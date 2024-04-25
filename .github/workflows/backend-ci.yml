@@ -25,7 +25,9 @@ jobs:
         working-directory: ./backend
 
       - name: Run Laravel tests
-        run: php artisan test
+        run: |
+          php artisan key:generate --env=testing
+          php artisan test
         working-directory: ./backend
         
   create-pull-request:
