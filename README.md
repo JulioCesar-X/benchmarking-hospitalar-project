@@ -19,7 +19,7 @@ Este repositório contém o projeto final para a UFCD 5425 - Curso Técnico Espe
 
 ### Clonar o Repositório:
 
-<code>git clone https://github.com/seu-usuario/seu-repositorio.git</code>
+<code>git clone https://github.com/JulioCesar-X/benchmarking-hospitalar-project.git</code>
 
 ### Iniciando o Ambiente de Desenvolvimento:
 
