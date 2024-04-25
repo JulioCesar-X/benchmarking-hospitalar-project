@@ -7,15 +7,15 @@ on:
 
 jobs:
   test-frontend:
-    if: github.ref_type == 'branch' && (github.event.ref == 'refs/heads/devF1' || github.event.ref == 'refs/heads/devF2')
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'front')
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18'
-    - name: Install Angular dependencies
-      run: npm install
-    - name: Run Angular tests
-      run: ng test --watch=false --browsers=ChromeHeadless
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - name: Install Angular dependencies
+        run: npm install
+      - name: Run Angular tests
+        run: ng test --watch=false --browsers=ChromeHeadless
