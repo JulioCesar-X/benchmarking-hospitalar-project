@@ -10,12 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'front')
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '20'
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
 
       - name: Change to Angular project directory
         run: cd frontend
