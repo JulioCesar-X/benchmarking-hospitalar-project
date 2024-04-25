@@ -1,0 +1,23 @@
+name: Backend Continuous Integration
+
+on:
+  push:
+    branches:
+      - 'testado'
+
+jobs:
+  test-backend:
+    if: github.ref_type == 'branch' && (github.event.ref == 'refs/heads/devB1' || github.event.ref == 'refs/heads/devB2')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        extensions: mbstring, pdo_pgsql
+        tools: composer, phpunit
+    - name: Install Laravel dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+    - name: Run Laravel tests
+      run: php artisan test

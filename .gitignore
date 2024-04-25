@@ -1,0 +1,19 @@
+# Laravel specific
+/vendor/
+/node_modules/
+/public/storage
+/storage/*.key
+/.env
+/.phpunit.result.cache
+
+# Angular specific
+/dist/
+/tmp/
+/src/**/*.js.map
+/src/**/*.css.map
+
+# Editor directories and files
+/.idea
+/*.sublime-workspace
+/*.sublime-project
+.DS_Store
