@@ -5,7 +5,6 @@ Este repositório contém o projeto final para a UFCD 5425 - Curso Técnico Espe
 
 - Docker
 - Docker Compose
-- Node.js e npm (para desenvolvimento do frontend)
 
 ## Tecnologias Utilizadas
 
