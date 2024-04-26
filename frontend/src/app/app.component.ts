@@ -13,3 +13,4 @@ export class AppComponent {
 }
 
 /*testando o devF1*/
+//teste
