@@ -1,6 +1,7 @@
 # Sistema de Gestão de Serviços Benchmark Hospitalar
 
 Este repositório contém o projeto final para a UFCD 5425 - Curso Técnico Especialista em Tecnologias e Programação de Sistemas de Informação da ATEC. O sistema de gestão de serviços Benchmark Hospitalar é uma aplicação web desenvolvida com Laravel para o backend e Angular para o frontend. Utiliza Docker para facilitar a criação e gestão do ambiente de desenvolvimento.
+
 ## Requisitos
 
 - Docker
@@ -34,12 +35,28 @@ Este repositório contém o projeto final para a UFCD 5425 - Curso Técnico Espe
 
 #### Instalar Dependências do Laravel:
 
+- Navegue até o diretório raiz do seu projeto.
+Execute os seguintes comandos para instalar as dependências do Laravel, copiar o arquivo .env.example e gerar a chave de aplicativo:
+
+<code>composer install</code><br>
+<code>cp .env.example .env</code><br>
+<code>php artisan key:generate</code><br>
+
+ Isso irá instalar as dependências do Laravel, copiar o arquivo de configuração e gerar a chave de aplicativo, tudo localmente no seu ambiente de desenvolvimento, fora do container.
+
+- Na raiz do projeto vá iniciar o angular:
+<code>cd frontend</code><br>
+<code>npm install</code><br>
+<code>ng serve</code><br>
+
+## Dentro do container
+
 <code>docker-compose exec laravel-app composer install</code>
 
 #### Configuração do Ambiente:
 
 <code>docker-compose exec laravel-app cp .env.example .env</code><br>
-<code>docker-compose exec laravel-app php artisan key:generate</code>
+<code>docker-compose exec laravel-app php artisan key:generate</code><br>
 
 Verifique se as configurações de banco de dados em `.env` correspondem às configuradas em `docker-compose.yml`.
 
