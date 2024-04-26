@@ -10,12 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'front')
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: '20'
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
 
       - name: Change to Angular project directory
         run: cd frontend
@@ -42,7 +46,9 @@ jobs:
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: "main"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          github_token: ${{ secrets.GH_TOKEN }}
+
           pr_title: "Automated PR to merge testado into main"
           pr_body: "This is an automated pull request to update the main branch with the latest code from testado."
           pr_label: "automerge"
