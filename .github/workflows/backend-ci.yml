@@ -6,8 +6,6 @@ on:
       - 'testado'
     paths:
       - 'backend/**'
-    paths-ignore:
-      - '**/*.md'
 
 jobs:
   test-backend:
