@@ -11,3 +11,6 @@ import { RouterOutlet } from '@angular/router';
 export class AppComponent {
   title = 'frontend';
 }
+
+/*testando o devF1*/
+//teste
