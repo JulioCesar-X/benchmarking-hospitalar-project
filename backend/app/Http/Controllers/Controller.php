@@ -12,6 +12,4 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }
 
-//testando novamente!!!
-//teste devB2
-
+// manual backend
