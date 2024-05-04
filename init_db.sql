@@ -1,0 +1,1 @@
+CREATE DATABASE benchmarking_hospitalar_db;

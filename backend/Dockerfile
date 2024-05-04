@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    libpq-dev  # Adiciona a dependência do PostgreSQL
+    libpq-dev
 
 # Instala as extensões do PHP necessárias
 RUN docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
