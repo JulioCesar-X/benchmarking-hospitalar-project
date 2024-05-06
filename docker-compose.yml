@@ -1,62 +1,56 @@
-version: "3.9"
+version: '3.8'
 
 services:
+
   laravel-app:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: laravel_app
-    ports:
-      - "8000:80"
-    depends_on:
-      - postgresql
+      context: .
+      dockerfile: docker/php/Dockerfile
     volumes:
-      - ./backend:/var/www/html
-    networks:
-      - app-network
+      - ./backend:/var/www
+    depends_on:
+      - db
 
   angular-app:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: angular_app
+      context: .
+      dockerfile: docker/angular/Dockerfile
+      args:
+        - ANGULAR_DIST=./frontend/dist/frontend/browser
     ports:
-      - "4200:80"
-    depends_on:
-      - nginx
-    networks:
-      - app-network
-
-  nginx:
-    image: nginx:alpine
-    container_name: nginx_proxy
-    ports:
-      - "8080:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - "4200:80"  # Mapeando a porta 4200 do host para a porta 80 do contêiner
     depends_on:
       - laravel-app
-    networks:
-      - app-network
 
-  postgresql:
-    image: postgres
-    container_name: pgsql_container
-    restart: always
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      args:
+        - ANGULAR_DIST=./frontend/dist/frontend/browser
+    ports:
+      - "8000:80"  # Mapeando a porta 8000 do host para a porta 80 do contêiner
     volumes:
-      - pgsql_data:/var/lib/postgresql/data
-      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - ./backend/public:/var/www/public
+    depends_on:
+      - laravel-app
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: benchmarking_hospitalar
+      POSTGRES_USER: atec
+      POSTGRES_PASSWORD: atec123
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=atec
-      - POSTGRES_DB=benchmarking_hospitalar_db
-      - POSTGRES_USER=atec
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
     networks:
-      - app-network
+      - backend
 
 networks:
-  app-network:
+  backend:
     driver: bridge
 
 volumes:
