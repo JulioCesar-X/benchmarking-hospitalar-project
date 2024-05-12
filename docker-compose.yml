@@ -1,57 +1,54 @@
-version: '3.8'
-
 services:
-
   laravel-app:
+    image: hma/laravel:1.0.0
     build:
-      context: .
-      dockerfile: docker/php/Dockerfile
-    volumes:
-      - ./backend:/var/www
-    depends_on:
-      - db
-
-  angular-app:
-    build:
-      context: .
-      dockerfile: docker/angular/Dockerfile
-      args:
-        - ANGULAR_DIST=./frontend/dist/frontend/browser
+      context: ./backend
+      dockerfile: Dockerfile.laravel
     ports:
-      - "4200:80"  # Mapeando a porta 4200 do host para a porta 80 do contêiner
-    depends_on:
-      - laravel-app
-
-  nginx:
-    build:
-      context: .
-      dockerfile: docker/nginx/Dockerfile
-      args:
-        - ANGULAR_DIST=./frontend/dist/frontend/browser
-    ports:
-      - "8000:80"  # Mapeando a porta 8000 do host para a porta 80 do contêiner
+      - "8000:8000"
+    environment:
+      APP_ENV: local
     volumes:
-      - ./backend/public:/var/www/public
-    depends_on:
-      - laravel-app
+      - ./backend:/var/www/html
 
   db:
-    image: postgres
-    restart: always
+    image: postgres:12
+    ports:
+    - "5432:5432"
     environment:
-      POSTGRES_DB: benchmarking_hospitalar
       POSTGRES_USER: atec
       POSTGRES_PASSWORD: atec123
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: bh_db
     volumes:
-      - pgsql_data:/var/lib/postgresql/data
-    networks:
-      - backend
+      - postgres-data:/var/lib/postgresql/data
 
-networks:
-  backend:
-    driver: bridge
+  angular-app:
+    image: hma/angular:1.0.0
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.angular
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    user: "front"
+
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
+      - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - laravel-app
+      - angular-app
 
 volumes:
-  pgsql_data:
+  postgres-data:
+  node_modules:
+    driver: local
