@@ -1,48 +1,57 @@
-version: "3.9"
+version: '3.8'
+
 services:
+
   laravel-app:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8000:80"
-    depends_on:
-      - postgresql
+      context: .
+      dockerfile: docker/php/Dockerfile
     volumes:
-      - ./backend:/var/www/html
+      - ./backend:/var/www
+    depends_on:
+      - db
 
   angular-app:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/angular/Dockerfile
+      args:
+        - ANGULAR_DIST=./frontend/dist/frontend/browser
     ports:
-      - "4200:80"
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "8080:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - "4200:80"  # Mapeando a porta 4200 do host para a porta 80 do contêiner
     depends_on:
       - laravel-app
-      - angular-app
-      
-  postgresql:
-    container_name: pgsql_container
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      args:
+        - ANGULAR_DIST=./frontend/dist/frontend/browser
+    ports:
+      - "8000:80"  # Mapeando a porta 8000 do host para a porta 80 do contêiner
+    volumes:
+      - ./backend/public:/var/www/public
+    depends_on:
+      - laravel-app
+
+  db:
     image: postgres
     restart: always
-    volumes:
-      - /home/julio/projects/atec-final-project/data:/var/lib/postgresql/data
-      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    environment:
+      POSTGRES_DB: benchmarking_hospitalar
+      POSTGRES_USER: atec
+      POSTGRES_PASSWORD: atec123
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=atec
-      - POSTGRES_DB=${POSTGRES_DATABASE:-benchmarking_hospitalar_db}
-      - POSTGRES_USER=${POSTGRES_USER:-atec123}
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
     networks:
-      - app-network
+      - backend
+
 networks:
-  app-network:
+  backend:
     driver: bridge
+
+volumes:
+  pgsql_data:
