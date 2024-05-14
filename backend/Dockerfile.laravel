@@ -36,4 +36,4 @@ RUN php artisan key:generate
 RUN php artisan config:cache
 
 # Comando padrão para iniciar o servidor PHP
-CMD php artisan serve --host=0.0.0.0 --port=8000
+CMD php artisan serve --host=0.0.0.0 --port=8001

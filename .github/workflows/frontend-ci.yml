@@ -21,7 +21,7 @@ jobs:
           node-version: '20'
 
       - name: Install Angular CLI
-        run: npm install -g @angular/cli
+        run: npm install -g @angular/cli@17
 
       - name: Change to Angular project directory
         run: cd frontend
