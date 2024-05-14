@@ -1,0 +1,13 @@
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin box-shadow($color) {
+  box-shadow: 0 2px 4px rgba($color, 0.1), 0 2px 6px rgba($color, 0.1);
+}
+
+@mixin transition($property, $duration: 0.3s, $ease: ease-in-out) {
+  transition: $property $duration $ease;
+}
