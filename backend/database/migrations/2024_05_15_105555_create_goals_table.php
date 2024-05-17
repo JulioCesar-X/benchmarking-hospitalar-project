@@ -13,6 +13,7 @@ class CreateGoalsTable extends Migration
      */
     public function up()
     {
+        //alteração commit apagar
         Schema::create('goals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('service_activity_indicator_id')->constrained();
