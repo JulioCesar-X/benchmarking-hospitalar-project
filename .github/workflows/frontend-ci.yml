@@ -12,45 +12,46 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'front')
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
+      - uses: actions/checkout@v2
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '20'
-
       - name: Install Angular CLI
         run: npm install -g @angular/cli@17
-
-      - name: Change to Angular project directory
-        run: cd frontend
-
       - name: Install Angular dependencies
         run: npm install
         working-directory: ./frontend
-
       - name: Run Angular tests
         run: ng test --watch=false --browsers=ChromeHeadless
         working-directory: ./frontend
-        
+
   create-pull-request:
     needs: test-frontend
     runs-on: ubuntu-latest
     if: success()
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: 'testado'
-          
+      - uses: actions/checkout@v2
       - name: Create Pull Request
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: "main"
-
           github_token: ${{ secrets.GH_TOKEN }}
-
           pr_title: "Automated PR to merge testado into main"
           pr_body: "This is an automated pull request to update the main branch with the latest code from testado."
           pr_label: "automerge"
+
+  deploy-to-netlify:
+    needs: create-pull-request
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v1.1
+        with:
+          publish-dir: './frontend/dist/frontend'
+          production-branch: 'main'
+          alias: 'netlify.app'
+          deploy-message: 'Deploy from GitHub Actions'
+          personal-access-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
