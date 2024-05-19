@@ -18,7 +18,7 @@ class CreateGoalsTable extends Migration
             $table->id();
             $table->foreignId('service_activity_indicator_id')->constrained();
             $table->float('target_value')->nullable(false);
-            $table->date('year')->default(DB::raw('YEAR(CURRENT_DATE)')); // Define o ano atual como valor padrão
+            $table->integer('year')->default(date('Y')); // Define o ano atual como valor padrão
             $table->softDeletes();
             $table->timestamps();
         });

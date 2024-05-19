@@ -9,7 +9,7 @@ RUN useradd -m front
 WORKDIR /app
 
 # Instalando Angular CLI globalmente
-RUN npm install -g @angular/cli
+RUN npm install -g @angular/cli@17
 
 # Copiando os arquivos de dependência primeiro para otimizar o cache do build
 COPY package.json package-lock.json ./

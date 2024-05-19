@@ -1,34 +1,89 @@
-# Usando uma imagem base oficial do PHP com a versão 7.4 e FPM
+# # Usando uma imagem base oficial do PHP com a versão 7.4 e FPM
+# FROM php:7.4-fpm
+
+# # Atualizando os pacotes e instalando dependências necessárias
+# RUN apt-get update && apt-get install -y \
+#     libpq-dev \
+#     libzip-dev \
+#     unzip \
+#     p7zip-full \
+#     git \
+#     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# # Instalando extensões necessárias para o PHP
+# RUN docker-php-ext-install pdo_pgsql zip
+
+# # Instalando Composer para gerenciamento de dependências do PHP
+# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# # Definindo o diretório de trabalho para onde a aplicação será copiada
+# WORKDIR /var/www/html
+
+# # Copiando o código-fonte da aplicação para o container
+# COPY . /var/www/html
+
+# # Instalando as dependências do projeto, sem scripts e sugestões para um processo mais rápido e seguro
+# RUN composer install --no-interaction --no-scripts --no-suggest --prefer-dist \
+#     && composer dump-autoload --optimize
+
+# # Configurando as permissões adequadas para os diretórios de armazenamento e cache do Laravel
+# RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+#     && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# # Copiar o script de inicialização de dados para o container
+# COPY postgresql-default-data.sql /docker-entrypoint-initdb.d/
+# COPY entrypoint.sh /usr/local/bin/
+
+# # Definir permissões para o script de entrypoint
+# RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# # Definir o entrypoint customizado
+# ENTRYPOINT ["entrypoint.sh"]
+
+# # Definindo o comando padrão para iniciar o servidor PHP na porta 8001
+# CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8001"]
+
 FROM php:7.4-fpm
 
-# Atualizando os pacotes e instalando dependências necessárias
+# Instalação de dependências
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     unzip \
     p7zip-full \
     git \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instalando extensões necessárias para o PHP
-RUN docker-php-ext-install pdo_pgsql zip
+# Instalação da extensão PDO para PostgreSQL
+RUN docker-php-ext-install pdo_pgsql
 
-# Instalando Composer para gerenciamento de dependências do PHP
+# Instalação da extensão zip
+RUN docker-php-ext-install zip
+
+# Instalação do Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Definindo o diretório de trabalho para onde a aplicação será copiada
+# Configuração do diretório de trabalho
 WORKDIR /var/www/html
 
-# Copiando o código-fonte da aplicação para o container
+# Copiando o código da aplicação
 COPY . /var/www/html
 
-# Instalando as dependências do projeto, sem scripts e sugestões para um processo mais rápido e seguro
-RUN composer install --no-interaction --no-scripts --no-suggest --prefer-dist \
-    && composer dump-autoload --optimize
+# Instalando dependências da aplicação
+RUN composer install --no-interaction --no-scripts --no-suggest --prefer-dist
 
 # Configurando as permissões adequadas para os diretórios de armazenamento e cache do Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Geração da chave de aplicação Laravel
+RUN php artisan key:generate
+
+RUN php artisan config:cache
+
+RUN composer dump-autoload
+
 
 # Copiar o script de inicialização de dados para o container
 COPY postgresql-default-data.sql /docker-entrypoint-initdb.d/
@@ -40,47 +95,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Definir o entrypoint customizado
 ENTRYPOINT ["entrypoint.sh"]
 
-# Definindo o comando padrão para iniciar o servidor PHP na porta 8001
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8001"]
-
-# FROM php:7.4-fpm
-
-# # Instalação de dependências
-# RUN apt-get update && apt-get install -y \
-#     libpq-dev \
-#     libzip-dev \
-#     unzip \
-#     p7zip-full \
-#     git \
-#     && rm -rf /var/lib/apt/lists/*
-
-# # Instalação da extensão PDO para PostgreSQL
-# RUN docker-php-ext-install pdo_pgsql
-
-# # Instalação da extensão zip
-# RUN docker-php-ext-install zip
-
-# # Instalação do Composer
-# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# # Configuração do diretório de trabalho
-# WORKDIR /var/www/html
-
-# # Copiando o código da aplicação
-# COPY . /var/www/html
-
-# # Instalando dependências da aplicação
-# RUN composer install --no-interaction --no-scripts --no-suggest --prefer-dist
-
-# # Configurando permissões de diretório
-# RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# # Geração da chave de aplicação Laravel
-# RUN php artisan key:generate
-
-# RUN php artisan config:cache
-
-# RUN composer dump-autoload
-
 # # Comando padrão para iniciar o servidor PHP
 # CMD php artisan serve --host=0.0.0.0 --port=8001
+# Comando padrão para iniciar o servidor PHP
+CMD ["php-fpm"]
