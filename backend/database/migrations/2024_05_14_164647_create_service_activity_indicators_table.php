@@ -32,10 +32,6 @@ class CreateServiceActivityIndicatorsTable extends Migration
      */
     public function down()
     {
-        Schema::table('service_activity_indicators', function (Blueprint $table) {
-            $table->dropColumn('type'); // Se necessário, remova a coluna 'type' ao reverter
-        });
-
         Schema::dropIfExists('service_activity_indicators');
     }
 }
