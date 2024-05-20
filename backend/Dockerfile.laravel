@@ -52,7 +52,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     p7zip-full \
     git \
-    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalação da extensão PDO para PostgreSQL
@@ -77,14 +76,6 @@ RUN composer install --no-interaction --no-scripts --no-suggest --prefer-dist
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Geração da chave de aplicação Laravel
-RUN php artisan key:generate
-
-RUN php artisan config:cache
-
-RUN composer dump-autoload
-
-
 # Copiar o script de inicialização de dados para o container
 COPY postgresql-default-data.sql /docker-entrypoint-initdb.d/
 COPY entrypoint.sh /usr/local/bin/
@@ -95,7 +86,5 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Definir o entrypoint customizado
 ENTRYPOINT ["entrypoint.sh"]
 
-# # Comando padrão para iniciar o servidor PHP
-# CMD php artisan serve --host=0.0.0.0 --port=8001
 # Comando padrão para iniciar o servidor PHP
 CMD ["php-fpm"]
