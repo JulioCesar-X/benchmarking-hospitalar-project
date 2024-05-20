@@ -1,0 +1,10 @@
+[build]
+  base = "./frontend"
+  command = "npm install -g @angular/cli && npm install && npm run build"
+  publish = "./frontend/dist/frontend"
+  environment = { NODE_ENV = "production" }
+
+[[plugins]]
+  package = "@netlify/plugin-cache"
+  [plugins.inputs]
+  path = "node_modules/.cache"
