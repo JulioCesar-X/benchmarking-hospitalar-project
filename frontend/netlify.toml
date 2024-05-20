@@ -1,6 +1,6 @@
 [build]
   base = "frontend"
-  publish = "frontend/dist/frontend"
+  publish = "dist/frontend"
   command = "npm run build"
 
 [context.production]
