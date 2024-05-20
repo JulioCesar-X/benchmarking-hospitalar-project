@@ -77,7 +77,7 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
     && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Copy nginx configuration file
-COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ../nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Copy supervisor configuration
 COPY ./supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
