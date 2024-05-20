@@ -2,7 +2,6 @@
 FROM node:20
 
 # Define informações do usuário (opcional, dependendo do ambiente)
-# A criação de um usuário não root pode ajudar com questões de permissão
 RUN useradd -m front
 
 # Definindo o diretório de trabalho
@@ -30,4 +29,4 @@ COPY --chown=front:front . .
 EXPOSE 4200
 
 # Iniciando o aplicativo Angular com o proxy configurado
-CMD ["ng", "serve", "--host", "0.0.0.0", "--poll=2000","--disable-host-check", "--proxy-config", "proxy.conf.json"]
+CMD ["ng", "serve", "--host", "0.0.0.0", "--poll=2000", "--disable-host-check", "--proxy-config", "proxy.conf.json"]
