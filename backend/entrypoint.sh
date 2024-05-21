@@ -22,9 +22,6 @@ unset PGPASSWORD
 php artisan key:generate
 php artisan config:cache
 
-# Iniciar o servidor Laravel
-exec "$@"
-
 
 # #!/bin/bash
 
