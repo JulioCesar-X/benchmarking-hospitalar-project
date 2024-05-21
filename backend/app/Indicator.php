@@ -11,6 +11,7 @@ class Indicator extends Model
 
     public function ServiceActivityIndicator()
     {
+        //dsdsd
         return $this->hasMany(ServiceActivityIndicator::class);
     }
 
