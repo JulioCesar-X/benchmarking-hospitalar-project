@@ -15,10 +15,10 @@ class CreateNotificationsTable extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sender_id')->constrained('users');
-            $table->foreignId('receiver_id')->constrained('users');
+            $table->foreignId('sender_id')->constrained();
+            $table->foreignId('receiver_id')->constrained();
             $table->string('title');
-            $table->text('message')->nullable(false);
+            $table->text('message');
             $table->timestamps();
         });
     }

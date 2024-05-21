@@ -17,7 +17,7 @@ class CreateGoalsTable extends Migration
         Schema::create('goals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('service_activity_indicator_id')->constrained();
-            $table->float('target_value')->nullable(false);
+            $table->float('target_value');
             $table->integer('year')->default(date('Y')); // Define o ano atual como valor padrão
             $table->softDeletes();
             $table->timestamps();

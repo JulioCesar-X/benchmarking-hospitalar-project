@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Record extends Model
 {
-    use SoftDeletes;
+    protected $fillable = [
+        'date',
+        'value',
+        'service_activity_indicator_id'
+    ];
 
-    public function ServiceActivityIndicator()
+    public function serviceActivityIndicator()
     {
-        return $this->belongsTo(ServiceActivityIndicator::class);
+        return $this->belongsTo('App\ServiceActivityIndicator');
     }
 }

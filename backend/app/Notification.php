@@ -6,8 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
-    public function User()
+    protected $fillable = [
+        'sender_id',
+        'receiver_id',
+        'title',
+        'message'
+    ];
+    public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo('App\User');
     }
 }

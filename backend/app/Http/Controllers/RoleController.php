@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Role;
+use Exception;
 
 class RoleController extends Controller
 {
@@ -13,7 +15,12 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $roles = Role::with('users')->get();
+            return response()->json($roles, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -24,7 +31,13 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $role = Role::create($request->all());
+            $role->users()->sync($request->users);
+            return response()->json($role->load('users'), 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -35,19 +48,28 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $role = Role::findOrFail($id);
+            return response()->json($role->load('users'), 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,Role $role)
     {
-        //
+        try {
+            $role->update($request->all());
+            return response()->json($role, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -58,6 +80,12 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $role = Role::findOrFail($id);
+            $role->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 }

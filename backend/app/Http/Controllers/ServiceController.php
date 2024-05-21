@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Service;
+use Exception;
+
 
 class ServiceController extends Controller
 {
@@ -13,7 +16,12 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $services = Service::all();
+            return response()->json($services, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -24,7 +32,12 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $service = Service::create($request->all());
+            return response()->json($service->load('servicesActivityIndicators'), 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -35,19 +48,28 @@ class ServiceController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $service = Service::findOrFail($id);
+            return response()->json($service->load('servicesActivityIndicators'), 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,Service $service)
     {
-        //
+        try {
+            $service->update($request->all());
+            return response()->json($service, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -58,6 +80,29 @@ class ServiceController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $service = Service::findOrFail($id);
+            $service->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+    /**
+     * Search for activities based on a keyword.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        try {
+
+            return response()->json(Service::all()->orderBy('updated_at', 'desc')->where('name', 'LIKE', '%' . $request->search . '%')->get(), 200); //search = name do form
+
+        } catch (Exception $exception) {
+
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }

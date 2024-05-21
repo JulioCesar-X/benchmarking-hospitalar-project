@@ -3,15 +3,17 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Indicator extends Model
 {
-    use SoftDeletes;
+    protected $fillable = [
+        'indicator_name',
+    ];
 
-    public function ServiceActivityIndicator()
+
+    public function serviceActivityIndicators()
     {
-        return $this->hasMany(ServiceActivityIndicator::class);
+        return $this->hasMany('App\ServiceActivityIndicator');
     }
 
 }

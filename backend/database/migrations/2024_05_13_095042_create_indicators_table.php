@@ -15,7 +15,7 @@ class CreateIndicatorsTable extends Migration
     {
         Schema::create('indicators', function (Blueprint $table) {
             $table->id();
-            $table->string('indicator_name')->nullable(false);
+            $table->string('indicator_name');
             $table->softDeletes();
             $table->timestamps();
         });

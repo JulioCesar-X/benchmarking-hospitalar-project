@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Notification;
+use Exception;
+
 
 use Illuminate\Http\Request;
 
@@ -13,7 +16,12 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $notifications = Notification::with('user')->get();
+            return response()->json($notifications, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -24,7 +32,12 @@ class NotificationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $notification = Notification::create($request->all());
+            return response()->json($notification->load('user'), 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -35,19 +48,29 @@ class NotificationController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $notification = Notification::findOrFail($id);
+            return response()->json($notification->load('user'), 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,Notification $notification)
     {
-        //
+        try {
+            $notification->update($request->all());
+            return response()->json($notification, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+
     }
 
     /**
@@ -58,6 +81,12 @@ class NotificationController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $notification = Notification::findOrFail($id);
+            $notification->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 }

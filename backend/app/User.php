@@ -6,17 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
-    public function Notications()
+    protected $fillable = [
+        'name',
+        'email',
+        'password'
+    ];
+
+    protected $hidden = ['pivot'];
+
+    public function notifications()
     {
-        return $this->hasMany(Notications::class);
+        return $this->hasMany('App\Notification');
     }
 
-    public function Roles(){
-        return $this->belongsToMany(Role::class);
+    public function roles(){
+        return $this->belongsToMany('App\Role');
     }
 
     public function tokens()
     {
-        return $this->hasMany(Personal_Acces::class);
+        return $this->hasMany('App\Token');
     }
 }

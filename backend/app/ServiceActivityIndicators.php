@@ -6,31 +6,37 @@ use Illuminate\Database\Eloquent\Model;
 
 class ServiceActivityIndicators extends Model
 {
-    use SoftDeletes;
+
+    protected $fillable = [
+        'service_id',
+        'activity_id',
+        'indicator_id',
+        'type',
+    ];
 
     public function goals()
     {
-        return $this->hasMany(Goal::class);
+        return $this->hasMany('App\Goal');
     }
 
     public function records()
     {
-        return $this->hasMany(Record::class);
+        return $this->hasMany('App\Record');
     }
 
     public function service()
     {
-        return $this->belongsTo(Service::class);
+        return $this->belongsTo('App\Service');
     }
 
     public function indicator()
     {
-        return $this->belongsTo(Indicator::class);
+        return $this->belongsTo('App\Indicator');
     }
 
     public function activity()
     {
-        return $this->belongsTo(Activity::class);
+        return $this->belongsTo('App\Activity');
     }
 
 }

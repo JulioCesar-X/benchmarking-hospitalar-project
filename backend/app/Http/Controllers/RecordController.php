@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Record;
+use Exception;
 
 use Illuminate\Http\Request;
 
@@ -13,7 +15,12 @@ class RecordController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $records = Record::with('serviceActivityIndicator')->get();
+            return response()->json($records, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -24,7 +31,12 @@ class RecordController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $record = Record::create($request->all());
+            return response()->json($record->load('serviceActivityIndicator'), 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -35,19 +47,28 @@ class RecordController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $record = Record::findOrFail($id);
+            return response()->json($record->load('servicesActivityIndicator'), 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,Record $record)
     {
-        //
+        try {
+            $record->update($request->all());
+            return response()->json($record, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -58,6 +79,12 @@ class RecordController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $record = Record::findOrFail($id);
+            $record->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
 }
