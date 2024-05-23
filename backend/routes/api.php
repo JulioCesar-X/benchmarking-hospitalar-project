@@ -13,66 +13,51 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::post('/login', 'AuthController@login')->name('api.login');
 
-// Todas as rotas aqui requerem autenticação
 Route::middleware('auth:sanctum')->group(function () {
+
+    // Rotas comuns para todos os usuários autenticados
+    Route::post('/logout', 'AuthController@logout')->name('api.logout');
+
+    Route::get('indicators/accumulated', 'IndicatorController@getAccumulatedIndicators')->name('indicators.accumulated');
+    Route::get('records/variation-rates', 'RecordController@getVariationRates')->name('records.variation-rates');
+    Route::get('goals/monthly', 'GoalController@getMonthlyGoals')->name('goals.monthly');
+    Route::get('indicators', 'IndicatorController@index')->name('indicators.index');
+    Route::get('indicators/{id}', 'IndicatorController@show')->name('indicators.show');
+    Route::get('services', 'ServiceController@index')->name('services.index');
+    Route::get('services/{id}', 'ServiceController@show')->name('services.show');
+    Route::get('service-activity-indicators', 'ServiceActivityIndicatorController@index')->name('service-activity-indicators.index');
+    Route::get('service-activity-indicators/{id}', 'ServiceActivityIndicatorController@show')->name('service-activity-indicators.show');
+    Route::get('activities', 'ActivityController@index')->name('activities.index');
+    Route::get('activities/{id}', 'ActivityController@show')->name('activities.show');
+    Route::get('records', 'RecordController@index')->name('records.index');
+    Route::get('records/{id}', 'RecordController@show')->name('records.show');
+    Route::get('goals', 'GoalController@index')->name('goals.index');
+    Route::get('goals/{id}', 'GoalController@show')->name('goals.show');
+
     // Rotas para admin
-    Route::apiResource('indicators', 'IndicatorController');
-
-    Route::middleware('role:admin-action')->group(function () {
-        Route::get('admin/users', 'UserController@index')->name('admin.users.index');
-        Route::get('admin/users/{user}', 'UserController@show')->name('admin.users.show');
-        Route::put('admin/users/{user}', 'UserController@update')->name('admin.users.update');
-        Route::delete('admin/users/{user}', 'UserController@destroy')->name('admin.users.destroy');
-
-        Route::apiResource('activities', 'ActivityController');
-        Route::apiResource('goals', 'GoalController');
-
-        Route::apiResource('notifications', 'NotificationController')->names([
-            'index' => 'admin.notifications.index',
-            'store' => 'admin.notifications.store',
-            'create' => 'admin.notifications.create',
-            'show' => 'admin.notifications.show',
-            'edit' => 'admin.notifications.edit',
-            'update' => 'admin.notifications.update',
-            'destroy' => 'admin.notifications.destroy',
-        ]);
-
-        Route::apiResource('records', 'RecordController');
-        Route::apiResource('roles', 'RoleController');
-        Route::apiResource('services', 'ServiceController');
-        Route::apiResource('service-activity-indicators', 'ServiceActivityIndicatorController');
+    Route::prefix('admin')->middleware('role:admin-action')->group(function () {
+        Route::apiResource('users', 'UserController')->names('admin.users');
+        Route::apiResource('activities', 'ActivityController')->names('admin.activities');
+        Route::apiResource('notifications', 'NotificationController')->names('admin.notifications');
+        Route::apiResource('records', 'RecordController')->names('admin.records');
+        Route::apiResource('goals', 'GoalController')->names('admin.goals');
+        Route::apiResource('indicators', 'IndicatorController')->names('admin.indicators');
+        Route::apiResource('roles', 'RoleController')->names('admin.roles');
+        Route::apiResource('services', 'ServiceController')->names('admin.services');
+        Route::apiResource('service-activity-indicators', 'ServiceActivityIndicatorController')->names('admin.service-activity-indicators');
     });
 
     // Rotas para coordenador
-    Route::middleware('role:coordinator-action')->group(function () {
-        Route::get('coordinator/users', 'UserController@index')->name('coordinator.users.index');
-        Route::get('admin/users/{user}', 'UserController@show')->name('admin.users.show');
-        Route::post('coordinator/users', 'UserController@store')->name('coordinator.users.store');
-        Route::put('coordinator/users/{user}', 'UserController@update')->name('coordinator.users.update');
-        Route::apiResource('goals', 'GoalController');
-        Route::apiResource('records', 'RecordController');
-        
-        Route::apiResource('notifications', 'NotificationController')->names([
-            'index' => 'coordinator.notifications.index',
-            'store' => 'coordinator.notifications.store',
-            'create' => 'coordinator.notifications.create',
-            'show' => 'coordinator.notifications.show',
-            'edit' => 'coordinator.notifications.edit',
-            'update' => 'coordinator.notifications.update',
-            'destroy' => 'coordinator.notifications.destroy',
-        ]);
+    Route::prefix('coordinator')->middleware('role:coordinator-action')->group(function () {
+        Route::apiResource('users', 'UserController')->only(['index', 'store', 'update'])->names('coordinator.users');
+        Route::apiResource('activities', 'ActivityController')->only(['index', 'show'])->names('coordinator.activities');
+        Route::apiResource('goals', 'GoalController')->names('coordinator.goals');
+        Route::apiResource('records', 'RecordController')->names('coordinator.records');
+        Route::apiResource('services', 'ServiceController')->only(['index', 'show'])->names('coordinator.services');
+        Route::apiResource('service-activity-indicators', 'ServiceActivityIndicatorController')->only(['index', 'show', 'update'])->names('coordinator.service-activity-indicators');
+        Route::apiResource('indicators', 'IndicatorController')->only(['index', 'show'])->names('coordinator.indicators');
+        Route::apiResource('notifications', 'NotificationController')->names('coordinator.notifications');
     });
-
-    // Rotas comuns para todos os usuários autenticados
-    Route::get('indicators/accumulated', 'IndicatorController@getAccumulatedIndicators');
-    Route::get('records/variation-rates', 'RecordController@getVariationRates');
-    Route::get('goals/monthly', 'GoalController@getMonthlyGoals');
-
-    Route::post('/logout', 'AuthController@logout');
-
 });
-
-

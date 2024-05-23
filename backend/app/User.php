@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -23,12 +23,16 @@ class User extends Authenticatable
         'remember_token'
     ];
 
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
+    }
+
     public function hasRole($roleName)
     {
         return $this->roles->contains('role_name', $roleName);
     }
 
-    // Relacionamento com as notificações enviadas
     public function sentNotifications()
     {
         return $this->hasMany('App\Notification', 'sender_id');
