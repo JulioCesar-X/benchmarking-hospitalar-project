@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://laravel-app:8000",
+    "target": "http://laravel-app:8001",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use App\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -31,10 +33,6 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('coordinator-action', function ($user) {
             return $user->hasRole('Coordenador');
-        });
-
-        Gate::define('collaborator-view', function ($user) {
-            return $user->hasRole('Colaborador');
         });
     }
 }

@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -22,9 +23,9 @@ class User extends Authenticatable
         'remember_token'
     ];
 
-    public function hasRole($role)
+    public function hasRole($roleName)
     {
-        return $this->roles()->where('role_name', $role)->exists();
+        return $this->roles->contains('role_name', $roleName);
     }
 
     // Relacionamento com as notificações enviadas
