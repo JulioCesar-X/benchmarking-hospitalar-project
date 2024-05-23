@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 use App\Indicator;
 use Exception;
 
@@ -106,4 +107,20 @@ class IndicatorController extends Controller
             return response()->json(['error' => $exception], 500);
         }
     }
+
+    /**
+     * Get the accumulated indicators.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getAccumulatedIndicators()
+    {
+        try {
+            $data = DB::table('vw_indicator_accumulated')->get();
+            return response()->json($data, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
 }

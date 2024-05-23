@@ -17,7 +17,7 @@ class UserController extends Controller
     public function index()
     {
         try {
-            $users = User::with(['roles','notifications','tokens'])->get();
+            $users = User::with(['roles', 'sentNotifications', 'receivedNotifications'])->get();
             return response()->json($users, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -34,7 +34,7 @@ class UserController extends Controller
     {
         try {
             $user = User::create($request->all());
-            return response()->json($user->load(['roles', 'notifications', 'tokens']), 201);
+            return response()->json($user->load(['roles', 'sentNotifications', 'receivedNotifications']), 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -50,7 +50,7 @@ class UserController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-            return response()->json($user->load(['roles', 'notifications', 'tokens']), 200);
+            return response()->json($user->load(['roles', 'sentNotifications', 'receivedNotifications']), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -98,7 +98,7 @@ class UserController extends Controller
     {
         try {
 
-            return response()->json(User::with(['roles', 'notifications', 'tokens'])->orderBy('updated_at', 'desc')->where('name', 'LIKE', '%' . $request->search . '%')->get(), 200); //search = name do form
+            return response()->json(User::with(['roles', 'sentNotifications', 'receivedNotifications'])->orderBy('updated_at', 'desc')->where('name', 'LIKE', '%' . $request->search . '%')->get(), 200); //search = name do form
 
         } catch (Exception $exception) {
 

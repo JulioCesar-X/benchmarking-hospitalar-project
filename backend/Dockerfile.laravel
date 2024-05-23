@@ -1,51 +1,41 @@
+# Use a imagem base do PHP 7.4 FPM
 FROM php:7.4-fpm
 
-# Instalação de dependências
+# Instale as dependências necessárias
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     unzip \
     p7zip-full \
     git \
+    netcat \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalação da extensão PDO para PostgreSQL
-RUN docker-php-ext-install pdo_pgsql
+# Instale as extensões necessárias do PHP
+RUN docker-php-ext-install pdo_pgsql zip
 
-# Instalação da extensão zip
-RUN docker-php-ext-install zip
-
-# Instalação do Composer
+# Instale o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Configuração do diretório de trabalho
+# Adicione o script wait-for-it.sh
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+RUN chmod +x /usr/local/bin/wait-for-it.sh
+
+# Configure o diretório de trabalho
 WORKDIR /var/www/html
 
-# Copiando o código da aplicação
-COPY . /var/www/html
+# Copie o código da aplicação para o contêiner
+COPY . .
 
-# Instalando dependências da aplicação
-RUN composer install --no-interaction --no-scripts --no-suggest --prefer-dist
-
-# Configurando permissões de diretório
+# Configure as permissões adequadas
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Geração da chave de aplicação Laravel
-RUN php artisan key:generate
+# Permita que o Composer seja executado como root
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN php artisan config:cache
+# Instale as dependências do Composer
+RUN composer install --no-interaction --optimize-autoloader
+RUN php artisan cache:clear && php artisan config:clear
 
-RUN composer dump-autoload
-
-# Copiar o script de inicialização de dados para o container
-COPY postgresql-default-data.sql /docker-entrypoint-initdb.d/
-COPY entrypoint.sh /usr/local/bin/
-
-# Definir permissões para o script de entrypoint
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Definir o entrypoint customizado
-ENTRYPOINT ["entrypoint.sh"]
-
-# Comando padrão para iniciar o servidor PHP
-CMD php artisan serve --host=0.0.0.0 --port=8001
+# Defina o comando padrão para esperar pelo banco de dados e iniciar o servidor Laravel
+CMD /usr/local/bin/wait-for-it.sh -t 30 db:5432 -- php artisan migrate:fresh --seed && php artisan serve --host=0.0.0.0 --port=8001

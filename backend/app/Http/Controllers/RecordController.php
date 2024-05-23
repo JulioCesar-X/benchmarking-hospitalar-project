@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 use App\Record;
 use Exception;
 
@@ -87,4 +88,15 @@ class RecordController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
+    public function getVariationRates()
+    {
+        try {
+            $data = DB::table('vw_variation_rate')->get();
+            return response()->json($data, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
 }

@@ -15,6 +15,6 @@ class Goal extends Model
 
     public function serviceActivityIndicator()
     {
-        return $this->belongsTo('App\ServiceActivityIndicator');
+        return $this->belongsTo('App\ServiceActivityIndicators');
     }
 }

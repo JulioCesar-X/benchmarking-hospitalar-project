@@ -17,7 +17,7 @@ class NotificationController extends Controller
     public function index()
     {
         try {
-            $notifications = Notification::with('user')->get();
+            $notifications = Notification::with(['sender', 'receiver'])->get();
             return response()->json($notifications, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -34,7 +34,7 @@ class NotificationController extends Controller
     {
         try {
             $notification = Notification::create($request->all());
-            return response()->json($notification->load('user'), 201);
+            return response()->json($notification->load(['sender', 'receiver']), 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -50,7 +50,7 @@ class NotificationController extends Controller
     {
         try {
             $notification = Notification::findOrFail($id);
-            return response()->json($notification->load('user'), 200);
+            return response()->json($notification->load(['sender', 'receiver']), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

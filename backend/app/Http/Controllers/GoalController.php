@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 use App\Goal;
 use Exception;
 
@@ -87,4 +88,15 @@ class GoalController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
+    public function getMonthlyGoals()
+    {
+        try {
+            $data = DB::table('vw_goals_monthly')->get();
+            return response()->json($data, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
 }
