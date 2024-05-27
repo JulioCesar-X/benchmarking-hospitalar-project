@@ -1,0 +1,23 @@
+{
+    "name": "nwidart/serviceactivityindicator",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\ServiceActivityIndicator\\Providers\\ServiceActivityIndicatorServiceProvider",
+                "Modules\\ServiceActivityIndicator\\Providers\\RouteServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ServiceActivityIndicator\\": ""
+        }
+    }
+}

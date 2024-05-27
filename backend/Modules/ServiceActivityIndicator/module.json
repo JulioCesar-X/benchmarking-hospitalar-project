@@ -1,0 +1,13 @@
+{
+    "name": "ServiceActivityIndicator",
+    "alias": "serviceactivityindicator",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ServiceActivityIndicator\\Providers\\ServiceActivityIndicatorServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

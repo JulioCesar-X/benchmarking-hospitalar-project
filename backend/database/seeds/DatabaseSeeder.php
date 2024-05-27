@@ -1,7 +1,5 @@
 <?php
 
-use App\Goal;
-use App\Record;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,18 +12,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-
-            UsersTableSeeder::class,
-            RolesTableSeeder::class,
-            RoleUserTableSeeder::class,
-            NotificationsTableSeeder::class,
-            ServicesTableSeeder::class,
-            ActivitiesTableSeeder::class,
-            IndicatorsTableSeeder::class,
-            ServiceActivityIndicatorsTableSeeder::class,
-            RecordsTableSeeder::class,
-            GoalsTableSeeder::class
-
+            \Modules\User\Database\Seeders\UserDatabaseSeeder::class,
+            \Modules\Role\Database\Seeders\RoleDatabaseSeeder::class,
+            \Modules\Notification\Database\Seeders\NotificationDatabaseSeeder::class,
+            \Modules\Service\Database\Seeders\ServiceDatabaseSeeder::class,
+            \Modules\Activity\Database\Seeders\ActivityDatabaseSeeder::class,
+            \Modules\Indicator\Database\Seeders\IndicatorDatabaseSeeder::class,
+            \Modules\ServiceActivityIndicator\Database\Seeders\ServiceActivityIndicatorDatabaseSeeder::class,
+            \Modules\Goal\Database\Seeders\GoalDatabaseSeeder::class,
+            \Modules\Record\Database\Seeders\RecordDatabaseSeeder::class,
         ]);
     }
 }
