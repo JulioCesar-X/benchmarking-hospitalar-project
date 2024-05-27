@@ -1,4 +1,4 @@
-# Use a imagem base oficial do PHP com FPM# Use a imagem base oficial do PHP com FPM
+# Use a imagem base oficial do PHP com FPM
 FROM php:7.4-fpm
 
 # Instale as dependências necessárias
@@ -35,8 +35,9 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN composer install --no-interaction --optimize-autoloader
 RUN php artisan clear:all
 
-# Exponha a porta 8000 para PHP-FPM
-EXPOSE 8000
+# Exponha a porta 9000 para PHP-FPM
+EXPOSE 9000
+
 # Use o script de entrypoint para inicializar os serviços
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
