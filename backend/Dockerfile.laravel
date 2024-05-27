@@ -1,7 +1,7 @@
 # Use a imagem base oficial do PHP com FPM
 FROM php:7.4-fpm
 
-WORKDIR /
+WORKDIR /var/www/html/
 
 # Instale as dependências necessárias
 RUN apt-get update && apt-get install -y \
@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     wget \
-    nginx \
     && rm -rf /var/lib/apt/lists/*
 
 # Instale as extensões necessárias do PHP
@@ -37,9 +36,6 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN composer install --no-interaction --optimize-autoloader
 RUN php artisan clear:all
 
-# Copie o arquivo de configuração do Nginx
-COPY nginx.conf /etc/nginx/nginx.conf
-
 # Copie o script de entrypoint
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
@@ -47,11 +43,11 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Exponha a porta 80 para Nginx
-EXPOSE 80
+EXPOSE 8000
 
 # Use o script de entrypoint para inicializar os serviços
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["php-fpm"]
 
 
 
