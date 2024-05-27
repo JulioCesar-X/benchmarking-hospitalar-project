@@ -63,5 +63,10 @@ return [
         'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
         'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
     ],
+    
+    'throttle' => [
+        'limit' => env('SANCTUM_THROTTLE_LIMIT', 100),
+        'expires' => env('SANCTUM_THROTTLE_EXPIRES', 1),
+    ],
 
 ];

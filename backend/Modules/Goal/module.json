@@ -1,0 +1,13 @@
+{
+    "name": "Goal",
+    "alias": "goal",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Goal\\Providers\\GoalServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
