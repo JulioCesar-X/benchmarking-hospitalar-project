@@ -8,18 +8,13 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
+    && docker-php-ext-install pdo_pgsql zip \
     && rm -rf /var/lib/apt/lists/*
-
-# Instale as extensões necessárias do PHP
-RUN docker-php-ext-install pdo_pgsql zip
-
-# Verifique se pdo_pgsql foi instalado corretamente
-RUN php -m | grep pdo_pgsql
 
 # Instale o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Configure o diretório de trabalho
+# Define o diretório de trabalho dentro do container
 WORKDIR /var/www/html
 
 # Copie o código da aplicação para o contêiner
@@ -32,20 +27,25 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Instale as dependências do Composer
-RUN composer install --no-interaction --optimize-autoloader
-RUN php artisan clear:all
+RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Copie o script de entrypoint para o contêiner
-COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+# Limpe e otimize a aplicação
+RUN php artisan optimize
 
-
-# Exponha a porta 9000 para PHP-FPM
+# Exponha a porta 9000
 EXPOSE 9000
 
-# Use o script de entrypoint para inicializar os serviços
+# Copie o script de entrypoint para o diretório local
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Torne o script de entrypoint executável
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Use o script de entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-CMD php-fpm
+# Inicie o PHP-FPM
+CMD ["php-fpm"]
 
 
 
