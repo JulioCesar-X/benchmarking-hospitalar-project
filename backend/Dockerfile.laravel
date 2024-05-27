@@ -37,5 +37,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN composer install --no-interaction --optimize-autoloader
 RUN php artisan cache:clear && php artisan config:clear
 
+EXPOSE 8001
+
 # Defina o comando padrão para esperar pelo banco de dados e iniciar o servidor Laravel
 CMD /usr/local/bin/wait-for-it.sh -t 30 db:5432 -- php artisan migrate:fresh --seed && php artisan db:adjust-sequences && php artisan serve --host=0.0.0.0 --port=8001
