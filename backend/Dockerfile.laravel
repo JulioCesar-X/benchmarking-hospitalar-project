@@ -46,11 +46,10 @@ EXPOSE 80
 
 # Defina o comando padrão para esperar pelo banco de dados e iniciar o servidor Nginx e PHP-FPM
 CMD dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a.frankfurt-postgres.render.com:5432 -timeout 60s \
-    && php artisan migrate:fresh --seed \
-    && php artisan db:adjust-sequences \
+    && php artisan migrate:fresh --seed --force \
+    && php artisan db:adjust-sequences --force \
     && php-fpm -D && nginx -g "daemon off;"
 
-    
 # # Path: backend/Dockerfile.laravel - development
 
 # # Use a imagem base do PHP 7.4 FPM
