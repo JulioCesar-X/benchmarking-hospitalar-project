@@ -24,7 +24,9 @@ jobs:
         working-directory: ./backend
       - name: Run Laravel tests
         run: |
+          cp .env.example .env
           php artisan key:generate --env=testing
+          php artisan migrate --env=testing
           php artisan test
         working-directory: ./backend
 
@@ -48,6 +50,15 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Deploy to Render
-        run: echo "Trigger the deployment via Render dashboard or configure webhook in Render settings."
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          curl -X POST "https://api.render.com/v1/services/${{ env.SERVICE_ID }}/deploys" \
+          -H "Authorization: Bearer ${{ env.RENDER_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"clearCache": false}'
