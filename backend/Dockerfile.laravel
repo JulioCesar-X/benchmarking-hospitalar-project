@@ -17,6 +17,11 @@ RUN docker-php-ext-install pdo_pgsql zip
 # Instale o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Instale o Dockerize para aguardar o banco de dados
+RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
+    && rm dockerize-linux-amd64-v0.6.1.tar.gz
+
 # Configure o diretório de trabalho
 WORKDIR /var/www/html
 
@@ -31,7 +36,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Instale as dependências do Composer
 RUN composer install --no-interaction --optimize-autoloader
-RUN php artisan clear:all
+RUN php artisan cache:clear && php artisan config:clear
 
 # Copie o arquivo de configuração do Nginx
 COPY nginx.conf /etc/nginx/nginx.conf
