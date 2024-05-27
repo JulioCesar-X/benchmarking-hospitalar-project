@@ -1,4 +1,3 @@
-# Base image
 FROM php:7.4-fpm
 
 # Install system dependencies
@@ -11,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     wget
 
 # Ensure the PHP extensions are properly installed
-RUN docker-php-ext-install pdo_pgsql zip
+RUN docker-php-ext-install pdo pdo_pgsql pgsql zip
 
 # Verify the extension
 RUN php -m | grep pdo_pgsql
@@ -56,49 +55,3 @@ ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Start PHP-FPM
 CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf"]
-
-# # Path: backend/Dockerfile.laravel - development
-
-# # Use a imagem base do PHP 7.4 FPM
-# FROM php:7.4-fpm
-
-# # Instale as dependências necessárias
-# RUN apt-get update && apt-get install -y \
-#     libpq-dev \
-#     libzip-dev \
-#     unzip \
-#     p7zip-full \
-#     git \
-#     netcat \
-#     && rm -rf /var/lib/apt/lists/*
-
-# # Instale as extensões necessárias do PHP
-# RUN docker-php-ext-install pdo_pgsql zip
-
-# # Instale o Composer
-# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# # Adicione o script wait-for-it.sh
-# ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /usr/local/bin/wait-for-it.sh
-# RUN chmod +x /usr/local/bin/wait-for-it.sh
-
-# # Configure o diretório de trabalho
-# WORKDIR /var/www/html
-
-# # Copie o código da aplicação para o contêiner
-# COPY . .
-
-# # Configure as permissões adequadas
-# RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# # Permita que o Composer seja executado como root
-# ENV COMPOSER_ALLOW_SUPERUSER 1
-
-# # Instale as dependências do Composer
-# RUN composer install --no-interaction --optimize-autoloader
-# RUN php artisan cache:clear && php artisan config:clear
-
-# EXPOSE 8001
-
-# # Defina o comando padrão para esperar pelo banco de dados e iniciar o servidor Laravel
-# CMD /usr/local/bin/wait-for-it.sh -t 30 db:5432 -- php artisan migrate:fresh --seed && php artisan db:adjust-sequences && php artisan serve --host=0.0.0.0 --port=8001
