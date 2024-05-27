@@ -1,7 +1,5 @@
-# Use a imagem base oficial do PHP com FPM
+# Use a imagem base oficial do PHP com FPM# Use a imagem base oficial do PHP com FPM
 FROM php:7.4-fpm
-
-WORKDIR /var/www/html/
 
 # Instale as dependências necessárias
 RUN apt-get update && apt-get install -y \
@@ -9,19 +7,20 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     unzip \
     git \
-    wget \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Instale as extensões necessárias do PHP
 RUN docker-php-ext-install pdo_pgsql zip
 
+# Verifique se pdo_pgsql foi instalado corretamente
+RUN php -m | grep pdo_pgsql
+
 # Instale o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Instale o Dockerize para aguardar o banco de dados
-RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
-    && rm dockerize-linux-amd64-v0.6.1.tar.gz
+# Configure o diretório de trabalho
+WORKDIR /var/www/html
 
 # Copie o código da aplicação para o contêiner
 COPY . .
@@ -36,15 +35,8 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN composer install --no-interaction --optimize-autoloader
 RUN php artisan clear:all
 
-# Copie o script de entrypoint
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
-# Torne o script de entrypoint executável
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Exponha a porta 80 para Nginx
+# Exponha a porta 8000 para PHP-FPM
 EXPOSE 8000
-
 # Use o script de entrypoint para inicializar os serviços
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
