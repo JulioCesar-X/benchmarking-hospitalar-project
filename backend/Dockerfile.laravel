@@ -40,7 +40,8 @@ EXPOSE 9000
 
 # Use o script de entrypoint para inicializar os serviços
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["php-fpm"]
+
+CMD php-fpm
 
 
 
