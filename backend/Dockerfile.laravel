@@ -35,6 +35,10 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN composer install --no-interaction --optimize-autoloader
 RUN php artisan clear:all
 
+# Copie o script de entrypoint para o contêiner
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+
+
 # Exponha a porta 9000 para PHP-FPM
 EXPOSE 9000
 
