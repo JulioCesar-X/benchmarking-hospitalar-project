@@ -1,54 +1,54 @@
-# Use a imagem base oficial do PHP com FPM
+# Base image
 FROM php:7.4-fpm
 
-# Atualiza os pacotes e instala as dependências necessárias
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     unzip \
     git \
     curl \
-    wget \
-    && docker-php-ext-install pdo_pgsql zip \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    wget
 
-# Instale o Dockerize
-RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
-    && rm dockerize-linux-amd64-v0.6.1.tar.gz
+# Ensure the PHP extensions are properly installed
+RUN docker-php-ext-install pdo_pgsql zip
 
-# Instale o Composer
+# Verify the extension
+RUN php -m | grep pdo_pgsql
+
+# Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Configure o diretório de trabalho dentro do container
+# Set the working directory
 WORKDIR /var/www/html
 
-# Copie o código da aplicação para o contêiner
+# Copy application code
 COPY . .
 
-# Configure as permissões adequadas
+# Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Permita que o Composer seja executado como root
+# Allow Composer to be run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-# Instale as dependências do Composer
+# Install Composer dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-RUN php artisan clear:all
+# Clean up the system
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copie o arquivo de script de entrada e torne-o executável
+# Expose the port PHP-FPM listens on
+EXPOSE 9000
+
+# Copy the entrypoint script
 COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Exponha a porta 9000 para PHP-FPM
-EXPOSE 9000
-
-# Execute o script de entrada que inicializa os serviços
+# Use the entrypoint script to setup the application
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["php-fpm"]
 
+# Start PHP-FPM
+CMD ["php-fpm"]
 
 # # Path: backend/Dockerfile.laravel - development
 
