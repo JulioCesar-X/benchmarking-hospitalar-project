@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Instale as extensões necessárias do PHP
-RUN docker-php-ext-install pdo_pgsql zip
+RUN docker-php-ext-install pdo pdo_pgsql zip
 
 # Instale o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -35,10 +35,11 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Instale as dependências do Composer
 RUN composer install --no-interaction --optimize-autoloader
-RUN php artisan clear:all
+RUN php artisan cache:clear && php artisan config:clear
 
 # Exponha a porta 8000 para o PHP-FPM
-EXPOSE 8001
+EXPOSE 8000
+
 
 # Defina o comando padrão para esperar pelo banco de dados e iniciar o servidor Laravel com PHP-FPM
 CMD dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a.frankfurt-postgres.render.com:5432 -timeout 60s \
