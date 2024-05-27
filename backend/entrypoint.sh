@@ -16,5 +16,5 @@ fi
 php artisan db:adjust-sequences
 
 # Inicie o PHP-FPM e o Nginx
-service nginx start
-php-fpm
+php-fpm -D
+nginx -g "daemon off;"
