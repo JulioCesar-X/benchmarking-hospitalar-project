@@ -18,13 +18,10 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
     && rm dockerize-linux-amd64-v0.6.1.tar.gz
 
-# Verifique a instalação do PDO_PGSQL
-RUN php -m | grep pdo_pgsql
-
 # Instale o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Define o diretório de trabalho dentro do container
+# Configure o diretório de trabalho dentro do container
 WORKDIR /var/www/html
 
 # Copie o código da aplicação para o contêiner
@@ -39,22 +36,18 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 # Instale as dependências do Composer
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Limpe e otimize a aplicação
 RUN php artisan clear:all
 
-# Exponha a porta 9000
-EXPOSE 9000
-
-# Copie e torne executável o script de entrypoint
+# Copie o arquivo de script de entrada e torne-o executável
 COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Use o script de entrypoint para inicializar os serviços
+# Exponha a porta 9000 para PHP-FPM
+EXPOSE 9000
+
+# Execute o script de entrada que inicializa os serviços
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-# Comando padrão para iniciar o PHP-FPM
 CMD ["php-fpm"]
-
 
 
 # # Path: backend/Dockerfile.laravel - development
