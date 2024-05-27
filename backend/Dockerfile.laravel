@@ -8,19 +8,18 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Instale as extensões necessárias do PHP
-RUN docker-php-ext-install pdo \
-    && docker-php-ext-install pdo_pgsql \
-    && docker-php-ext-install zip
-
-RUN apt-get update && apt-get install -y wget \
-    && wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
-    && tar -C /usr -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
-    && rm dockerize-linux-amd64-v0.6.1.tar.gz \
+    wget \
+    && docker-php-ext-install pdo_pgsql zip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Instale o Dockerize
+RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
+    && rm dockerize-linux-amd64-v0.6.1.tar.gz
+
+# Verifique a instalação do PDO_PGSQL
+RUN php -m | grep pdo_pgsql
 
 # Instale o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -46,16 +45,14 @@ RUN php artisan clear:all
 # Exponha a porta 9000
 EXPOSE 9000
 
-# Copie o script de entrypoint para o diretório local
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
-# Torne o script de entrypoint executável
+# Copie e torne executável o script de entrypoint
+COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Use o script de entrypoint
+# Use o script de entrypoint para inicializar os serviços
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# Inicie o PHP-FPM
+# Comando padrão para iniciar o PHP-FPM
 CMD ["php-fpm"]
 
 
