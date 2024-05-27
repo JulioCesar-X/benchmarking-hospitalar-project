@@ -1,5 +1,7 @@
 #!/bin/bash
 
+php-fpm -D
+
 # Aguarde o banco de dados estar disponível
 dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a.frankfurt-postgres.render.com:5432 -timeout 60s
 
@@ -15,6 +17,5 @@ fi
 # Ajuste as sequências
 php artisan db:adjust-sequences
 
-# Inicie o PHP-FPM e o Nginx
-php-fpm -D
+# Inicie o Nginx
 nginx -g "daemon off;"

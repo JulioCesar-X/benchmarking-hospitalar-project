@@ -53,6 +53,9 @@ EXPOSE 80
 # Use o script de entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
+# Comando para manter o contêiner rodando após a inicialização
+CMD ["nginx", "-g", "daemon off;"]
+
 # # Path: backend/Dockerfile.laravel - development
 
 # # Use a imagem base do PHP 7.4 FPM
