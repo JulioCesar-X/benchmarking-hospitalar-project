@@ -16,6 +16,11 @@ RUN docker-php-ext-install pdo_pgsql zip
 # Verify the extension
 RUN php -m | grep pdo_pgsql
 
+RUN apt-get update && apt-get install -y wget \
+    && wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz -O /tmp/dockerize.tar.gz \
+    && tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz \
+    && rm /tmp/dockerize.tar.gz
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -37,6 +42,10 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 # Clean up the system
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN php artisan clear:all
+
+RUN echo "listen = 9000" >> /usr/local/etc/php-fpm.d/www.conf
+
 # Expose the port PHP-FPM listens on
 EXPOSE 9000
 
@@ -48,7 +57,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Start PHP-FPM
-CMD ["php-fpm"]
+CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf"]
 
 # # Path: backend/Dockerfile.laravel - development
 
