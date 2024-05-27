@@ -1,5 +1,5 @@
 # Use a imagem base oficial do PHP com FPM
-FROM php:7.4-slim AS build
+FROM php:7.4-fpm
 
 WORKDIR /
 
