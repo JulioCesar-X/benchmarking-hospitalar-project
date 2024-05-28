@@ -14,4 +14,4 @@ fi
 php artisan db:adjust-sequences
 
 # Inicia o PHP-FPM
-exec php-fpm -F
+exec php-fpm

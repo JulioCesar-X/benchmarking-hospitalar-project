@@ -42,4 +42,30 @@ jobs:
           pr_label: "automerge"
 
   deploy-to-netlify:
-    
+    needs: create-pull-request
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli@17
+      - name: Install Angular dependencies
+        run: npm install
+        working-directory: ./frontend
+      - name: Build Angular project
+        run: ng build --prod
+        working-directory: ./frontend
+      - name: Netlify Deploy
+        uses: nwtgck/actions-netlify@v1.2
+        with:
+          publish-dir: './frontend/dist/<your-angular-project-name>'
+          production-branch: 'main'
+          alias: 'example-branch-deploy'
+          deploy-message: 'Deploy from GitHub Actions'
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
