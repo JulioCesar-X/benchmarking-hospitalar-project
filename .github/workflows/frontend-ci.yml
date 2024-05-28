@@ -42,16 +42,4 @@ jobs:
           pr_label: "automerge"
 
   deploy-to-netlify:
-    needs: create-pull-request
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v1.1
-        with:
-          publish-dir: './frontend/dist/frontend'
-          production-branch: 'main'
-          alias: 'netlify.app'
-          deploy-message: 'Deploy from GitHub Actions'
-          auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    

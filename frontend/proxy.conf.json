@@ -1,8 +1,0 @@
-{
-  "/api": {
-    "target": "http://laravel-app:8001",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  }
-}
