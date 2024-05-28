@@ -7,7 +7,8 @@ import { LoginFormComponent } from '../../components/auth/login-form/login-form.
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [NavbarComponent,
+  imports: [
+    NavbarComponent,
     LoginFormComponent,
     FormsModule
   ],

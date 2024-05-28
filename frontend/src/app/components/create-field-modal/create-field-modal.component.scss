@@ -1,81 +1,78 @@
 @import '../../../styles/_variables.scss';
 @import '../../../styles/_mixins.scss';
 
-.crossIcon{
-    @include cross-icon();
+.crossIcon {
+  @include cross-icon();
 }
 
-.modalHeader{
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
-    width: 100%;
-    border-bottom: $secondary-blue 4px solid;
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  width: 100%;
+  border-bottom: $secondary-blue 4px solid;
 
-    h2{
-        margin:0;
-        margin-bottom:0.5em;
-        color: $fill-white
-    }
+  h2 {
+    margin: 0;
+    margin-bottom: 0.5em;
+    color: $fill-white;
+  }
 }
 
-
-.forms-container{
-    @include forms-container();
-
-    align-items: start;
-    width: 60%;
-    max-width: 800px;
+.forms-container {
+  @include forms-container();
+  align-items: start;
+  width: 60%;
+  max-width: 800px;
 }
 
-.forms-container--inputContainer{
-    @include forms-container--inputContainer();
+.forms-container--inputContainer {
+  @include forms-container--inputContainer();
 }
 
-.sectionTitle{
-    margin-bottom: 0.2em;
-    color: $fill-white
+.sectionTitle {
+  margin-bottom: 0.2em;
+  color: $fill-white;
 }
 
-.inputContainer--input{
-    @include inputContainer--input();
+.inputContainer--input {
+  @include inputContainer--input();
 }
 
-.errorSpanMessage{
-    @include errorSpanMessage();
+.errorSpanMessage {
+  @include errorSpanMessage();
 }
 
-.forms-Button{
-    @include forms-Button();
+.forms-Button {
+  @include forms-Button();
 }
 
-.__remove-mt{
-    margin-top: 0;
+.__remove-mt {
+  margin-top: 0;
 }
 
-
-/* radialOptions class serves to slightly adjust the spacing between radial inputs */
-
-.type-sectionContainer{
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    width: 100%;
-}
-.type-sectionContainer--sideBySideOptionsSection{
-    display: flex;
-    margin-right: 1em;
-    gap: 4em;
-    width: 100%;
+.type-sectionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  width: 100%;
 }
 
-.selectOptionContainer{
-    @include selectOptionContainer();
-}
-.selectOptionContainer--option{
-    @include selectOptionContainer--option();
+.type-sectionContainer--sideBySideOptionsSection {
+  display: flex;
+  margin-right: 1em;
+  gap: 4em;
+  width: 100%;
 }
 
-.icon{
-    @include icon();
+.selectOptionContainer {
+  @include selectOptionContainer();
+}
+
+.selectOptionContainer--option {
+  @include selectOptionContainer--option();
+}
+
+.icon {
+  @include icon();
 }

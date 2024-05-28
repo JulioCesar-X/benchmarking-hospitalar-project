@@ -7,10 +7,11 @@ import { CreateUserPageComponent } from './pages/create-user-page/create-user-pa
 import { UpdateIndicatorsPageComponent } from './pages/update-indicators-page/update-indicators-page.component'
 
 export const routes: Routes = [
-    {path: 'home', component: HomepageComponent},
-    {path: 'login', component: LoginPageComponent},
-    {path: 'description', component: DescriptionServicePageComponent},
-    {path: 'consultUsers', component: ConsultUsersPageComponent},
-    {path: 'createUser', component: CreateUserPageComponent},
-    {path: 'updateIndicators', component: UpdateIndicatorsPageComponent},
+  { path: 'home', component: HomepageComponent },
+  { path: 'login', component: LoginPageComponent },
+  { path: 'description', component: DescriptionServicePageComponent },
+  { path: 'consultUsers', component: ConsultUsersPageComponent },
+  { path: 'createUser', component: CreateUserPageComponent },
+  { path: 'updateIndicators', component: UpdateIndicatorsPageComponent },
+  { path: '', redirectTo: '/home', pathMatch: 'full' }
 ];

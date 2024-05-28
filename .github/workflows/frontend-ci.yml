@@ -62,7 +62,7 @@ jobs:
       - name: Netlify Deploy
         uses: nwtgck/actions-netlify@v1.2
         with:
-          publish-dir: './frontend/dist/<your-angular-project-name>'
+          publish-dir: './frontend/dist/frontend'
           production-branch: 'main'
           alias: 'example-branch-deploy'
           deploy-message: 'Deploy from GitHub Actions'

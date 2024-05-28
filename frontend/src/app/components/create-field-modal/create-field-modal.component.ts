@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
-import { FormsModule,  } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-create-field-modal',
   standalone: true,
-  imports: [FormsModule,
-    CommonModule
-  ],
+  imports: [FormsModule, CommonModule],
   templateUrl: './create-field-modal.component.html',
   styleUrls: ['./create-field-modal.component.scss']
 })
@@ -15,7 +13,6 @@ export class CreateFieldModalComponent {
   isError: boolean = false;
   restrictionType: string = 'all';
   selectedType: string = 'select';
-
   options: string[] = [];
   newOption: string = '';
 
@@ -25,11 +22,10 @@ export class CreateFieldModalComponent {
   maxValueEnabled: boolean = false;
   regexEnabled: boolean = false;
 
-
   addOption() {
     if (this.newOption.trim()) {
       this.options.push(this.newOption);
-      this.newOption = ''; 
+      this.newOption = '';
     }
   }
 
@@ -41,6 +37,5 @@ export class CreateFieldModalComponent {
     return index;
   }
 
-
-  constructor() {}
+  constructor() { }
 }
