@@ -1,53 +1,53 @@
 # Use a imagem base oficial do PHP com FPM
 FROM php:7.4-fpm
 
-# Instala as dependências do sistema
+# Atualiza os pacotes e instala as dependências necessárias
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     unzip \
     git \
     curl \
-    wget
+    wget \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instala extensões do PHP, garantindo a instalação do pdo_pgsql
-RUN docker-php-ext-install pdo pdo_pgsql pgsql
+# Instale as extensões necessárias do PHP, incluindo PostgreSQL
+RUN docker-php-ext-install pdo pdo_pgsql pgsql zip
 
-# Instala Dockerize para esperar pela disponibilidade do banco de dados
-RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz -O /tmp/dockerize.tar.gz \
-    && tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz \
-    && rm /tmp/dockerize.tar.gz
+# Instale o Dockerize
+RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
+    && rm dockerize-linux-amd64-v0.6.1.tar.gz
 
-# Instala o Composer
+# Instale o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Define o diretório de trabalho dentro do contêiner
+# Define o diretório de trabalho dentro do container
 WORKDIR /var/www/html
 
-# Copia o código da aplicação para o contêiner
+# Copie o código da aplicação para o contêiner
 COPY . .
 
-# Configura as permissões adequadas para o Laravel
+# Configure as permissões adequadas para diretórios Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Permite que o Composer seja executado como root
+# Permita que o Composer seja executado como root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-# Instala as dependências do Composer
+# Instale as dependências do Composer
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Executa limpeza no Laravel
-RUN php artisan clear:all
-
-# Expõe a porta 9000
+# Exponha a porta 9000
 EXPOSE 9000
 
-# Copia o script de entrypoint
+RUN php artisan clear:all
+
+# Copie o script de entrypoint para o contêiner
 COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Usa o script de entrypoint para configurar a aplicação
+# Use o script de entrypoint para configurar o ambiente no momento do lançamento
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# Inicia o PHP-FPM
-CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf"]
+# Comando para iniciar o PHP-FPM
+CMD ["php-fpm"]

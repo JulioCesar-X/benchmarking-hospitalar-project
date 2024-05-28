@@ -57,14 +57,14 @@ jobs:
         run: npm install
         working-directory: ./frontend
       - name: Build Angular project
-        run: ng build --prod
+        run: npm run build:prod
         working-directory: ./frontend
       - name: Netlify Deploy
         uses: nwtgck/actions-netlify@v1.2
         with:
-          publish-dir: './frontend/dist/frontend'
+          publish-dir: './frontend/dist/browser'
           production-branch: 'main'
-          alias: 'example-branch-deploy'
+          alias: 'angular-app-deploy'
           deploy-message: 'Deploy from GitHub Actions'
           enable-pull-request-comment: false
           enable-commit-comment: true
