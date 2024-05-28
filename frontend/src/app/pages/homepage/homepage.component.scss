@@ -1,0 +1,58 @@
+@import '../../../styles/_variables.scss';
+
+.headingSection{
+    width: 100%;
+}
+
+.headingImg{
+    width: 100%;
+    aspect-ratio: 8/3;
+}
+
+.headingTitle{
+    color: $fill-white;
+    font-size: 4rem;
+    margin-left: 2em;
+    margin-top: -5em;
+    margin-bottom: 4em;
+}
+
+.homepageCardsSections{
+    display: grid;
+    margin: 0 auto;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr; 
+    gap: 1em;
+    width: 90%
+}
+
+.card{
+    cursor: pointer;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    height: 100%;
+}
+
+.cardImg{
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    img{
+        max-width: 100%;
+        aspect-ratio: 10/8;
+    }
+}
+
+.cardText{
+    cursor: pointer;
+    background-color: $main-blue;
+    height: 100%;
+    padding: 1em;
+    p{
+        color: $fill-white;
+        text-transform: uppercase;
+        text-align: center;
+        margin: 0;
+    }
+}

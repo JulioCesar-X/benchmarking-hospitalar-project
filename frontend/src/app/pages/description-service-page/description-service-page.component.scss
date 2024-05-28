@@ -1,0 +1,19 @@
+@import '../../../styles/_variables.scss';
+
+.container{
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+    padding-inline: 4em;
+    padding-block: 2em;
+    background-color: $main-blue;
+    color: $fill-white;
+    width: 50%;
+    max-width: 500px;
+    margin: 0 auto;
+    margin-block: 3em;
+    border-radius: 1em;
+}

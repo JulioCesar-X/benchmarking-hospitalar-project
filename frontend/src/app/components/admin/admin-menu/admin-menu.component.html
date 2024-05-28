@@ -1,1 +1,65 @@
-<p>admin-menu works!</p>
+<aside class="dashboard">
+    <h2 class="dashboardTitle">ADMIN DASHBOARD</h2>
+    <div class="dashboardOptionsContainer">
+      <!-- menuItem -->
+      <div class="dashboardOption" (click)="openManageUsers()" [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
+        <h2>Gerir Users</h2>
+        <div class="plusIcon" #plusIconUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen}"></div>
+      </div>
+      <!-- sub menuItem -->
+      <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
+        <div class="subMenuItem">
+          <a routerLink="/createUser" routerLinkActive="Ativo">Criar Novo User</a>
+        </div>
+        <div class="subMenuItem">
+          <a routerLink="/consultUsers" routerLinkActive="Ativo">Consultar Users</a>
+        </div>
+      </div>
+  
+      <div class="dashboardOption" (click)="openManageContent()" [ngClass]="{'is-open': isManageContentSubMenuOpen}">
+        <h2>Gerir Conteúdo</h2>
+        <div class="plusIcon" [ngClass]="{'is-open': isManageContentSubMenuOpen}"></div>
+      </div>
+      <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageContentSubMenuOpen}">
+        <div class="subMenuItem">
+          <a href="">Inserir dados</a>
+        </div>
+        <div class="subMenuItem">
+          <a href="">Criar Indicador</a>
+        </div>
+      </div>
+
+      <div class="dashboardOption" (click)="openManageNotifications()" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
+        <h2>Gerir Notificações</h2>
+        <div class="plusIcon" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}"></div>
+    </div>
+      <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
+        <div class="subMenuItem">
+          <a href="">Histórico</a>
+        </div>
+        <div class="subMenuItem">
+          <a href="">Gerir</a>
+        </div>
+        <div class="subMenuItem">
+            <a href="">Gerir</a>
+          </div>
+          <div class="subMenuItem">
+            <a href="">Gerir</a>
+          </div>
+          <div class="subMenuItem">
+            <a href="">Gerir</a>
+          </div>
+          <div class="subMenuItem">
+            <a href="">Gerir</a>
+          </div>
+          <div class="subMenuItem">
+            <a href="">Gerir</a>
+          </div>
+          <div class="subMenuItem">
+            <a href="">Gerir</a>
+          </div>
+          
+      </div>
+    </div>
+</aside>
+  

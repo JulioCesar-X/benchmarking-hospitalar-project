@@ -1,0 +1,45 @@
+@import '../../../styles/_variables.scss';
+@import '../../../styles/_mixins.scss';
+
+.crossIcon{
+    @include cross-icon();
+}
+
+.modalHeader{
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    width: 100%;
+    border-bottom: $secondary-blue 4px solid;
+
+    h2{
+        margin:0;
+        margin-bottom:0.5em;
+        color: $fill-white
+    }
+}
+
+
+.forms-container{
+    @include forms-container();
+
+    align-items: start;
+    width: 60%;
+    max-width: 800px;
+}
+.forms-Button{
+    @include forms-Button();
+
+    border: solid 2px $error-red;
+    color: $error-red;
+
+    &:active{
+        background-color: $error-red;
+        color:  $fill-white;
+        border: $error-red 2px solid;
+      }
+}
+
+.customMessage{
+    color: $fill-white;
+}
