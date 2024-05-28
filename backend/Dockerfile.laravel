@@ -1,41 +1,57 @@
 FROM php:7.4-fpm
 
-# Instalação de dependências
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     unzip \
-    p7zip-full \
     git \
-    && rm -rf /var/lib/apt/lists/*
+    curl \
+    wget
 
-# Instalação da extensão PDO para PostgreSQL
-RUN docker-php-ext-install pdo_pgsql
+# Ensure the PHP extensions are properly installed
+RUN docker-php-ext-install pdo pdo_pgsql pgsql zip
 
-# Instalação da extensão zip
-RUN docker-php-ext-install zip
+# Verify the extension
+RUN php -m | grep pdo_pgsql
 
-# Instalação do Composer
+RUN apt-get update && apt-get install -y wget \
+    && wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz -O /tmp/dockerize.tar.gz \
+    && tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz \
+    && rm /tmp/dockerize.tar.gz
+
+# Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Configuração do diretório de trabalho
+# Set the working directory
 WORKDIR /var/www/html
 
-# Copiando o código da aplicação
-COPY . /var/www/html
+# Copy application code
+COPY . .
 
-# Instalando dependências da aplicação
-RUN composer install --no-interaction --no-scripts --no-suggest --prefer-dist
-
-# Configurando permissões de diretório
+# Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Geração da chave de aplicação Laravel
-RUN php artisan key:generate
+# Allow Composer to be run as root
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN php artisan config:cache
+# Install Composer dependencies
+RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-RUN composer dump-autoload
+# Clean up the system
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Comando padrão para iniciar o servidor PHP
-CMD php artisan serve --host=0.0.0.0 --port=8001
+RUN php artisan clear:all
+
+# Expose the port PHP-FPM listens on
+EXPOSE 9000
+
+# Copy the entrypoint script
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Use the entrypoint script to setup the application
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Start PHP-FPM
+CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf"]
