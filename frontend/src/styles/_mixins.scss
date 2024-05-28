@@ -1,4 +1,6 @@
-@mixin flex-center {
+@import '_variables.scss';
+
+/* @mixin flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,4 +12,151 @@
 
 @mixin transition($property, $duration: 0.3s, $ease: ease-in-out) {
   transition: $property $duration $ease;
+} */
+
+
+//Estilos componentes
+@mixin cross-icon($icon-width: 1em, $icon-height: 3px, $background-color: $fill-white) {
+  transform: rotate(45deg);
+  
+  &::before, &::after {
+    cursor: pointer;
+    content: '';
+    display: block;
+    width: $icon-width;
+    height: $icon-height;
+    background: $background-color;
+  }
+
+  &::before {
+    transform: translateY(0px);
+  }
+
+  &::after {
+    transform: rotate(-90deg) translateX(3px);
+  }
+}
+
+@mixin forms-container(){
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1em;
+  margin: 0 auto;
+  margin-block: 3em;
+  box-sizing: border-box; 
+  padding: 2em;
+  border-radius: 1em;
+  background-color: $main-blue;
+  border: $secondary-blue 7px solid;
+
+  &.forms-container__error{
+    border: $error-color 7px solid;
+  }
+}
+
+@mixin forms-container--inputContainer(){
+  display: flex;
+  gap: 0.5em;
+  color: $fill-white;
+  width: 100%;
+  text-align: start;
+  align-items: center;
+}
+
+@mixin inputContainer--input{
+  width: 100%;
+  box-sizing: border-box;
+  color: $main-blue;
+  background-color: $fill-white;
+  border-radius: 0.5em;
+  padding-block: 0.5em;
+  padding-inline: 1em;
+  border: none;
+
+  &::placeholder{
+    color: $main-blue;
+  }
+  &:focus{
+    outline: none;
+    border: none;
+    caret-color: $main-blue;
+  }
+  &:disabled{
+    background-color: $secondary-blue;
+    border: none;
+  }
+  &.inputContainer--input__error, .inputContainer--input__error:focus{
+    outline: none;
+    border: $error-red 2px solid;
+    caret-color: $error-red;
+    color: $error-red;
+  }
+  &.inputContainer--input__error::placeholder{
+    color: $error-red;
+  }
+}
+
+@mixin errorSpanMessage(){
+  color: $error-color;
+  margin-left: auto;
+}
+
+@mixin forms-Button(){
+  margin-top: 1em;
+  background-color: transparent;
+  color:  $fill-white;
+  border: $fill-white 2px solid;
+  text-transform: uppercase;
+  width: 50%; /* use widht or padding-inline??? */
+  padding-block: 0.4em;
+  border-radius: 1em;
+  cursor: pointer;
+  align-self: flex-end; /* overide this or delete later??? */
+
+  &:active{
+    background-color: $fill-white;
+    color:  $main-blue;
+    border: $fill-white 2px solid;
+  }
+}
+
+@mixin selectOptionContainer(){
+  max-height: 300px;
+  overflow-y: auto;
+
+  scrollbar-width: thin; 
+  scrollbar-color: $main-blue $fill-white;
+
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+  padding-inline: 1em;
+  background-color: $fill-white;
+  border-radius: 1em;
+  width: 100%;
+  min-height: 50px;
+}
+
+@mixin selectOptionContainer--option(){
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: $main-blue;
+  border-bottom: solid 1px $main-blue;
+  margin-block: 1em;
+
+  input, input:focus{
+      border: none;
+      outline: none;
+      caret-color: $main-blue;
+      color: $main-blue;
+
+  }
+}
+
+@mixin icon(){
+  cursor: pointer;
+  width: 25px;
 }

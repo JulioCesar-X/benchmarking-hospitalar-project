@@ -1,0 +1,18 @@
+<section class="forms-container">
+    <div class="selectOptionContainer">
+        <h2>Month - Year</h2>
+
+        <div *ngFor="let indicator of indicators; let i = index; trackBy: trackByIndex" class="selectOptionContainer--option">
+            <p>{{ indicator.name }}</p>
+            <input
+            class="inputContainer--input"
+            [value]="indicator.value || ''"
+            [disabled]="indicator.isInserted"
+            (input)="onValueChange(indicator, $event)">
+                <button class="forms-Button" (click)="toggleEdit(indicator)">
+                    {{ !indicator.isInserted ? 'Atualizar' : 'Editar' }}
+                </button>
+        </div>
+     </div>
+
+</section>
