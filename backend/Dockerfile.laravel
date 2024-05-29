@@ -59,15 +59,15 @@
 FROM richarvey/nginx-php-fpm:1.7.2
 
 # Install system dependencies required for Laravel and common PHP extensions
-RUN apt-get update && apt-get install -y \
-    netcat \
-    libpq-dev \
+RUN apk update && apk add --no-cache \
+    netcat-openbsd \
+    postgresql-dev \
     libzip-dev \
     unzip \
     git \
     curl \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
+    wget
+
 
 # Install necessary PHP extensions for Laravel (PostgreSQL and Zip in this case)
 RUN docker-php-ext-install pdo pdo_pgsql pgsql zip
