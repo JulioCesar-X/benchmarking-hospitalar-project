@@ -1,9 +1,18 @@
 #!/bin/bash
+set -e  # O script falhará se qualquer comando retornar um status de saída diferente de zero
 
-# Wait for the database to be ready
-# dockerize -wait tcp://db:5432 -timeout 60s
+# Iniciar PHP-FPM em background
+php-fpm
+
+# Esperar que PHP-FPM esteja pronto antes de iniciar Nginx
+while ! nc -z localhost 9000; do
+  echo "Esperando PHP-FPM..."
+  sleep 1
+done
+echo "PHP-FPM está pronto."
+
+# Esperar que o banco de dados esteja pronto
 dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a:5432 -timeout 60s
-
 
 # Run migrations
 if [ "$RESET_SEEDERS" = "true" ]; then
@@ -12,19 +21,8 @@ else
     php artisan migrate --force
 fi
 
-# Adjust database sequences if necessary
+# Ajustar sequências do banco de dados se necessário
 php artisan db:adjust-sequences
 
-# Iniciar PHP-FPM em background
-php-fpm
-
-# Esperar que PHP-FPM esteja pronto
-while ! nc -z localhost 9000; do
-  echo "Esperando PHP-FPM..."
-  sleep 1
-done
-echo "PHP-FPM está pronto."
-
-
-# Iniciar o servidor Nginx
+# Iniciar Nginx em primeiro plano
 exec nginx -g 'daemon off;'
