@@ -1,18 +1,9 @@
 #!/bin/bash
-set -e  # O script falhará se qualquer comando retornar um status de saída diferente de zero
 
-# Iniciar PHP-FPM em background
-php-fpm
+# Wait for the database to be ready
+dockerize -wait tcp://db:5432 -timeout 60s
+# dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a:5432 -timeout 60s
 
-# Esperar que PHP-FPM esteja pronto antes de iniciar Nginx
-while ! nc -z localhost 9000; do
-  echo "Esperando PHP-FPM..."
-  sleep 1
-done
-echo "PHP-FPM está pronto."
-
-# Esperar que o banco de dados esteja pronto
-dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a:5432 -timeout 60s
 
 # Run migrations
 if [ "$RESET_SEEDERS" = "true" ]; then
@@ -24,5 +15,8 @@ fi
 # Ajustar sequências do banco de dados se necessário
 php artisan db:adjust-sequences
 
-# Iniciar Nginx em primeiro plano
-exec nginx -g 'daemon off;'
+# Start the Laravel application
+php artisan serve --host=0.0.0.0 --port=8001
+
+# # Start the Laravel application
+# php-fpm
