@@ -61,6 +61,8 @@ FROM php:7.4-fpm AS php-base
 
 # Install system dependencies required for Laravel and common PHP extensions
 RUN apt-get update && apt-get install -y \
+    nginx \
+    netcat \
     libpq-dev \
     libzip-dev \
     unzip \

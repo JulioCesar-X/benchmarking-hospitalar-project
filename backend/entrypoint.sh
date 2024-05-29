@@ -15,11 +15,16 @@ fi
 # Adjust database sequences if necessary
 php artisan db:adjust-sequences
 
-# Iniciar PHP-FPM
-php-fpm &
+# Iniciar PHP-FPM em background
+php-fpm
 
-# Aguardar um momento para garantir que o PHP-FPM esteja pronto
-sleep 5
+# Esperar que PHP-FPM esteja pronto
+while ! nc -z localhost 9000; do
+  echo "Esperando PHP-FPM..."
+  sleep 1
+done
+echo "PHP-FPM está pronto."
+
 
 # Iniciar o servidor Nginx
 exec nginx -g 'daemon off;'
