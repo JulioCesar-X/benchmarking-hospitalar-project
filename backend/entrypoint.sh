@@ -3,7 +3,7 @@
 # Wait for the database to be ready
 # dockerize -wait tcp://db:5432 -timeout 60s
 dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a:5432 -timeout 60s
-
+php artisan clear:all
 
 # Run migrations
 if [ "$RESET_SEEDERS" = "true" ]; then
