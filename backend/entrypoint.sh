@@ -15,8 +15,11 @@ fi
 # Adjust database sequences if necessary
 php artisan db:adjust-sequences
 
-# Start the Laravel application
-# php artisan serve --host=0.0.0.0 --port=8001
+# Iniciar PHP-FPM
+php-fpm &
 
-# Start the Laravel application
-php-fpm
+# Aguardar um momento para garantir que o PHP-FPM esteja pronto
+sleep 5
+
+# Iniciar o servidor Nginx
+exec nginx -g 'daemon off;'
