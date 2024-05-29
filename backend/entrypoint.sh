@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Wait for the database to be ready
-dockerize -wait tcp://db:5432 -timeout 60s
-# dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a:5432 -timeout 60s
+# dockerize -wait tcp://db:5432 -timeout 60s
+dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a:5432 -timeout 60s
 
 
 # Run migrations
