@@ -56,9 +56,10 @@
 # CMD php artisan serve --host=0.0.0.0 --port=8001
 
 #production
+# Use a imagem richarvey/nginx-php-fpm
 FROM richarvey/nginx-php-fpm:1.7.2
 
-# Install system dependencies required for Laravel and common PHP extensions
+# Atualizar e instalar dependências do sistema necessárias para Laravel e extensões PHP comuns
 RUN apk update && apk add --no-cache \
     netcat-openbsd \
     postgresql-dev \
@@ -68,8 +69,7 @@ RUN apk update && apk add --no-cache \
     curl \
     wget
 
-
-# Install necessary PHP extensions for Laravel (PostgreSQL and Zip in this case)
+# Instalar extensões PHP necessárias para Laravel (PostgreSQL e Zip neste caso)
 RUN docker-php-ext-install pdo pdo_pgsql pgsql zip
 
 # Configuração da imagem
