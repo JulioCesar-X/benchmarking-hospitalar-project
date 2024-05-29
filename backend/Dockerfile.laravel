@@ -57,7 +57,7 @@
 
 #production
 # Use PHP 7.4 with FPM (FastCGI Process Manager)
-FROM php:7.4-fpm
+FROM php:7.4-fpm AS php-base
 
 # Install system dependencies required for Laravel and common PHP extensions
 RUN apt-get update && apt-get install -y \
