@@ -5,7 +5,6 @@ if (! function_exists('module_path')) {
     {
         $module = app('modules')->find($name);
         if (null === $module) {
-            \Log::warning("Módulo '{$name}' não encontrado, retornando caminho padrão.");
             return 'Modules/' . $name . ($path ? DIRECTORY_SEPARATOR . $path : '');
         }
         return $module->getPath() . ($path ? DIRECTORY_SEPARATOR . $path : $path);
