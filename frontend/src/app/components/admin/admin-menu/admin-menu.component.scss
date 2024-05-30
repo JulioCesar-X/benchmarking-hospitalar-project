@@ -3,6 +3,8 @@
 .dashboard{
     box-sizing: border-box;
     background-color: $main-blue;
+    margin-top: 0.5em;
+    border-top-right-radius: 1em;
     min-width: 350px; /* change later to something more responsive?? */
     max-width: 30%;
     height: 84vh; /* aprox value to make dashboard fill screen */

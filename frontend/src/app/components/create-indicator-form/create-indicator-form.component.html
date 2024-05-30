@@ -1,0 +1,49 @@
+
+<!-- <div *ngIf="isVisible">
+    <h2>safasdas</h2>
+    <app-create-field-modal></app-create-field-modal>
+</div> -->
+<app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()">
+
+</app-create-field-modal>
+
+
+<form action="">
+    <div class="forms-container" >
+        <h2 class="title">Criar indicador</h2>
+        <button class="forms-Button" (click)="openModal($event)">Adicionar Campo</button>
+
+        <div class="forms-container--inputContainer"> 
+            <label for="">Nome:</label>
+            <input type="text" class="inputContainer--input" placeholder="Name">
+            <span class="errorSpanMessage"></span>
+        </div>
+        <div class="selectContainer">
+            <label for="">Serviço:</label>
+            <select name="" id="">
+                <option value="">Passar opções da DB</option>
+            </select>
+        </div>
+        <div class="selectContainer">
+            <label for="">Atividade:</label>
+            <select name="" id="">
+                <option value="">Passar opções da DB</option>
+            </select>
+        </div>
+        <div class="selectContainer">
+            <label for="">Tipo:</label>
+            <select name="" id="">
+                <option value="">Passar opções da DB</option>
+            </select>
+        </div>
+        <div class="forms-container--inputContainer"> 
+            <label for="">Meta:</label>
+            <input type="text" class="inputContainer--input" placeholder="Meta anual">
+            <span class="errorSpanMessage"></span>
+        </div>
+
+        <button type="submit" class="forms-Button">Atualizar</button>
+    </div>
+</form>
+
+

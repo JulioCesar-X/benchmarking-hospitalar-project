@@ -43,6 +43,7 @@ img{
     margin-left: auto;
     display: flex;
     align-items: center;
+    gap: 1em;
     width: 50%;
     background-color: $main-blue;
     color: $fill-white;
@@ -50,7 +51,7 @@ img{
 
   .navBarLink{
     display: flex;
-    gap: 1em;
+
     text-decoration: none;
     text-transform: uppercase;
     font-size: 1.2rem;

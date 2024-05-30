@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -22,6 +22,14 @@ export class CreateFieldModalComponent {
   maxValueEnabled: boolean = false;
   regexEnabled: boolean = false;
 
+  @Input() isVisible = false;
+  @Output() closeEvent = new EventEmitter<void>();
+
+  close() {
+    this.isVisible = false;
+    this.closeEvent.emit();
+  }
+
   addOption() {
     if (this.newOption.trim()) {
       this.options.push(this.newOption);
@@ -36,6 +44,7 @@ export class CreateFieldModalComponent {
   trackByIndex(index: number, item: string): number {
     return index;
   }
+
 
   constructor() { }
 }

@@ -1,9 +1,19 @@
 
-<form action="">
-    <div class="forms-container">
-        <h2 class="title">Create User</h2>
-        <button class="createBtn">Adicionar Campo</button>
+<!-- <div *ngIf="isVisible">
+    <h2>safasdas</h2>
+    <app-create-field-modal></app-create-field-modal>
+</div> -->
+<app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()">
 
+</app-create-field-modal>
+
+
+<form action="">
+    <div class="forms-container" >
+        <h2 class="title">Criar User</h2>
+        <button class="forms-Button" (click)="openModal($event)">Adicionar Campo</button>
+
+        
         <div class="forms-container--inputContainer"> 
             <input type="text" class="inputContainer--input" placeholder="Name">
             <span class="errorSpanMessage"></span>

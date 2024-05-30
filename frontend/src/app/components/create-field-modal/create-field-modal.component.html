@@ -1,92 +1,96 @@
-<div class="forms-container" [ngClass]="{ 'forms-container__error': isError }">
-  <div class="modalHeader">
-    <h2 class="modalTitle">Criar campo para indicador</h2>
-    <div class="crossIcon"></div>
-  </div>
 
-  <div class="forms-container--inputContainer">
-    <label>Nome:</label>
-    <input type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }">
-  </div>
+<div class="modal" [ngClass]="{'show': isVisible}" (click)="close()">
 
-  <div class="forms-container--inputContainer">
-    <label>Tipo:</label>
-    <div class="type-sectionContainer--sideBySideOptionsSection">
-      <div class="radialOption">
-        <label for="text">Text</label>
-        <input type="radio" id="text" name="type" value="text" [(ngModel)]="selectedType">
+    <div class="forms-container" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
+      <div class="modalHeader">
+        <h2 class="modalTitle">Criar campo para indicador</h2>
+        <span class="close" (click)="close()">&times;</span>
       </div>
-      <div class="radialOption">
-        <label for="select">Select</label>
-        <input type="radio" id="select" name="type" value="select" [(ngModel)]="selectedType">
+    
+      <div class="forms-container--inputContainer">
+        <label>Nome:</label>
+        <input type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }">
       </div>
-    </div>
-  </div>
-
-  <section *ngIf="selectedType === 'text'" class="type-sectionContainer">
-    <h2 class="sectionTitle">Restrições:</h2>
-    <div class="forms-container--inputContainer">
-      <label>Tipo:</label>
-      <div class="type-sectionContainer--sideBySideOptionsSection">
-        <div class="radialOption">
-          <label for="all">Tudo</label>
-          <input type="radio" id="all" name="restriction" value="all" [(ngModel)]="restrictionType">
-        </div>
-        <div class="radialOption">
-          <label for="justText">Apenas texto</label>
-          <input type="radio" id="justText" name="restriction" value="justText" [(ngModel)]="restrictionType">
-        </div>
-        <div class="radialOption">
-          <label for="justNumbers">Apenas números</label>
-          <input type="radio" id="justNumbers" name="restriction" value="justNumbers" [(ngModel)]="restrictionType">
+    
+      <div class="forms-container--inputContainer">
+        <label>Tipo:</label>
+        <div class="type-sectionContainer--sideBySideOptionsSection">
+          <div class="radialOption">
+            <label for="text">Text</label>
+            <input type="radio" id="text" name="type" value="text" [(ngModel)]="selectedType">
+          </div>
+          <div class="radialOption">
+            <label for="select">Select</label>
+            <input type="radio" id="select" name="type" value="select" [(ngModel)]="selectedType">
+          </div>
         </div>
       </div>
+    
+      <section *ngIf="selectedType === 'text'" class="type-sectionContainer">
+        <h2 class="sectionTitle">Restrições:</h2>
+        <div class="forms-container--inputContainer">
+          <label>Tipo:</label>
+          <div class="type-sectionContainer--sideBySideOptionsSection">
+            <div class="radialOption">
+              <label for="all">Tudo</label>
+              <input type="radio" id="all" name="restriction" value="all" [(ngModel)]="restrictionType">
+            </div>
+            <div class="radialOption">
+              <label for="justText">Apenas texto</label>
+              <input type="radio" id="justText" name="restriction" value="justText" [(ngModel)]="restrictionType">
+            </div>
+            <div class="radialOption">
+              <label for="justNumbers">Apenas números</label>
+              <input type="radio" id="justNumbers" name="restriction" value="justNumbers" [(ngModel)]="restrictionType">
+            </div>
+          </div>
+        </div>
+    
+        <div class="type-sectionContainer--sideBySideOptionsSection">
+          <div class="forms-container--inputContainer">
+            <input type="checkbox" [(ngModel)]="minLengthEnabled">
+            <input type="text" class="inputContainer--input" placeholder="Nº de caracteres mínimo"
+              [disabled]="!minLengthEnabled">
+          </div>
+          <div class="forms-container--inputContainer">
+            <input type="checkbox" [(ngModel)]="maxLengthEnabled">
+            <input type="text" class="inputContainer--input" placeholder="Nº de caracteres máximo"
+              [disabled]="!maxLengthEnabled">
+          </div>
+        </div>
+    
+        <div *ngIf="restrictionType === 'justNumbers'" class="type-sectionContainer--sideBySideOptionsSection">
+          <div class="forms-container--inputContainer">
+            <input type="checkbox" [(ngModel)]="minValueEnabled">
+            <input type="text" class="inputContainer--input" placeholder="Valor mínimo" [disabled]="!minValueEnabled">
+          </div>
+          <div class="forms-container--inputContainer">
+            <input type="checkbox" [(ngModel)]="maxValueEnabled">
+            <input type="text" class="inputContainer--input" placeholder="Valor máximo" [disabled]="!maxValueEnabled">
+          </div>
+        </div>
+    
+        <div class="forms-container--inputContainer">
+          <input type="checkbox" [(ngModel)]="regexEnabled">
+          <input type="text" class="inputContainer--input" placeholder="Insira regex de validação customizado"
+            [disabled]="!regexEnabled">
+        </div>
+      </section>
+    
+      <section *ngIf="selectedType === 'select'" class="type-sectionContainer">
+        <h2 class="sectionTitle">Opções:</h2>
+        <div class="forms-container--inputContainer">
+          <input type="text" class="inputContainer--input" [(ngModel)]="newOption" placeholder="Nome/valor da opção">
+          <button class="forms-Button __remove-mt" (click)="addOption()">Adicionar</button>
+        </div>
+        <div class="selectOptionContainer">
+          <div *ngFor="let option of options; let i = index; trackBy: trackByIndex" class="selectOptionContainer--option">
+            <input [(ngModel)]="options[i]">
+            <img src="../../../assets/images/trash-96.png" class="icon" alt="" (click)="removeOption(i)">
+          </div>
+        </div>
+      </section>
+    
+      <button type="submit" class="forms-Button">Confirmar</button>
     </div>
-
-    <div class="type-sectionContainer--sideBySideOptionsSection">
-      <div class="forms-container--inputContainer">
-        <input type="checkbox" [(ngModel)]="minLengthEnabled">
-        <input type="text" class="inputContainer--input" placeholder="Nº de caracteres mínimo"
-          [disabled]="!minLengthEnabled">
-      </div>
-      <div class="forms-container--inputContainer">
-        <input type="checkbox" [(ngModel)]="maxLengthEnabled">
-        <input type="text" class="inputContainer--input" placeholder="Nº de caracteres máximo"
-          [disabled]="!maxLengthEnabled">
-      </div>
-    </div>
-
-    <div *ngIf="restrictionType === 'justNumbers'" class="type-sectionContainer--sideBySideOptionsSection">
-      <div class="forms-container--inputContainer">
-        <input type="checkbox" [(ngModel)]="minValueEnabled">
-        <input type="text" class="inputContainer--input" placeholder="Valor mínimo" [disabled]="!minValueEnabled">
-      </div>
-      <div class="forms-container--inputContainer">
-        <input type="checkbox" [(ngModel)]="maxValueEnabled">
-        <input type="text" class="inputContainer--input" placeholder="Valor máximo" [disabled]="!maxValueEnabled">
-      </div>
-    </div>
-
-    <div class="forms-container--inputContainer">
-      <input type="checkbox" [(ngModel)]="regexEnabled">
-      <input type="text" class="inputContainer--input" placeholder="Insira regex de validação customizado"
-        [disabled]="!regexEnabled">
-    </div>
-  </section>
-
-  <section *ngIf="selectedType === 'select'" class="type-sectionContainer">
-    <h2 class="sectionTitle">Opções:</h2>
-    <div class="forms-container--inputContainer">
-      <input type="text" class="inputContainer--input" [(ngModel)]="newOption" placeholder="Nome/valor da opção">
-      <button class="forms-Button __remove-mt" (click)="addOption()">Adicionar</button>
-    </div>
-    <div class="selectOptionContainer">
-      <div *ngFor="let option of options; let i = index; trackBy: trackByIndex" class="selectOptionContainer--option">
-        <input [(ngModel)]="options[i]">
-        <img src="../../../assets/images/trash-96.png" class="icon" alt="" (click)="removeOption(i)">
-      </div>
-    </div>
-  </section>
-
-  <button type="submit" class="forms-Button">Confirmar</button>
-</div>
+  </div>
