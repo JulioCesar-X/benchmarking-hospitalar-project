@@ -16,7 +16,7 @@ class UserServiceProvider extends ServiceProvider
         // $this->registerConfig();
         // $this->registerViews();
         // $this->registerTranslations();
-        $this->loadMigrationsFrom(module_path("User", 'Database/Migrations'));
+        $this->loadMigrationsFrom(module_path('User', 'Database/Migrations'));
     }
 
     public function register()

@@ -36,7 +36,7 @@ class AuthServiceProvider extends ServiceProvider
             return $user->hasRole('Coordenador');
         });
 
-        // $this->loadMigrationsFrom(module_path('Auth', 'Database/Migrations'));
+        //$this->loadMigrationsFrom(module_path('Auth', 'Database/Migrations'));
         // $this->loadViewsFrom(base_path('Modules/Auth/Resources/views'), 'auth');
 
     }

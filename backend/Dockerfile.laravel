@@ -1,7 +1,7 @@
-# Use a imagem base oficial do PHP com FPM
+# Use PHP 7.4 with FPM (FastCGI Process Manager)
 FROM php:7.4-fpm
 
-# Atualiza os pacotes e instala as dependências necessárias
+# Install system dependencies required for Laravel and common PHP extensions
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
@@ -9,45 +9,117 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     wget \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Instale as extensões necessárias do PHP, incluindo PostgreSQL
+# Install necessary PHP extensions for Laravel (PostgreSQL and Zip in this case)
 RUN docker-php-ext-install pdo pdo_pgsql pgsql zip
 
-# Instale o Dockerize
-RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
-    && rm dockerize-linux-amd64-v0.6.1.tar.gz
+# Download and install Composer globally
+RUN curl -sS https://getcomposer.org/installer | php -- \
+    --install-dir=/usr/local/bin \
+    --filename=composer
 
-# Instale o Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install Dockerize
+RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz -O dockerize.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize.tar.gz \
+    && rm dockerize.tar.gz
 
-# Define o diretório de trabalho dentro do container
+# Set working directory inside the container
 WORKDIR /var/www/html
 
-# Copie o código da aplicação para o contêiner
-COPY . .
+# Copy the application code to the container
+COPY . /var/www/html
 
-# Configure as permissões adequadas para diretórios Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Permita que o Composer seja executado como root
-ENV COMPOSER_ALLOW_SUPERUSER 1
+# Install Composer dependencies
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader \
+&& composer require laravel/sanctum \
+&& composer require nwidart/laravel-modules
 
-# Instale as dependências do Composer
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+# Set the correct permissions for the Laravel storage and bootstrap directories
+RUN chmod -R 777 storage bootstrap/cache
 
-# Exponha a porta 9000
-EXPOSE 9000
+COPY .env.example .env
+# Generate application key, clear cache, and discover packages
+RUN php artisan key:generate
+RUN php artisan optimize:clear
+RUN php artisan package:discover --ansi
 
-RUN php artisan clear:all
-
-# Copie o script de entrypoint para o contêiner
-COPY entrypoint.sh /usr/local/bin/
+# Copy the entrypoint script into the container and ensure it is executable
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Use o script de entrypoint para configurar o ambiente no momento do lançamento
+# Use the entrypoint script to setup the application
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# Comando para iniciar o PHP-FPM
-CMD ["php-fpm"]
+
+# CMD php artisan serve --host=0.0.0.0 --port=8001
+
+#production
+# # Use PHP 7.4 with FPM (FastCGI Process Manager)
+# FROM php:7.4-fpm
+
+# # Atualizar e instalar dependências do sistema necessárias para Laravel e extensões PHP comuns
+# RUN apk update && apk add --no-cache \
+#     netcat-openbsd \
+#     postgresql-dev \
+#     libzip-dev \
+#     unzip \
+#     git \
+#     curl \
+#     wget
+
+# # Instalar extensões PHP necessárias para Laravel (PostgreSQL e Zip neste caso)
+# RUN docker-php-ext-install pdo pdo_pgsql pgsql zip
+
+# # Configuração da imagem
+# ENV SKIP_COMPOSER 1
+# ENV WEBROOT /var/www/html/public
+# ENV PHP_ERRORS_STDERR 1
+# ENV RUN_SCRIPTS 1
+# ENV REAL_IP_HEADER 1
+
+# # Configuração do Laravel
+# ENV APP_ENV production
+# ENV APP_DEBUG false
+# ENV LOG_CHANNEL stderr
+
+# # Permitir que o Composer rode como root
+# ENV COMPOSER_ALLOW_SUPERUSER 1
+
+# # Instalar Dockerize
+# RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz -O dockerize.tar.gz \
+#     && tar -C /usr/local/bin -xzvf dockerize.tar.gz \
+#     && rm dockerize.tar.gz
+
+# # Copiar o código da aplicação para o container
+# COPY . /var/www/html
+
+
+# # Instalar dependências do Composer
+# RUN composer global require hirak/prestissimo \
+#     && composer install --no-dev --working-dir=/var/www/html
+
+# RUN composer install --no-interaction --prefer-dist --optimize-autoloader \
+# && composer require laravel/sanctum \
+# && composer require nwidart/laravel-modules
+
+# # Set the correct permissions for the Laravel storage and bootstrap directories
+# RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+#     && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# # Copiar o arquivo de configuração do Nginx
+# COPY nginx.conf /etc/nginx/nginx.conf
+
+# # Copiar o script de entrada e garantir que ele seja executável
+# COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+# RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# # Expor a porta 80 para tráfego HTTP
+# EXPOSE 80
+
+# # Usar o script de entrypoint para iniciar os serviços
+# ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# # Default command to run
+# CMD ["php-fpm"]
