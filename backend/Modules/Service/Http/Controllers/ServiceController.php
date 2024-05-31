@@ -35,7 +35,7 @@ class ServiceController extends Controller
     {
         try {
             $service = Service::create($request->all());
-            return response()->json($service->load('servicesActivityIndicators'), 201);
+            return response()->json($service->load('serviceActivityIndicators'), 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -51,7 +51,7 @@ class ServiceController extends Controller
     {
         try {
             $service = Service::findOrFail($id);
-            return response()->json($service->load('servicesActivityIndicators'), 200);
+            return response()->json($service->load('serviceActivityIndicators'), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -82,6 +82,7 @@ class ServiceController extends Controller
     public function destroy($id)
     {
         try {
+            //Quando deletar um serviço perco todos os registros para aquele serviço?
             $service = Service::findOrFail($id);
             $service->delete();
             return response()->json(['message' => 'Deleted'], 205);
