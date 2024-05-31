@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders  } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
@@ -38,23 +38,30 @@ export class LoginService {
   }
 
   logout(): void {
-    this.clearClientAuth();
-}
+    const token = this.cookieService.get('access_token');
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      this.http.post(`https://benchmarking-hospitalar-project.onrender.com/logout`, {}, { headers }).subscribe(
+        () => {
+          this.cookieService.delete('access_token');
+          this.cookieService.delete('role');
+          this.router.navigate(['']);
+        },
+        error => {
+          console.error('Logout failed', error);
+        }
+      );
+    } else {
+      console.error('No token found');
+      this.router.navigate(['']);
+    }
+  }
+  
+  getRole(): string | null {
+    return this.cookieService.get('role');
+  }
 
-  private clearClientAuth(): void {
-  // Excluir o token de autenticação e outras informações de autenticação
-  this.cookieService.delete('access_token', '/');
-  this.cookieService.delete('role', '/');
-}
-
-
-isLoggedIn(): boolean {
-  return this.cookieService.check('access_token');
-}
-
-getRole(): string | null {
-  return this.cookieService.get('role');
-}
-
-
+  isLoggedIn(): boolean {
+    return this.cookieService.check('access_token');
+  }
 }
