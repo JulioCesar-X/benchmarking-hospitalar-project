@@ -4,7 +4,6 @@ import { AdminMenuComponent } from '../../components/admin/admin-menu/admin-menu
 import { UsersListSectionComponent } from '../../components/ui/users-list-section/users-list-section.component';
 import { UserFilterSectionComponent } from '../../components/ui/user-filter-section/user-filter-section.component';
 import { FooterComponent } from '../../components/ui/footer/footer.component';
-import { UsersService } from '../../services/users.service'
 
 
 @Component({
@@ -21,13 +20,5 @@ import { UsersService } from '../../services/users.service'
   styleUrl: './consult-users-page.component.scss'
 })
 export class ConsultUsersPageComponent {
-  users: any[] = [];
-  constructor(private usersService: UsersService){}
-
-  ngOnInit() {
-    this.usersService.getUsers().subscribe(data => {
-      this.users = data;
-      console.log(data);
-    });
-  }
+  
 }

@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
-import { FormsModule,  } from '@angular/forms';
+import { FormsModule, } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../../services/user.service';
 
 interface User {
   id: number;
   name: string;
-  role: string;
+  email: string;
+  role: number;
 }
 
 @Component({
@@ -21,24 +23,54 @@ interface User {
 export class UsersListSectionComponent {
   options: User[] = [];
 
-  ngOnInit() {
-    // Simulating an API call to fetch users
-    this.options = [
-      { id: 1, name: 'John Doe', role: 'Admin' },
-      { id: 2, name: 'Jane Smith', role: 'User' }
-      // Add more users as needed
-    ];
+  constructor(private userService: UserService) { }
+
+  ngOnInit(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (data) => {
+        if (data && Array.isArray(data)) { // Verifica se data não é null e é um array
+          this.options = data.map(user => ({
+            id: user.id,
+            name: user.name,
+            role: user.roles && user.roles[0] ? user.roles[0].role_name : 'No role'
+          }));
+        } else {
+          console.warn('Data is not an array:', data);
+        }
+      },
+      error: (error) => {
+        console.error('Erro ao obter usuários', error);
+      }
+    });
   }
 
-  removeUser(id: number) {
-    this.options = this.options.filter(user => user.id !== id);
-    // Add API call to remove user from the database
-  }
-  editUser(index: number) {
-    //should redirect to edit user page
+  // editUser(id: number): void {
+  //   const user = this.options.find(user => user.id === id);
+  //   this.userService.editUser(id,user).subscribe({
+  //     next: (data) => {
+  //       console.log('User data:', data);
+  //     },
+  //     error: (error) => {
+  //       console.error('Error editing user:', error);
+  //     }
+  //   });
+
+  // }
+
+  removeUser(id: number): void {
+    this.userService.deleteUser(id).subscribe({
+      next: () => {
+        this.options = this.options.filter(user => user.id !== id);
+        alert('User removed successfully');
+      },
+      error: (error) => {
+        console.error('Error removing user:', error);
+      }
+    });
   }
 
-  trackByIndex(index: number, item: User): number {
+  trackByIndex(index: number, item: any): any {
     return item.id;
   }
+
 }

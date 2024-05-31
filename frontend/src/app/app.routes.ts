@@ -23,3 +23,5 @@ export const routes: Routes = [
   { path: 'createIndicator', component: CreateIndicatorsPageComponent,canActivate: [authGuard] },
   { path: '', redirectTo: '/home', pathMatch: 'full' }
 ];
+
+
