@@ -1,4 +1,6 @@
-<aside class="dashboard">
+<div>
+
+  <aside class="dashboard">
     <h2 class="dashboardTitle">ADMIN DASHBOARD</h2>
     <div class="dashboardOptionsContainer">
       <!-- menuItem -->
@@ -15,7 +17,7 @@
           <a routerLink="/consultUsers" routerLinkActive="Ativo">Consultar Users</a>
         </div>
       </div>
-  
+
       <div class="dashboardOption" (click)="openManageContent()" [ngClass]="{'is-open': isManageContentSubMenuOpen}">
         <h2>Gerir Conteúdo</h2>
         <div class="plusIcon" [ngClass]="{'is-open': isManageContentSubMenuOpen}"></div>
@@ -32,7 +34,7 @@
       <div class="dashboardOption" (click)="openManageNotifications()" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
         <h2>Gerir Notificações</h2>
         <div class="plusIcon" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}"></div>
-    </div>
+      </div>
       <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
         <div class="subMenuItem">
           <a href="">Histórico</a>
@@ -40,8 +42,6 @@
         <div class="subMenuItem">
           <a href="">Gerir</a>
         </div>
-          
       </div>
     </div>
 </aside>
-  

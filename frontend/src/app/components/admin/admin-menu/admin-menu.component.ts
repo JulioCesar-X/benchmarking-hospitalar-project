@@ -5,7 +5,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 @Component({
   selector: 'app-admin-menu',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     RouterLink,
     RouterLinkActive
   ], // Import CommonModule here
@@ -23,7 +24,7 @@ export class AdminMenuComponent {
   openManageContent() {
     this.isManageContentSubMenuOpen = !this.isManageContentSubMenuOpen;
   }
-  
+
   openManageNotifications() {
     this.isManageNotificationsSubMenuOpen = !this.isManageNotificationsSubMenuOpen;
   }

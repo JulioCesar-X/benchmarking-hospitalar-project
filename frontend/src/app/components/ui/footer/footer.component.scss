@@ -1,0 +1,32 @@
+/* footer.component.scss */
+.footer {
+  background-color: #fff;
+  /* Cor de fundo branca */
+  padding: 0px 20px;
+  /* Espaçamento interno */
+  color: #948f8f;
+  /* Cor do texto */
+  font-size: 12px;
+  /* Tamanho da fonte do texto */
+
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Alinha os itens nas extremidades */
+}
+
+.logo {
+  height: 80px;
+  /* Altura do logotipo */
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 10px 0;
+    font-size: 14px;
+    /* Reduz o tamanho da fonte em telas menores */
+  }
+}
