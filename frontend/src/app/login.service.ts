@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders  } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
@@ -36,10 +36,25 @@ export class LoginService {
   }
 
   logout(): void {
-    this.cookieService.delete('access_token');
-    this.cookieService.delete('role');
-    this.router.navigate(['']);
+    const token = this.cookieService.get('access_token');
+    if (token) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      this.http.post(`https://benchmarking-hospitalar-project.onrender.com/logout`, {}, { headers }).subscribe(
+        () => {
+          this.cookieService.delete('access_token');
+          this.cookieService.delete('role');
+          this.router.navigate(['']);
+        },
+        error => {
+          console.error('Logout failed', error);
+        }
+      );
+    } else {
+      console.error('No token found');
+      this.router.navigate(['']);
+    }
   }
+
 
   isLoggedIn(): boolean {
     return this.cookieService.check('access_token');
@@ -49,12 +64,13 @@ export class LoginService {
     return this.cookieService.get('role');
   }
 
-  canActivate(): boolean {
+  //guard esta a fazer o que cod. abaixo fazia
+/*   canActivate(): boolean {
     if (this.isLoggedIn()) {
       return true;
     } else {
       this.router.navigate(['/login']);
       return false;
     }
-  }
+  } */
 }
