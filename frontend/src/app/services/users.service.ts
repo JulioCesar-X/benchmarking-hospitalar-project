@@ -6,10 +6,10 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UsersService {
   //exemplo basico de como fazer request á API atraves do servico
-  private usersUrl = 'assets/users.json';
+  private usersUrl = 'https://benchmarking-hospitalar-project.onrender.com/admin/users';
 
   constructor(private http: HttpClient) { }
-  
+
   getUsers() {
     return this.http.get<any>(this.usersUrl);
   }

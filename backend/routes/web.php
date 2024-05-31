@@ -13,6 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
- Route::get('welcome', 'HomeController@index');
+ Route::get('/', 'HomeController@index');
 
 

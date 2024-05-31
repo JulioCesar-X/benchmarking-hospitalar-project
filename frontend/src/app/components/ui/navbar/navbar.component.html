@@ -16,16 +16,14 @@
           <h1>Tâmega e Sousa</h1>
         </div>
       </div>
-
-      <div class="navbarLinksContainer">
-        <div class="triangle"></div>
-        <a routerLink="/home" class="navBarLink">Home</a>
-        <a routerLink="/consultUsers" class="navBarLink">Admin menu</a>
-        <div class="loginContainer">
-          <a routerLink="/login" class="navBarLink">Login</a>
-          <img src="../../../../assets/images/notificationIcon.png" class="icon" alt="Notifications icon">
-        </div>
-      </div>
-    </header>
+  <div class="navbarLinksContainer">
+    <div class="triangle"></div>
+    <a routerLink="/home" class="navBarLink">Home</a>
+    <a *ngIf="isLoggedIn()" routerLink="/consultUsers" class="navBarLink">Admin menu</a>
+    <div class="loginContainer">
+        <a *ngIf="!isLoggedIn()" routerLink="/login" class="navBarLink">Login</a>
+        <a *ngIf="isLoggedIn()" (click)="logout()" class="navBarLink">Logout</a>
+      <img src="../../../../assets/images/notificationIcon.png" class="icon" alt="Notifications icon">
+    </div>
   </div>
 
