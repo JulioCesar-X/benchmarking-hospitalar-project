@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormsModule,  } from '@angular/forms'; 
+import { FormsModule,  } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 interface User {
@@ -11,7 +11,8 @@ interface User {
 @Component({
   selector: 'app-users-list-section',
   standalone: true,
-  imports: [FormsModule,
+  imports: [
+    FormsModule,
     CommonModule,
   ],
   templateUrl: './users-list-section.component.html',

@@ -1,1 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0a0;
+}
+
+/* Estiliza a barra de rolagem de todo o documento */
+::-webkit-scrollbar {
+  width: 10px;
+  /* Largura da scrollbar */
+  height: 10px;
+  /* Altura da scrollbar para áreas de rolagem horizontal */
+}
+
+/* Estiliza a trilha da scrollbar (parte por trás da barra de rolagem) */
+::-webkit-scrollbar-track {
+  background: #f0f0f0a0;
+  /* Cor de fundo da trilha */
+  border-radius: 10px;
+  /* Borda arredondada */
+}
+
+/* Estiliza a alça da scrollbar (a parte móvel da scrollbar) */
+::-webkit-scrollbar-thumb {
+  background: #528cad;
+  /* Cor de fundo da alça */
+  border-radius: 10px;
+  /* Borda arredondada */
+}
+
+// /* Estiliza a alça da scrollbar ao passar o mouse */
+// ::-webkit-scrollbar-thumb:hover {
+//   background: #0e0e3a;
+//   /* Cor de fundo da alça ao passar o mouse */
+// }

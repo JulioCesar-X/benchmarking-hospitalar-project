@@ -3,13 +3,16 @@ import { NavbarComponent } from '../../components/ui/navbar/navbar.component';
 import { AdminMenuComponent } from '../../components/admin/admin-menu/admin-menu.component';
 import { UserFilterSectionComponent } from '../../components/ui/user-filter-section/user-filter-section.component';
 import { CreateUserFormComponent } from '../../components/create-user-form/create-user-form.component';
+import { FooterComponent } from '../../components/ui/footer/footer.component';
 @Component({
   selector: 'app-create-user-page',
   standalone: true,
-  imports: [NavbarComponent,
+  imports: [
+    NavbarComponent,
     AdminMenuComponent,
     UserFilterSectionComponent,
-    CreateUserFormComponent
+    CreateUserFormComponent,
+    FooterComponent
   ],
   templateUrl: './create-user-page.component.html',
   styleUrl: './create-user-page.component.scss'

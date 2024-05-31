@@ -18,7 +18,7 @@
 //Estilos componentes
 @mixin cross-icon($icon-width: 1em, $icon-height: 3px, $background-color: $fill-white) {
   transform: rotate(45deg);
-  
+
   &::before, &::after {
     cursor: pointer;
     content: '';
@@ -43,8 +43,8 @@
   justify-content: center;
   gap: 1em;
   margin: 0 auto;
-  margin-block: 3em;
-  box-sizing: border-box; 
+  margin-block: 7em;
+  box-sizing: border-box;
   padding: 2em;
   border-radius: 1em;
   background-color: $main-blue;
@@ -125,7 +125,7 @@
   max-height: 300px;
   overflow-y: auto;
 
-  scrollbar-width: thin; 
+  scrollbar-width: thin;
   scrollbar-color: $main-blue $fill-white;
 
   display: flex;
