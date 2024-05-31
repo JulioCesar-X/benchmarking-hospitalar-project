@@ -11,7 +11,7 @@
 <form action="">
     <div class="forms-container" >
         <h2 class="title">Criar User</h2>
-        <button class="forms-Button" (click)="openModal($event)">Adicionar Campo</button>
+<!--         <button class="forms-Button" (click)="openModal($event)">Adicionar Campo</button> -->
 
         
         <div class="forms-container--inputContainer"> 
@@ -22,19 +22,16 @@
             <input type="text" class="inputContainer--input" placeholder="Email">
             <span class="errorSpanMessage"></span>
         </div>
+        <!-- Nif do user vai ser usado para criar a password inicial -->
         <div class="forms-container--inputContainer"> 
-            <input type="password" class="inputContainer--input" placeholder="Telefone">
-            <span class="errorSpanMessage"></span>
-        </div>
-        <div class="forms-container--inputContainer"> 
-            <input type="text" class="inputContainer--input" placeholder="Password">
+            <input type="password" class="inputContainer--input" placeholder="Nif">
             <span class="errorSpanMessage"></span>
         </div>
         <div class="selectContainer">
             <label for="">Role:</label>
             <select name="" id="">
                 <option value="">User</option>
-                <option value="">Gestor</option>
+                <option value="">Coordenador</option>
                 <option value="">Admin</option>
             </select>
         </div>
