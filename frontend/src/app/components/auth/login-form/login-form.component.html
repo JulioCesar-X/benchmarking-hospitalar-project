@@ -1,17 +1,37 @@
-
-<form #loginForm="ngForm" (ngSubmit)="onLogin()">
-    <div class="loginContainer">
-        <div class="inputContainer"> 
-            <input type="text" class="loginInput" placeholder="Username" [(ngModel)]="email" name="email" required>
-            <span class="errorSpan"></span>
-        </div>
-        <div class="inputContainer"> 
-            <input type="password" class="loginInput" placeholder="Password" [(ngModel)]="password" name="password" required>
-            <span class="errorSpan"></span>
-        </div>
-        <button type="submit" class="loginBtn">Login</button>
-        <a href="" class="forgotPassLink">Forgot Password?</a>
+<form (ngSubmit)="onLogin()">
+  <div class="loginContainer">
+    <!-- Input containers apenas visíveis quando isLoading for falso -->
+    <div *ngIf="!isLoading">
+      <div class="inputContainer">
+        <input type="text" class="loginInput" id="email" placeholder="Enter your email" [(ngModel)]="email" name="email"
+          required>
+      </div>
+      <div class="inputContainer">
+        <input type="password" class="loginInput" id="password" placeholder="Enter your password" [(ngModel)]="password"
+          name="password" required>
+      </div>
+      <button type="submit" class="loginBtn">Login</button>
     </div>
+
+    <!-- Spinner visível apenas quando isLoading for verdadeiro -->
+    <div *ngIf="isLoading" class="loading-circle">
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <a href="#" class="forgotPassLink">Forgot Password?</a>
 </form>
 
-
+ <!-- <form #loginForm="ngForm" (ngSubmit)="onLogin()">
+    <div class="loginContainer">
+      <div class="inputContainer">
+        <input type="text" class="loginInput" placeholder="Username" [(ngModel)]="email" name="email" required>
+        <span class="errorSpan"></span>
+      </div>
+      <div class="inputContainer">
+        <input type="password" class="loginInput" placeholder="Password" [(ngModel)]="password" name="password" required>
+        <span class="errorSpan"></span>
+      </div>
+      <button type="submit" class="loginBtn">Login</button>
+      <a href="" class="forgotPassLink">Forgot Password?</a>
+    </div>
+  </form> -->
