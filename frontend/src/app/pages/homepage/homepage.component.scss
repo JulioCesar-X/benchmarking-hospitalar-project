@@ -1,69 +1,79 @@
 @import '../../../styles/_variables.scss';
 
 .headingSection {
+  width: 100%;
+  background-image: url('../../../assets/images/g579.png');
+  background-size: cover;
+  background-position: center;
+  padding-block: 5%;
+  margin-top: 6.5em;
+  margin-bottom: 2em;
+}
+
+.headingTitle {
+  width: 30%;
+  color: $fill-white;
+  font-size: 4em;
+  margin-left: 2em;
+}
+
+.homepageCardsSections {
+  display: grid;
+  margin: 0 auto;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 50px;
+  grid-auto-rows: 1fr;
+  gap: 1em;
+  width: 70%
+}
+
+.card {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  border-radius: 1em;
+  overflow: hidden;
+
+}
+
+.card:hover {
+  box-shadow: 5px 10px 63px -20px rgba(0, 0, 0, 0.75);
+
+}
+
+.cardImg {
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+
+  img {
     width: 100%;
-    background-image: url('../../../assets/images/g579.png');
-    background-size: cover;
-    background-position: center;
-    padding-block: 5%;
-    margin-top: 6.5em;
-    margin-bottom: 2em;
+    aspect-ratio: 10/8;
+    transition: transform 0.6s ease-in-out;
+  }
 }
 
-.headingTitle{
-    width: 30%;
-    color: $fill-white;
-    font-size: 4em;
-    margin-left: 2em;
-}
-
-.homepageCardsSections{
-    display: grid;
-    margin: 0 auto;
-    grid-template-columns: repeat(4, 1fr);
-    margin-bottom: 50px;
-    grid-auto-rows: 1fr;
-    gap: 1em;
-    width: 70%
-}
-
-.card{
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    border-radius: 1em;
-    overflow: hidden;
-
-}
-.card:hover{
-    box-shadow: 5px 10px 63px -20px rgba(0,0,0,0.75);
-}
-
-.cardImg{
-    cursor: pointer;
-    display: flex;
-    align-items: flex-end;
-    img{
-        width: 100%;
-        aspect-ratio: 10/8;
-        transition: transform 0.6s ease-in-out;
-    }
-}
 .card:hover .cardImg img {
   transform: scale(1.05); // Aumenta a imagem em 5% ao passar o mouse
 }
 
-.cardText{
-    cursor: pointer;
-    background-color: $main-blue;
-    height: 100%;
-    padding: 1em;
-    p{
-        color: $fill-white;
-        text-transform: uppercase;
-        text-align: center;
-        margin: 0;
-    }
+.cardText {
+  cursor: pointer;
+  background-color: $main-blue;
+  height: 100%;
+  padding: 1em;
+
+  p {
+    color: $fill-white;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0;
+  }
+
+
+}
+.cardText:hover {
+  background-color: $main-dark-blue;
 }
