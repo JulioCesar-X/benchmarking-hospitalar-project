@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders  } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
@@ -24,8 +24,8 @@ export class LoginService {
       { withCredentials: true }  // Inclui cookies e headers de autenticação
     ).pipe(
       map((response: any) => {
-        this.cookieService.set('access_token', response.access_token);
-        this.cookieService.set('role', response.role);
+        this.cookieService.set('access_token', response.access_token, { expires: 1 / 24 });  // Define token para expirar em 1 hora
+        this.cookieService.set('role', response.role, { expires: 1 / 24 });
         return response;
       }),
       catchError(error => {
@@ -41,7 +41,7 @@ export class LoginService {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
       this.http.post(this.logoutUrl, {}, { headers, withCredentials: true }).subscribe(
         () => {
-          this.cookieService.delete('access_id');
+          this.cookieService.delete('access_token');
           this.cookieService.delete('role');
         },
         error => {
@@ -51,5 +51,12 @@ export class LoginService {
     } else {
       console.error('No token found');
     }
+  }
+  isLoggedIn(): boolean {
+    return this.cookieService.get('access_token') ? true : false;
+  }
+
+  getRole(): string | null {
+    return this.cookieService.get('role');
   }
 }
