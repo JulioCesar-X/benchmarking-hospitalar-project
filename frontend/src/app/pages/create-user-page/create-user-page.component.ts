@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { NavbarComponent } from '../../components/ui/navbar/navbar.component';
-import { AdminMenuComponent } from '../../components/admin/admin-menu/admin-menu.component';
-import { UserFilterSectionComponent } from '../../components/ui/user-filter-section/user-filter-section.component';
-import { CreateUserFormComponent } from '../../components/create-user-form/create-user-form.component';
+import { MenuComponent } from '../../components/user/menu/menu.component';
+import { UserFilterSectionComponent } from '../../components/user/user-filter-section/user-filter-section.component';
+import { CreateUserFormComponent } from '../../components/user/create-user-form/create-user-form.component';
 import { FooterComponent } from '../../components/ui/footer/footer.component';
 @Component({
   selector: 'app-create-user-page',
   standalone: true,
   imports: [
     NavbarComponent,
-    AdminMenuComponent,
+    MenuComponent,
     UserFilterSectionComponent,
     CreateUserFormComponent,
     FooterComponent
