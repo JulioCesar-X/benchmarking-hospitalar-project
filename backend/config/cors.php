@@ -20,8 +20,8 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        env("FRONTEND_URL", "https://hospital-metrics-analisys.netlify.app"),
-        env("FRONTEND_URL_LOCAL","http://localhost:4200")
+        'https://main--hospital-metrics-analisys.netlify.app',
+        'http://localhost:4200'
     ],
 
     'allowed_origins_patterns' => [],
