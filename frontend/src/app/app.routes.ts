@@ -21,7 +21,7 @@ export const routes: Routes = [
   { path: 'createUser', component: CreateUserPageComponent, canActivate: [authGuard]},
   { path: 'updateIndicators', component: UpdateIndicatorsPageComponent, canActivate: [authGuard] },
   { path: 'createIndicator', component: CreateIndicatorsPageComponent,canActivate: [authGuard] },
-  { path: '', redirectTo: '/home', pathMatch: 'full' }
+  { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
 

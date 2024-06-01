@@ -21,7 +21,7 @@ interface User {
   styleUrl: './users-list-section.component.scss'
 })
 export class UsersListSectionComponent {
-  options: User[] = [];
+  options: any[] = [];
 
   constructor(private userService: UserService) { }
 
@@ -44,18 +44,18 @@ export class UsersListSectionComponent {
     });
   }
 
-  // editUser(id: number): void {
-  //   const user = this.options.find(user => user.id === id);
-  //   this.userService.editUser(id,user).subscribe({
-  //     next: (data) => {
-  //       console.log('User data:', data);
-  //     },
-  //     error: (error) => {
-  //       console.error('Error editing user:', error);
-  //     }
-  //   });
+  editUser(id: number): void {
+    const user = this.options.find(user => user.id === id);
+    this.userService.editUser(id,user).subscribe({
+      next: (data) => {
+        console.log('User data:', data);
+      },
+      error: (error) => {
+        console.error('Error editing user:', error);
+      }
+    });
 
-  // }
+  }
 
   removeUser(id: number): void {
     this.userService.deleteUser(id).subscribe({
