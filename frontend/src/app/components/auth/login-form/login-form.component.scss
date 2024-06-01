@@ -9,7 +9,7 @@
   align-items: center;
   gap: 2em;
   padding-inline: 4em;
-  padding-block: 4em;
+  padding-top: 4em;
   padding-bottom: 2em;
   background-color: $main-blue;
   width: 50%;
@@ -57,29 +57,25 @@
 
 .inputContainer {
   width: 100%; // Mantém o contêiner de input na largura total
-  margin-bottom: 20px; // Espaçamento entre os inputs e o botão de login
-  position: relative; // Para posicionamento absoluto dos ícones ou mensagens de erro
+  margin-bottom: 20px; // Espaçamento entre os inputs e o botão de login // Para posicionamento absoluto dos ícones ou mensagens de erro
 }
 
 .loginInput {
   width: 100%;
-  padding: 12px 10px; // Ajuste para melhor toque e aparência
   box-sizing: border-box;
   caret-color: $fill-white;
   color: $fill-white;
   background-color: transparent;
   border: none;
-  border-bottom: 2px solid $fill-white; // Linha mais visível conforme o design
-  border-radius: 0; // Remover qualquer raio de borda que possa estar aplicado
-  transition: border-color 0.3s; // Suavizar a transição da borda
+  border-bottom: 2px solid $fill-white; 
 
   &::placeholder {
-    color: rgba($fill-white,1); // Suavizar a cor do placeholder para melhor visibilidade
+    color: $fill-white; // Suavizar a cor do placeholder para melhor visibilidade
   }
 
   &:focus {
     outline: none;
-    border-bottom-color: #ffffff; // Manter a borda branca, mas destacar ao focar
+    border-bottom-color: $fill-white; // Manter a borda branca, mas destacar ao focar
   }
 }
 .loginInput--error,
@@ -94,26 +90,17 @@
 }
 
 .errorSpan {
-  position: absolute;
-  right: 0;
-  bottom: -20px; // Posicionar abaixo do input
+  margin-left: auto;
   color: $error-color; // Cor para mensagem de erro
-  font-size: 0.75em; // Tamanho menor para mensagem de erro
+  font-size: 0.75rem; // Tamanho menor para mensagem de erro
 }
+
 // .inputContainer {
 //   width: 100%;
 //   text-align: start;
 // }
 
-// .loginInput {
-//   width: 100%;
-//   box-sizing: border-box;
-//   caret-color: $fill-white;
-//   color: $fill-white;
-//   background-color: transparent;
-//   border: none;
-//   border-bottom: $fill-white 2px solid;
-// }
+
 
 // .loginInput::placeholder {
 //   color: $fill-white;

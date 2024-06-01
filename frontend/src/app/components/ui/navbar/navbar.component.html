@@ -19,7 +19,7 @@
   <div class="navbarLinksContainer">
     <div class="triangle"></div>
     <a routerLink="/home" class="navBarLink">Home</a>
-    <a *ngIf="isLoggedIn()" routerLink="/consultUsers" class="navBarLink">Admin menu</a>
+    <a *ngIf="isLoggedIn()" routerLink="/consultUsers" class="navBarLink">Menu</a>
     <div class="loginContainer">
         <a *ngIf="!isLoggedIn()" routerLink="/login" class="navBarLink">Login</a>
         <a *ngIf="isLoggedIn()" (click)="logout()" class="navBarLink">Logout</a>
