@@ -20,6 +20,7 @@ export class LoginFormComponent {
   email: string = '';
   password: string = '';
   isLoading = false;
+  errorMessage: string = '';
 
   constructor(private loginService: LoginService, private router: Router) {}
 
@@ -27,15 +28,25 @@ export class LoginFormComponent {
 
   onLogin() {
     this.isLoading = true;
+
     this.loginService.login(this.email, this.password).subscribe(
       (response: any) => {
-        console.log('Login successful');
         this.isLoading = false;
-        this.router.navigate(['/consultUsers']);
+
+        if(response == null){
+          console.log('Login successful' + response);
+          this.errorMessage = 'Login failed!'
+        } else {
+          this.errorMessage = ''
+          console.log('Login successful' + response);
+          this.router.navigate(['/consultUsers']);
+        }
+
       },
       error => {
         console.error('Login failed', error);
         this.isLoading = false;
+
         // Handle login error (e.g., show an error message)
       }
     );
