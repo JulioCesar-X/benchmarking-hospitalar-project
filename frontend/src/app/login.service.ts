@@ -41,7 +41,7 @@ export class LoginService {
     const token = this.cookieService.get('access_token');
     if (token) {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      this.http.post(`https://benchmarking-hospitalar-project.onrender.com/logout`, {}, { headers }).subscribe(
+      this.http.post(this.logoutUrl,{}, { headers }).subscribe(
         () => {
           this.cookieService.delete('access_token');
           this.cookieService.delete('role');
@@ -56,7 +56,7 @@ export class LoginService {
       this.router.navigate(['']);
     }
   }
-  
+
   getRole(): string | null {
     return this.cookieService.get('role');
   }

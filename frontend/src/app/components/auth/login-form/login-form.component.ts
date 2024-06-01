@@ -21,7 +21,7 @@ export class LoginFormComponent {
   onLogin() {
     this.loginService.login(this.email, this.password).subscribe(
       (response: any) => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/consultUsers']);
       },
       error => {
         console.error('Login failed', error);
