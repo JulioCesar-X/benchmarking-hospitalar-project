@@ -15,9 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('services', 'ServiceController@index')->name('services.index');
+Route::get('services/{id}', 'ServiceController@show')->name('services.show');
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('services/{id}', 'ServiceController@show')->name('services.show');
-
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {
         Route::apiResource('services', 'ServiceController')->names('admin.services');
     });
