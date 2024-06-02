@@ -34,8 +34,12 @@ export class UserService {
     const role = this.cookieService.get('role').toLowerCase();
     if (role === 'admin') {
       this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/admin/users';
+      // this.apiUrl = 'http://localhost:8001/admin/users'; //para testar localmente
+
     } else if (role === 'coordenador') {
+
       this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/coordinator/users';
+      // this.apiUrl = 'http://localhost:8001/coordinator/users'; //para testar localmente
     }
   }
 
