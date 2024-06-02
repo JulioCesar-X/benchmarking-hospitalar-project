@@ -20,34 +20,42 @@ interface Data {
 })
 
 export class UserService {
-
-  private apiUrl!: string;
+  private apiUrl: string = ''; // Inicializa como string vazia
 
   constructor(
     private http: HttpClient,
     private cookieService: CookieService,
     private router: Router
-  ) { this.getUrl();}
-
-  getUrl(): void {
-    if (this.isAdmin()) {
-      this.apiUrl= `https://benchmarking-hospitalar-project.onrender.com/admin/users`;
-    } else if (this.isCoordinator()){
-      this.apiUrl = `https://benchmarking-hospitalar-project.onrender.com/coordinator/users`;
-    }
-
+  ) {
+    this.updateApiUrl();
   }
 
-  getAllUsers(): Observable<any> {
+  private updateApiUrl(): void {
+    const role = this.cookieService.get('role').toLowerCase();
+    if (role === 'admin') {
+      this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/admin/users';
+      // this.apiUrl = 'http://localhost:8001/admin/users'; //para testar localmente
+
+    } else if (role === 'coordenador') {
+
+      this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/coordinator/users';
+      // this.apiUrl = 'http://localhost:8001/coordinator/users'; //para testar localmente
+    }
+  }
+
+  private getAuthHeaders(): HttpHeaders {
     const token = this.cookieService.get('access_token');
     if (!token) {
       this.router.navigate(['/login']);
-      return throwError(() => new Error('No token found'));
+      throw new Error('No token found');
     }
-    const headers = new HttpHeaders({
+    return new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    return this.http.get(this.apiUrl, { headers }).pipe(
+  }
+
+  getAllUsers(): Observable<any> {
+    return this.http.get(this.apiUrl, { headers: this.getAuthHeaders(), withCredentials: true }).pipe(
       catchError(error => {
         console.error('Failed to fetch users:', error);
         return throwError(() => error);
@@ -56,15 +64,7 @@ export class UserService {
   }
 
   deleteUser(id: number): Observable<any> {
-    const token = this.cookieService.get('access_token');
-    if (!token) {
-      this.router.navigate(['/login']);
-      return throwError(() => new Error('No token found'));
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    return this.http.delete(`${this.apiUrl}/${id}`, { headers }).pipe(
+    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders(), withCredentials: true }).pipe(
       catchError(error => {
         console.error('Failed to delete user:', error);
         return throwError(() => error);
@@ -73,29 +73,11 @@ export class UserService {
   }
 
   editUser(id: number, data: Data): Observable<any> {
-    const token = this.cookieService.get('access_token');
-    if (!token) {
-      this.router.navigate(['/login']);
-      return throwError(() => new Error('No token found'));
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    const body: { name: string, email: string, password: string, role_id: number } = { ...data
-    };
-    return this.http.put(`${this.apiUrl}/${id}`, { headers,body }).pipe(
+    return this.http.put(`${this.apiUrl}/${id}`, data, { headers: this.getAuthHeaders(), withCredentials: true }).pipe(
       catchError(error => {
         console.error('Failed to edit user:', error);
         return throwError(() => error);
       })
     );
   }
-
-  isAdmin(): boolean {
-    return this.cookieService.get('role').toLowerCase() === 'admin';
-  }
-  isCoordinator(): boolean {
-    return this.cookieService.get('role').toLowerCase() === 'coordenador';
-  }
-
 }

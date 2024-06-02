@@ -9,6 +9,13 @@ services:
     environment:
       APP_ENV: local
       RESET_SEEDERS: true
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: bh_db
+      DB_USERNAME: atec
+      DB_PASSWORD: atec
+
     volumes:
       - ./backend:/var/www/html
     depends_on:

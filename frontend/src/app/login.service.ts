@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders  } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
@@ -13,21 +13,21 @@ import { AuthInterceptor } from './auth.interceptor';
 
 export class LoginService {
   private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/login';
+  // private apiUrl = 'http://localhost:8001/login'; //para testar localmente
   private logoutUrl = 'https://benchmarking-hospitalar-project.onrender.com/logout';
+  // private logoutUrl = 'http://localhost:8001/logout';//para testar localmente
 
-  constructor(
-    private http: HttpClient,
-    private cookieService: CookieService,
-    private router: Router
-  ) { }
+  constructor(private http: HttpClient, private cookieService: CookieService) { }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}?email=${email}&password=${password}`, { email, password }).pipe(
+    return this.http.post(
+      `${this.apiUrl}?email=${email}&password=${password}`,
+      { email, password },
+      { withCredentials: true }  // Inclui cookies e headers de autenticação
+    ).pipe(
       map((response: any) => {
-        const expirationTime = new Date();
-        expirationTime.setMinutes(expirationTime.getMinutes() + 30);
-        this.cookieService.set('access_token', response.access_token, expirationTime);
-        this.cookieService.set('role', response.role, expirationTime);
+        this.cookieService.set('access_token', response.access_token, { expires: 1 / 24 });  // Define token para expirar em 1 hora
+        this.cookieService.set('role', response.role, { expires: 1 / 24 });
         return response;
       }),
       catchError(error => {
@@ -41,11 +41,10 @@ export class LoginService {
     const token = this.cookieService.get('access_token');
     if (token) {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-      this.http.post(this.logoutUrl,{}, { headers }).subscribe(
+      this.http.post(this.logoutUrl, {}, { headers, withCredentials: true }).subscribe(
         () => {
           this.cookieService.delete('access_token');
           this.cookieService.delete('role');
-          this.router.navigate(['']);
         },
         error => {
           console.error('Logout failed', error);
@@ -53,15 +52,13 @@ export class LoginService {
       );
     } else {
       console.error('No token found');
-      this.router.navigate(['']);
     }
+  }
+  isLoggedIn(): boolean {
+    return this.cookieService.get('access_token') ? true : false;
   }
 
   getRole(): string | null {
     return this.cookieService.get('role');
-  }
-
-  isLoggedIn(): boolean {
-    return this.cookieService.check('access_token');
   }
 }
