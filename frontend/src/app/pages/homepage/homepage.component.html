@@ -5,7 +5,7 @@
 <div class="homepageCardsSections">
   <div class="card" *ngFor="let service of uniqueServices">
     <div class="cardImg">
-      <img [src]="service.imageUrl" alt="{{ service.service_name }}">
+      <img [src]="service.imageUrl" class="imgSize" alt="{{ service.service_name }}">
     </div>
     <div class="cardText" (click)="goToDescription(service.id)">
       <p>{{ service.service_name }}</p>

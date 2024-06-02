@@ -32,6 +32,7 @@ export class HomepageComponent implements OnInit {
   loadServices(): void {
     this.serviceService.getServices().subscribe({
       next: (data: Service[]) => {
+        console.log('Services loaded:', data);
         this.uniqueServices = this.groupServices(data);
       },
       error: (err) => {

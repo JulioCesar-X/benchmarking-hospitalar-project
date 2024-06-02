@@ -10,6 +10,9 @@ import { Service } from '../models/service.model';  // Certifique-se de que a in
 export class ServiceService {
   private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/services';
 
+  //para testar localmente
+  // private apiUrl = 'http://localhost:8001/services';
+
   constructor(private http: HttpClient) { }
 
   getServices(): Observable<Service[]> {
