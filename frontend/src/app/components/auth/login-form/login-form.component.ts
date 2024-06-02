@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NgForm, FormsModule, NgModel } from '@angular/forms';
 import { LoginService } from '../../../login.service';
 import { EventEmitter, Output } from '@angular/core';
@@ -10,7 +10,8 @@ import { EventEmitter, Output } from '@angular/core';
   standalone: true,
   imports: [
     FormsModule,
-    CommonModule
+    CommonModule,
+    RouterLink
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'

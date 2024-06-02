@@ -1,6 +1,14 @@
-<app-navbar></app-navbar>
+
 <div class="container">
-  <h2>{{ service?.service_name }}</h2>
-  <p>{{ service?.description }}</p>
+    <app-navbar></app-navbar>
+
+    <main>
+        <div class="descriptionBox">
+            <h2>{{ service?.service_name }}</h2>
+            <p>{{ service?.description }}</p>
+        </div>
+    </main>
+    
+    <app-footer></app-footer>
 </div>
-<app-footer></app-footer>
+

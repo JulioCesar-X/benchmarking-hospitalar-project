@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
+import { ResetPasswordPageComponent } from './pages/reset-password-page/reset-password-page.component';
 import { DescriptionServicePageComponent } from './pages/description-service-page/description-service-page.component';
 import { ConsultUsersPageComponent } from './pages/user-pages/consult-users-page/consult-users-page.component';
 import { CreateUserPageComponent } from './pages/user-pages/create-user-page/create-user-page.component';
@@ -16,7 +17,10 @@ import { authGuard } from './guards/auth.guard'
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
   { path: 'login', component: LoginPageComponent },
+
+  { path: 'resetPassword', component: ResetPasswordPageComponent },
   { path: 'description/:serviceId', component: DescriptionServicePageComponent },
+
   { path: 'consultUsers', component: ConsultUsersPageComponent, canActivate: [authGuard] },
   { path: 'createUser', component: CreateUserPageComponent, canActivate: [authGuard] },
   { path: 'updateIndicators', component: UpdateIndicatorsPageComponent, canActivate: [authGuard] },

@@ -9,6 +9,7 @@
 .forms-container{
     @include forms-container();
 
+    margin-block: 2em;
     width: 50%;
     max-width: 500px;
 }

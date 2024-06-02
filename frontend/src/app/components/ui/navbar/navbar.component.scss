@@ -2,14 +2,14 @@
 
 
 .fixed {
-  position: fixed;
+  //position: fixed; preciso de arranja soluçõa
   top: 0;
   width: 100%;
   z-index: 1000;
   /* Garante que a navbar fique acima de outros elementos */
   background-color: #ffff;
   /* Define uma cor de fundo para garantir legibilidade */
-  border-bottom: 5px solid #f0f0f0a0
+  border-bottom: 5px solid #f0f0f0a0;
   /* Opcional: uma linha para separar a navbar do conteúdo da página */
 }
 

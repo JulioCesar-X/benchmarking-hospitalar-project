@@ -3,11 +3,11 @@
 .dashboard{
     box-sizing: border-box;
     background-color: $main-blue;
-    margin-top: 7em;
+
     border-top-right-radius: 1em;
     min-width: 350px; /* change later to something more responsive?? */
     max-width: 30%;
-    height: 72vh; /* aprox value to make dashboard fill screen */
+    height: 100%; /* aprox value to make dashboard fill screen */
     clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);
 }
 .dashboardTitle{
