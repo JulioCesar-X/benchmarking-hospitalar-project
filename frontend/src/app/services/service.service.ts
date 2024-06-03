@@ -11,7 +11,7 @@ export class ServiceService {
   private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/services';
 
   //para testar localmente
-  // private apiUrl = 'http://localhost:8001/services';
+  //private apiUrl = 'http://localhost:8001/services';
 
   constructor(private http: HttpClient) { }
 

@@ -7,6 +7,7 @@
  -->
  <div class="fixed">
    <header class="navbar">
+
      <div class="logoSection">
        <div class="logoContainer">
          <img class="logo" src="../../../../assets/images/novoLogo.png" alt="Logo">
@@ -15,11 +16,13 @@
           <h3>Unidade local de Saúde</h3>
           <h1>Tâmega e Sousa</h1>
         </div>
-      </div>
+    </div>
+
   <div class="navbarLinksContainer">
-    <div class="triangle"></div>
+   <!--  <div class="triangle"></div> -->
     <a routerLink="/home" class="navBarLink">Home</a>
-    <a *ngIf="isLoggedIn()" routerLink="/consultUsers" class="navBarLink">Menu</a>
+    <a *ngIf="isLoggedIn() && getRole() === 'admin'" routerLink="/consultUsers" class="navBarLink">Menu</a>
+    <a *ngIf="isLoggedIn() && getRole() === 'coordenador'" routerLink="/coordenadorHome0" class="navBarLink">Menu</a>
     <div class="loginContainer">
         <a *ngIf="!isLoggedIn()" routerLink="/login" class="navBarLink">Login</a>
         <a *ngIf="isLoggedIn()" (click)="logout()" class="navBarLink">Logout</a>

@@ -13,9 +13,9 @@ import { AuthInterceptor } from './auth.interceptor';
 
 export class LoginService {
   private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/login';
-  // private apiUrl = 'http://localhost:8001/login'; //para testar localmente
+   //private apiUrl = 'http://localhost:8001/login'; //para testar localmente
   private logoutUrl = 'https://benchmarking-hospitalar-project.onrender.com/logout';
-  // private logoutUrl = 'http://localhost:8001/logout';//para testar localmente
+  //private logoutUrl = 'http://localhost:8001/logout';//para testar localmente
 
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
@@ -59,6 +59,6 @@ export class LoginService {
   }
 
   getRole(): string | null {
-    return this.cookieService.get('role');
+    return this.cookieService.get('role').toLowerCase();
   }
 }

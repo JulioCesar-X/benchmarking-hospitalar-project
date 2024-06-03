@@ -19,6 +19,11 @@ export class NavbarComponent {
   isLoggedIn(): boolean {
     return this.loginService.isLoggedIn();
   }
+  getRole(){
+    const role = this.loginService.getRole();
+    console.log(`Role do user: ${role}`)
+    return role;
+  }
 
   logout(): void {
     this.loginService.logout();
