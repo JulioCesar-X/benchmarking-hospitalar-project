@@ -11,7 +11,7 @@ import { EventEmitter, Output } from '@angular/core';
   imports: [
     FormsModule,
     CommonModule,
-    RouterLink
+    RouterLink, 
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'

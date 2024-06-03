@@ -1,6 +1,9 @@
+@import '../../../../styles/_variables.scss';
+
 /* footer.component.scss */
 .footer {
-  background-color: #fff;
+  margin-top: 0.5em;
+  background-color: $fill-white;
   /* Cor de fundo branca */
   padding: 0px 20px;
   /* Espaçamento interno */
