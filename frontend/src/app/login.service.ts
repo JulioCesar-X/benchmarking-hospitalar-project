@@ -16,6 +16,7 @@ export class LoginService {
    //private apiUrl = 'http://localhost:8001/login'; //para testar localmente
   private logoutUrl = 'https://benchmarking-hospitalar-project.onrender.com/logout';
   //private logoutUrl = 'http://localhost:8001/logout';//para testar localmente
+  private role_response!: string;
 
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
@@ -27,7 +28,7 @@ export class LoginService {
     ).pipe(
       map((response: any) => {
         this.cookieService.set('access_token', response.access_token, { expires: 1 / 24 });  // Define token para expirar em 1 hora
-        this.cookieService.set('role', response.role, { expires: 1 / 24 });
+        this.role_response = response.role;
         return response;
       }),
       catchError(error => {
@@ -58,7 +59,7 @@ export class LoginService {
     return this.cookieService.get('access_token') ? true : false;
   }
 
-  getRole(): string | null {
-    return this.cookieService.get('role').toLowerCase();
+  getRole(): string {
+    return this.role_response.toLowerCase();
   }
 }

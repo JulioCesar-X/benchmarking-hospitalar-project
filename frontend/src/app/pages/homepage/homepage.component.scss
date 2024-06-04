@@ -31,6 +31,7 @@
 .card {
   cursor: pointer;
   display: flex;
+  background-color: $main-blue;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
@@ -58,11 +59,17 @@
 
 .card:hover .cardImg img {
   transform: scale(1.05); // Aumenta a imagem em 5% ao passar o mouse
+
 }
+.card:hover{
+  background-color: $main-dark-blue;
+
+}
+
 
 .cardText {
   cursor: pointer;
-  background-color: $main-blue;
+  background-color: transparent;
   height: 100%;
   padding: 1em;
 
@@ -75,9 +82,9 @@
 
 
 }
-.cardText:hover {
-  background-color: $main-dark-blue;
-}
+// .cardText:hover {
+//   background-color: $main-dark-blue;
+// }
 .imgSize{
   width: $card-width;
   height: $card-height;

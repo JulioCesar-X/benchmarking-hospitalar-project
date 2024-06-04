@@ -1,0 +1,19 @@
+
+
+
+<div class="container">
+    <app-navbar></app-navbar>
+
+    <main>
+        <app-consult-data-filter (filterData)="handleFilterData($event)"></app-consult-data-filter>
+
+
+        <div class="graphicsContainer">
+            <app-data-graphic [data]="data"></app-data-graphic>
+            <app-data-graphic [data]="data"></app-data-graphic>
+        </div>
+    </main>
+    
+    <app-footer></app-footer>
+</div>
+

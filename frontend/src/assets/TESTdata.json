@@ -1,0 +1,30 @@
+[
+  {
+    "day": "Jan",
+    "amount": 30.00
+  },
+  {
+    "day": "Fev",
+    "amount": 40.00
+  },
+  {
+    "day": "Mar",
+    "amount": 20.00
+  },
+  {
+    "day": "Abr",
+    "amount": 17.45
+  },
+  {
+    "day": "Mai",
+    "amount": 35.00
+  },
+  {
+    "day": "Jun",
+    "amount": 25.48
+  },
+  {
+    "day": "Jul",
+    "amount": 50.00
+  }
+]

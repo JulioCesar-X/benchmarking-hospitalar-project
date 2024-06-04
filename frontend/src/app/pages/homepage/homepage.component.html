@@ -1,23 +1,19 @@
 <div class="container">
-    <app-navbar></app-navbar>
-
-    <main>
-        <div class="headingSection">
-            <h1 class="headingTitle">Departamento Psiquiatria</h1>
+  <app-navbar></app-navbar>
+  <main>
+    <div class="headingSection">
+      <h1 class="headingTitle">Departamento Psiquiatria</h1>
+    </div>
+    <div class="homepageCardsSections">
+      <div class="card" *ngFor="let service of uniqueServices" (click)="goToDescription(service.id)">
+        <div class="cardImg">
+          <img [src]="service.imageUrl" class="imgSize" alt="{{ service.service_name }}">
         </div>
-        <div class="homepageCardsSections">
-            <div class="card" *ngFor="let service of uniqueServices">
-                <div class="cardImg">
-                    <img [src]="service.imageUrl" class="imgSize" alt="{{ service.service_name }}">
-                </div>
-                <div class="cardText" (click)="goToDescription(service.id)">
-                    <p>{{ service.service_name }}</p>
-                </div>
-            </div>
+        <div class="cardText">
+          <p>{{ service.service_name }}</p>
         </div>
-    </main>
-    
-    <app-footer></app-footer>
-
+      </div>
+    </div>
+  </main>
+  <app-footer></app-footer>
 </div>
-

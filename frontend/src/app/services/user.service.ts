@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
+import { LoginService } from '../login.service';
 
 
 interface Data {
@@ -25,21 +26,26 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private cookieService: CookieService,
-    private router: Router
+    private router: Router,
+    private loginService: LoginService
   ) {
     this.updateApiUrl();
   }
 
   private updateApiUrl(): void {
-    const role = this.cookieService.get('role').toLowerCase();
+    const role = this.loginService.getRole().toLowerCase();
     if (role === 'admin') {
       this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/admin/users';
       //this.apiUrl = 'http://localhost:8001/admin/users'; //para testar localmente
+      // this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/admin/users';
+      this.apiUrl = 'http://localhost:8001/admin/users'; //para testar localmente
 
     } else if (role === 'coordenador') {
 
       this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/coordinator/users';
        //this.apiUrl = 'http://localhost:8001/coordinator/users'; //para testar localmente
+      // this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/coordinator/users';
+      this.apiUrl = 'http://localhost:8001/coordinator/users'; //para testar localmente
     }
   }
 

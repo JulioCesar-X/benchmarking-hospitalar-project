@@ -1,0 +1,52 @@
+@import '../../../styles/_variables.scss';
+@import '../../../styles/_mixins.scss';
+
+.chart{
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1em;
+    height: 150px;
+    background-color: $fill-white;
+    border-radius: 1em;
+
+    padding-top: 1.5em;
+    padding-inline: 0.5em;
+}
+
+.loading-bar {
+    width: 100%;
+    border-radius: 5px;
+    background-color: $main-blue;
+    animation: fill-progress 2s ease forwards;
+    transform-origin: bottom;
+    transition: 200ms ease-in;
+}
+.loading-bar:hover {
+    background-color: $main-blue;
+}
+
+/* .maxDayBar{
+    background-color:  var(--Cyan);
+}
+.maxDayBar:hover{
+    background-color:  var(--LightCyan);
+} */
+
+.column{
+   width:12%;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+}
+
+
+@keyframes fill-progress {
+    from {
+        transform: scaleY(0);
+    }
+    to {
+        transform: scaleY(1);
+    }
+}

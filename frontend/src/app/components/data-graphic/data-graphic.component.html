@@ -1,0 +1,11 @@
+<div class="chart">
+    <div *ngFor="let element of data" class="column">
+<!--       <div class="valueBox hide">
+        <p>${{element.amount}}</p>
+      </div> -->
+      <div class="loading-bar"[style.height.px]="element.amount * 2" (click)="togglePriceBox($event)">
+      </div>
+      <p>{{element.day}}</p>
+    </div>
+  </div>
+  
