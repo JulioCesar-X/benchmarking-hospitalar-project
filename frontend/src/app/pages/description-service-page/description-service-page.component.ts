@@ -18,6 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class DescriptionServicePageComponent implements OnInit {
   service: any;
+  isLoading: boolean = false; //Add para load
 
   constructor(private serviceService: ServiceService, private route: ActivatedRoute) { }
 
@@ -28,12 +29,16 @@ export class DescriptionServicePageComponent implements OnInit {
   }
 
   loadService(serviceId: number): void {
+    this.isLoading = true //Carregamento em andamento
     this.serviceService.getServiceById(serviceId).subscribe({
       next: (data) => {
         this.service = data;  // Armazena o serviço específico retornado pela API
       },
       error: (err) => {
         console.error('Error loading the service:', err);
+      },
+      complete: () => {
+        this.isLoading = false; // Indica que o carregamento foi concluído
       }
     });
   }

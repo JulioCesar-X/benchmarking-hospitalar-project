@@ -1,14 +1,17 @@
-
 <div class="container">
-    <app-navbar></app-navbar>
+  <app-navbar></app-navbar>
 
-    <main>
-        <div class="descriptionBox">
-            <h2>{{ service?.service_name }}</h2>
-            <p>{{ service?.description }}</p>
-        </div>
-    </main>
-    
-    <app-footer></app-footer>
+  <main>
+    <!-- Add para o load -->
+    <div *ngIf="isLoading" class="loading-circle">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="descriptionBox">
+      <h2>{{ service?.service_name }}</h2>
+      <p>{{ service?.description }}</p>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
 </div>
-

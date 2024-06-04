@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomepageComponent } from './pages/homepage/homepage.component';
-import { LoginPageComponent } from './pages/login-page/login-page.component';
-import { ResetPasswordPageComponent } from './pages/reset-password-page/reset-password-page.component';
+import { LoginPageComponent } from './pages/auth-pages/login-page/login-page.component';
+import { ResetPasswordPageComponent } from './pages/auth-pages/reset-password-page/reset-password-page.component';
 import { DescriptionServicePageComponent } from './pages/description-service-page/description-service-page.component';
 import { ConsultUsersPageComponent } from './pages/user-pages/consult-users-page/consult-users-page.component';
 import { CreateUserPageComponent } from './pages/user-pages/create-user-page/create-user-page.component';

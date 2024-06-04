@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { LoginService} from '../../../login.service'
+import { AuthService } from '../../../auth.service'
 
 @Component({
   selector: 'app-menu',
@@ -9,7 +9,7 @@ import { LoginService} from '../../../login.service'
   imports: [
     CommonModule,
     RouterLink,
-    RouterLinkActive
+    RouterLinkActive,
   ], // Import CommonModule here
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
@@ -19,10 +19,10 @@ export class MenuComponent {
   isManageContentSubMenuOpen = false;
   isManageNotificationsSubMenuOpen = false;
 
-  constructor(private loginService: LoginService){}
-  
-  getRole(){
-    return this.loginService.getRole();
+  constructor(private authService: AuthService) { }
+
+  getRole() {
+    return this.authService.getRole();
   }
 
   openManageUsers() {

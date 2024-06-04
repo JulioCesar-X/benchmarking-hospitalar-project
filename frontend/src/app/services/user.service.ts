@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders  } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
-import { LoginService } from '../login.service';
+import { AuthService } from '../auth.service';
 
 
 interface Data {
@@ -27,13 +27,13 @@ export class UserService {
     private http: HttpClient,
     private cookieService: CookieService,
     private router: Router,
-    private loginService: LoginService
+    private AuthService: AuthService
   ) {
     this.updateApiUrl();
   }
 
   private updateApiUrl(): void {
-    const role = this.loginService.getRole().toLowerCase();
+    const role = this.AuthService.getRole().toLowerCase();
     if (role === 'admin') {
       // this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/admin/users';
       this.apiUrl = 'http://localhost:8001/admin/users'; //para testar localmente
