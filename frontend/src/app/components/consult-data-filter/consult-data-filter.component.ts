@@ -19,10 +19,10 @@ export class ConsultDataFilterComponent {
   @Output() filterData = new EventEmitter<{ outgoingFilter: Filter }>();
 
   ngOnInit(): void {
-    this.filterResults();
+    this.emitFilter();
   }
 
-  filterResults(){
+  emitFilter(){
     console.log(`Indicator: ${this.filter.indicator}; Month: ${this.filter.month}; Year: ${this.filter.year}`);
     this.filterData.emit({ outgoingFilter: this.filter });
   }
