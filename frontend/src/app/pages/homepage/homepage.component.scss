@@ -107,7 +107,7 @@ main {
   position: absolute;
   top: 50%;
   left: 43%;
-  transform: translate(0, 30%);
+  transform: translate(30%, 30%);
 }
 
 .el {
@@ -115,7 +115,7 @@ main {
   height: 50px;
   background-color: $main-dark-blue;
   border-radius: 50%;
-  margin: 10px;
+  margin: 20px;
 }
 
 // .line-drawing-demo .text path {

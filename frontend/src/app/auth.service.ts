@@ -14,7 +14,8 @@ import { AuthInterceptor } from './auth.interceptor';
 export class AuthService {
   // private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/';
   private apiUrl = 'http://localhost:8001'; //para testar localmente
-  private role_response!: string;
+  // private role_response!: string;
+
 
   constructor(private http: HttpClient, private cookieService: CookieService,private router: Router) { }
 
@@ -26,7 +27,8 @@ export class AuthService {
     ).pipe(
       map((response: any) => {
         this.cookieService.set('access_token', response.access_token, { expires: 1 / 24 });  // Define token para expirar em 1 hora
-        this.role_response = response.role;
+        // this.role_response = response.role;
+        this.cookieService.set('role', response.role, { expires: 1 / 24 });
         return response;
       }),
       catchError(error => {
@@ -59,13 +61,15 @@ export class AuthService {
   }
 
   getRole(): string{
-    let role = this.role_response;
-    if (role == null || role == undefined) {
-      console.log('Role not found');
-    }else{
-      console.log('Role found:', role);
-    }
-    return this.role_response.toLowerCase();
+
+    return this.cookieService.get('role').toLowerCase();
+  //   let role = this.role_response;
+  //   if (role == null || role == undefined) {
+  //     console.log('Role not found');
+  //   }else{
+  //     console.log('Role found:', role);
+  //   }
+  //   return this.role_response.toLowerCase();
   }
   // Novo método para solicitar o código de reset
   forgotPassword(email: string): Observable<any> {

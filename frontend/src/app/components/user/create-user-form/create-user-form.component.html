@@ -1,29 +1,26 @@
-
 <!-- <div *ngIf="isVisible">
     <h2>safasdas</h2>
     <app-create-field-modal></app-create-field-modal>
 </div> -->
-<app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()">
+<!--<app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()">
 
-</app-create-field-modal>
+</app-create-field-modal>-->
 
 
-<form action="">
+<!--<form action="">
     <div class="forms-container" >
         <h2 class="title">Criar User</h2>
-<!--         <button class="forms-Button" (click)="openModal($event)">Adicionar Campo</button> -->
-
-        
-        <div class="forms-container--inputContainer"> 
+<!--         <button class="forms-Button" (click)="openModal($event)">Adicionar Campo</button>-->
+<!--<div class="forms-container--inputContainer">
             <input type="text" class="inputContainer--input" placeholder="Name">
             <span class="errorSpanMessage"></span>
         </div>
-        <div class="forms-container--inputContainer"> 
+        <div class="forms-container--inputContainer">
             <input type="text" class="inputContainer--input" placeholder="Email">
             <span class="errorSpanMessage"></span>
-        </div>
-        <!-- Nif do user vai ser usado para criar a password inicial -->
-        <div class="forms-container--inputContainer"> 
+        </div>-->
+<!-- Nif do user vai ser usado para criar a password inicial -->
+<!--<div class="forms-container--inputContainer">
             <input type="password" class="inputContainer--input" placeholder="Nif">
             <span class="errorSpanMessage"></span>
         </div>
@@ -36,8 +33,42 @@
             </select>
         </div>
 
-        <button type="submit" class="forms-Button">Atualizar</button>
+        <button type="submit" class="forms-Button">Adicionar</button>
     </div>
-</form>
+</form>-->
 
+
+<app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal>
+<app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
+
+<form (ngSubmit)="createUser()">
+  <div class="forms-container" [class.loading]="isLoading">
+    <h2 class="title">Criar User</h2>
+    <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
+      <input type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="name" name="name" required>
+      <span class="errorSpanMessage"></span>
+    </div>
+    <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
+      <input type="email" class="inputContainer--input" placeholder="Email" [(ngModel)]="email" name="email" required>
+      <span class="errorSpanMessage"></span>
+    </div>
+    <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
+      <input type="password" class="inputContainer--input" placeholder="Password" [(ngModel)]="password" name="password" required>
+      <span class="errorSpanMessage"></span>
+    </div>
+    <div class="selectContainer" *ngIf="!isLoading || notificationType === 'error'">
+      <label for="role">Role:</label>
+      <select id="role" [(ngModel)]="role_id" name="role_id" required>
+        <option [value]="3">User</option>
+        <option [value]="2">Coordenador</option>
+        <option [value]="1">Admin</option>
+      </select>
+    </div>
+    <button type="submit" class="forms-Button" *ngIf="!isLoading">Adicionar</button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-circle">
+    <div class="spinner"></div>
+  </div>
+</form>
 

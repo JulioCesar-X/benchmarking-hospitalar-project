@@ -17,10 +17,8 @@ import { authGuard } from './guards/auth.guard'
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
   { path: 'login', component: LoginPageComponent },
-
   { path: 'resetPassword', component: ResetPasswordPageComponent },
   { path: 'description/:serviceId', component: DescriptionServicePageComponent },
-
   { path: 'consultUsers', component: ConsultUsersPageComponent, canActivate: [authGuard] },
   { path: 'createUser', component: CreateUserPageComponent, canActivate: [authGuard] },
   { path: 'updateIndicators', component: UpdateIndicatorsPageComponent, canActivate: [authGuard] },

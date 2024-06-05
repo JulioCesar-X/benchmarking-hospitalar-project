@@ -82,4 +82,14 @@ export class UserService {
       })
     );
   }
+
+  //Criar user
+  createUser(data: Data): Observable<any> {
+    return this.http.post(this.apiUrl, data, { headers: this.getAuthHeaders(), withCredentials: true }).pipe(
+    catchError(error => {
+      console.error('Failed to create user:', error);
+      return throwError(() => error);
+    })
+  );
+}
 }
