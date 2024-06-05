@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class IndicatorService {
+  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com';
+  // private apiUrl = 'http://localhost:8001';
 
 
 
@@ -29,7 +31,7 @@ export class IndicatorService {
   }
 
   getIndicators(): Observable<any[]> {
-    return this.http.get<any[]>('https://benchmarking-hospitalar-project.onrender.com/indicators',
+    return this.http.get<any[]>(`${this.apiUrl}/indicators`,
     { headers: this.getAuthHeaders(), withCredentials: true }
     )
       .pipe(

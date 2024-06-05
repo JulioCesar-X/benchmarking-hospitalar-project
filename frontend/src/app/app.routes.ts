@@ -20,10 +20,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'resetPassword', component: ResetPasswordPageComponent },
   { path: 'description/:serviceId', component: DescriptionServicePageComponent },
-
   { path: 'consultData', component: ConsultDataPageComponent },
-
-  { path: 'consultUsers', component: ConsultUsersPageComponent, canActivate: [authGuard] },
   { path: 'consultUsers', component: ConsultUsersPageComponent, canActivate: [authGuard] },
   { path: 'createUser', component: CreateUserPageComponent, canActivate: [authGuard] },
   { path: 'updateIndicators', component: UpdateIndicatorsPageComponent, canActivate: [authGuard] },
