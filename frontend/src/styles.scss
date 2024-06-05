@@ -1,9 +1,11 @@
+@import './styles/_variables.scss';
 /* You can add global styles to this file, and also import other style files */
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f0f0f0a0;
+  background-color: $fill-white;
+
 }
 
 /* Estiliza a barra de rolagem de todo o documento */
@@ -16,7 +18,8 @@ body {
 
 /* Estiliza a trilha da scrollbar (parte por trás da barra de rolagem) */
 ::-webkit-scrollbar-track {
-  background: #f0f0f0a0;
+background: $secondary-blue;
+/*   background: #f0f0f0a0; */
   /* Cor de fundo da trilha */
   border-radius: 10px;
   /* Borda arredondada */
@@ -24,7 +27,8 @@ body {
 
 /* Estiliza a alça da scrollbar (a parte móvel da scrollbar) */
 ::-webkit-scrollbar-thumb {
-  background: #528cad;
+background: $main-dark-blue;
+/*   background: #528cad; */
   /* Cor de fundo da alça */
   border-radius: 10px;
   /* Borda arredondada */

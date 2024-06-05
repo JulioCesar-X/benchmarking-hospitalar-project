@@ -21,7 +21,6 @@ return [
 
     'allowed_origins' => [
         'https://main--hospital-metrics-analisys.netlify.app',
-        'http://localhost:4200'
     ],
 
     'allowed_origins_patterns' => [],

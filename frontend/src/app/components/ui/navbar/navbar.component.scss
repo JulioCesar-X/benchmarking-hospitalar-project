@@ -21,7 +21,6 @@
   max-height: 99px;
   overflow: hidden;
   min-width: 780px;
-
 }
 
 /* i can make the logocontainer occupy space where i want with position absolute */
@@ -41,25 +40,27 @@
   margin-right: 1em;
 }
 
-.triangle {
+/* .triangle {
   width: 0;
   height: 0;
   margin-left: -12.5em;
   border-left: 100px solid transparent;
   border-right: 100px solid $main-blue;
-  /* Adjust color as needed */
   border-top: 100px solid transparent;
-}
+} */
 
 .navbarLinksContainer {
+  box-sizing: border-box;
   padding-right: 1em;
+  padding-left: 6em;
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 1em;
-  width: 50%;
+  width: 60%;
   background-color: $main-blue;
   color: $fill-white;
+  clip-path: polygon(0 100%, 10% 0, 100% 0, 100% 100%);
 }
 
 .navBarLink {

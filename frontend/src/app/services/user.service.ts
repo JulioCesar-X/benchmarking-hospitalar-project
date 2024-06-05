@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders  } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 
 interface Data {
@@ -25,13 +26,14 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private cookieService: CookieService,
-    private router: Router
+    private router: Router,
+    private AuthService: AuthService
   ) {
     this.updateApiUrl();
   }
 
   private updateApiUrl(): void {
-    const role = this.cookieService.get('role').toLowerCase();
+    const role = this.AuthService.getRole().toLowerCase();
     if (role === 'admin') {
       this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/admin/users';
       // this.apiUrl = 'http://localhost:8001/admin/users'; //para testar localmente
@@ -80,4 +82,14 @@ export class UserService {
       })
     );
   }
+
+  //Criar user
+  createUser(data: Data): Observable<any> {
+    return this.http.post(this.apiUrl, data, { headers: this.getAuthHeaders(), withCredentials: true }).pipe(
+    catchError(error => {
+      console.error('Failed to create user:', error);
+      return throwError(() => error);
+    })
+  );
+}
 }

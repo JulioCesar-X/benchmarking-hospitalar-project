@@ -183,7 +183,6 @@ return [
         Modules\Indicator\Providers\RouteServiceProvider::class,
         Modules\Record\Providers\RouteServiceProvider::class,
         Modules\Service\Providers\RouteServiceProvider::class,
-        Modules\ServiceActivityIndicator\Providers\RouteServiceProvider::class,
         Modules\User\Providers\UserServiceProvider::class,
         Modules\Notification\Providers\NotificationServiceProvider::class,
         Modules\Activity\Providers\ActivityServiceProvider::class,
@@ -192,6 +191,7 @@ return [
         Modules\Record\Providers\RecordServiceProvider::class,
         Modules\Role\Providers\RoleServiceProvider::class,
         Modules\Service\Providers\ServiceServiceProvider::class,
+        Modules\ServiceActivityIndicator\Providers\RouteServiceProvider::class,
         Modules\ServiceActivityIndicator\Providers\ServiceActivityIndicatorServiceProvider::class,
     ],
 

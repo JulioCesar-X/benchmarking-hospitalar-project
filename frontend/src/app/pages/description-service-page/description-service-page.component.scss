@@ -1,6 +1,6 @@
 @import '../../../styles/_variables.scss';
 
-.descriptionBox{
+.descriptionBox {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -12,13 +12,12 @@
     background-color: $main-blue;
     color: $fill-white;
     width: 50%;
-    max-width: 500px;
     margin: 0 auto;
     margin-block: 12em;
     border-radius: 1em;
 }
 
-.container{
+.container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -26,4 +25,33 @@
 
 main {
     flex: 1;
+}
+
+
+// Add para o load
+.loading-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -88%);
+    z-index: 1000;
+}
+
+.spinner {
+    border: 16px solid #f3f3f3; // Light grey
+    border-top: 16px solid #3498db; // Blue
+    border-radius: 50%;
+    width: 110px;
+    height: 110px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

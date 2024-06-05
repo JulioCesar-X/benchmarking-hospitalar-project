@@ -1,0 +1,22 @@
+
+
+
+<div class="container">
+    <app-navbar></app-navbar>
+
+    <main>
+        <app-consult-data-filter (filterData)="handleFilterData($event)"></app-consult-data-filter>
+
+        <div class="graphicsContainer">
+            <div>
+                <app-data-graphic [data]="homologData" [homologueYear]="homologueYear"></app-data-graphic>
+            </div>
+            <div>
+                <app-data-graphic [data]="data" [homologueYear]="year"></app-data-graphic>
+            </div>
+        </div>
+    </main>
+    
+<!--     <app-footer></app-footer> -->
+</div>
+
