@@ -1,11 +1,9 @@
+<h2 class="chartTitle"> Year: {{homologueYear}}</h2>
 <div class="chart">
-    <div *ngFor="let element of data" class="column">
-<!--       <div class="valueBox hide">
-        <p>${{element.amount}}</p>
-      </div> -->
-      <div class="loading-bar"[style.height.px]="element.amount * 2" (click)="togglePriceBox($event)">
+    <div *ngFor="let element of dataHTML" class="column">
+      <div class="loading-bar" [style.height.px]="element.value">
       </div>
-      <p>{{element.day}}</p>
+      <p>{{element.month}}</p>
     </div>
   </div>
   

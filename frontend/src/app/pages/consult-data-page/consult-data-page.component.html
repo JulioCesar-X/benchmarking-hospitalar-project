@@ -7,13 +7,16 @@
     <main>
         <app-consult-data-filter (filterData)="handleFilterData($event)"></app-consult-data-filter>
 
-
         <div class="graphicsContainer">
-            <app-data-graphic [data]="data"></app-data-graphic>
-            <app-data-graphic [data]="data"></app-data-graphic>
+            <div>
+                <app-data-graphic [data]="homologData" [homologueYear]="homologueYear"></app-data-graphic>
+            </div>
+            <div>
+                <app-data-graphic [data]="data" [homologueYear]="year"></app-data-graphic>
+            </div>
         </div>
     </main>
     
-    <app-footer></app-footer>
+<!--     <app-footer></app-footer> -->
 </div>
 

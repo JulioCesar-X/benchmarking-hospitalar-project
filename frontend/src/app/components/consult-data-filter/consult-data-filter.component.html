@@ -1,20 +1,37 @@
 <section class="forms-container">
     <div class="forms-container--inputContainer">
-        <div class="selectContainer">
-            <label for="">Indicator:</label>
-            <select [(ngModel)]="filter.indicator" name="" id="">
-                <option value="">Receive options</option>
-            </select>
+        <div class="special">
+            <div class="selectContainer">
+                <label for="">Indicator:</label>
+                <select [(ngModel)]="filter.indicator" id="indicator" name="indicator">
+                    <option *ngFor="let indicator of indicatorsList; ; let i = index; trackBy: trackByIndex" [value]="indicator.indicator_name">
+                        {{ indicator.indicator_name }}
+                    </option>
+                    <option *ngIf="indicatorsList.length === 0" disabled>No indicators available</option>
+                </select>
+            </div>
+            <div class="selectContainer">
+                <label for="">Atividade:</label>
+                <select [(ngModel)]="filter.activity" id="indicator" name="indicator">
+                    <option *ngFor="let activity of activitiesList; ; let i = index; trackBy: trackByIndex" [value]="activity.actitivity_name">
+                        {{ activity.actitivity_name }}
+                    </option>
+                    <option *ngIf="indicatorsList.length === 0" disabled>No indicators available</option>
+                </select>
+            </div>
         </div>
 
-        <div>
-            <label>Mês: </label>
-            <input [(ngModel)]="filter.month" type="number" id="year" name="year" min="1" max="12" step="1" class="inputContainer--input">
+        <div class="special">
+            <div>
+                <label>Mês: </label>
+                <input [(ngModel)]="filter.month" type="number" id="year" name="year" min="1" max="12" step="1" class="inputContainer--input">
+            </div>
+            <div>
+                <label>Ano: </label>
+                <input [(ngModel)]="filter.year"  type="number" id="year" name="year" min="1900" max="2200" step="1" class="inputContainer--input">
+            </div>
         </div>
-        <div>
-            <label>Ano: </label>
-            <input [(ngModel)]="filter.year"  type="number" id="year" name="year" min="1900" max="2200" step="1" class="inputContainer--input">
-        </div>
+
 
         <button (click)="emitFilter()" class="forms-Button">Procurar</button>
     </div>

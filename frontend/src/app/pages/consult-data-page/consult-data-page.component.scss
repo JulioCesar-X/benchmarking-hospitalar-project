@@ -35,8 +35,11 @@
     border: none;
     width: 90%;
     display: flex;
-    padding: 2em;
+    padding: 1em;
     justify-content: space-around;
+    div{
+        width: 45%;
+    }
 }
 
 main {

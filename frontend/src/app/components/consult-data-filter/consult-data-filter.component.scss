@@ -1,7 +1,12 @@
 @import '../../../styles/_variables.scss';
 @import '../../../styles/_mixins.scss';
 
+.special{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
 
+}
 .forms-container{
     @include forms-container();
 
@@ -17,7 +22,7 @@
 
     div{
         display: flex;
-        align-items: center;
+        align-items: flex-start;
     }
 }
 
@@ -29,6 +34,7 @@
     @include forms-Button();
     margin-left: auto;
     margin-top: 0;
+    width: 15%;
 }
 
 
