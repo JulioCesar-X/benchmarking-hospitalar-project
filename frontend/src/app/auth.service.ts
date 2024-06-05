@@ -12,7 +12,7 @@ import { AuthInterceptor } from './auth.interceptor';
 })
 
 export class AuthService {
-  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/';
+  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com';
   // private apiUrl = 'http://localhost:8001'; //para testar localmente
   // private role_response!: string;
 
