@@ -1,15 +1,16 @@
-// import { TestBed } from '@angular/core/testing';
-// // import { IndicatorService } from '../indicator.service';
+import { TestBed } from '@angular/core/testing';
 
-// describe('IndicatorService', () => {
-//   let service: IndicatorService;
+import { IndicatorService } from '../indicator.service';
 
-//   beforeEach(() => {
-//     TestBed.configureTestingModule({});
-//     service = TestBed.inject(IndicatorService);
-//   });
+describe('IndicatorService', () => {
+  let service: IndicatorService;
 
-//   it('should be created', () => {
-//     expect(service).toBeTruthy();
-//   });
-// });
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(IndicatorService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
