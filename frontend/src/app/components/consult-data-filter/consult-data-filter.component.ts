@@ -2,7 +2,7 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgModel } from '@angular/forms';
 import { Filter } from '../../models/accumulatedDataFilter.model'
-import { Indicator } from '../../models/Indicator.model'
+import { Indicator } from '../../models/indicator.model'
 import { Activity } from '../../models/activity.model'
 import { ActivityService } from '../../services/activity.service'
 import { IndicatorService} from '../../services/indicator.service'

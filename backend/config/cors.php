@@ -20,7 +20,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'https://main--hospital-metrics-analisys.netlify.app',
+        env('APP_URL_FRONT', 'https://main--hospital-metrics-analisys.netlify.app')
     ],
 
     'allowed_origins_patterns' => [],
