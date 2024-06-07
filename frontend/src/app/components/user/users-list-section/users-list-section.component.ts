@@ -81,12 +81,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserService } from '../../../services/user.service';
-
-interface User {
-  id: number;
-  name: string;
-  roles: { role_name: string }[];
-}
+import { User } from '../../../models/user.model';
 
 @Component({
   selector: 'app-users-list-section',
@@ -98,36 +93,33 @@ interface User {
 
 export class UsersListSectionComponent implements OnInit, OnChanges {
   allUsers: any[] = [];
+  displayedUsers: any[] = [];  // Usuários para mostrar na página atual
   isLoading: boolean = false;
-  @Input() searchTerm: string = '';
   totalUsers: number = 0;
   pageSize: number = 10;
   currentPage: number = 0;
 
-  constructor(private userService: UserService) {}
+  @Input() searchTerm: string = '';
+  constructor(private userService: UserService) { }
 
 
   ngOnInit(): void {
     this.loadUsers();
   }
-//sempre que search term mudar corre tudo de novo/requestá API
+  //sempre que search term mudar corre tudo de novo/requestá API
   ngOnChanges(changes: SimpleChanges): void {
     this.loadUsers();
   }
 
   loadUsers(): void {
     this.isLoading = true;
-    this.userService.getAllUsers({ search: this.searchTerm, page: this.currentPage, pageSize: this.pageSize }).subscribe({
-      next: (data) => {
-        if (data && Array.isArray(data.users)) {
-          this.allUsers = data.users.map((user: User) => ({
-            id: user.id,
-            name: user.name,
-            role: user.roles && user.roles[0] ? user.roles[0].role_name : 'No role'
-          }));
-          this.totalUsers = data.totalUsers;
+    this.userService.getAllUsers(this.currentPage + 1, this.pageSize).subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          this.displayedUsers = response.data;
+          this.totalUsers = response.total;
         } else {
-          console.warn('Data is not an array:', data);
+          console.warn('Nenhum usuário foi carregado ou a resposta está mal formatada', response);
         }
         this.isLoading = false;
       },
@@ -147,7 +139,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
   onPageChange(event: PageEvent): void {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadUsers();
+    this.loadUsers();  // Carrega os usuários com a página e tamanho de página atualizados
   }
 
   editUser(id: number): void {
@@ -177,4 +169,15 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
   trackByIndex(index: number, item: any): any {
     return item.id;
   }
+
+  updateDisplayedUsers(): void {
+    if (this.allUsers) {
+      const start = this.currentPage * this.pageSize;
+      const end = start + this.pageSize;
+      this.displayedUsers = this.allUsers.slice(start, end);
+    } else {
+      console.warn('Tentativa de atualizar usuários exibidos, mas allUsers é undefined.');
+    }
+  }
+
 }

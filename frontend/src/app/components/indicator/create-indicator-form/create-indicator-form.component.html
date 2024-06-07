@@ -1,4 +1,3 @@
-
 <!-- <div *ngIf="isVisible">
     <h2>safasdas</h2>
     <app-create-field-modal></app-create-field-modal>
@@ -15,25 +14,25 @@
 
     <div class="forms-container--inputContainer">
       <label for="name">Nome:</label>
-      <input id="name" type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="indicator.name"
+      <input id="name" type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="indicator.indicator_name"
         name="indicatorName">
       <span class="errorSpanMessage"></span>
     </div>
     <div class="selectContainer">
       <label for="service">Serviço:</label>
-      <select id="service" [(ngModel)]="sai.service_id" name="serviceId">
+      <select id="service" [(ngModel)]="indicator.service_id" name="serviceId">
         <option *ngFor="let service of services" [value]="service.id">{{service.service_name}}</option>
       </select>
     </div>
     <div class="selectContainer">
       <label for="activity">Atividade:</label>
-      <select id="activity" [(ngModel)]="sai.activity_id" name="activityId">
+      <select id="activity" [(ngModel)]="indicator.activity_id" name="activityId">
         <option *ngFor="let activity of activities" [value]="activity.id">{{activity.activity_name}}</option>
       </select>
     </div>
     <div class="selectContainer">
       <label for="type">Tipo:</label>
-      <select id="type" [(ngModel)]="sai.type" name="typeId">
+      <select id="type" [(ngModel)]="indicator.type" name="typeId">
         <option value="produção">Produção</option>
         <option value="desempenho">Desempenho</option>
         <option value="financeiro">Financeiro</option>
@@ -42,11 +41,10 @@
     <div class="forms-container--inputContainer">
       <label for="meta">Meta:</label>
       <input id="meta" type="text" class="inputContainer--input" placeholder="Meta anual"
-        [(ngModel)]="goal.target_value" name="goalValue">
+        [(ngModel)]="indicator.target_value" name="goalValue">
       <span class="errorSpanMessage"></span>
     </div>
 
     <button type="submit" class="forms-Button">Atualizar</button>
   </div>
 </form>
-

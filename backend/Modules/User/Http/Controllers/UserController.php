@@ -17,10 +17,12 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $users = User::with(['roles', 'sentNotifications', 'receivedNotifications'])->get();
+            $perPage = $request->input('pageSize', 10);  // Pega o pageSize da requisição ou usa 10 como padrão
+            $users = User::with(['roles', 'sentNotifications', 'receivedNotifications'])
+            ->paginate($perPage);
             return response()->json($users, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);

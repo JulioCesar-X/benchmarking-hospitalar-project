@@ -2,12 +2,12 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgModel } from '@angular/forms';
 import { Filter } from '../../models/accumulatedDataFilter.model'
-import { Indicator } from '../../models/indicator.model'
 import { Activity } from '../../models/activity.model'
 import { ActivityService } from '../../services/activity.service'
 import { IndicatorService } from '../../services/indicator.service'
 import { ServiceService } from '../../services/service.service'
 import { Service } from '../../models/service.model'
+import { Indicator } from '../../models/indicator.model'
 
 
 
@@ -55,12 +55,9 @@ export class ConsultDataFilterComponent {
   }
 
   emitFilter(){
-
-
     console.log("FILTRO EMITIDO:", this.filter);
     this.filterData.emit(this.filter);
   }
-
 
   getIndicators(){
     this.indicatorService.getIndicators().subscribe({

@@ -3,13 +3,7 @@ import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http'
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
-
-interface Data {
-  name: string;
-  email: string;
-  password: string;
-  role_id: number;
-}
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -33,30 +27,29 @@ export class UserService {
     }
   }
 
-  getAllUsers(params?: { search?: string, page?: number, pageSize?: number }): Observable<any> {
-    let httpParams = new HttpParams();
-    if (params) {
-      if (params.search) {
-        httpParams = httpParams.set('search', params.search);
-      }
-      if (params.page) {
-        httpParams = httpParams.set('page', params.page);
-      }
-      if (params.pageSize) {
-        httpParams = httpParams.set('pageSize', params.pageSize);
-      }
-    }
+  searchUsers(searchTerm: string, page: number = 1, pageSize: number = 10): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString())
+      .set('search', searchTerm);  // Assuming 'search' is the query parameter expected by the backend
 
-    return this.http.get<{ users: any[], totalUsers: number }>(this.apiUrl, { params: httpParams, withCredentials: true })
+    return this.http.get(`${this.apiUrl}/search`, { params: params, withCredentials: true })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  getAllUsers(page: number = 1, pageSize: number = 10): Observable<any> {
+    return this.http.get(`${this.apiUrl}?page=${page}&pageSize=${pageSize}`, { withCredentials: true })
       .pipe(catchError(this.handleError));
   }
 
-  createUser(data: Data): Observable<any> {
+  createUser(data: User): Observable<any> {
     return this.http.post(this.apiUrl, data, { withCredentials: true })
       .pipe(catchError(this.handleError));
   }
 
-  editUser(id: number, data: Data): Observable<any> {
+  editUser(id: number, data: User): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, data, { withCredentials: true })
       .pipe(catchError(this.handleError));
   }

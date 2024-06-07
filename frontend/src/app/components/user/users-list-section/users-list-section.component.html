@@ -1,43 +1,3 @@
-<!-- <section class="forms-container">
-
-    <div class="selectOptionContainer">
-
-        <div class="selectOptionContainer--option __remove-paragraphMB">
-            <p>Nome</p>
-            <p>Role</p>
-            <p>Opções</p>
-        </div> -->
-
-<!--         <div class="selectOptionContainer--option">
-            <p>example</p>
-            <p>admin</p>
-            <div>
-                <img src="../../../assets/images/pencil-96.png" class="icon" alt="" (click)="removeUser(1)">
-                <img src="../../../assets/images/trash-96.png" class="icon" alt="" (click)="removeUser(1)">
-            </div>
-        </div> -->
-
-
-<!-- <div *ngFor="let option of options; let i = index; trackBy: trackByIndex" class="selectOptionContainer--option">
-            <p>{{ option.name }}</p>
-            <p>{{ option.role }}</p>
-            <div>
-                <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="editUser(option.id)">
-                <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete"
-                    (click)="removeUser(option.id)">
-            </div>
-        </div>
-    </div> -->
-
-<!-- paginator
-    <mat-paginator [length]="totalUsers" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]"
-        (page)="onPageChange($event)">
-    </mat-paginator> -->
-
-<!--</section> -->
-
-
-<!-- users-list-section.component.html -->
 <section class="forms-container">
   <div class="loading-circle" *ngIf="isLoading">
     <div class="spinner"></div>
@@ -49,12 +9,13 @@
       <p>Opções</p>
     </div>
 
-    <div *ngFor="let option of options; let i = index; trackBy: trackByIndex" class="selectOptionContainer--option">
-      <p>{{ option.name }}</p>
-      <p>{{ option.role }}</p>
+    <div *ngFor="let user of displayedUsers; let i = index; trackBy: trackByIndex"
+      class="selectOptionContainer--option">
+      <p>{{ user.name }}</p>
+      <p>{{ user.roles[0]?.role_name }}</p>
       <div>
-        <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="editUser(option.id)">
-        <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="removeUser(option.id)">
+        <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="editUser(user.id)">
+        <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="removeUser(user.id)">
       </div>
     </div>
   </div>
@@ -63,3 +24,33 @@
     (page)="onPageChange($event)">
   </mat-paginator>
 </section>
+
+<!-- <section class="forms-container">
+  <div class="loading-circle" *ngIf="isLoading">
+    <div class="spinner"></div>
+  </div>
+  <table class="selectOptionTable">
+    <thead>
+      <tr class="__remove-paragraphMB">
+        <th>Nome</th>
+        <th>Role</th>
+        <th>Opções</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of displayedUsers; let i = index; trackBy: trackByIndex"
+        class="selectOptionContainer--option">
+        <td>{{ user.name }}</td>
+        <td>{{ user.roles[0]?.role_name }}</td>
+        <td>
+          <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="editUser(user.id)">
+          <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="removeUser(user.id)">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <mat-paginator [length]="totalUsers" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]"
+    (page)="onPageChange($event)">
+  </mat-paginator>
+</section> -->

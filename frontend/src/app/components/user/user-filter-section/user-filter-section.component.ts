@@ -20,7 +20,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-user-filter-section',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UserFilterSectionComponent],
   templateUrl: './user-filter-section.component.html',
   styleUrls: ['./user-filter-section.component.scss']
 })

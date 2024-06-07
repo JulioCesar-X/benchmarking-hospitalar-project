@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { graphData } from '../../models/graphData.model';
 
@@ -13,9 +13,11 @@ import { graphData } from '../../models/graphData.model';
 //cenas do OnInit em principio podem ser apagadas. Ou mantidas - pode ser preciso + tarde
 export class DataGraphicComponent implements OnInit, OnChanges {
   dataHTML: Array<graphData> = [];
-
+  
   @Input({required: true}) data: Array<graphData> = [];
-  @Input() homologueYear: string | undefined;
+  @Input({required: true}) typeOfGraph: string = "";
+  @Input() homologueYear: string = "";
+  
 
   constructor() { }
 
@@ -24,29 +26,45 @@ export class DataGraphicComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.resetDataHTML();
+
     if (changes['data']) {
       this.updateDataHTML();
     }
   }
 
   updateDataHTML(): void {
+    this.dataHTML = [];
+    
+    if(this.typeOfGraph === "month"){
+      this.monthGraphPlaceholder()
+    }  else {
+      this.yearGraphPlaceholder();
+    }
 
     for (const item of this.data) {
-      const index = this.dataHTML.findIndex(obj => obj.month === this.adaptMonth(item.month));
+    
+      const index = this.typeOfGraph === "month" ? 
+        this.dataHTML.findIndex(obj => obj.month === this.adaptMonth(item.month)) :
+        this.dataHTML.findIndex(obj => obj.year === item.year);
+
+      console.log(index)
+      
 
       if (item.value > 0 && index !== -1) {
         this.dataHTML[index] = {
           month: this.adaptMonth(item.month),
           activity: item.activity,
-
+          year: item.year,
           indicator: item.indicator,
           value: item.value
         };
       }
     }
     this.dataHTML = this.normalizeData(this.dataHTML);
+
+    console.log("RECEiBED DATA:", this.data)
     console.log("NORMALIZED DATA:", this.dataHTML)
+
   }
 
   adaptMonth(month: string): string {
@@ -72,21 +90,29 @@ export class DataGraphicComponent implements OnInit, OnChanges {
     });
   }
 
-  resetDataHTML(){
+  monthGraphPlaceholder(){
     this.dataHTML = [
-      { activity: "", indicator: "", value: 0, month: "Jan" },
-      { activity: "", indicator: "", value: 0, month: "Feb" },
-      { activity: "", indicator: "", value: 0, month: "Mar" },
-      { activity: "", indicator: "", value: 0, month: "Apr" },
-      { activity: "", indicator: "", value: 0, month: "May" },
-      { activity: "", indicator: "", value: 0, month: "Jun" },
-      { activity: "", indicator: "", value: 0, month: "Jul" },
-      { activity: "", indicator: "", value: 0, month: "Aug" },
-      { activity: "", indicator: "", value: 0, month: "Sep" },
-      { activity: "", indicator: "", value: 0, month: "Oct" },
-      { activity: "", indicator: "", value: 0, month: "Nov" },
-      { activity: "", indicator: "", value: 0, month: "Dec" }
+      { activity: "", indicator: "", value: 0, month: "Jan", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Feb", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Mar", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Apr", year: "" },
+      { activity: "", indicator: "", value: 0, month: "May", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Jun", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Jul", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Aug", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Sep", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Oct", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Nov", year: "" },
+      { activity: "", indicator: "", value: 0, month: "Dec", year: "" }
     ]
   }
 
+  yearGraphPlaceholder(){
+    //placeholder para 5 anos
+    const year = parseInt(this.homologueYear);
+
+    for (let i = 0; i < 5; i++) {
+      this.dataHTML.push({ activity: "", indicator: "", value: 0, month: "", year: (year - i).toString() });
+    }
+  }
 }
