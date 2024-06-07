@@ -37,6 +37,7 @@ class IndicatorController extends Controller
     {
         try {
             $indicator = Indicator::create($request->all());
+            
             return response()->json($indicator, 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);

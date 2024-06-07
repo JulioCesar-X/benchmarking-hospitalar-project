@@ -8,42 +8,45 @@
 </app-create-field-modal>
 
 
-<form action="">
-    <div class="forms-container" >
-        <h2 class="title">Criar indicador</h2>
-        <button class="forms-Button" (click)="openModal($event)">Adicionar Campo</button>
+<form (submit)="onSubmit()">
+  <div class="forms-container">
+    <h2 class="title">Criar indicador</h2>
+    <button type="button" class="forms-Button" (click)="openModal($event)">Adicionar Campo</button>
 
-        <div class="forms-container--inputContainer"> 
-            <label for="">Nome:</label>
-            <input type="text" class="inputContainer--input" placeholder="Name">
-            <span class="errorSpanMessage"></span>
-        </div>
-        <div class="selectContainer">
-            <label for="">Serviço:</label>
-            <select name="" id="">
-                <option value="">Passar opções da DB</option>
-            </select>
-        </div>
-        <div class="selectContainer">
-            <label for="">Atividade:</label>
-            <select name="" id="">
-                <option value="">Passar opções da DB</option>
-            </select>
-        </div>
-        <div class="selectContainer">
-            <label for="">Tipo:</label>
-            <select name="" id="">
-                <option value="">Passar opções da DB</option>
-            </select>
-        </div>
-        <div class="forms-container--inputContainer"> 
-            <label for="">Meta:</label>
-            <input type="text" class="inputContainer--input" placeholder="Meta anual">
-            <span class="errorSpanMessage"></span>
-        </div>
-
-        <button type="submit" class="forms-Button">Atualizar</button>
+    <div class="forms-container--inputContainer">
+      <label for="name">Nome:</label>
+      <input id="name" type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="indicator.name"
+        name="indicatorName">
+      <span class="errorSpanMessage"></span>
     </div>
-</form>
+    <div class="selectContainer">
+      <label for="service">Serviço:</label>
+      <select id="service" [(ngModel)]="sai.service_id" name="serviceId">
+        <option *ngFor="let service of services" [value]="service.id">{{service.service_name}}</option>
+      </select>
+    </div>
+    <div class="selectContainer">
+      <label for="activity">Atividade:</label>
+      <select id="activity" [(ngModel)]="sai.activity_id" name="activityId">
+        <option *ngFor="let activity of activities" [value]="activity.id">{{activity.activity_name}}</option>
+      </select>
+    </div>
+    <div class="selectContainer">
+      <label for="type">Tipo:</label>
+      <select id="type" [(ngModel)]="sai.type" name="typeId">
+        <option value="produção">Produção</option>
+        <option value="desempenho">Desempenho</option>
+        <option value="financeiro">Financeiro</option>
+      </select>
+    </div>
+    <div class="forms-container--inputContainer">
+      <label for="meta">Meta:</label>
+      <input id="meta" type="text" class="inputContainer--input" placeholder="Meta anual"
+        [(ngModel)]="goal.target_value" name="goalValue">
+      <span class="errorSpanMessage"></span>
+    </div>
 
+    <button type="submit" class="forms-Button">Atualizar</button>
+  </div>
+</form>
 

@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { CookieService } from 'ngx-cookie-service';
-import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
-
 
 interface Data {
   name: string;
@@ -14,82 +11,70 @@ interface Data {
   role_id: number;
 }
 
-
 @Injectable({
   providedIn: 'root',
-
 })
-
 export class UserService {
-  private apiUrl: string = ''; // Inicializa como string vazia
+  private apiUrl: string = '';
 
   constructor(
     private http: HttpClient,
-    private cookieService: CookieService,
-    private router: Router,
-    private AuthService: AuthService
+    private authService: AuthService
   ) {
     this.updateApiUrl();
   }
 
   private updateApiUrl(): void {
-    const role = this.AuthService.getRole().toLowerCase();
+    const role = this.authService.getRole().toLowerCase();
     if (role === 'admin') {
-      this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/admin/users';
-      // this.apiUrl = 'http://localhost:8001/admin/users'; //para testar localmente
-
+      this.apiUrl = 'http://localhost:8001/admin/users'; // para testar localmente
     } else if (role === 'coordenador') {
-
-      this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/coordinator/users';
-      // this.apiUrl = 'http://localhost:8001/coordinator/users'; //para testar localmente
+      this.apiUrl = 'http://localhost:8001/coordinator/users'; // para testar localmente
     }
   }
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = this.cookieService.get('access_token');
-    if (!token) {
-      this.router.navigate(['/login']);
-      throw new Error('No token found');
+  getAllUsers(params?: { search?: string, page?: number, pageSize?: number }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params) {
+      if (params.search) {
+        httpParams = httpParams.set('search', params.search);
+      }
+      if (params.page) {
+        httpParams = httpParams.set('page', params.page);
+      }
+      if (params.pageSize) {
+        httpParams = httpParams.set('pageSize', params.pageSize);
+      }
     }
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+
+    return this.http.get<{ users: any[], totalUsers: number }>(this.apiUrl, { params: httpParams, withCredentials: true })
+      .pipe(catchError(this.handleError));
   }
 
-  getAllUsers(): Observable<any> {
-    return this.http.get(this.apiUrl, { headers: this.getAuthHeaders(), withCredentials: true }).pipe(
-      catchError(error => {
-        console.error('Failed to fetch users:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  deleteUser(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders(), withCredentials: true }).pipe(
-      catchError(error => {
-        console.error('Failed to delete user:', error);
-        return throwError(() => error);
-      })
-    );
+  createUser(data: Data): Observable<any> {
+    return this.http.post(this.apiUrl, data, { withCredentials: true })
+      .pipe(catchError(this.handleError));
   }
 
   editUser(id: number, data: Data): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data, { headers: this.getAuthHeaders(), withCredentials: true }).pipe(
-      catchError(error => {
-        console.error('Failed to edit user:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.http.put(`${this.apiUrl}/${id}`, data, { withCredentials: true })
+      .pipe(catchError(this.handleError));
   }
 
-  //Criar user
-  createUser(data: Data): Observable<any> {
-    return this.http.post(this.apiUrl, data, { headers: this.getAuthHeaders(), withCredentials: true }).pipe(
-    catchError(error => {
-      console.error('Failed to create user:', error);
-      return throwError(() => error);
-    })
-  );
-}
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true })
+      .pipe(catchError(this.handleError));
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Unknown error occurred. Please try again.';
+    if (error.error instanceof ErrorEvent) {
+      console.error('Client-side error:', error.error.message);
+      errorMessage = `An error occurred: ${error.error.message}`;
+    } else {
+      console.error(`Server returned code ${error.status}, body was: ${error.error}`);
+      errorMessage = `Error returned from server: ${error.error.message}`;
+    }
+    return throwError(() => new Error(errorMessage));
+  }
 }

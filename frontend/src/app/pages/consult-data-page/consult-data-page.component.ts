@@ -3,7 +3,7 @@ import { NavbarComponent } from '../../components/ui/navbar/navbar.component';
 import { FooterComponent } from '../../components/ui/footer/footer.component';
 import { ConsultDataFilterComponent } from '../../components/consult-data-filter/consult-data-filter.component'
 import {DataGraphicComponent } from '../../components/data-graphic/data-graphic.component'
-import { HttpClientModule } from '@angular/common/http'; 
+import { HttpClientModule } from '@angular/common/http';
 import { DataService } from '../../services/data.service';
 import { AccumulatedData } from '../../models/AccumulatedData.model'
 import { Filter } from '../../models/accumulatedDataFilter.model'
@@ -33,6 +33,7 @@ export class ConsultDataPageComponent {
   filterDefault: Filter = {
     indicator: "Consultas Marcadas e não Realizadas",
     activity: "Psiquiatria Infância e Adolescência",
+    service: "Hospital Dia",
     month: "1", /* new Date().getMonth().toString(), */
     year: (new Date().getFullYear() - 1).toString()
   }
@@ -63,7 +64,7 @@ export class ConsultDataPageComponent {
 
   handleFilterData(event: Filter) {
 
-  
+
     this.data = this.filterData(event);
     this.homologData = this.filterData(this.getHomologueFilter(event))
     this.year = event.year;

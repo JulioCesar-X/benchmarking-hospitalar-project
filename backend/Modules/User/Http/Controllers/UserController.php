@@ -50,7 +50,6 @@ class UserController extends Controller
             $user = User::create($request->all());
             $user->roles()->attach($role);
 
-
             return response()->json($user->load(['roles', 'sentNotifications', 'receivedNotifications']), 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
