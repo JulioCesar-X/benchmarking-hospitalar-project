@@ -45,13 +45,14 @@ export class ConsultDataFilterComponent {
   }
 
   emitFilter(){
-
-
     console.log("FILTRO EMITIDO:", this.filter);
     this.filterData.emit(this.filter);
   }
 
 
+
+
+   
   getIndicators(){
     this.indicatorService.getIndicators().subscribe({
       next: (data) => {

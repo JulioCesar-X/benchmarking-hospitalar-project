@@ -1,4 +1,30 @@
 <section class="forms-container">
+
+
+
+
+    <div class="forms-container--inputContainer">
+        <div class="special">
+            <div class="selectContainer">
+                <label for="">Indicator:</label>
+                <select [(ngModel)]="filter.indicator" id="indicator" name="indicator">
+                    <option *ngFor="let indicator of indicatorsList; ; let i = index;" [value]="indicator.indicator_name">
+                        {{ indicator.indicator_name }}
+                    </option>
+                    <option *ngIf="indicatorsList.length === 0" disabled>No indicators available</option>
+                </select>
+            </div>
+            <div class="selectContainer">
+                <label for="">Atividade:</label>
+                <select [(ngModel)]="filter.activity" id="indicator" name="indicator">
+                    <option *ngFor="let activity of activitiesList; ; let i = index;" [value]="activity.actitivity_name">
+                        {{ activity.actitivity_name }}
+                    </option>
+                    <option *ngIf="indicatorsList.length === 0" disabled>No indicators available</option>
+                </select>
+            </div>
+        </div>
+    </div>
     <div class="forms-container--inputContainer">
         <div>
             <label>Mês: </label>

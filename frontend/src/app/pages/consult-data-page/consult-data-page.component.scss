@@ -28,6 +28,9 @@
 
     margin: auto;
 
+    display: flex;
+    flex-direction: column;
+
     box-sizing: border-box;
     border-radius: 1em;
     margin-block: 0;
@@ -37,10 +40,18 @@
     display: flex;
     padding: 1em;
     justify-content: space-around;
+}
+
+.row{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    
     div{
         width: 45%;
     }
 }
+
 
 main {
     flex: 1;

@@ -21,9 +21,7 @@ export class LoginService {
  
   login(email: string, password: string): Observable<any> {
 
-    this.cookieService.set('access_token', "23|2Btmi543Vior5WnjRjt4Mu7MOUTIBC6udzLcesRm");  // Define token para expirar em 1 hora
-    // this.role_response = response.role;
-    this.cookieService.set('role', 'admin', { expires: 1 / 24 });
+
 
     return this.http.post(
       `${this.apiUrl}/login?email=${email}&password=${password}`,

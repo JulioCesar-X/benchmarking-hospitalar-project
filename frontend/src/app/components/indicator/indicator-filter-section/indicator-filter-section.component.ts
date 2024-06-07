@@ -1,12 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
+import { Filter } from '../../../models/accumulatedDataFilter.model';
+import { CommonModule } from '@angular/common';
+import { FormsModule, NgModel } from '@angular/forms';
+import { Indicator } from '../../../models/Indicator.model'
+import { Activity } from '../../../models/activity.model'
+import { ActivityService } from '../../../services/activity.service'
+import { IndicatorService} from '../../../services/indicator.service'
 
 @Component({
   selector: 'app-indicator-filter-section',
   standalone: true,
-  imports: [],
+  imports: [CommonModule,
+    FormsModule
+  ],
   templateUrl: './indicator-filter-section.component.html',
   styleUrl: './indicator-filter-section.component.scss'
 })
 export class IndicatorFilterSectionComponent {
+  indicatorsList: Array<Indicator> = [];
+  activitiesList: Array<Activity> = [];
 
+  @Output() filterData = new EventEmitter<Filter>();
+
+  filter: Filter = {
+    indicator: "Consultas Marcadas e não Realizadas", //colocar um indicator default para mais tarde
+    activity: "Psiquiatria Infância e Adolescência",
+    month: new Date().getMonth().toString(),
+    year: new Date().getFullYear().toString()
+  }
 }
