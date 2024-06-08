@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class DataService {
 
-  // private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/indicators';
-  private apiUrl = 'http://localhost:8001/indicators'; //para testar localmente
+  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/indicators';
+  //private apiUrl = 'http://localhost:8001/indicators'; //para testar localmente
 
 
   constructor(private http: HttpClient) { }

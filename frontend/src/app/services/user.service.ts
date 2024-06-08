@@ -3,7 +3,7 @@ import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http'
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
-import { User } from '../models/user.model';
+import { User } from '../models/User.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,9 +21,11 @@ export class UserService {
   private updateApiUrl(): void {
     const role = this.authService.getRole().toLowerCase();
     if (role === 'admin') {
-      this.apiUrl = 'http://localhost:8001/admin/users'; // para testar localmente
+      // this.apiUrl = 'http://localhost:8001/admin/users'; // para testar localmente
+      this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/admin/users'; // para testar na nuvem
     } else if (role === 'coordenador') {
-      this.apiUrl = 'http://localhost:8001/coordinator/users'; // para testar localmente
+      // this.apiUrl = 'http://localhost:8001/coordinator/users'; // para testar localmente
+      this.apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/coordinator/users'; // para testar na nuvem
     }
   }
 

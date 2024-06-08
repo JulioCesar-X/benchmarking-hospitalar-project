@@ -7,6 +7,7 @@ use Modules\Indicator\Entities\Indicator;
 use Modules\Goal\Entities\Goal;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Modules\ServiceActivityIndicator\Entities\ServiceActivityIndicator;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -36,23 +37,27 @@ class IndicatorController extends Controller
     public function store(Request $request)
     {
         try {
-            $indicator = Indicator::create($request->all());
 
-            return response()->json($indicator, 201);
+            $indicator = Indicator::create($request->only(['indicator_name']));
+
+            $serviceActivityIndicator = ServiceActivityIndicator::create([
+            'service_id' => $request->input('service_id'),
+            'activity_id' => $request->input('activity_id'),
+            'indicator_id' => $indicator->id,
+            'type' => $request->input('type')
+        ]);
+            // Criar o Goal associado
+            $goal = Goal::create([
+                'service_activity_indicator_id' => $serviceActivityIndicator->id,
+                'target_value' => $request->input('target_value'),
+                'year' => $request->input('year')
+            ]);
+            return response()->json($indicator->load('serviceActivityIndicators'), 201);
+            
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
-//para sai post
 
-        // $indicator = Indicator::create($request->only(['indicator_name']));
-
-        // // Create the ServiceActivityIndicator using the indicator id and other request data
-        // $serviceActivityIndicator = ServiceActivityIndicator::create([
-        //     'service_id' => $request->input('service_id'),
-        //     'activity_id' => $request->input('activity_id'),
-        //     'indicator_id' => $indicator->id,
-        //     'type' => $request->input('type')
-        // ]);
     }
 
 

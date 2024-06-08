@@ -8,8 +8,8 @@ import { Indicator } from '../models/indicator.model';
   providedIn: 'root'
 })
 export class IndicatorService {
-  // private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com';
-  private apiUrl = 'http://localhost:8001';
+  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com';
+  //private apiUrl = 'http://localhost:8001';
 
   constructor(private http: HttpClient) { }
 

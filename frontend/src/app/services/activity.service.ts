@@ -8,8 +8,8 @@ import { Activity } from '../models/activity.model';
   providedIn: 'root'
 })
 export class ActivityService {
-  private apiUrl = 'http://localhost:8001';
-  //private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com';
+  //private apiUrl = 'http://localhost:8001';
+  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com';
 
   constructor(private http: HttpClient) { }
 
