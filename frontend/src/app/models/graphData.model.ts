@@ -3,4 +3,5 @@ export interface graphData {
     indicator: string;
     value: number;
     month: string;
+    year: string
   }

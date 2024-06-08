@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Service } from '../models/service.model';  // Certifique-se de que a interface Service esteja corretamente definida
@@ -8,39 +8,30 @@ import { Service } from '../models/service.model';  // Certifique-se de que a in
   providedIn: 'root'
 })
 export class ServiceService {
-  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/services';
-
-  //para testar localmente
-  //private apiUrl = 'http://localhost:8001/services';
+  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/services';  // URL base para serviços
+  //private apiUrl = 'http://localhost:8001/services';  // URL base para serviços
 
   constructor(private http: HttpClient) { }
 
   getServices(): Observable<Service[]> {
-    return this.http.get<Service[]>(this.apiUrl, { withCredentials: true }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.get<Service[]>(this.apiUrl, { withCredentials: true })
+      .pipe(catchError(this.handleError));
   }
 
   getServiceById(serviceId: number): Observable<Service> {
-    return this.http.get<Service>(`${this.apiUrl}/${serviceId}`, { withCredentials: true }).pipe(
-      catchError(this.handleError)
-    );
+    return this.http.get<Service>(`${this.apiUrl}/${serviceId}`, { withCredentials: true })
+      .pipe(catchError(this.handleError));
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Unknown error occurred. Please try again.';
     if (error.error instanceof ErrorEvent) {
-      // Um erro de cliente ou de rede ocorreu. Trate-o de acordo.
-      console.error('An error occurred:', error.error.message);
+      console.error('Client-side error:', error.error.message);
+      errorMessage = `An error occurred: ${error.error.message}`;
     } else {
-      // O backend retornou um código de resposta de falha.
-      // O corpo da resposta pode conter pistas sobre o que deu errado,
-      console.error(
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
+      console.error(`Server returned code ${error.status}, body was: ${error.error}`);
+      errorMessage = `Error returned from server: ${error.error?.message || error.message}`;
     }
-    // Retorna um Observable com uma mensagem de erro voltada para o usuário
-    return throwError(
-      'Something bad happened; please try again later.');
+    return throwError(() => new Error(errorMessage));
   }
-
 }

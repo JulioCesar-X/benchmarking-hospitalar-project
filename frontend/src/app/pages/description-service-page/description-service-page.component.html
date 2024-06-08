@@ -3,11 +3,13 @@
 
   <main>
     <!-- Add para o load -->
-    <div *ngIf="isLoading" class="loading-circle">
-        <div class="spinner"></div>
-    </div>
+
 
     <div class="descriptionBox">
+      <div *ngIf="isLoading" class="loading-circle">
+        <div class="spinner"></div>
+      </div>
+
       <h2>{{ service?.service_name }}</h2>
       <p>{{ service?.description }}</p>
     </div>

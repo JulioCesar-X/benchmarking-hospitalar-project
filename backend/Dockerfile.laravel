@@ -54,7 +54,6 @@ ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 
 # #Developement Dockerfile environment
-# # Use PHP 7.4 with FPM
 # FROM php:7.4-fpm
 
 # # Set working directory inside the container

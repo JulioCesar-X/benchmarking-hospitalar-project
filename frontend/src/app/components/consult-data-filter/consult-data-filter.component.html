@@ -13,19 +13,28 @@
             <div class="selectContainer">
                 <label for="">Atividade:</label>
                 <select [(ngModel)]="filter.activity" id="indicator" name="indicator">
-                    <option *ngFor="let activity of activitiesList; ; let i = index; trackBy: trackByIndex" [value]="activity.actitivity_name">
-                        {{ activity.actitivity_name }}
+                    <option *ngFor="let activity of activitiesList; ; let i = index; trackBy: trackByIndex" [value]="activity.activity_name">
+                        {{ activity.activity_name }}
                     </option>
-                    <option *ngIf="indicatorsList.length === 0" disabled>No indicators available</option>
+                    <option *ngIf="activitiesList.length === 0" disabled>No Activities available</option>
+                </select>
+            </div>
+            <div class="selectContainer">
+                <label for="">Services:</label>
+                <select [(ngModel)]="filter.service" id="service" name="service">
+                    <option *ngFor="let service of servicesList ; let i = index; trackBy: trackByIndex" [value]="service.service_name">
+                        {{ service.service_name }}
+                    </option>
+                    <option *ngIf="servicesList.length === 0" disabled>No services available</option>
                 </select>
             </div>
         </div>
 
         <div class="special">
-            <div>
+<!--             <div>
                 <label>Mês: </label>
                 <input [(ngModel)]="filter.month" type="number" id="year" name="year" min="1" max="12" step="1" class="inputContainer--input">
-            </div>
+            </div> -->
             <div>
                 <label>Ano: </label>
                 <input [(ngModel)]="filter.year"  type="number" id="year" name="year" min="1900" max="2200" step="1" class="inputContainer--input">

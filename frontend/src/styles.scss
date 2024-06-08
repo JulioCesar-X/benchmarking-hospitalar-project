@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import './styles/_variables.scss';
 /* You can add global styles to this file, and also import other style files */
 body {
@@ -39,3 +43,9 @@ background: $main-dark-blue;
 //   background: #0e0e3a;
 //   /* Cor de fundo da alça ao passar o mouse */
 // }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

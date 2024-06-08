@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users',
             'UserController'
         )->names('admin.users');
+        Route::get('search', 'UserController@search')->name('admin.users.search');
     });
 
     Route::prefix('coordinator')->middleware('role:coordinator-action')->group(function () {

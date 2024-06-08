@@ -1,8 +1,8 @@
 export interface Service {
   id: number;
-  imageUrl: string;
+  imageUrl: string | null;
   service_name: string;
-  description: string;
+  description: string | null;
 }
 
 

@@ -21,7 +21,6 @@ export class NavbarComponent {
   }
   getRole() {
     const role = this.AuthService.getRole();
-    console.log(`Role do user: ${role}`)
     return role;
   }
 
