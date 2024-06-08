@@ -1,6 +1,6 @@
 // Cores
 $main-blue: #9CCCDE;
-$main-dark-blue:#131D47;
+$main-dark-blue: #131D47;
 $secondary-blue: #D2E8ED;
 $error-red: #FE557D;
 $fill-white: #fff;
@@ -8,6 +8,7 @@ $fill-white: #fff;
 
 $primary-color: #70c6d6;
 $secondary-color: #f5f5f5;
+// $accent-color: #fff;
 $accent-color: #fff;
 $error-color: #ff6b6b;
 $text-color: #333;
@@ -32,3 +33,7 @@ $border-radius-large: 10px;
 //imagens
 $card-width: 200px;
 $card-height: 150px;
+
+//Mensagens de erro e sucess user
+$success-color: #28a745; // Cor verde para mensagens de sucesso
+$error-color: #dc3545; // Cor vermelha para mensagens de erro

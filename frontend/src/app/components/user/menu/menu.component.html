@@ -29,8 +29,10 @@
       <div class="subMenuItem">
         <a routerLink="/createIndicator" routerLinkActive="Ativo">Criar Indicador</a>
       </div>
+      <div class="subMenuItem">
+        <a routerLink="/consultData" routerLinkActive="Ativo">View Dashboards</a>
+      </div>
     </div>
-
     <div class="dashboardOption" (click)="openManageNotifications()"
       [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
       <h2>Gerir Notificações</h2>

@@ -13,10 +13,19 @@
             <div class="selectContainer">
                 <label for="">Atividade:</label>
                 <select [(ngModel)]="filter.activity" id="indicator" name="indicator">
-                    <option *ngFor="let activity of activitiesList; ; let i = index; trackBy: trackByIndex" [value]="activity.actitivity_name">
-                        {{ activity.actitivity_name }}
+                    <option *ngFor="let activity of activitiesList; ; let i = index; trackBy: trackByIndex" [value]="activity.activity_name">
+                        {{ activity.activity_name }}
                     </option>
-                    <option *ngIf="activitiesList.length === 0" disabled>No activities available</option>
+                    <option *ngIf="activitiesList.length === 0" disabled>No Activities available</option>
+                </select>
+            </div>
+            <div class="selectContainer">
+                <label for="">Services:</label>
+                <select [(ngModel)]="filter.service" id="service" name="service">
+                    <option *ngFor="let service of servicesList ; let i = index; trackBy: trackByIndex" [value]="service.service_name">
+                        {{ service.service_name }}
+                    </option>
+                    <option *ngIf="servicesList.length === 0" disabled>No services available</option>
                 </select>
             </div>
         </div>

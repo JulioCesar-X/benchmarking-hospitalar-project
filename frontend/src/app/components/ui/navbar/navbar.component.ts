@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { RouterLink} from '@angular/router';
-import { LoginService } from '../../../login.service';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../auth.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,19 +14,18 @@ import { CommonModule } from '@angular/common';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
-  constructor(private loginService: LoginService) {}
+  constructor(private AuthService: AuthService) { }
 
   isLoggedIn(): boolean {
-    return this.loginService.isLoggedIn();
+    return this.AuthService.isLoggedIn();
   }
-  getRole(){
-    const role = this.loginService.getRole();
-/*     console.log(`Role do user: ${role}`) */
+  getRole() {
+    const role = this.AuthService.getRole();
     return role;
   }
 
   logout(): void {
-    this.loginService.logout();
+    this.AuthService.logout();
   }
 
 }

@@ -3,7 +3,7 @@ import { NavbarComponent } from '../../components/ui/navbar/navbar.component';
 import { FooterComponent } from '../../components/ui/footer/footer.component';
 import { ConsultDataFilterComponent } from '../../components/consult-data-filter/consult-data-filter.component'
 import {DataGraphicComponent } from '../../components/data-graphic/data-graphic.component'
-import { HttpClientModule } from '@angular/common/http'; 
+import { HttpClientModule } from '@angular/common/http';
 import { DataService } from '../../services/data.service';
 import { AccumulatedData } from '../../models/AccumulatedData.model'
 import { Filter } from '../../models/accumulatedDataFilter.model'
@@ -36,6 +36,7 @@ export class ConsultDataPageComponent {
   filter: Filter = {
     indicator: "Consultas Marcadas e não Realizadas",
     activity: "Psiquiatria Infância e Adolescência",
+    service: "Hospital Dia",
     month: "1", /* new Date().getMonth().toString(), */
     year: (new Date().getFullYear() - 1).toString()
   }
@@ -64,11 +65,11 @@ export class ConsultDataPageComponent {
   updateAllGraphData(){
     this.data = this.filterData(this.filter, this.data, "month");
     this.homologData = this.filterData(this.getHomologueFilter(this.filter), this.homologData, "month");
-    
+
     this.yearlyData = this.getYearlyData(this.filter);
     console.log("YEAR", this.yearlyData)
 
-    
+
     this.year = this.filter.year;
     this.homologueYear = this.getHomologueFilter(this.filter).year;
     console.log("HOMOLOG FILTER", this.getHomologueFilter(this.filter));
@@ -80,7 +81,7 @@ export class ConsultDataPageComponent {
 
     // Convert the requested data to the format needed for graphing
     this.requestedData.forEach((item: any) => {
-  
+
       filteredData.push({
         activity: item.nome_da_atividade,
         indicator: item.nome_do_indicador,
@@ -97,7 +98,7 @@ export class ConsultDataPageComponent {
     //filtrar lista para grafico
     filteredData = filteredData.filter((item: graphData) => {
       let shouldInclude: boolean;
-  
+
       if (chartType === "month") {
         shouldInclude = (
           (!filter.indicator || filter.indicator === item.indicator) &&
@@ -112,7 +113,7 @@ export class ConsultDataPageComponent {
           (!filter.year || filter.year === item.year)
         );
       }
-  
+
       return shouldInclude;
     });
 
@@ -135,7 +136,7 @@ export class ConsultDataPageComponent {
 
   getYearlyData(filter: Filter): any {
     let data: Array<graphData> = [];
-    
+
     const filterYear = parseInt(filter.year);
 
     for (let i = 0; i < 5; i++) {
@@ -147,7 +148,7 @@ export class ConsultDataPageComponent {
 
       data.push(...this.filterData(filter, this.yearlyData, "year"));
     }
-    
+
     return data;
 }
 

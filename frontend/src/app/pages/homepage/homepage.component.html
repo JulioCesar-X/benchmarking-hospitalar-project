@@ -5,6 +5,7 @@
       <h1 class="headingTitle">Departamento Psiquiatria</h1>
     </div>
     <div class="homepageCardsSections">
+
       <div class="card" *ngFor="let service of uniqueServices" (click)="goToDescription(service.id)">
         <div class="cardImg">
           <img [src]="service.imageUrl" class="imgSize" alt="{{ service.service_name }}">
@@ -12,6 +13,14 @@
         <div class="cardText">
           <p>{{ service.service_name }}</p>
         </div>
+      </div>
+    </div>
+    <div *ngIf="isLoading">
+      <div class="random-demo">
+        <div class="el"></div>
+        <div class="el"></div>
+        <div class="el"></div>
+        <div class="el"></div>
       </div>
     </div>
   </main>

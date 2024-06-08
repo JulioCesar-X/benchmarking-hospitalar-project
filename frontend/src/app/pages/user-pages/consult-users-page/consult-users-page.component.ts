@@ -16,9 +16,14 @@ import { FooterComponent } from '../../../components/ui/footer/footer.component'
     UserFilterSectionComponent,
     FooterComponent
   ],
-  templateUrl: './consult-users-page.component.html',
+  templateUrl:'./consult-users-page.component.html',
   styleUrl: './consult-users-page.component.scss'
 })
-export class ConsultUsersPageComponent {
 
+export class ConsultUsersPageComponent {
+  searchFilter: string | undefined;
+
+  // handleFilterData(event: string) {
+  //   this.searchFilter = event;
+  // }
 }

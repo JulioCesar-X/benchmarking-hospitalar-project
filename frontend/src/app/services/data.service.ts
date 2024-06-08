@@ -7,15 +7,13 @@ import { Observable } from 'rxjs';
 })
 export class DataService {
 
-  private dataUrl = 'assets/TESTdata.json';
+  // private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/indicators';
+  private apiUrl = 'http://localhost:8001/indicators'; //para testar localmente
+
 
   constructor(private http: HttpClient) { }
 
-  getData(): Observable<any[]> {
-    return this.http.get<any[]>(this.dataUrl);
-  }
-
   getAccumulatedIndicatorData(): Observable<any>{
-    return this.http.get<any[]>('assets/indicatorsAccumulated.json');
+    return this.http.get<any[]>(`${this.apiUrl}/accumulated`);
   }
 }

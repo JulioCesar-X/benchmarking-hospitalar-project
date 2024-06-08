@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { NgForm, FormsModule, NgModel } from '@angular/forms';
-import { LoginService } from '../../../login.service';
+import { AuthService } from '../../../auth.service';
 import { EventEmitter, Output } from '@angular/core';
 
 @Component({
@@ -11,7 +11,7 @@ import { EventEmitter, Output } from '@angular/core';
   imports: [
     FormsModule,
     CommonModule,
-    RouterLink, 
+    RouterLink,
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'
@@ -23,18 +23,18 @@ export class LoginFormComponent {
   isLoading = false;
   errorMessage: string = '';
 
-  constructor(private loginService: LoginService, private router: Router) {}
+  constructor(private AuthService: AuthService, private router: Router) { }
 
   @Output() loginEvent = new EventEmitter<{ email: string, password: string }>();
 
   onLogin() {
     this.isLoading = true;
 
-    this.loginService.login(this.email, this.password).subscribe(
+    this.AuthService.login(this.email, this.password).subscribe(
       (response: any) => {
         this.isLoading = false;
 
-        if(response == null){
+        if (response == null) {
           console.log('Login successful' + response);
           this.errorMessage = 'Login failed!'
         } else {
@@ -57,7 +57,7 @@ export class LoginFormComponent {
 // import { Component, EventEmitter, Output } from '@angular/core';
 // import { Router } from '@angular/router';
 // import { FormsModule } from '@angular/forms';
-// import { LoginService } from '../../../login.service';
+// import { AuthService } from '../../../login.service';
 
 // @Component({
 //   selector: 'app-login-form',
@@ -72,7 +72,7 @@ export class LoginFormComponent {
 //   email: string = '';
 //   password: string = '';
 
-//   constructor(private loginService: LoginService, private router: Router) { }
+//   constructor(private AuthService: AuthService, private router: Router) { }
 
 //   onLogin() {
 //     this.loginEvent.emit({ email: this.email, password: this.password });

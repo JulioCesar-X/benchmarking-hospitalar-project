@@ -1,8 +1,4 @@
 <section class="forms-container">
-
-
-
-
     <div class="forms-container--inputContainer">
         <div class="special">
             <div class="selectContainer">
@@ -17,10 +13,10 @@
             <div class="selectContainer">
                 <label for="">Atividade:</label>
                 <select [(ngModel)]="filter.activity" id="indicator" name="indicator">
-                    <option *ngFor="let activity of activitiesList; ; let i = index;" [value]="activity.actitivity_name">
-                        {{ activity.actitivity_name }}
+                    <option *ngFor="let activity of activitiesList; let i = index;" [value]="activity.activity_name">
+                        {{ activity.activity_name }}
                     </option>
-                    <option *ngIf="indicatorsList.length === 0" disabled>No indicators available</option>
+                    <option *ngIf="activitiesList.length === 0" disabled>No activities available</option>
                 </select>
             </div>
         </div>

@@ -1,25 +1,23 @@
-import { CanActivateFn } from '@angular/router';
-import { Router } from '@angular/router';
-import { LoginService } from '../login.service';
-import { inject } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { CanActivate, Router, UrlTree } from '@angular/router';
+import { AuthService } from '../auth.service';
 
-export const authGuard: CanActivateFn = (route, state) => {
-  const loginService = inject(LoginService);
-  const router = inject(Router);
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) { }
 
-  const isLoggedIn = loginService.isLoggedIn();
-  const role = loginService.getRole()?.toLowerCase();
-
-  if (!isLoggedIn) {
-    // Redireciona diretamente para a página de login se não estiver logado
-    return router.createUrlTree(['/login']);
-  }
-  // Verifica se o usuário é um administrador
-  if (role === 'admin') {
-    // Continua para a rota protegida
+  canActivate(): boolean | UrlTree {
+    if (!this.authService.isLoggedIn()) {
+      console.warn('AuthGuard: User not logged in, redirecting to login page.');
+      return this.router.createUrlTree(['/login']);
+    }
+    const role = this.authService.getRole();
+    if (role !== 'admin') {
+      console.warn(`AuthGuard: User role (${role}) not authorized, redirecting to home page.`);
+      return this.router.createUrlTree(['/home']);
+    }
     return true;
-  } else {
-    // Redireciona para uma página padrão ou de erro se não for admin
-    return router.createUrlTree(['/home']); // Substitua isso conforme necessário
   }
-};
+}
