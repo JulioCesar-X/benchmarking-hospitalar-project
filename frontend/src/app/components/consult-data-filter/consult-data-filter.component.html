@@ -16,7 +16,7 @@
                     <option *ngFor="let activity of activitiesList; ; let i = index; trackBy: trackByIndex" [value]="activity.actitivity_name">
                         {{ activity.actitivity_name }}
                     </option>
-                    <option *ngIf="indicatorsList.length === 0" disabled>No indicators available</option>
+                    <option *ngIf="activitiesList.length === 0" disabled>No activities available</option>
                 </select>
             </div>
         </div>
