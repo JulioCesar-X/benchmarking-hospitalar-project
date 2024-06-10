@@ -10,7 +10,7 @@ class Goal extends Model
     protected $fillable = [
         'year',
         'target_value',
-        'service_activity_goal_id'
+        'service_activity_indicator_id'
     ];
 
     public function serviceActivityIndicator()
