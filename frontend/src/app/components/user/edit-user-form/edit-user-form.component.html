@@ -4,7 +4,7 @@
 
 <form (ngSubmit)="editUser()">
   <div class="forms-container" [class.loading]="isLoading">
-    <h2 class="title">Criar User</h2>
+    <h2 class="title">Editar User</h2>
     <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
       <input type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="name" name="name" required>
       <span class="errorSpanMessage"></span>
@@ -25,7 +25,7 @@
         <option [value]="1">Admin</option>
       </select>
     </div>
-    <button type="submit" class="forms-Button" *ngIf="!isLoading">Adicionar</button>
+    <button type="submit" class="forms-Button" *ngIf="!isLoading">Atualizar</button>
   </div>
 
   <div *ngIf="isLoading" class="loading-circle">

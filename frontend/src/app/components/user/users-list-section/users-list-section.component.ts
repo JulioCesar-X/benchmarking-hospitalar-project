@@ -81,7 +81,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserService } from '../../../services/user.service';
-import { User } from '../../../models/user.model';
+import { User } from '../../../models/User.model';
 import { Router, RouterLink  } from '@angular/router';
 
 @Component({
