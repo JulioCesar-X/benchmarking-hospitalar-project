@@ -1,12 +1,9 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
-import { Filter } from '../../../models/accumulatedDataFilter.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgModel } from '@angular/forms';
-import { Indicator } from '../../../models/indicator.model'
 import { Activity } from '../../../models/activity.model'
 import { ActivityService } from '../../../services/activity.service'
 import { IndicatorService } from '../../../services/indicator.service'
-import { get } from 'animejs';
 import { ServiceService } from '../../../services/service.service';
 import { Service } from '../../../models/service.model';
 
@@ -22,32 +19,23 @@ import { Service } from '../../../models/service.model';
 export class IndicatorFilterSectionComponent implements OnInit {
 
   constructor(private indicatorService: IndicatorService, private activityService: ActivityService, private serviceService: ServiceService) { }
-  indicatorsList: Array<Indicator> = [];
+  indicatorsList: Array<any> = [];
   activitiesList: Array<Activity> = [];
   servicesList: Array<Service> = [];
+  activityId!: number;
+  serviceId!: number;
+  month!: number;
+  year!: number;
+  date: Date = new Date(this.year, this.month);
 
-  @Output() filterData = new EventEmitter<Filter>();
+  @Output() indicatorsUpdated = new EventEmitter<any[]>();
 
-  filter: Filter = {
-    indicator: "Consultas Marcadas e não Realizadas",
-    activity: "Psiquiatria Infância e Adolescência",
-    service: "Hospital Dia", //add isso
-    month: new Date().getMonth().toString(),
-    year: new Date().getFullYear().toString()
-  }
+
   ngOnInit() {
-    this.getIndicators();
     this.getActivities();
     this.getServices();
   }
-  emitFilter() {
-    this.filterData.emit(this.filter);
-  }
-  getIndicators() {
-    this.indicatorService.getIndicators().subscribe(data => {
-      this.indicatorsList = data;
-    });
-  }
+
   getActivities() {
     this.activityService.getActivities().subscribe(data => {
       this.activitiesList = data;
@@ -56,6 +44,20 @@ export class IndicatorFilterSectionComponent implements OnInit {
   getServices() {
     this.serviceService.getServices().subscribe(data => {
       this.servicesList = data;
+    });
+  }
+
+
+  getIndicators(): void {
+    this.indicatorService.getAllSaiIndicators(this.serviceId, this.activityId, this.date).subscribe({
+      next: (data) => {
+        console.log('Indicators data:', data);
+        this.indicatorsList = data;
+        this.indicatorsUpdated.emit(this.indicatorsList);  // Emitindo os dados atualizados
+      },
+      error: (error) => {
+        console.error('Error fetching indicators:', error);
+      }
     });
   }
 }

@@ -13,9 +13,9 @@ import { LoginResponse } from './models/login-response.model';
 })
 
 export class AuthService {
-  
-  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com';
- // private apiUrl = 'http://localhost:8001'; //para testar localmente
+
+ //private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com';
+  private apiUrl = 'http://localhost:8001'; //para testar localmente
 
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) { }
 

@@ -81,6 +81,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserService } from '../../../services/user.service';
+import { User } from '../../../models/User.model';
 
 @Component({
   selector: 'app-users-list-section',
@@ -145,10 +146,10 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
     const user = this.allUsers.find(user => user.id === id);
     this.userService.editUser(id, user).subscribe({
       next: (data) => {
-        console.log('User data:', data);
+        console.log('Dados user:', data);
       },
       error: (error) => {
-        console.error('Error editing user:', error);
+        console.error('Error ao editar user:', error);
       }
     });
   }
@@ -157,10 +158,10 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
     this.userService.deleteUser(id).subscribe({
       next: () => {
         this.allUsers = this.allUsers.filter(user => user.id !== id);
-        alert('User removed successfully');
+        alert('User removido com successo');
       },
       error: (error) => {
-        console.error('Error removing user:', error);
+        console.error('Error ao remover user:', error);
       }
     });
   }

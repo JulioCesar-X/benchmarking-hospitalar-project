@@ -2,12 +2,12 @@
     <div class="forms-container--inputContainer">
         <div class="special">
             <div class="selectContainer">
-                <label for="">Indicator:</label>
-                <select [(ngModel)]="filter.indicator" id="indicator" name="indicator">
-                    <option *ngFor="let indicator of indicatorsList; ; let i = index;" [value]="indicator.indicator_name">
-                        {{ indicator.indicator_name }}
+                <label for="">Serviços:</label>
+                <select [(ngModel)]="filter.service" id="service" name="service">
+                    <option *ngFor="let service of servicesList ; let i = index;" [value]="service.service_name">
+                        {{ service.service_name }}
                     </option>
-                    <option *ngIf="indicatorsList.length === 0" disabled>No indicators available</option>
+                    <option *ngIf="servicesList.length === 0" disabled>No services available</option>
                 </select>
             </div>
             <div class="selectContainer">

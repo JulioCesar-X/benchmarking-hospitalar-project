@@ -25,6 +25,35 @@ class ServiceActivityIndicatorController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getIndicators(Request $request)
+    {
+        try {
+            // Obtém os parâmetros de ID do serviço e da atividade da requisição
+            $serviceId = $request->query('service_id');
+            $activityId = $request->query('activity_id');
+
+            // Filtra os indicadores com base nos IDs de serviço e atividade
+            $query = ServiceActivityIndicator::with(['service', 'indicator', 'activity']);
+
+            if ($serviceId) {
+                $query->where('service_id', $serviceId);
+            }
+
+            if ($activityId) {
+                $query->where('activity_id', $activityId);
+            }
+
+            $serviceActivityIndicators = $query->get();
+            return response()->json($serviceActivityIndicators, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
 
     /**
      * Store a newly created resource in storage.

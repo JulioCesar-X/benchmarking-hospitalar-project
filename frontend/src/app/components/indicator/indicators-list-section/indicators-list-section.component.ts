@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { IndicatorService } from '../../../services/indicator.service';
 
 interface Indicator {
   id: number;
@@ -20,12 +21,9 @@ interface Indicator {
   styleUrls: ['./indicators-list-section.component.scss']
 })
 export class IndicatorsListSectionComponent implements OnInit {
-  indicators: Indicator[] = [
-    { id: 1, name: 'Indicator 1', value: '12', month: 0, year: 0, isInserted: true },
-    { id: 2, name: 'Indicator 2', value: '', month: 0, year: 0, isInserted: false },
-  ];
+  @Input() indicators: any[] = [];
 
-  indicatorForms: { [key: number]: FormGroup } = {};
+  constructor(private indicatorService: IndicatorService) { }
 
   ngOnInit(): void {
     this.indicators.forEach(indicator => {
@@ -48,7 +46,7 @@ export class IndicatorsListSectionComponent implements OnInit {
       }
     }
 
-    // logic to update the indicator in the DB if necessary
+    console.log('Indicator atualizado', indicator);
   }
 
   onValueChange(indicator: Indicator, event: Event): void {
@@ -59,4 +57,6 @@ export class IndicatorsListSectionComponent implements OnInit {
   trackByIndex(index: number, item: any): any {
     return index;
   }
+
+
 }

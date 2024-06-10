@@ -8,8 +8,8 @@ import { Service } from '../models/service.model';  // Certifique-se de que a in
   providedIn: 'root'
 })
 export class ServiceService {
-  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/services';  // URL base para serviços
-  //private apiUrl = 'http://localhost:8001/services';  // URL base para serviços
+  // private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/services';  // URL base para serviços
+  private apiUrl = 'http://localhost:8001/services';  // URL base para serviços
 
   constructor(private http: HttpClient) { }
 
