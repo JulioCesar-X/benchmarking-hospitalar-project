@@ -4,12 +4,22 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { User } from '../models/user.model';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   private apiUrl: string = '';
+
+  //para testar para passar o user a ser editado JMS...............
+  private userDataSource = new BehaviorSubject<any>(null); // Use BehaviorSubject for initial value
+  userData$ = this.userDataSource.asObservable();
+
+  setUserData(data: any) {
+    this.userDataSource.next(data);
+  }
+  //.................................JMS
 
   constructor(
     private http: HttpClient,

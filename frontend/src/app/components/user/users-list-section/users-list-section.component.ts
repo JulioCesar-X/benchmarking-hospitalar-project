@@ -82,11 +82,12 @@ import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
+import { Router, RouterLink  } from '@angular/router';
 
 @Component({
   selector: 'app-users-list-section',
   standalone: true,
-  imports: [FormsModule, CommonModule, MatPaginatorModule],
+  imports: [FormsModule, CommonModule, MatPaginatorModule, RouterLink],
   templateUrl: './users-list-section.component.html',
   styleUrls: ['./users-list-section.component.scss']
 })
@@ -100,8 +101,8 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
   currentPage: number = 0;
 
   @Input() searchTerm: string = '';
-  constructor(private userService: UserService) { }
 
+  constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -142,8 +143,19 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
     this.loadUsers();  // Carrega os usuários com a página e tamanho de página atualizados
   }
 
-  editUser(id: number): void {
-    const user = this.allUsers.find(user => user.id === id);
+  editUser(user: any): void {
+    console.log("User to be edited:", user);
+
+    const userData = { id: user.id, name: user.name, email: user.email, password: user.password,
+      roleId: user.role_id
+     }; // Create user data object
+    this.userService.setUserData(userData);
+    this.router.navigate(['/editUser/'+ user.id]);
+
+
+    //ver se o router link funciona atraves da imagem, se sim apagar isto! Deixa
+
+/*     const user = this.allUsers.find(user => user.id === id);
     this.userService.editUser(id, user).subscribe({
       next: (data) => {
         console.log('User data:', data);
@@ -151,7 +163,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
       error: (error) => {
         console.error('Error editing user:', error);
       }
-    });
+    }); */
   }
 
   removeUser(id: number): void {
