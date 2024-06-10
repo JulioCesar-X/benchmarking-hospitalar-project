@@ -8,13 +8,14 @@ import { CreateUserPageComponent } from './pages/user-pages/create-user-page/cre
 import { UpdateIndicatorsPageComponent } from './pages/indicator-pages/update-indicators-page/update-indicators-page.component'
 import { CreateIndicatorsPageComponent } from './pages/indicator-pages/create-indicators-page/create-indicators-page.component'
 import { ConsultDataPageComponent } from './pages/consult-data-page/consult-data-page.component'
+import { UpdateGoalsPageComponent } from './pages/update-goals-page/update-goals-page.component'
 import { AuthGuard } from './guards/auth.guard'
-
 
 
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
   { path: 'login', component: LoginPageComponent },
+  { path: 'updateGoals', component: UpdateGoalsPageComponent },
   { path: 'resetPassword', component: ResetPasswordPageComponent },
   { path: 'description/:serviceId', component: DescriptionServicePageComponent },
   { path: 'consultData', component: ConsultDataPageComponent },
