@@ -16,5 +16,10 @@ import { IndicatorsListSectionComponent } from '../../../components/indicator/in
   styleUrl: './update-indicators-page.component.scss'
 })
 export class UpdateIndicatorsPageComponent {
+  currentIndicators: any[] = [];
+
+  onIndicatorsUpdated(indicators: any[]) {
+    this.currentIndicators = indicators;
+  }
 
 }

@@ -13,8 +13,6 @@ import { LoginResponse } from './models/login-response.model';
 })
 
 export class AuthService {
-  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com';
-  //private apiUrl = 'http://localhost:8001'; //para testar localmente
 
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) { }
 
@@ -31,7 +29,7 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }, { withCredentials: true })
+    return this.http.post<LoginResponse>('/login', { email, password }, { withCredentials: true })
       .pipe(
         map(response => {
           this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict' });
@@ -52,7 +50,7 @@ export class AuthService {
       this.router.navigate(['/login']);
       return;
     }
-    this.http.post(`${this.apiUrl}/logout`, {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
+    this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
       .subscribe(
         () => {
           this.cookieService.delete('access_token', '/');
@@ -72,11 +70,11 @@ export class AuthService {
   }
 
   forgotPassword(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+    return this.http.post('/forgot-password', { email });
   }
 
   resetPassword(email: string, code: string, password: string, password_confirmation: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reset-password`, { email, code, password, password_confirmation });
+    return this.http.post('/reset-password', { email, code, password, password_confirmation });
   }
 
 }
