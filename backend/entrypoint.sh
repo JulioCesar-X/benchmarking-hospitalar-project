@@ -1,7 +1,5 @@
 #!/bin/bash
-
 # Wait for the database to be ready
-
 #comente esse para o deploy
 dockerize -wait tcp://db:5432 -timeout 60s
 

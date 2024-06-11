@@ -32,9 +32,11 @@ class ServiceActivityIndicatorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function getIndicators(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'indicatorId' => 'nullable|integer',
             'serviceId' => 'nullable|integer',
             'activityId' => 'nullable|integer',
             'date' => 'nullable|date_format:Y-m-d'
@@ -45,35 +47,34 @@ class ServiceActivityIndicatorController extends Controller
         }
 
         try {
-            $serviceId = $request->query('serviceId');
-            $activityId = $request->query('activityId');
-            $date = $request->query('date') ? $request->query('date') . '%' : null; // Handle null date
+            // Convert to integers to ensure correct types are passed to the query.
+            $serviceId = $request->has('serviceId') ? (int) $request->query('serviceId') : null;
+            $activityId = $request->has('activityId') ? (int) $request->query('activityId') : null;
+            $date = $request->query('date');
 
             $query = ServiceActivityIndicator::query()
-                ->leftJoin('records', function ($join) use ($date) {
-                    $join->on('records.service_activity_indicator_id', '=', 'service_activity_indicators.id');
-                    if ($date) {
-                        $join->where('records.date', 'LIKE', $date);
-                    }
-                })
-                ->leftJoin('indicators', 'indicators.id', '=', 'service_activity_indicators.indicator_id')
+                ->join('indicators', 'indicators.id', '=', 'service_activity_indicators.indicator_id')
+                ->join('records', 'records.service_activity_indicator_id', '=', 'service_activity_indicators.id')
                 ->select([
                     'service_activity_indicators.id as sai_id',
                     'indicators.name as indicator_name',
-                    'records.value as value',
-                    'records.date as date'
+                    'records.value',
+                    'records.date'
                 ]);
 
-            if ($serviceId) {
+            if ($date) {
+                $query->whereDate('records.date', '=', $date);
+            }
+            if ($serviceId !== null) {
                 $query->where('service_activity_indicators.service_id', $serviceId);
             }
-            if ($activityId) {
+            if ($activityId !== null) {
                 $query->where('service_activity_indicators.activity_id', $activityId);
             }
 
             $indicators = $query->get();
 
-            return response()->json($indicators, 200);
+            return response()->json($indicators);
         } catch (Exception $exception) {
             Log::error("Error fetching indicators: " . $exception->getMessage());
             return response()->json(['error' => $exception->getMessage()], 500);

@@ -33,8 +33,8 @@ export class IndicatorService {
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`
     });
     const params = new HttpParams()
-      .set('serviceId', serviceId.toString())
-      .set('activityId', activityId.toString())
+      .set('serviceId', serviceId)
+      .set('activityId', activityId)
       .set('date', date.toISOString().split('T')[0]); // Garantir que a data está no formato YYYY-MM-DD
 
     return this.http.get<any[]>(`/sai/indicators`, { params: params, headers: headers, withCredentials: true })

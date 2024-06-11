@@ -48,10 +48,9 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out'], 200);
+        
 
-
-
-    //     // Remover o cookie de acesso
+    //Remover o cookie de acesso
     //     $cookie = Cookie::forget('access_token');
     //     return response()->json(['message' => 'Logged out'], 200)->withCookie($cookie);
 
