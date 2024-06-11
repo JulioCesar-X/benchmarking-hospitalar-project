@@ -8,18 +8,16 @@ import { Service } from '../models/service.model';  // Certifique-se de que a in
   providedIn: 'root'
 })
 export class ServiceService {
-  private apiUrl = 'https://benchmarking-hospitalar-project.onrender.com/services';  // URL base para serviços
-  //private apiUrl = 'http://localhost:8001/services';  // URL base para serviços
 
   constructor(private http: HttpClient) { }
 
   getServices(): Observable<Service[]> {
-    return this.http.get<Service[]>(this.apiUrl, { withCredentials: true })
+    return this.http.get<Service[]>('/services', { withCredentials: true })
       .pipe(catchError(this.handleError));
   }
 
   getServiceById(serviceId: number): Observable<Service> {
-    return this.http.get<Service>(`${this.apiUrl}/${serviceId}`, { withCredentials: true })
+    return this.http.get<Service>(`/services/${serviceId}`, { withCredentials: true })
       .pipe(catchError(this.handleError));
   }
 

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+
 
 interface Indicator {
   id: number;
@@ -15,25 +16,46 @@ interface Indicator {
 @Component({
   selector: 'app-indicators-list-section',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './indicators-list-section.component.html',
   styleUrls: ['./indicators-list-section.component.scss']
 })
-export class IndicatorsListSectionComponent implements OnInit {
-  indicators: Indicator[] = [
-    { id: 1, name: 'Indicator 1', value: '12', month: 0, year: 0, isInserted: true },
-    { id: 2, name: 'Indicator 2', value: '', month: 0, year: 0, isInserted: false },
-  ];
-
+export class IndicatorsListSectionComponent implements OnInit, OnChanges {
+  @Input() indicators: Indicator[] = [];
   indicatorForms: { [key: number]: FormGroup } = {};
 
+  constructor(private fb: FormBuilder) { }
+
   ngOnInit(): void {
+    this.buildForm();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Verifica se a propriedade 'indicators' mudou
+    if (changes['indicators']) {
+      if (changes['indicators'].currentValue !== changes['indicators'].previousValue) {
+        this.buildForm();  // Reconstrói os formulários quando os indicadores mudam
+      }
+    }
+  }
+
+  buildForm(): void {
+    this.indicatorForms = {};
     this.indicators.forEach(indicator => {
-      const formControl = new FormControl({ value: indicator.value, disabled: indicator.isInserted }, Validators.required);
-      this.indicatorForms[indicator.id] = new FormGroup({
-        indicatorValue: formControl
+      this.indicatorForms[indicator.id] = this.fb.group({
+        indicatorValue: [indicator.value || '', Validators.required]
       });
+      // Set isInserted based on whether value is present
+      indicator.isInserted = indicator.value != null;
     });
+  }
+
+  onValueChange(indicator: Indicator, event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    indicator.value = inputElement.value;
   }
 
   toggleEdit(indicator: Indicator): void {
@@ -47,16 +69,9 @@ export class IndicatorsListSectionComponent implements OnInit {
         formControl.enable();
       }
     }
-
-    // logic to update the indicator in the DB if necessary
   }
 
-  onValueChange(indicator: Indicator, event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    indicator.value = inputElement.value;
-  }
-
-  trackByIndex(index: number, item: any): any {
-    return index;
+  trackByIndex(index: number, item: any): number {
+    return item.id;
   }
 }

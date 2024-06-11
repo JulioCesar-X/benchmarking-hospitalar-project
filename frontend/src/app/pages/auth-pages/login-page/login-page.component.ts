@@ -4,7 +4,6 @@ import { NavbarComponent } from '../../../components/ui/navbar/navbar.component'
 import { LoginFormComponent } from '../../../components/auth/login-form/login-form.component';
 import { FooterComponent } from '../../../components/ui/footer/footer.component';
 
-
 @Component({
   selector: 'app-login-page',
   standalone: true,
@@ -12,7 +11,7 @@ import { FooterComponent } from '../../../components/ui/footer/footer.component'
     NavbarComponent,
     LoginFormComponent,
     FormsModule,
-    FooterComponent
+    FooterComponent,
   ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss'

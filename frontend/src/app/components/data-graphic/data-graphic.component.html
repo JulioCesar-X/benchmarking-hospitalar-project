@@ -1,5 +1,7 @@
+
 <h2 *ngIf="typeOfGraph === 'month'" class="chartTitle"> Ano: {{homologueYear}}</h2>
 <h2 *ngIf="typeOfGraph === 'year'" class="chartTitle">Ultimos 5 anos:</h2>
+
 
 <div class="chart">
     <div *ngFor="let element of dataHTML" class="column">
@@ -9,4 +11,11 @@
       <p *ngIf="typeOfGraph === 'year'">{{element.year}}</p>
     </div>
 </div>
-  
+
+
+<!-- posso usar ng-content para definir onde vai ficar renderizado o HTML recebido do pai -->
+<!-- <ng-content></ng-content> -->
+
+<!-- usar multiplos placeholders. No C.pai criar elementos c/ classes com mesmo nome do select -->
+<!-- <ng-content select=".card-title"></ng-content>
+<ng-content select=".card-body"></ng-content> -->

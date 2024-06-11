@@ -7,12 +7,13 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthInterceptor } from './app/auth.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { environment } from '../environments/env';
 
 
-// if (environment.production) {
-//   enableProdMode();
-// }
-
+if (environment.production) {
+  enableProdMode();
+}
+console.log('Environment:', environment);
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),

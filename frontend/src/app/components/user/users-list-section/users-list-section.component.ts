@@ -76,16 +76,17 @@
 
 // }
 
-import { Component, OnInit, Input, OnChanges, SimpleChanges, input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserService } from '../../../services/user.service';
+import { RouterLink, Router } from '@angular/router';
 
 @Component({
   selector: 'app-users-list-section',
   standalone: true,
-  imports: [FormsModule, CommonModule, MatPaginatorModule],
+  imports: [FormsModule, CommonModule, MatPaginatorModule, RouterLink],
   templateUrl: './users-list-section.component.html',
   styleUrls: ['./users-list-section.component.scss']
 })
@@ -99,8 +100,8 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
   currentPage: number = 0;
 
   @Input() searchTerm: string = '';
-  constructor(private userService: UserService) { }
 
+  constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -141,26 +142,37 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
     this.loadUsers();  // Carrega os usuários com a página e tamanho de página atualizados
   }
 
-  editUser(id: number): void {
-    const user = this.allUsers.find(user => user.id === id);
+  editUser(user: any): void {
+    console.log("User to be edited:", user);
+
+    const userData = { id: user.id, name: user.name, email: user.email, password: user.password,
+      roleId: user.role_id
+     }; // Create user data object
+    this.userService.setUserData(userData);
+    this.router.navigate(['/editUser/'+ user.id]);
+
+
+    //ver se o router link funciona atraves da imagem, se sim apagar isto! Deixa
+
+/*     const user = this.allUsers.find(user => user.id === id);
     this.userService.editUser(id, user).subscribe({
       next: (data) => {
-        console.log('User data:', data);
+        console.log('Dados user:', data);
       },
       error: (error) => {
-        console.error('Error editing user:', error);
+        console.error('Error ao editar user:', error);
       }
-    });
+    }); */
   }
 
   removeUser(id: number): void {
     this.userService.deleteUser(id).subscribe({
       next: () => {
         this.allUsers = this.allUsers.filter(user => user.id !== id);
-        alert('User removed successfully');
+        alert('User removido com successo');
       },
       error: (error) => {
-        console.error('Error removing user:', error);
+        console.error('Error ao remover user:', error);
       }
     });
   }
