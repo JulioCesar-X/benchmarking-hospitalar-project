@@ -1,0 +1,34 @@
+
+<app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal>
+<app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
+
+<form (ngSubmit)="editUser()">
+  <div class="forms-container" [class.loading]="isLoading">
+    <h2 class="title">Editar User</h2>
+    <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
+      <input type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="name" name="name" required>
+      <span class="errorSpanMessage"></span>
+    </div>
+    <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
+      <input type="email" class="inputContainer--input" placeholder="Email" [(ngModel)]="email" name="email" required>
+      <span class="errorSpanMessage"></span>
+    </div>
+    <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
+      <input type="password" class="inputContainer--input" placeholder="Password" [(ngModel)]="password" name="password" required>
+      <span class="errorSpanMessage"></span>
+    </div>
+    <div class="selectContainer" *ngIf="!isLoading || notificationType === 'error'">
+      <label for="role">Role:</label>
+      <select id="role" [(ngModel)]="role_id" name="role_id" required>
+        <option [value]="3">User</option>
+        <option [value]="2">Coordenador</option>
+        <option [value]="1">Admin</option>
+      </select>
+    </div>
+    <button type="submit" class="forms-Button" *ngIf="!isLoading">Atualizar</button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-circle">
+    <div class="spinner"></div>
+  </div>
+</form>

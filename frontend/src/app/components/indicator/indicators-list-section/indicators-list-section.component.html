@@ -1,24 +1,15 @@
 <section class="forms-container">
-    <div class="selectOptionContainer">
-      <h2>Gerir Indicadores</h2>
-      <h2>Month - Year</h2>
-
-      <form [formGroup]="indicatorForms[indicator.id]"
-            *ngFor="let indicator of indicators; let i = index; trackBy: trackByIndex"
-            class="selectOptionContainer--option">
-
-        <p>{{ indicator.name }}</p>
-        <input
-          class="inputContainer--input"
-          formControlName="indicatorValue"
-          [disabled]="indicator.isInserted"
-          (input)="onValueChange(indicator, $event)">
-          <button type="button"
-          [disabled]="!indicatorForms[indicator.id].valid && !indicator.isInserted"
-          class="forms-Button"
-          (click)="toggleEdit(indicator)">
-    {{ !indicator.isInserted ? 'Atualizar' : 'Editar' }}
-  </button>
-      </form>
-    </div>
-  </section>
+  <div class="selectOptionContainer">
+    <h2>Gerir Indicadores</h2>
+    <form [formGroup]="indicatorForms[indicator.id]" *ngFor="let indicator of indicators; trackBy: trackByIndex"
+      class="selectOptionContainer--option">
+      <p>{{ indicator.name }}</p>
+      <input class="inputContainer--input" formControlName="indicatorValue" [disabled]="indicator.isInserted"
+        (input)="onValueChange(indicator, $event)">
+      <button type="button" [disabled]="!indicatorForms[indicator.id].valid && !indicator.isInserted"
+        class="forms-Button" (click)="toggleEdit(indicator)">
+        {{ !indicator.isInserted ? 'Atualizar' : 'Editar' }}
+      </button>
+    </form>
+  </div>
+</section>

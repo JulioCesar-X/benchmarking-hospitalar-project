@@ -14,7 +14,7 @@
       <p>{{ user.name }}</p>
       <p>{{ user.roles[0]?.role_name }}</p>
       <div>
-        <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="editUser(user.id)">
+        <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="editUser(user)">
         <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="removeUser(user.id)">
       </div>
     </div>
