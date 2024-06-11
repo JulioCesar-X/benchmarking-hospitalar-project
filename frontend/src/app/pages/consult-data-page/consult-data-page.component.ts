@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { NavbarComponent } from '../../components/ui/navbar/navbar.component';
-import { FooterComponent } from '../../components/ui/footer/footer.component';
 import { ConsultDataFilterComponent } from '../../components/consult-data-filter/consult-data-filter.component'
 import {DataGraphicComponent } from '../../components/data-graphic/data-graphic.component'
 import { HttpClientModule } from '@angular/common/http';
@@ -12,8 +10,7 @@ import {graphData} from '../../models/graphData.model'
 @Component({
   selector: 'app-consult-data-page',
   standalone: true,
-  imports: [NavbarComponent,
-    FooterComponent,
+  imports: [
     ConsultDataFilterComponent,
     DataGraphicComponent,
     HttpClientModule,

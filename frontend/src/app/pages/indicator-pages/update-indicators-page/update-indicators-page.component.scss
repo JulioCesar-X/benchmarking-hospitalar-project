@@ -1,4 +1,4 @@
-.row {
+/* .row {
     display: flex;
 
     div:last-child {
@@ -16,3 +16,8 @@
 main {
     flex: 1;
 }
+ */
+ :host {
+    flex: 1;
+    display: flex;
+  }

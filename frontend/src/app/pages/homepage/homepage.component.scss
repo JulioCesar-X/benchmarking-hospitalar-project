@@ -1,5 +1,10 @@
 @import '../../../styles/_variables.scss';
 
+:host {
+  flex: 1;
+  display: flex;
+}
+
 .headingSection {
 
   width: 100%;
@@ -117,6 +122,11 @@ main {
   background-color: $main-dark-blue;
   border-radius: 50%;
   margin: 20px;
+}
+
+:host {
+  flex: 1;
+  display: flex;
 }
 
 // .line-drawing-demo .text path {
