@@ -1,7 +1,7 @@
 <section class="forms-container">
     <div class="selectOptionContainer">
-        <h2>Gerir Metas</h2>
-      <h2>Year</h2>
+        <h2 class="title">Gerir Metas</h2>
+        <h2 class="title">Year</h2>
   
       <form [formGroup]="indicatorForms[indicator.id]"
             *ngFor="let indicator of indicators; let i = index; trackBy: trackByIndex"

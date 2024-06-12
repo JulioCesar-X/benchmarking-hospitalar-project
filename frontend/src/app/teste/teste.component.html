@@ -1,4 +1,4 @@
-<div class="relative inline-block text-left" (clickOutside)="closeDropdown()">
+<!-- <div class="relative inline-block text-left" (clickOutside)="closeDropdown()">
     <div>
       <button type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" id="menu-button" aria-expanded="true" aria-haspopup="true" (click)="toggleDropdown()">
         Options
@@ -15,4 +15,34 @@
         <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-item-2">License</a>
       </div>
     </div>
+</div> -->
+
+<div class="tabs">
+  <div class="tab-headers">
+      <button class="tab-link" 
+              [class.active]="selectedTab === 'Records'"
+              (click)="selectTab('Records')">
+          Records
+      </button>
+      <button class="tab-link" 
+              [class.active]="selectedTab === 'Metas'"
+              (click)="selectTab('Metas')">
+          Metas
+      </button>
+  </div>
+
+
+  <div *ngIf="selectedTab === 'Records'" class="tab-content">
+      <h2>Records</h2>
+      <p>This is the content of the Records tab.</p>
+  </div>
+  <div *ngIf="selectedTab === 'Metas'" class="tab-content">
+      <h2>Metas</h2>
+      <p>This is the content of the Metas tab.</p>
+  </div>
+</div>
+
+
+<div class="mx-2 w-full">
+  <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="true" (indicatorsUpdated)="filterData($event)"></app-filter>
 </div>

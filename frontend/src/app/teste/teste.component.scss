@@ -1,0 +1,40 @@
+@import '../../styles/_variables.scss';
+
+.tabs {
+
+    width: 100%;
+    margin: 0 auto;
+}
+
+.tab-headers {
+    overflow: hidden;
+    background-color: transparent;
+
+}
+
+.tab-link {
+    background-color: $main-blue;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 1em;
+    transition: 0.3s;
+
+}
+
+.tab-link:hover {
+    background-color: $secondary-blue;
+}
+
+.tab-link.active {
+    background-color: $secondary-blue;
+}
+
+.tab-content {
+    padding: 20px;
+    border-top: none;
+}
+
+.tab-content h2 {
+    margin-top: 0;
+}

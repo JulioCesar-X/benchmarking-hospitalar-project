@@ -19,6 +19,7 @@ import { NotificationService } from '../../../services/notifications/notificatio
 export class NavbarComponent implements OnInit {
   isNotificationsOpen: boolean = false;
   unreadNotifications: number = 0;
+
   allNotifications: Array<any> = [
     {
       "id": 1,
@@ -88,4 +89,5 @@ export class NavbarComponent implements OnInit {
   toggleNotifications(){
     this.isNotificationsOpen = !this.isNotificationsOpen;
   }
+  
 }

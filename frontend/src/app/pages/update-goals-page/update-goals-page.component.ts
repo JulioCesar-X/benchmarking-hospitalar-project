@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { MenuComponent } from '../../components/user/menu/menu.component';
-import { GoalsFilterSectionComponent } from '../../components/goals/goals-filter-section/goals-filter-section.component';
 import { GoalsListSectionComponent} from '../../components/goals/goals-list-section/goals-list-section.component'
 
 @Component({
@@ -8,7 +7,6 @@ import { GoalsListSectionComponent} from '../../components/goals/goals-list-sect
   standalone: true,
   imports: [
     MenuComponent,
-    GoalsFilterSectionComponent,
     GoalsListSectionComponent
   ],
   templateUrl: './update-goals-page.component.html',

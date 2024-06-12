@@ -4,6 +4,24 @@
   </div>
   <div class="mx-2 w-full">
     <app-indicator-filter-section (indicatorsUpdated)="onIndicatorsUpdated($event)"></app-indicator-filter-section>
+
+    <div class="tab-headers">
+      <button class="tab-link" 
+              [class.active]="selectedTab === 'Records'"
+              (click)="selectTab('Records')">
+          Records
+      </button>
+      <button class="tab-link" 
+              [class.active]="selectedTab === 'Metas'"
+              (click)="selectTab('Metas')">
+          Metas
+      </button>
+  </div>
+  <div *ngIf="selectedTab === 'Records'">
     <app-indicators-list-section [indicators]="currentIndicators"></app-indicators-list-section>
+  </div>
+  <div *ngIf="selectedTab === 'Metas'">
+    <app-goals-list-section></app-goals-list-section>
+  </div>
   </div>
 
