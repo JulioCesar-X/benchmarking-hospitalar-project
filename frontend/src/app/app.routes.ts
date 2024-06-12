@@ -11,13 +11,14 @@ import { EditUserPageComponent } from './pages/user-pages/edit-user-page/edit-us
 import { ConsultDataPageComponent } from './pages/consult-data-page/consult-data-page.component'
 import { UpdateGoalsPageComponent } from './pages/update-goals-page/update-goals-page.component'
 import { AuthGuard } from './guards/auth.guard'
+import {TesteComponent} from './teste/teste.component'
 
 
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
   { path: 'login', component: LoginPageComponent },
   { path: 'updateGoals', component: UpdateGoalsPageComponent },
-  
+  { path: 'teste', component: TesteComponent },
   { path: 'resetPassword', component: ResetPasswordPageComponent },
   { path: 'description/:serviceId', component: DescriptionServicePageComponent },
   { path: 'consultData', component: ConsultDataPageComponent },
