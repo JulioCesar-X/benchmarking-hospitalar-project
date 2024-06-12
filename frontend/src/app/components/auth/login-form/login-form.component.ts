@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NgForm, FormsModule, NgModel } from '@angular/forms';
 import { AuthService } from '../../../auth.service';
 import { EventEmitter, Output } from '@angular/core';
+import { PasswordRecupModalComponent } from '../../../components/auth/password-recup-modal/password-recup-modal.component'
 
 @Component({
   selector: 'app-login-form',
@@ -12,12 +13,15 @@ import { EventEmitter, Output } from '@angular/core';
     FormsModule,
     CommonModule,
     RouterLink,
+    PasswordRecupModalComponent
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'
 })
 
 export class LoginFormComponent {
+  isModalVisible = false;
+
   email: string = '';
   password: string = '';
   isLoading = false;
@@ -52,6 +56,20 @@ export class LoginFormComponent {
       }
     );
   }
+
+
+  sendPasswordRecoveryCode(){
+
+  }
+
+  openModal(event: Event) {
+    event.preventDefault();
+    this.isModalVisible = true;
+}
+
+closeModal() {
+    this.isModalVisible = false;
+}
 }
 
 // import { Component, EventEmitter, Output } from '@angular/core';

@@ -20,8 +20,9 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        'http://localhost:4200',
+        'https://hosp-metrics-atec-ijw7ffhu3-atec.vercel.app',
         env('APP_URL_FRONT', 'https://main--hospital-metrics-analisys.netlify.app'),
-        // 'http://localhost:4200',
     ],
 
     'allowed_origins_patterns' => [],

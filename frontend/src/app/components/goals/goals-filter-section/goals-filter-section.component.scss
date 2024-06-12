@@ -1,0 +1,47 @@
+@import '../../../../styles/_variables.scss';
+@import '../../../../styles/_mixins.scss';
+
+
+.forms-container{
+    @include forms-container();
+
+    margin-block: 0;
+    border: none;
+    width: 100%;
+}
+
+
+.selectContainer{
+    color: $fill-white;
+
+    label{
+        margin-right: 0.2em;
+    }
+    select{
+        color: $main-blue;
+        border-radius: 0.5em;
+        padding-block: 0.2em;
+        padding-inline: 0.5em;
+        border: none;
+        outline: $main-blue;
+    }
+}
+
+.forms-container--inputContainer{
+    @include forms-container--inputContainer();
+    gap: 1em;
+
+    div{
+        display: flex;
+        align-items: center;
+    }
+}
+
+.inputContainer--input{
+    @include inputContainer--input();
+}
+
+.forms-Button{
+    @include forms-Button();
+    margin-top: 0;
+}
