@@ -7,19 +7,23 @@ import { ConsultUsersPageComponent } from './pages/user-pages/consult-users-page
 import { CreateUserPageComponent } from './pages/user-pages/create-user-page/create-user-page.component';
 import { UpdateIndicatorsPageComponent } from './pages/indicator-pages/update-indicators-page/update-indicators-page.component'
 import { CreateIndicatorsPageComponent } from './pages/indicator-pages/create-indicators-page/create-indicators-page.component'
+import { EditUserPageComponent } from './pages/user-pages/edit-user-page/edit-user-page.component'
 import { ConsultDataPageComponent } from './pages/consult-data-page/consult-data-page.component'
+import { UpdateGoalsPageComponent } from './pages/update-goals-page/update-goals-page.component'
 import { AuthGuard } from './guards/auth.guard'
-
 
 
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
   { path: 'login', component: LoginPageComponent },
+  { path: 'updateGoals', component: UpdateGoalsPageComponent },
+  
   { path: 'resetPassword', component: ResetPasswordPageComponent },
   { path: 'description/:serviceId', component: DescriptionServicePageComponent },
   { path: 'consultData', component: ConsultDataPageComponent },
   { path: 'consultUsers', component: ConsultUsersPageComponent, canActivate: [AuthGuard] },
   { path: 'createUser', component: CreateUserPageComponent, canActivate: [AuthGuard] },
+  { path: 'editUser/:id', component: EditUserPageComponent, canActivate: [AuthGuard] },
   { path: 'updateIndicators', component: UpdateIndicatorsPageComponent, canActivate: [AuthGuard] },
   { path: 'createIndicator', component: CreateIndicatorsPageComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: 'home', pathMatch: 'full' }

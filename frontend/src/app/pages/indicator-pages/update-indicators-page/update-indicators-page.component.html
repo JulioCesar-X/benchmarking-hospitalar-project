@@ -1,14 +1,14 @@
 <div class="container">
-    <app-navbar></app-navbar>
-  
-    <main class="row">
-      <div>
-        <app-menu></app-menu>
-      </div>
-      <div>
-        <app-indicator-filter-section></app-indicator-filter-section>
-        <app-indicators-list-section></app-indicators-list-section>
-      </div>
-    </main>
-    <app-footer></app-footer>
-  </div>
+  <app-navbar></app-navbar>
+
+  <main class="row">
+    <div>
+      <app-menu></app-menu>
+    </div>
+    <div>
+      <app-indicator-filter-section (indicatorsUpdated)="onIndicatorsUpdated($event)"></app-indicator-filter-section>
+      <app-indicators-list-section [indicators]="currentIndicators"></app-indicators-list-section>
+    </div>
+  </main>
+  <app-footer></app-footer>
+</div>

@@ -1,4 +1,4 @@
-# Use PHP 7.4 with FPM (FastCGI Process Manager)
+## Use PHP 7.4 with FPM (FastCGI Process Manager)
 FROM php:7.4-fpm
 
 # Install system dependencies required for Laravel and common PHP extensions
@@ -53,7 +53,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 
-# #Developement Dockerfile environment
+# # #Developement Dockerfile environment
 # FROM php:7.4-fpm
 
 # # Set working directory inside the container

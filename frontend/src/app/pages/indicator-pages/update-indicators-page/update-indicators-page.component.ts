@@ -20,5 +20,10 @@ import { FooterComponent } from '../../../components/ui/footer/footer.component'
   styleUrl: './update-indicators-page.component.scss'
 })
 export class UpdateIndicatorsPageComponent {
+  currentIndicators: any[] = [];
+
+  onIndicatorsUpdated(indicators: any[]) {
+    this.currentIndicators = indicators;
+  }
 
 }

@@ -10,6 +10,8 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Notifications\ResetPasswordNotification;
+// use Illuminate\Support\Facades\Cookie;
+// use Illuminate\Support\Facades\Auth;
 
 
 class AuthController extends Controller
@@ -31,18 +33,47 @@ class AuthController extends Controller
 
         $token = $user->createToken('access_token')->plainTextToken;
 
+        // // Configurar cookie HttpOnly e Secure
+        // $cookie = cookie('access_token', $token, 60 * 24, '/', null, true, true, false, 'None'); // 1 dia de expiração
+
         return response()->json([
             'role' => $user->roles()->first()->role_name,
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
+              // ])->withCookie($cookie);
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out'], 200);
+        
+
+    //Remover o cookie de acesso
+    //     $cookie = Cookie::forget('access_token');
+    //     return response()->json(['message' => 'Logged out'], 200)->withCookie($cookie);
+
+
     }
+    // }
+
+    // public function checkSession()
+    // {
+    //     if (Auth::check()) {
+    //         $user = Auth::user();
+    //         return response()->json([
+    //             'authenticated' => true,
+    //             'user' => [
+    //                 'id' => $user->id,
+    //                 'name' => $user->name,
+    //                 'email' => $user->email,
+    //                 'roles' => $user->roles->pluck('role_name'), // Assume que você tem uma relação roles e role_name é o nome da role
+    //             ]
+    //         ]);
+    //     } else {
+    //         return response()->json(['authenticated' => false], 401);
+    //}
 
     public function sendResetCode(Request $request)
     {
@@ -64,6 +95,7 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Reset code sent to your email.']);
     }
+
     public function resetPassword(Request $request)
     {
         $request->validate([
@@ -73,7 +105,7 @@ class AuthController extends Controller
         ]);
 
         $record = DB::table('password_resets')
-        ->where('email', $request->email)
+            ->where('email', $request->email)
             ->where('code', $request->code)
             ->first();
 
