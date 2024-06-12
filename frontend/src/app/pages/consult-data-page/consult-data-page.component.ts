@@ -8,6 +8,7 @@ import { DataService } from '../../services/data.service';
 import { AccumulatedData } from '../../models/AccumulatedData.model'
 import { Filter } from '../../models/accumulatedDataFilter.model'
 import {graphData} from '../../models/graphData.model'
+import { PdfExportService } from '../../services/pdf-export-service';
 
 @Component({
   selector: 'app-consult-data-page',
@@ -23,6 +24,9 @@ import {graphData} from '../../models/graphData.model'
 })
 
 export class ConsultDataPageComponent {
+   
+  title = 'angular-pdf-export';
+
   requestedData: any;
   filteredData: any;
 
@@ -43,7 +47,11 @@ export class ConsultDataPageComponent {
 
   graphData: Array<graphData>[] = [];
 
-  constructor(private dataService: DataService) {};
+  constructor(private dataService: DataService, private pdfExportService: PdfExportService) {};
+
+  public exportToPDF(): void {
+    this.pdfExportService.exportToPDF('contentToConvert', 'sample.pdf');
+  }
 
   ngOnInit(): void {
     this.dataService.getAccumulatedIndicatorData().subscribe(

@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges, input } from '@angu
 import { CommonModule } from '@angular/common';
 import { graphData } from '../../models/graphData.model';
 
+
 @Component({
   selector: 'app-data-graphic',
   standalone: true,
@@ -12,6 +13,7 @@ import { graphData } from '../../models/graphData.model';
 
 //cenas do OnInit em principio podem ser apagadas. Ou mantidas - pode ser preciso + tarde
 export class DataGraphicComponent implements OnInit, OnChanges {
+
   dataHTML: Array<graphData> = [];
   
   @Input({required: true}) data: Array<graphData> = [];
@@ -115,4 +117,7 @@ export class DataGraphicComponent implements OnInit, OnChanges {
       this.dataHTML.push({ activity: "", indicator: "", value: 0, month: "", year: (year - i).toString() });
     }
   }
+
+
+
 }

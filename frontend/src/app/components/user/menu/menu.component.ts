@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../../auth.service'
+import { AuthService } from '../../../auth.service';
+
 
 @Component({
   selector: 'app-menu',
@@ -15,6 +16,7 @@ import { AuthService } from '../../../auth.service'
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent {
+
   isManageUsersSubMenuOpen = false;
   isManageContentSubMenuOpen = false;
   isManageNotificationsSubMenuOpen = false;
@@ -35,4 +37,5 @@ export class MenuComponent {
   openManageNotifications() {
     this.isManageNotificationsSubMenuOpen = !this.isManageNotificationsSubMenuOpen;
   }
+
 }

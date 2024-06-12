@@ -23,11 +23,16 @@
     "@angular/router": "^17.3.0",
     "@lottiefiles/lottie-player": "^2.0.4",
     "animejs": "^3.2.2",
+    "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
     "lottie-web": "^5.12.2",
     "ngx-cookie-service": "^17.1.0",
     "ngx-lottie": "^11.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
