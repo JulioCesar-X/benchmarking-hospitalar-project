@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => [
         'https://main--hospital-metrics-analisys.netlify.app',
-        'https://hosp-metrics-atec-azq54fm00-atec.vercel.app',
+        'https://hosp-metrics-atec-atec.vercel.app',
         'http://localhost:4200',
     ],
 
