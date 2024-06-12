@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgModel } from '@angular/forms';
-import { Filter } from '../../models/accumulatedDataFilter.model'
+import { Filter } from '../../models/Filter.model'
 import { Activity } from '../../models/activity.model'
 import { ActivityService } from '../../services/activity.service'
 import { IndicatorService } from '../../services/indicator.service'
@@ -29,11 +29,11 @@ export class ConsultDataFilterComponent {
   servicesList: Array<Service> = [];
 
   filter: Filter = {
-    indicator: "Consultas Marcadas e não Realizadas", //colocar um indicator default para mais tarde
-    activity: "Psiquiatria Infância e Adolescência",
-    service: "Hospital Dia",
-    month: new Date().getMonth().toString(),
-    year: new Date().getFullYear().toString()
+    indicatorId: "Consultas Marcadas e não Realizadas", //colocar um indicator default para mais tarde
+    activityId: "Psiquiatria Infância e Adolescência",
+    serviceId: "Hospital Dia",
+    month: new Date().getMonth(),
+    year: new Date().getFullYear()
   }
 
   @Output() filterData = new EventEmitter<Filter>();

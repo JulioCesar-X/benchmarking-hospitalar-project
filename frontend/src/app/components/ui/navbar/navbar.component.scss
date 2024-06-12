@@ -1,26 +1,28 @@
 @import '../../../../styles/_variables.scss';
 
 
-.fixed {
+.fixedCSS {
+
   //position: fixed; preciso de arranja soluçõa
+
   top: 0;
-  width: 100%;
   z-index: 1000;
   /* Garante que a navbar fique acima de outros elementos */
-  background-color: #ffff;
+  background-color: $fill-white;
   /* Define uma cor de fundo para garantir legibilidade */
-  border-bottom: 5px solid #f0f0f0a0;
   /* Opcional: uma linha para separar a navbar do conteúdo da página */
 }
 
+
 .navbar {
-  /*     position: relative; */
+      position: relative;
+
   display: flex;
   margin-bottom: auto;
-  width: 100%;
+  max-width: 100%;
   max-height: 99px;
   overflow: hidden;
-  min-width: 780px;
+/*   min-width: 780px; */
 }
 
 /* i can make the logocontainer occupy space where i want with position absolute */
@@ -50,7 +52,6 @@
 } */
 
 .navbarLinksContainer {
-  box-sizing: border-box;
   padding-right: 1em;
   padding-left: 6em;
   margin-left: auto;
@@ -101,4 +102,13 @@
 .logo {
 
   height: 85px;
+}
+
+.unread{
+  background-color: $secondary-blue;
+  border-radius: 1em;
+}
+.unread:hover{
+  background-color: $main-blue;
+  border-radius: 1em;
 }

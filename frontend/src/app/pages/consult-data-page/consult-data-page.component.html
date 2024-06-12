@@ -1,33 +1,22 @@
+<div class="mx-2 w-full">
 
-
-
-<div class="container">
-    <app-navbar></app-navbar>
-
-    <main>
-
-        <app-consult-data-filter (filterData)="handleFilterData($event)"></app-consult-data-filter>
-        <h2 class="pageTitle">Dados por mês:</h2>
-
-        <div class="graphicsContainer">
-            <div class="row">
-                <div>
-                    <app-data-graphic [data]="homologData" typeOfGraph="month" [homologueYear]="homologueYear"></app-data-graphic>
-                </div>
-                <div>
-                    <app-data-graphic [data]="data" typeOfGraph="month" [homologueYear]="year"></app-data-graphic>
-                </div>
-            </div>
-            <div class="row">
-                <div>
-                    <app-data-graphic [data]="yearlyData" [homologueYear]="year" typeOfGraph="year"></app-data-graphic>
-                </div>
-            </div>
-
-            
-        </div>
-    </main>
+    <app-consult-data-filter (filterData)="handleFilterData($event)"></app-consult-data-filter>
+    <h2 class="pageTitle">Dados por mês:</h2>
     
-    <app-footer></app-footer>
+    <div class="graphicsContainer">
+        <div class="row">
+            <div>
+                <app-data-graphic [data]="homologData" typeOfGraph="month" [homologueYear]="homologueYear"></app-data-graphic>
+            </div>
+            <div>
+                <app-data-graphic [data]="data" typeOfGraph="month" [homologueYear]="year"></app-data-graphic>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                <app-data-graphic [data]="yearlyData" [homologueYear]="year" typeOfGraph="year"></app-data-graphic>
+            </div>
+        </div>
+    </div>    
 </div>
 
