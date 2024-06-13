@@ -38,8 +38,10 @@ class AuthController extends Controller
 
         return response()->json([
             'role' => $user->roles()->first()->role_name,
+            'email' => $user->email, 
             'access_token' => $token,
             'token_type' => 'Bearer',
+            
         ]);
               // ])->withCookie($cookie);
     }

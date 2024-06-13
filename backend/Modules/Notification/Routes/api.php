@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {
         Route::apiResource('notifications', 'NotificationController')->names('admin.notifications');
+        Route::apiResource('notifications/received', 'NotificationController@getAllNotificationReceived')->names('admin.notifications.received');
     });
 
     Route::prefix('coordinator')->middleware('role:coordinator-action')->group(function () {

@@ -90,4 +90,25 @@ class NotificationController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
+    public function getAllNotificationReceived(Request $request) 
+    {
+        try {
+            // Obter o usuário pelo email fornecido na requisição
+            $user = User::where('email', $request->input('email'))->first();
+
+            if (!$user) {
+                return response()->json(['error' => 'Usuário não encontrado'], 404);
+            }
+
+            // Buscar todas as notificações recebidas pelo usuário com base no relacionamento
+            $notifications = $user->receivedNotifications()->get();
+
+            return response()->json($notifications);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
+        }
+    }
+
 }

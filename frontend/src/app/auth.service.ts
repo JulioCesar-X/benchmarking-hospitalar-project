@@ -33,6 +33,7 @@ export class AuthService {
       .pipe(
         map(response => {
           this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict' });
+          this.cookieService.set('email', response.email, { secure: true, sameSite: 'Strict'}); 
           this.cookieService.set('role', response.role, { secure: true, sameSite: 'Strict' });
           return response;
         }),

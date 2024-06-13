@@ -10,6 +10,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { environment } from '../environments/env';
 
 
+
 if (environment.production) {
   enableProdMode();
 }
@@ -19,6 +20,6 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideAnimations(),
-    importProvidersFrom(HttpClientModule), provideAnimationsAsync() // Corrige a importação do HttpClientModule
+    importProvidersFrom(HttpClientModule), provideAnimationsAsync(), provideAnimationsAsync() // Corrige a importação do HttpClientModule
   ]
 }).catch(err => console.error(err));
