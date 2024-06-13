@@ -108,10 +108,10 @@
 # ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 
-# Use PHP 7.4 FPM image from the official Docker Hub repository
+# #Developement Dockerfile environment
 FROM php:7.4-fpm
 
-# Set the working directory in the container
+# Set working directory inside the container
 WORKDIR /var/www/html
 
 # Install system dependencies required for Laravel and common PHP extensions
@@ -122,24 +122,25 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     wget \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install necessary PHP extensions for Laravel (PostgreSQL and Zip in this case)
-RUN docker-php-ext-install pdo pdo_pgsql pgsql zip
+# Install necessary PHP extensions for Laravel
+RUN docker-php-ext-install pdo pdo_pgsql zip
 
-# Install Composer globally
+# Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- \
     --install-dir=/usr/local/bin \
     --filename=composer
 
-# Copy existing application directory permissions
-COPY . /var/www/html
+# Install Dockerize
+RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz -O dockerize.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize.tar.gz \
+    && rm dockerize.tar.gz
 
-# Copy over and set the correct environment file
-COPY .env /var/www/html/.env
-
-# Set correct permissions for the .env file
-RUN chmod 644 /var/www/html/.env
+# Copy the application code and the environment file
+COPY . ./
+COPY .env.example .env
 
 # Install Composer dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader \
@@ -149,15 +150,14 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader \
 # Set the correct permissions for the Laravel storage and bootstrap directories
 RUN chmod -R 777 storage bootstrap/cache
 
-# Expose port 8001 for the application
-EXPOSE 8001
+# Generate application key, clear cache, and discover packages
+RUN php artisan key:generate
+RUN php artisan clear:all
+RUN composer dump-autoload
 
-# Run Laravel setup commands and start the server
-CMD php artisan key:generate && \
-    php artisan clear-compiled && \
-    php artisan migrate --force && \
-    php artisan migrate:fresh --seed --force && \
-    php artisan db:adjust-sequences && \
-    php artisan serve --host=0.0.0.0 --port=8001
+# Copy and set entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-
+# Specify the entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

@@ -90,7 +90,7 @@
 //   toggleNotifications(){
 //     this.isNotificationsOpen = !this.isNotificationsOpen;
 //   }
-  
+
 // }
 
 
@@ -100,7 +100,7 @@ import { AuthService } from '../../../auth.service';
 import { CommonModule } from '@angular/common';
 import { MatBadgeModule } from '@angular/material/badge';
 import { NotificationService } from '../../../services/notifications/notification.service';
-import { Notification } from '/Users/Los Pollos/Documents/GitHub/projeto-final/benchmarking-hospitalar-project/frontend/src/app/models/notification.model';
+import { Notification } from '../../../models/notification.model'
 
 @Component({
   selector: 'app-navbar',
