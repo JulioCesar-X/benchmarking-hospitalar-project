@@ -9,6 +9,7 @@ import { AccumulatedData } from '../../models/AccumulatedData.model'
 import { Filter } from '../../models/accumulatedDataFilter.model'
 import {graphData} from '../../models/graphData.model'
 import { PdfExportService } from '../../services/pdf-export-service';
+import { ExcelExportService } from '../../services/excel-export-service.service';
 
 @Component({
   selector: 'app-consult-data-page',
@@ -26,6 +27,7 @@ import { PdfExportService } from '../../services/pdf-export-service';
 export class ConsultDataPageComponent {
    
   title = 'angular-pdf-export';
+  Title = 'angular-excel-export';
 
   requestedData: any;
   filteredData: any;
@@ -47,10 +49,20 @@ export class ConsultDataPageComponent {
 
   graphData: Array<graphData>[] = [];
 
-  constructor(private dataService: DataService, private pdfExportService: PdfExportService) {};
+  constructor(private dataService: DataService, private pdfExportService: PdfExportService, private excelExportService: ExcelExportService) {};
 
   public exportToPDF(): void {
     this.pdfExportService.exportToPDF('contentToConvert', 'sample.pdf');
+  }
+
+  public exportJson(): void {
+    const sampleJson = [
+      { name: 'John', age: 30, city: 'New York', location: 'Europe' },
+      { name: 'Anna', age: 22, city: 'London', location: 'Europe'},
+      { name: 'Mike', age: 32, city: 'Chicago', location: 'Europe'}
+    ];
+
+    this.excelExportService.exportJsonToExcel(sampleJson, 'sample');
   }
 
   ngOnInit(): void {
