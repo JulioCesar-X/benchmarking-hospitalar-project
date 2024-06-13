@@ -1,10 +1,3 @@
-<!-- <div *ngIf="isVisible">
-    <h2>safasdas</h2>
-    <app-create-field-modal></app-create-field-modal>
-</div> -->
-
-
-
 <app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal>
 <app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
 
@@ -15,20 +8,21 @@
 
     <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
       <label for="name">Nome:</label>
-      <input id="name" type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="indicator.indicator_name" name="indicatorName">
+      <input id="name" type="text" class="inputContainer--input" placeholder="Name"
+        [(ngModel)]="indicator.indicator_name" name="indicatorName" required>
       <span class="errorSpanMessage"></span>
     </div>
 
     <div class="selectContainer" *ngIf="!isLoading || notificationType === 'error'">
       <label for="service">Serviço:</label>
-      <select id="service" [(ngModel)]="indicator.service_id" name="serviceId">
+      <select id="service" [(ngModel)]="indicator.service_id" name="serviceId" required>
         <option *ngFor="let service of services" [value]="service.id">{{service.service_name}}</option>
       </select>
     </div>
 
     <div class="selectContainer" *ngIf="!isLoading || notificationType === 'error'">
       <label for="activity">Atividade:</label>
-      <select id="activity" [(ngModel)]="indicator.activity_id" name="activityId">
+      <select id="activity" [(ngModel)]="indicator.activity_id" name="activityId" required>
         <option *ngFor="let activity of activities" [value]="activity.id">{{activity.activity_name}}</option>
         <option value="none">None</option>
       </select>
@@ -36,7 +30,7 @@
 
     <div class="selectContainer" *ngIf="!isLoading || notificationType === 'error'">
       <label for="type">Tipo:</label>
-      <select id="type" [(ngModel)]="indicator.type" name="typeId">
+      <select id="type" [(ngModel)]="indicator.type" name="typeId" required>
         <option value="produção">Produção</option>
         <option value="desempenho">Desempenho</option>
         <option value="financeiro">Financeiro</option>
@@ -45,7 +39,8 @@
 
     <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
       <label for="meta">Meta:</label>
-      <input id="meta" type="text" class="inputContainer--input" placeholder="Meta anual" [(ngModel)]="indicator.target_value" name="goalValue">
+      <input id="meta" type="text" class="inputContainer--input" placeholder="Meta anual" [(ngModel)]="goalTargetValue"
+        name="goalValue" required>
       <span class="errorSpanMessage"></span>
     </div>
 

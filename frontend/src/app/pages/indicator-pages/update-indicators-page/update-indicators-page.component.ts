@@ -3,7 +3,8 @@ import { MenuComponent } from '../../../components/user/menu/menu.component';
 import { IndicatorFilterSectionComponent } from '../../../components/indicator/indicator-filter-section/indicator-filter-section.component';
 import { IndicatorsListSectionComponent } from '../../../components/indicator/indicators-list-section/indicators-list-section.component';
 import { CommonModule } from '@angular/common';
-import { GoalsListSectionComponent} from '../../../components/goals/goals-list-section/goals-list-section.component'
+import { GoalsListSectionComponent } from '../../../components/goals/goals-list-section/goals-list-section.component';
+import { Indicator } from '../../../models/indicator.model';
 
 @Component({
   selector: 'app-update-indicators-page',
@@ -19,18 +20,15 @@ import { GoalsListSectionComponent} from '../../../components/goals/goals-list-s
   styleUrl: './update-indicators-page.component.scss'
 })
 export class UpdateIndicatorsPageComponent {
-  currentIndicators: any[] = [];
+  currentIndicators: Indicator[] = [];
 
-  onIndicatorsUpdated(indicators: any[]) {
+  onIndicatorsUpdated(indicators: Indicator[]) {
     this.currentIndicators = indicators;
   }
 
-
-  /*  */
   selectedTab: string = 'Records';
 
   selectTab(tab: string) {
-    console.log(this.selectTab)
     this.selectedTab = tab;
   }
 }

@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { CreateFieldModalComponent } from '../create-field-modal/create-field-modal.component'
+import { CreateFieldModalComponent } from '../create-field-modal/create-field-modal.component';
 import { CommonModule } from '@angular/common';
 import { IndicatorService } from '../../../services/indicator.service';
-import { Goal } from '../../../models/Goal.model';
 import { FormsModule } from '@angular/forms';
 import { Service } from '../../../models/service.model';
 import { Activity } from '../../../models/activity.model';
 import { ServiceService } from '../../../services/service.service';
 import { ActivityService } from '../../../services/activity.service';
 import { Indicator } from '../../../models/indicator.model';
+import { Goal } from '../../../models/Goal.model';
 import { NotificationComponent } from '../../shared/notification/notification.component';
 
 @Component({
@@ -21,35 +21,45 @@ import { NotificationComponent } from '../../shared/notification/notification.co
     NotificationComponent
   ],
   templateUrl: './create-indicator-form.component.html',
-  styleUrl: './create-indicator-form.component.scss'
+  styleUrls: ['./create-indicator-form.component.scss']
 })
 export class CreateIndicatorFormComponent implements OnInit {
   isModalVisible = false;
   services: Service[] = [];
   activities: Activity[] = [];
   indicator: Indicator = {
-    id: null,
     indicator_name: '',
-    service_id: null,
-    activity_id: null,
-    type: '',
-    target_value: null,
-    year: new Date().getFullYear()
+    service_id: '',
+    activity_id: '',
+    records: [],
+    goal: {
+      service_activity_indicator_id: 0,
+      target_value: '',
+      year: new Date().getFullYear()
+    },
+    isInserted: false,
+    type: ''
   };
 
   notificationMessage: string = '';
   notificationType: 'success' | 'error' = 'success';
   isLoading = false;
 
-  constructor(private indicatorService: IndicatorService, private serviceService: ServiceService, private activityService: ActivityService) { }
+  constructor(
+    private indicatorService: IndicatorService,
+    private serviceService: ServiceService,
+    private activityService: ActivityService
+  ) { }
 
   openModal(event: Event) {
     event.preventDefault();
     this.isModalVisible = true;
   }
+
   closeModal() {
     this.isModalVisible = false;
   }
+
   ngOnInit() {
     this.fetchServices();
     this.fetchActivities();
@@ -105,14 +115,33 @@ export class CreateIndicatorFormComponent implements OnInit {
 
   clearForm() {
     this.indicator = {
-      id: null,
       indicator_name: '',
-      service_id: null,
-      activity_id: null,
-      type: '',
-      target_value: null,
-      year: new Date().getFullYear()
+      service_id: '',
+      activity_id: '',
+      records: [],
+      goal: {
+        service_activity_indicator_id: 0,
+        target_value: '',
+        year: new Date().getFullYear()
+      },
+      isInserted: false,
+      type: ''
     };
   }
 
+  get goalTargetValue(): string | number {
+    return this.indicator.goal?.target_value ?? '';
+  }
+
+  set goalTargetValue(value: string | number) {
+    if (this.indicator.goal) {
+      this.indicator.goal.target_value = value;
+    } else {
+      this.indicator.goal = {
+        service_activity_indicator_id: 0,
+        target_value: value,
+        year: new Date().getFullYear()
+      };
+    }
+  }
 }

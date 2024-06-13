@@ -8,7 +8,7 @@ use Modules\Goal\Entities\Goal;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Modules\Record\Entities\Record;
+use Carbon\Carbon;
 use Exception;
 
 
@@ -35,39 +35,59 @@ class ServiceActivityIndicatorController extends Controller
      */
     public function getIndicators(Request $request)
     {
-        $serviceId = $request->query('serviceId');
-        $activityId = $request->query('activityId');
-        $date = $request->query('date');
+        // Validação inicial dos parâmetros de entrada
+        $validator = Validator::make($request->all(), [
+            'serviceId' => 'required|integer',
+            'activityId' => 'required|integer',
+            'date' => 'required|date_format:Y-m-d'  // Garante que a data está no formato correto
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        // Extração dos parâmetros após validação
+        $serviceId = $request->input('serviceId');
+        $activityId = $request->input('activityId');
+        $date = $request->input('date');
+
+        // Parsing da data para extrair o ano e o mês
+        $year = Carbon::createFromFormat('Y-m-d', $date)->year;
+        $month = Carbon::createFromFormat('Y-m-d', $date)->month;
 
         try {
-            // Inicialmente, busca-se os SAI correspondentes aos IDs de serviço e atividade fornecidos
-            $serviceActivityIndicators = ServiceActivityIndicator::where('service_id', $serviceId)
+            // Consulta principal para buscar indicadores, incluindo pré-carregamento de relações
+            $serviceActivityIndicators = ServiceActivityIndicator::with([
+                'indicator', // Carrega os detalhes do indicador
+                'records' => function ($query) use ($year, $month) {
+                    $query->whereYear('date', '=', $year)
+                        ->whereMonth('date', '=', $month); // Filtra os registros pelo mês e ano
+                },
+                'service',
+                'activity'
+            ])
+                ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
-                ->with('indicator')
                 ->get();
 
-            // Preparar a resposta final
-            $response = collect();
-
-            foreach ($serviceActivityIndicators as $sai) {
-                // Buscar registros que correspondam ao sai_id e à data fornecida
-                $records = Record::where('service_activity_indicator_id', $sai->id)
-                    ->whereDate('date', '=', $date)
-                    ->get();
-
-                // Estruturar os dados para resposta
-                $response->push([
+            // Formatação da resposta para enviar dados já estruturados
+            $response = $serviceActivityIndicators->map(function ($sai) {
+                return [
                     'sai_id' => $sai->id,
+                    'service_name' => $sai->service->service_name ?? 'No Service',
+                    'activity_name' => $sai->activity->activity_name ?? 'No Activity',
                     'indicator_name' => $sai->indicator->indicator_name,
-                    'records' => $records->map(function ($record) {
+                    'records' => $sai->records->map(function ($record) {
+                        // Assegura que a data é um objeto Carbon
+                        $date = $record->date instanceof Carbon ? $record->date : Carbon::createFromFormat('Y-m-d', $record->date);
                         return [
                             'record_id' => $record->id,
                             'value' => $record->value,
-                            'date' => $record->date->format('Y-m-d')
+                            'date' => $date->toDateString()  // Formata a data corretamente
                         ];
                     })
-                ]);
-            }
+                ];
+            });
 
             return response()->json($response);
         } catch (Exception $exception) {

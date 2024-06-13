@@ -1,9 +1,13 @@
+import { Record } from './Record.model';
+import { Goal } from './Goal.model';
+
 export interface Indicator {
-  id: number | null;
+  sai_id?: number;
+  service_id?: string;
+  activity_id?: string;
   indicator_name: string;
-  service_id?: number| null;
-  activity_id?: number | null;
+  records?: Record[];
+  goal?: Goal;
+  isInserted?: boolean;
   type?: string;
-  target_value?: number | null;
-  year?: number;
 }
