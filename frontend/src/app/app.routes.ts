@@ -19,6 +19,8 @@ import { CreateIndicatorsPageComponent } from './pages/indicators/create-indicat
 
 import { ActivitiesPageComponent } from './pages/activites/activities-page/activities-page.component'
 
+import {ServicesPageComponent} from './pages/services/services-page/services-page.component'
+
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
 
@@ -39,9 +41,10 @@ export const routes: Routes = [
   //actividades
   { path: 'activities', component: ActivitiesPageComponent },
 
+  //Services
+  { path: 'services', component: ServicesPageComponent },
 
 
-  
   { path: 'teste', component: TesteComponent },
 
   { path: 'description/:serviceId', component: DescriptionServicePageComponent },

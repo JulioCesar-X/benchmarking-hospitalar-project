@@ -1,0 +1,25 @@
+<section class="forms-container">
+    <div class="loading-circle" *ngIf="isLoading">
+      <div class="spinner"></div>
+    </div>
+    <div class="headingSection">
+      <h2>Lista de serviços</h2>
+      <img src="../../../assets/images/icons8-plus-30.png" class="icon" alt="createIcon">
+    </div>
+    <div class="cardsContainer">
+      <div *ngFor="let service of services; trackBy: trackByIndex" class="card">
+        <img [src]="service.imageUrl" class="card-image" alt="{{ service.service_name }}">
+        <div class="card-content">
+          <p class="card-title">{{ service.service_name }}</p>
+          <div class="card-actions">
+            <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit">
+            <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete">
+          </div>
+        </div>
+      </div>
+    </div>
+    <mat-paginator class="mat-paginator" [length]="totalActivities" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </section>
+  
