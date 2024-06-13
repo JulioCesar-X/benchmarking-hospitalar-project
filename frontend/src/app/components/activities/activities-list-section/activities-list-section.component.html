@@ -1,0 +1,63 @@
+<section class="forms-container">
+    <div class="loading-circle" *ngIf="isLoading">
+      <div class="spinner"></div>
+    </div>
+    <div class="headingSection">
+        <h2>Lista de atividades</h2>
+        <img src="../../../assets/images/icons8-plus-30.png" class="icon" alt="createIcon" (click)="openModal('create')">
+    </div>
+    <div class="selectOptionContainer">
+      <div class="selectOptionContainer--option __remove-paragraphMB">
+        <p>Nome</p>
+
+        <p>Opções</p>
+      </div>
+  
+      <div *ngFor="let activity of activities; trackBy: trackByIndex"
+        class="selectOptionContainer--option">
+        <p>{{ activity.name }}</p>
+        <div>
+          <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="openModal('edit')">
+          <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="removeActivity('delete')">
+        </div>
+      </div>
+    </div>
+  
+    <mat-paginator class="mat-paginator" [length]="totalActivities" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </section>
+
+
+
+  <!-- MODAL -->
+  <div class="modal" [ngClass]="{'show': isModalOpen}" (click)="closeModal()">
+    <form (onSubmit)="formSubmited()">
+        <div *ngIf="modalAction !== 'delete'" class="modal-container" [ngClass]="{ 'forms-container__error': isError }">
+            <div class="modalHeader">
+              <h2 *ngIf="modalAction === 'create'" class="modalTitle">Criar atividade</h2>
+              <h2 *ngIf="modalAction === 'edit'" class="modalTitle">Editar atividade</h2>
+              <span class="close" (click)="closeModal()">&times;</span>
+            </div>
+          
+            <div class="forms-container--inputContainer">
+              <label>Nome atividade:</label>
+              <input type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }">
+            </div>
+          
+            <button type="submit" class="forms-Button">Confirmar</button>
+        </div>
+
+        <div *ngIf="modalAction !== 'delete'" class="modal-container"  [ngClass]="{ 'forms-container__error': isError }">
+            <div class="modalHeader">
+                <h2>Tem a certeza que quer remover esta atividade?</h2>
+              <span class="close" (click)="closeModal()">&times;</span>
+            </div>
+          
+            <button type="submit" class="forms-Button">Confirmar</button>
+        </div>
+    </form>
+  </div>
+
+
+  

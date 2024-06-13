@@ -1,6 +1,9 @@
 <section class="forms-container">
     <div class="selectOptionContainer">
-        <h2 class="title">Gerir Metas</h2>
+      <div class="headingSection">
+        <h2>Lista de Metas</h2>
+        <img src="../../../assets/images/icons8-plus-30.png" class="icon" alt="Edit" (click)="navigateToCreateGoal()">
+    </div>
         <h2 class="title">Year</h2>
   
       <form [formGroup]="indicatorForms[indicator.id]"

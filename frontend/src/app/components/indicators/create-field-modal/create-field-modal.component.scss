@@ -90,6 +90,12 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+.modalHeader{
+  min-width: 100%;
+  color: $main-blue;
+  display: flex;
+}
+
 .modal.show {
   display: block;
 }

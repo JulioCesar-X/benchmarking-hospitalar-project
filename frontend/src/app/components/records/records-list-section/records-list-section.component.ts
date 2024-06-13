@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/cor
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RouterLink, Router } from '@angular/router';
 
 
 interface Indicator {
@@ -20,14 +21,14 @@ interface Indicator {
     CommonModule,
     ReactiveFormsModule
   ],
-  templateUrl: './indicators-list-section.component.html',
-  styleUrls: ['./indicators-list-section.component.scss']
+  templateUrl: './records-list-section.component.html',
+  styleUrls: ['./records-list-section.component.scss']
 })
-export class IndicatorsListSectionComponent implements OnInit, OnChanges {
+export class RecordsListSectionComponent implements OnInit, OnChanges {
   @Input() indicators: Indicator[] = [];
   indicatorForms: { [key: number]: FormGroup } = {};
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, private router: Router) { }
 
   ngOnInit(): void {
     this.buildForm();
@@ -73,5 +74,9 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
 
   trackByIndex(index: number, item: any): number {
     return item.id;
+  }
+
+  navigateToCreateRecord(){
+    this.router.navigate(['createIndicators']);
   }
 }

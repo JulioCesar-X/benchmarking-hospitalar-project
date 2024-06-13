@@ -1,6 +1,9 @@
 <section class="forms-container">
   <div class="selectOptionContainer">
-    <h2>Gerir Records</h2>
+    <div class="headingSection">
+      <h2>Lista de Records</h2>
+      <img src="../../../assets/images/icons8-plus-30.png" class="icon" alt="Edit" (click)="navigateToCreateRecord()">
+  </div>
     <form [formGroup]="indicatorForms[indicator.id]" *ngFor="let indicator of indicators; trackBy: trackByIndex"
       class="selectOptionContainer--option">
       <p>{{ indicator.name }}</p>

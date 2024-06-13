@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MenuComponent } from '../../../components/user/menu/menu.component';
-import { CreateIndicatorFormComponent } from '../../../components/indicator/create-indicator-form/create-indicator-form.component'
+import { CreateIndicatorFormComponent } from '../../../components/indicators/create-indicator-form/create-indicator-form.component'
 
 @Component({
   selector: 'app-create-indicators-page',

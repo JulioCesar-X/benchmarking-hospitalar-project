@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RouterLink, Router } from '@angular/router';
 
 interface Indicator {
   id: number;
@@ -25,6 +26,8 @@ export class GoalsListSectionComponent {
   ];
 
   indicatorForms: { [key: number]: FormGroup } = {};
+
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     this.indicators.forEach(indicator => {
@@ -57,5 +60,9 @@ export class GoalsListSectionComponent {
 
   trackByIndex(index: number, item: any): any {
     return index;
+  }
+
+  navigateToCreateGoal(){
+    this.router.navigate(['createIndicators']);
   }
 }

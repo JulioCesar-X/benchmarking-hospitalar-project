@@ -1,0 +1,83 @@
+@import '../../../../styles/_variables.scss';
+@import '../../../../styles/_mixins.scss';
+
+.title {
+  color: $fill-white;
+  margin: 0;
+}
+
+.forms-container {
+  @include forms-container();
+  width: 50%;
+  max-width: 500px;
+}
+
+.forms-container--inputContainer {
+  @include forms-container--inputContainer();
+}
+
+.inputContainer--input {
+  @include inputContainer--input();
+}
+
+.errorSpanMessage {
+  @include errorSpanMessage();
+}
+
+.forms-Button {
+  @include forms-Button();
+}
+
+.selectContainer {
+  color: $fill-white;
+
+  label {
+    margin-right: 0.2em;
+  }
+
+  select {
+    color: $main-blue;
+    border-radius: 0.5em;
+    padding-block: 0.2em;
+    padding-inline: 0.5em;
+    border: none;
+    outline: $main-blue;
+  }
+}
+
+.justify--end {
+  align-self: flex-end;
+}
+
+/* Adicione o estilo para o spinner e container de loading */
+.loading-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.spinner {
+  border: 8px solid #f3f3f3; /* Cor de fundo */
+  border-top: 8px solid #3498db; /* Cor do spinner */
+  border-radius: 50%;
+  width: 60px; /* Tamanho do spinner */
+  height: 60px; /* Tamanho do spinner */
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Adicione a classe de estilo para ocultar o formulário enquanto estiver carregando */
+.loading {
+  opacity: 0.5; /* Opacidade reduzida para indicar que está carregando */
+  pointer-events: none; /* Desabilita interação com o formulário enquanto está carregando */
+}

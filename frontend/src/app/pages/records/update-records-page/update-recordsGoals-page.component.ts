@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MenuComponent } from '../../../components/user/menu/menu.component';
 import { IndicatorFilterSectionComponent } from '../../../components/indicator/indicator-filter-section/indicator-filter-section.component';
-import { IndicatorsListSectionComponent } from '../../../components/indicator/indicators-list-section/indicators-list-section.component';
+import { RecordsListSectionComponent } from '../../../components/records/records-list-section/records-list-section.component';
 import { CommonModule } from '@angular/common';
 import { GoalsListSectionComponent} from '../../../components/goals/goals-list-section/goals-list-section.component'
 
@@ -11,14 +11,14 @@ import { GoalsListSectionComponent} from '../../../components/goals/goals-list-s
   imports: [
     MenuComponent,
     IndicatorFilterSectionComponent,
-    IndicatorsListSectionComponent,
+    RecordsListSectionComponent,
     GoalsListSectionComponent,
     CommonModule
   ],
-  templateUrl: './update-indicators-page.component.html',
-  styleUrl: './update-indicators-page.component.scss'
+  templateUrl: './update-recordsGoals-page.component.html',
+  styleUrl: './update-recordsGoals-page.component.scss'
 })
-export class UpdateIndicatorsPageComponent {
+export class RecordsGoalsUpdatePageComponent {
   currentIndicators: any[] = [];
 
   onIndicatorsUpdated(indicators: any[]) {
