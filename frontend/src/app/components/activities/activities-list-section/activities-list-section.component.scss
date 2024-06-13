@@ -108,6 +108,18 @@ mat-paginator {
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
   }
+
+  .modalHeader{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: $fill-white;
+
+    h2{
+        margin-bottom: 0;
+    }
+  }
   
   .modal.show {
     display: block;

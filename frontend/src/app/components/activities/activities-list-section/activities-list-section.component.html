@@ -15,25 +15,34 @@
   
       <div *ngFor="let activity of activities; trackBy: trackByIndex"
         class="selectOptionContainer--option">
-        <p>{{ activity.name }}</p>
+        <p>{{ activity.activity_name }}</p>
         <div>
-          <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="openModal('edit')">
-          <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="removeActivity('delete')">
+          <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="openModal('edit', activity)">
+          <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="openModal('delete', activity)">
         </div>
       </div>
     </div>
+    <input [(ngModel)]="selectedActivity">
   
     <mat-paginator class="mat-paginator" [length]="totalActivities" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]"
       (page)="onPageChange($event)">
     </mat-paginator>
   </section>
 
+  <form *ngIf="isModalOpen">
+    <div class="forms-container--inputContainer">
+        <label>Nome atividade:</label>
+
+        <input [(ngModel)]="selectedActivity" type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }">
+      </div>
+  </form>
+
 
 
   <!-- MODAL -->
   <div class="modal" [ngClass]="{'show': isModalOpen}" (click)="closeModal()">
-    <form (onSubmit)="formSubmited()">
-        <div *ngIf="modalAction !== 'delete'" class="modal-container" [ngClass]="{ 'forms-container__error': isError }">
+    <div [class.loading]="isLoading">
+        <div (click)="$event.stopPropagation()" class="modal-container" [ngClass]="{ 'forms-container__error': isError }">
             <div class="modalHeader">
               <h2 *ngIf="modalAction === 'create'" class="modalTitle">Criar atividade</h2>
               <h2 *ngIf="modalAction === 'edit'" class="modalTitle">Editar atividade</h2>
@@ -42,21 +51,27 @@
           
             <div class="forms-container--inputContainer">
               <label>Nome atividade:</label>
-              <input type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }">
+
+              <input [(ngModel)]="selectedActivity" type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }">
             </div>
           
-            <button type="submit" class="forms-Button">Confirmar</button>
+            <button (click)="formSubmited()" type="submit" class="forms-Button">Confirmar</button>
         </div>
 
-        <div *ngIf="modalAction !== 'delete'" class="modal-container"  [ngClass]="{ 'forms-container__error': isError }">
+        <div *ngIf="modalAction === 'delete'" class="modal-container" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
             <div class="modalHeader">
                 <h2>Tem a certeza que quer remover esta atividade?</h2>
               <span class="close" (click)="closeModal()">&times;</span>
             </div>
           
-            <button type="submit" class="forms-Button">Confirmar</button>
+            <button (click)="formSubmited()" type="submit" class="forms-Button">Confirmar</button>
         </div>
-    </form>
+    </div>
+        
+
+    <div *ngIf="isLoading" class="loading-circle">
+        <div class="spinner"></div>
+    </div>
   </div>
 
 
