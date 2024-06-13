@@ -25,8 +25,8 @@ export class IndicatorFilterSectionComponent implements OnInit {
   activitiesList: Array<Activity> = [];
   servicesList: Array<Service> = [];
 
-  activityId!: number;
-  serviceId!: number;
+  activity_id!: number;
+  service_id!: number;
   month!: number;
   year!: number;
   date!: Date;
@@ -50,37 +50,6 @@ export class IndicatorFilterSectionComponent implements OnInit {
     });
   }
 
-  // getIndicators(): void {
-  //   if (this.month < 1 || this.month > 12) {
-  //     console.error('Invalid month:', this.month);
-  //     return;
-  //   }
-  //   if (!this.year) {
-  //     console.error('Year is required');
-  //     return;
-  //   }
-  //   if (!this.serviceId) {
-  //     console.error('Service ID is required');
-  //     return;
-  //   }
-  //   if (!this.activityId) {
-  //     console.error('Activity ID is required');
-  //     return;
-  //   }
-
-  //   this.date = new Date(this.year, this.month - 1);
-  //   this.indicatorService.getAllSaiIndicators(this.serviceId, this.activityId, this.date).subscribe({
-  //     next: (data) => {
-  //       console.log('Indicators data:', data);
-  //       this.indicatorsList = data;
-  //       this.indicatorsUpdated.emit(this.indicatorsList);
-  //     },
-  //     error: (error) => {
-  //       console.error('Error fetching indicators:', error);
-  //     }
-  //   });
-  // }
-
   getIndicators(): void {
     if (this.month < 1 || this.month > 12) {
       console.error('Invalid month:', this.month);
@@ -90,18 +59,18 @@ export class IndicatorFilterSectionComponent implements OnInit {
       console.error('Year is required');
       return;
     }
-    if (!this.serviceId) {
+    if (!this.service_id) {
       console.error('Service ID is required');
       return;
     }
-    if (!this.activityId) {
+    if (!this.activity_id) {
       console.error('Activity ID is required');
       return;
     }
 
     this.date = new Date(this.year, this.month - 1);
     const dateStr = this.date.toISOString().split('T')[0];
-    this.indicatorService.getAllSaiIndicators(this.serviceId, this.activityId, this.date).subscribe({
+    this.indicatorService.getAllSaiIndicators(this.service_id, this.activity_id, this.date).subscribe({
       next: (data) => {
         console.log('Indicators data:', data);
         this.indicatorsList = data;
@@ -111,7 +80,7 @@ export class IndicatorFilterSectionComponent implements OnInit {
         console.error('Error fetching indicators:', error);
       }
     });
-  }
+}
 
 
 }

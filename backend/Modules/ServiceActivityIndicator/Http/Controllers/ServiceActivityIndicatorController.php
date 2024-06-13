@@ -35,52 +35,62 @@ class ServiceActivityIndicatorController extends Controller
 
     public function getIndicators(Request $request)
     {
+         // Validação dos parâmetros recebidos na requisição
         $validator = Validator::make($request->all(), [
-            'indicatorId' => 'nullable|integer',
-            'serviceId' => 'nullable|integer',
-            'activityId' => 'nullable|integer',
+            'indicator_id' => 'nullable|integer',
+            'service_id' => 'nullable|integer',
+            'activity_id' => 'nullable|integer',
             'date' => 'nullable|date_format:Y-m-d'
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
+    
         try {
-            // Convert to integers to ensure correct types are passed to the query.
-            $serviceId = $request->has('serviceId') ? (int) $request->query('serviceId') : null;
-            $activityId = $request->has('activityId') ? (int) $request->query('activityId') : null;
+             // Recuperação dos parâmetros
+            $serviceId = $request->query('service_id');
+            $activityId = $request->query('activity_id');
             $date = $request->query('date');
-
-            $query = ServiceActivityIndicator::query()
-                ->join('indicators', 'indicators.id', '=', 'service_activity_indicators.indicator_id')
-                ->join('records', 'records.service_activity_indicator_id', '=', 'service_activity_indicators.id')
-                ->select([
-                    'service_activity_indicators.id as sai_id',
-                    'indicators.name as indicator_name',
-                    'records.value',
-                    'records.date'
-                ]);
-
-            if ($date) {
-                $query->whereDate('records.date', '=', $date);
-            }
-            if ($serviceId !== null) {
-                $query->where('service_activity_indicators.service_id', $serviceId);
-            }
-            if ($activityId !== null) {
-                $query->where('service_activity_indicators.activity_id', $activityId);
-            }
-
-            $indicators = $query->get();
-
-            return response()->json($indicators);
+    
+             // Construção da consulta utilizando os relacionamentos Eloquent
+            $query = ServiceActivityIndicator::with(['indicator', 'records'])
+                ->when($serviceId, function($query, $serviceId) {
+                    return $query->where('service_id', $serviceId);
+                })
+                ->when($activityId, function($query, $activityId) {
+                    return $query->where('activity_id', $activityId);
+                })
+                ->when($date, function($query, $date) {
+                    return $query->whereHas('records', function($query) use ($date) {
+                        $query->whereDate('date', $date);
+                    });
+                });
+    
+             // Execução da consulta
+            $serviceActivityIndicators = $query->get();
+    
+             // Transformação dos resultados para o formato desejado
+            $results = $serviceActivityIndicators->map(function($sai) {
+                return $sai->records->map(function($record) use ($sai) {
+                    return [
+                        'sai_id' => $sai->id,
+                        'indicator_name' => $sai->indicator->indicator_name,
+                        'value' => $record->value,
+                        'date' => $record->date,
+                    ];
+                });
+            })->flatten();
+    
+             // Retorno dos resultados em formato JSON
+            return response()->json($results, 200);
         } catch (Exception $exception) {
+             // Log e retorno de erro em caso de exceção
             Log::error("Error fetching indicators: " . $exception->getMessage());
-            return response()->json(['error' => $exception->getMessage()], 500);
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
-
+    
     /**
      * Store a newly created resource in storage.
      *

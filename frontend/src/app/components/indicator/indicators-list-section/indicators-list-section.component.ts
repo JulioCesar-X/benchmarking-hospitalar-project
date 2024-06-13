@@ -1,8 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-
 
 interface Indicator {
   id: number;
@@ -34,10 +33,9 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Verifica se a propriedade 'indicators' mudou
     if (changes['indicators']) {
       if (changes['indicators'].currentValue !== changes['indicators'].previousValue) {
-        this.buildForm();  // Reconstrói os formulários quando os indicadores mudam
+        this.buildForm();
       }
     }
   }
@@ -48,7 +46,6 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
       this.indicatorForms[indicator.id] = this.fb.group({
         indicatorValue: [indicator.value || '', Validators.required]
       });
-      // Set isInserted based on whether value is present
       indicator.isInserted = indicator.value != null;
     });
   }
@@ -60,7 +57,6 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
 
   toggleEdit(indicator: Indicator): void {
     indicator.isInserted = !indicator.isInserted;
-
     const formControl = this.indicatorForms[indicator.id].get('indicatorValue');
     if (formControl) {
       if (indicator.isInserted) {

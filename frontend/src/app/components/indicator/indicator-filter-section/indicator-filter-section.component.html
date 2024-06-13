@@ -41,12 +41,13 @@
     <label>Mostrar indicadores com dados não inseridos</label>
   </div>
 </section> -->
+
 <section class="forms-container">
   <div class="forms-container--inputContainer">
     <div class="special">
       <div class="selectContainer">
         <label for="">Serviços:</label>
-        <select [(ngModel)]="serviceId" id="serviceId" name="serviceId">
+        <select [(ngModel)]="service_id" id="serviceId" name="serviceId">
           <option *ngFor="let service of servicesList ; let i = index;" [value]="service.id">
             {{ service.service_name }}
           </option>
@@ -55,7 +56,7 @@
       </div>
       <div class="selectContainer">
         <label for="">Atividade:</label>
-        <select [(ngModel)]="activityId" id="activityId" name="activityId">
+        <select [(ngModel)]="activity_id" id="activityId" name="activityId">
           <option *ngFor="let activity of activitiesList; let i = index;" [value]="activity.id">
             {{ activity.activity_name }}
           </option>
@@ -77,7 +78,7 @@
     </div>
 
     <button (click)="getIndicators()" class="forms-Button"
-      [disabled]="!month || !year || !serviceId || !activityId">Procurar</button>
+      [disabled]="!month || !year || !service_id || !activity_id">Procurar</button>
   </div>
   <div class="forms-container--inputContainer">
     <input type="checkbox">
