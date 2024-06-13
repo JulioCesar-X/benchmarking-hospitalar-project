@@ -91,7 +91,9 @@ class ServiceActivityIndicatorController extends Controller
 
             return response()->json($response);
         } catch (Exception $exception) {
+             // Log e retorno de erro em caso de exceção
             Log::error("Error fetching indicators: " . $exception->getMessage());
+            return response()->json(['error' => 'Internal Server Error'], 500);
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }

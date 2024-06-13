@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, Validators, FormBuilder,FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Indicator } from '../../../models/indicator.model';
