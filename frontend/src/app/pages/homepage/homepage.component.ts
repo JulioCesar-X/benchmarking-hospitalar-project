@@ -83,8 +83,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';  // Importar CommonModule para ngFor
 import { RouterModule } from '@angular/router';  // Importar RouterModule para routerLink
-import { NavbarComponent } from '../../components/ui/navbar/navbar.component';
-import { FooterComponent } from '../../components/ui/footer/footer.component';
 import { ServiceService } from '../../services/service.service';
 import { Service } from '../../models/service.model'; // Asegure-se de que este modelo esteja definido corretamente
 import { Router } from '@angular/router';
@@ -96,8 +94,6 @@ import anime from 'animejs/lib/anime.es.js';
   imports: [
     CommonModule,
     RouterModule,
-    NavbarComponent,
-    FooterComponent
   ],
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss']

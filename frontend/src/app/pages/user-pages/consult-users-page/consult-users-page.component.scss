@@ -1,18 +1,21 @@
-.row {
+
+
+/* .row {
     display: flex;
+
 
     div:last-child {
         margin-inline: 0.5em;
         width: 100%;
     }
-}
+} */
 
-.container{
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
+/* .full-w {
+    margin-inline: 0.5em;
+    width: 100%;
+} */
 
-main {
+:host {
     flex: 1;
-}
+    display: flex;
+  }

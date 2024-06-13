@@ -43,7 +43,7 @@
 .forms-container {
     @include forms-container();
 
-    margin-block: 0.5em;
+    margin-block: 0em;
     border: 10px solid $main-blue;
     background-color: $fill-white;
     width: 100%;

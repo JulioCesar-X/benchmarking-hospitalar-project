@@ -40,11 +40,10 @@ import { FooterComponent } from '../../../components/ui/footer/footer.component'
   selector: 'app-consult-users-page',
   standalone: true,
   imports: [
-    NavbarComponent,
     MenuComponent,
     UsersListSectionComponent,
     UserFilterSectionComponent,
-    FooterComponent
+
   ],
   templateUrl: './consult-users-page.component.html',
   styleUrls: ['./consult-users-page.component.scss']

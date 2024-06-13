@@ -3,8 +3,8 @@
 #comente esse para o deploy
 dockerize -wait tcp://db:5432 -timeout 60s
 
-# #comente esse para o ambiente de desenvolvimento
-#  dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a:5432 -timeout 60s
+#comente esse para o ambiente de desenvolvimento
+# dockerize -wait tcp://dpg-cp50v0f79t8c73emtbjg-a:5432 -timeout 60s
 
 php artisan clear:all
 

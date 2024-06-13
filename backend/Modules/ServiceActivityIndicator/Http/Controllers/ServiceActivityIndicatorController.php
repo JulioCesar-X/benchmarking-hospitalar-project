@@ -8,6 +8,7 @@ use Modules\Goal\Entities\Goal;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Modules\Record\Entities\Record;
 use Exception;
 
 
@@ -32,7 +33,6 @@ class ServiceActivityIndicatorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
     public function getIndicators(Request $request)
     {
          // Validação dos parâmetros recebidos na requisição
@@ -87,6 +87,7 @@ class ServiceActivityIndicatorController extends Controller
         } catch (Exception $exception) {
              // Log e retorno de erro em caso de exceção
             Log::error("Error fetching indicators: " . $exception->getMessage());
+            return response()->json(['error' => 'Internal Server Error'], 500);
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
@@ -162,7 +163,6 @@ class ServiceActivityIndicatorController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-
     /**
      * Remove the specified resource from storage.
      *

@@ -23,6 +23,7 @@ interface Indicator {
   styleUrls: ['./indicators-list-section.component.scss']
 })
 export class IndicatorsListSectionComponent implements OnInit, OnChanges {
+  
   @Input() indicators: Indicator[] = [];
   indicatorForms: { [key: number]: FormGroup } = {};
 
