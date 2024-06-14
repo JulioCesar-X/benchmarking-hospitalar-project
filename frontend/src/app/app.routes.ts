@@ -20,6 +20,9 @@ import { CreateIndicatorsPageComponent } from './pages/indicators/create-indicat
 import { ActivitiesPageComponent } from './pages/activites/activities-page/activities-page.component'
 
 import {ServicesPageComponent} from './pages/services/services-page/services-page.component'
+import {CreateServicesPageComponent} from './pages/services/create-services-page/create-services-page.component'
+import {UpdateServicesPageComponent} from './pages/services/update-services-page/update-services-page.component'
+
 
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
@@ -38,20 +41,27 @@ export const routes: Routes = [
   { path: 'createUser', component: CreateUserPageComponent, canActivate: [AuthGuard] },
   { path: 'editUser/:id', component: EditUserPageComponent, canActivate: [AuthGuard] },
 
-  //actividades
+  //actividades - single page
   { path: 'activities', component: ActivitiesPageComponent },
 
+
   //Services
-  { path: 'services', component: ServicesPageComponent },
+/*   { path: 'services', component: ServicesPageComponent },
+  { path: 'servicesCreate', component: CreateServicesPageComponent }, */
+  {
+    path: 'services',
+    children: [
+      { path: '', component: ServicesPageComponent },
+      { path: 'create', component: CreateServicesPageComponent },
+      { path: 'update/:id', component: UpdateServicesPageComponent },
+    ]
+  },
+  { path: 'description/:serviceId', component: DescriptionServicePageComponent },
+
 
 
   { path: 'teste', component: TesteComponent },
-
-  { path: 'description/:serviceId', component: DescriptionServicePageComponent },
   { path: 'consultData', component: ConsultDataPageComponent },
-
-
-
 
   { path: 'RecordGoalsUpdate', component: RecordsGoalsUpdatePageComponent, canActivate: [AuthGuard] },
 

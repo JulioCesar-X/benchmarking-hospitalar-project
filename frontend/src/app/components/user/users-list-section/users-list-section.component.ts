@@ -149,6 +149,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
       roleId: user.role_id
      }; // Create user data object
     this.userService.setUserData(userData);
+    
     this.router.navigate(['/editUser/'+ user.id]);
 
 

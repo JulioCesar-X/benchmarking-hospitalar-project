@@ -3,11 +3,20 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Service } from '../models/service.model';  // Certifique-se de que a interface Service esteja corretamente definida
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ServiceService {
+  //Passar dados da lista para pagina de edit
+  private serviceDataSource = new BehaviorSubject<any>(null); // Use BehaviorSubject for initial value
+  serviceData$ = this.serviceDataSource.asObservable();
+
+  setServiceData(data: any) {
+    this.serviceDataSource.next(data);
+  }
+  //........JMS
 
   constructor(private http: HttpClient) { }
 

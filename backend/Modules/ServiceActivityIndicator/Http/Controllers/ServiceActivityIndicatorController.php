@@ -8,6 +8,7 @@ use Modules\Goal\Entities\Goal;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Modules\Record\Entities\Record;
 use Exception;
 
 
@@ -32,55 +33,48 @@ class ServiceActivityIndicatorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
     public function getIndicators(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'indicatorId' => 'nullable|integer',
-            'serviceId' => 'nullable|integer',
-            'activityId' => 'nullable|integer',
-            'date' => 'nullable|date_format:Y-m-d'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
-        }
+        $serviceId = $request->query('serviceId');
+        $activityId = $request->query('activityId');
+        $date = $request->query('date');
 
         try {
-            // Convert to integers to ensure correct types are passed to the query.
-            $serviceId = $request->has('serviceId') ? (int) $request->query('serviceId') : null;
-            $activityId = $request->has('activityId') ? (int) $request->query('activityId') : null;
-            $date = $request->query('date');
+            // Inicialmente, busca-se os SAI correspondentes aos IDs de serviço e atividade fornecidos
+            $serviceActivityIndicators = ServiceActivityIndicator::where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->with('indicator')
+                ->get();
 
-            $query = ServiceActivityIndicator::query()
-                ->join('indicators', 'indicators.id', '=', 'service_activity_indicators.indicator_id')
-                ->join('records', 'records.service_activity_indicator_id', '=', 'service_activity_indicators.id')
-                ->select([
-                    'service_activity_indicators.id as sai_id',
-                    'indicators.name as indicator_name',
-                    'records.value',
-                    'records.date'
+            // Preparar a resposta final
+            $response = collect();
+
+            foreach ($serviceActivityIndicators as $sai) {
+                // Buscar registros que correspondam ao sai_id e à data fornecida
+                $records = Record::where('service_activity_indicator_id', $sai->id)
+                    ->whereDate('date', '=', $date)
+                    ->get();
+
+                // Estruturar os dados para resposta
+                $response->push([
+                    'sai_id' => $sai->id,
+                    'indicator_name' => $sai->indicator->indicator_name,
+                    'records' => $records->map(function ($record) {
+                        return [
+                            'record_id' => $record->id,
+                            'value' => $record->value,
+                            'date' => $record->date->format('Y-m-d')
+                        ];
+                    })
                 ]);
-
-            if ($date) {
-                $query->whereDate('records.date', '=', $date);
-            }
-            if ($serviceId !== null) {
-                $query->where('service_activity_indicators.service_id', $serviceId);
-            }
-            if ($activityId !== null) {
-                $query->where('service_activity_indicators.activity_id', $activityId);
             }
 
-            $indicators = $query->get();
-
-            return response()->json($indicators);
+            return response()->json($response);
         } catch (Exception $exception) {
             Log::error("Error fetching indicators: " . $exception->getMessage());
-            return response()->json(['error' => $exception->getMessage()], 500);
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -152,7 +146,6 @@ class ServiceActivityIndicatorController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-
     /**
      * Remove the specified resource from storage.
      *

@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    Route::get('sai/indicators', 'ServiceActivityIndicatorController@getIndicators');
     Route::get('sai', 'ServiceActivityIndicatorController@index');
     Route::get('sai/{id}', 'ServiceActivityIndicatorController@show');
-    Route::get('sai/indicators', 'ServiceActivityIndicatorController@getIndicators');
 
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {
         Route::apiResource('sai', 'ServiceActivityIndicatorController')->names('admin.sai');
