@@ -20,6 +20,6 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     provideAnimations(),
-    importProvidersFrom(HttpClientModule), provideAnimationsAsync(), provideAnimationsAsync() // Corrige a importação do HttpClientModule
+    importProvidersFrom(HttpClientModule), provideAnimationsAsync(), provideAnimationsAsync(), provideAnimationsAsync() // Corrige a importação do HttpClientModule
   ]
 }).catch(err => console.error(err));

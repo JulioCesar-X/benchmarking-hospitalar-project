@@ -24,14 +24,18 @@
     </div>
     <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageContentSubMenuOpen}">
       <div class="subMenuItem">
-        <a routerLink="/updateIndicators" routerLinkActive="Ativo">Inserir dados</a>
+        <a routerLink="/services" routerLinkActive="Ativo">Gerir serviços</a>
       </div>
       <div class="subMenuItem">
-        <a routerLink="/createIndicator" routerLinkActive="Ativo">Criar Indicador</a>
+        <a routerLink="/activities" routerLinkActive="Ativo">Gerir atividades</a>
       </div>
       <div class="subMenuItem">
-        <a routerLink="/updateGoals" routerLinkActive="Ativo">Gerir metas</a>
+        <a routerLink="/indicatorsIndex" routerLinkActive="Ativo">Gerir indicadores</a>
       </div>
+      <div class="subMenuItem">
+        <a routerLink="/RecordGoalsUpdate" routerLinkActive="Ativo">Gerir dados</a>
+      </div>
+
       <div class="subMenuItem">
         <a routerLink="/consultData" routerLinkActive="Ativo">View Dashboards</a>
       </div>

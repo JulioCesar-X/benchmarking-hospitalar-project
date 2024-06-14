@@ -33,7 +33,7 @@ class ServiceActivityIndicatorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getIndicators(Request $request)
+    public function getIndicatorsRecords(Request $request)
     {
         // Validação inicial dos parâmetros de entrada
         $validator = Validator::make($request->all(), [
@@ -74,8 +74,6 @@ class ServiceActivityIndicatorController extends Controller
             $response = $serviceActivityIndicators->map(function ($sai) {
                 return [
                     'sai_id' => $sai->id,
-                    'service_name' => $sai->service->service_name ?? 'No Service',
-                    'activity_name' => $sai->activity->activity_name ?? 'No Activity',
                     'indicator_name' => $sai->indicator->indicator_name,
                     'records' => $sai->records->map(function ($record) {
                         // Assegura que a data é um objeto Carbon
@@ -91,9 +89,63 @@ class ServiceActivityIndicatorController extends Controller
 
             return response()->json($response);
         } catch (Exception $exception) {
-             // Log e retorno de erro em caso de exceção
-            Log::error("Error fetching indicators: " . $exception->getMessage());
             return response()->json(['error' => 'Internal Server Error'], 500);
+        }
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getIndicatorsGoals(Request $request)
+    {
+        // Validação dos parâmetros de entrada
+        $validator = Validator::make($request->all(), [
+            'service_id' => 'required|integer',
+            'activity_id' => 'required|integer',
+            'year' => 'required|integer|min:1900|max:2100' // Validar o ano
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        // Extração dos parâmetros após validação
+        $serviceId = $request->input('service_id');
+        $activityId = $request->input('activity_id');
+        $year = $request->input('year');
+
+        try {
+            // Consulta principal para buscar indicadores, incluindo pré-carregamento de relações
+            $serviceActivityIndicators = ServiceActivityIndicator::with([
+                'indicator',
+                'goals' => function ($query) use ($year) {
+                    $query->where('year', '=', $year);
+                },
+                'service',
+                'activity'
+            ])
+                ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->get();
+
+            // Formatação da resposta para enviar dados já estruturados
+            $response = $serviceActivityIndicators->map(function ($sai) {
+                return [
+                    'sai_id' => $sai->id,
+                    'indicator_name' => $sai->indicator->indicator_name,
+                    'goal' => $sai->goals->map(function ($goal) {
+                        return [
+                            'goal_id' => $goal->id,
+                            'target_value' => $goal->target_value,
+                            'year' => $goal->year
+                        ];
+                    })->first()
+                ];
+            });
+
+            return response()->json($response);
+        } catch (Exception $exception) {
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }

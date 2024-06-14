@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CreateFieldModalComponent } from '../create-field-modal/create-field-modal.component';
+import { CreateFieldModalComponent } from '../../indicators/create-field-modal/create-field-modal.component';
 import { CommonModule } from '@angular/common';
 import { IndicatorService } from '../../../services/indicator.service';
 import { FormsModule } from '@angular/forms';

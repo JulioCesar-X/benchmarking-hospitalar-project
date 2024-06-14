@@ -28,20 +28,37 @@ export class IndicatorService {
     );
   }
 
-  getAllSaiIndicators(service_id: number, activity_id: number, date: Date): Observable<any[]> {
+  getAllSaiIndicators(service_id: number, activity_id: number, date: Date): Observable<Indicator[]> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.cookieService.get('access_token')}`
+    });
+    const params = new HttpParams()
+      .set('serviceId', service_id.toString())
+      .set('activityId', activity_id.toString())
+      .set('date', date.toISOString().split('T')[0]);
+
+    return this.http.get<Indicator[]>(`/sai/indicators/records`, { params: params, headers: headers, withCredentials: true })
+      .pipe(
+        catchError(error => {
+          console.error('Erro ao buscar records:', error);
+          return throwError(() => new Error('Falha ao buscar indicadores c/ records'));
+        })
+      );
+  }
+  getAllSaiGoals(service_id: number, activity_id: number, year: number): Observable<Indicator[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`
     });
     const params = new HttpParams()
       .set('service_id', service_id)
       .set('activity_id', activity_id)
-      .set('date', date.toISOString().split('T')[0]); // Garantir que a data está no formato YYYY-MM-DD
+      .set('year', year);
 
-    return this.http.get<any[]>(`/sai/indicators`, { params: params, headers: headers, withCredentials: true })
+    return this.http.get<Indicator[]>(`/sai/indicators/goals`, { params: params, headers: headers, withCredentials: true })
       .pipe(
         catchError(error => {
-          console.error('Erro ao buscar indicadores:', error);
-          return throwError(() => new Error('Falha ao buscar indicadores'));
+          console.error('Erro ao buscar metas:', error);
+          return throwError(() => new Error('Falha ao buscar indicadores c/ metas'));
         })
       );
   }

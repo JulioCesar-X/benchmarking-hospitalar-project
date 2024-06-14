@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get('sai/indicators', 'ServiceActivityIndicatorController@getIndicators');
+    Route::get('sai/indicators/records', 'ServiceActivityIndicatorController@getIndicatorsRecords');
+    Route::get('sai/indicators/goals', 'ServiceActivityIndicatorController@getIndicatorsGoals');
     Route::get('sai', 'ServiceActivityIndicatorController@index');
     Route::get('sai/{id}', 'ServiceActivityIndicatorController@show');
 

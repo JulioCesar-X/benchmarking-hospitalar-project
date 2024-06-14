@@ -1,9 +1,11 @@
 <?php
 
 namespace Modules\Notification\Http\Controllers;
+
 use Modules\Notification\Entities\Notification;
 use App\Http\Controllers\Controller;
 use Modules\User\Entities\User;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 
@@ -64,7 +66,7 @@ class NotificationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,Notification $notification)
+    public function update(Request $request, Notification $notification)
     {
         try {
             $notification->update($request->all());
@@ -72,7 +74,6 @@ class NotificationController extends Controller
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
-
     }
 
     /**
@@ -94,22 +95,34 @@ class NotificationController extends Controller
 
     public function getAllNotificationReceived(Request $request)
     {
+        // Validação de entrada
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
         try {
-            // Obter o usuário pelo email fornecido na requisição
-            $user = User::where('email', $request->input('email'))->first();
+            // Obter o email fornecido na requisição
+            $email = $request->input('email');
+
+            // Verificar se o usuário existe
+            $user = User::where('email', $email)->first();
 
             if (!$user) {
                 return response()->json(['error' => 'Usuário não encontrado'], 404);
             }
 
             // Buscar todas as notificações recebidas pelo usuário com base no relacionamento
-            $notifications = $user->receivedNotifications()->get();
+            $notifications = $user->receivedNotifications()
+                ->whereRaw('receiver_id = ?', [$user->id])  // Checagem de ID válido
+                ->get();
 
             return response()->json($notifications);
-
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
         }
     }
-
 }

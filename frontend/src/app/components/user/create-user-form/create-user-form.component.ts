@@ -30,7 +30,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CreateFieldModalComponent } from '../../indicator/create-field-modal/create-field-modal.component';
+import { CreateFieldModalComponent } from '../../indicators/create-field-modal/create-field-modal.component';
 import { UserService } from '../../../services/user.service';
 import { NotificationComponent } from '../../shared/notification/notification.component';
 

@@ -1,5 +1,5 @@
 export interface Goal {
-  service_activity_indicator_id: number;
-  target_value: number | string;
-  year: number;
+  sai_id: number; // Identificador do indicador de atividade do serviço associado
+  target_value: number | string;    // Valor alvo da meta
+  year: number;                     // Ano da meta
 }
