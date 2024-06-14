@@ -2,20 +2,11 @@ import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/cor
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
-
-
-interface Indicator {
-  id: number;
-  name: string;
-  value: string | null;
-  month: number;
-  year: number;
-  isInserted: boolean;
-}
+import { Router } from '@angular/router';
+import { Indicator } from '../../../models/indicator.model';
 
 @Component({
-  selector: 'app-indicators-list-section',
+  selector: 'app-records-list-section',
   standalone: true,
   imports: [
     CommonModule,
@@ -26,6 +17,7 @@ interface Indicator {
 })
 export class RecordsListSectionComponent implements OnInit, OnChanges {
   @Input() indicators: Indicator[] = [];
+  @Input() isLoading: boolean = false; // Adiciona a propriedade isLoading
   indicatorForms: { [key: number]: FormGroup } = {};
 
   constructor(private fb: FormBuilder, private router: Router) { }
@@ -35,10 +27,9 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Verifica se a propriedade 'indicators' mudou
     if (changes['indicators']) {
       if (changes['indicators'].currentValue !== changes['indicators'].previousValue) {
-        this.buildForm();  // Reconstrói os formulários quando os indicadores mudam
+        this.buildForm();
       }
     }
   }
@@ -46,37 +37,34 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
   buildForm(): void {
     this.indicatorForms = {};
     this.indicators.forEach(indicator => {
-      this.indicatorForms[indicator.id] = this.fb.group({
-        indicatorValue: [indicator.value || '', Validators.required]
+      const formControls: any = {};
+      const isInserted = indicator.isInserted ?? false;  // Garantir que isInserted seja sempre boolean
+      indicator.records?.forEach((record, index) => {
+        formControls['recordValue' + index] = new FormControl({ value: record.value || '', disabled: isInserted }, Validators.required);
       });
-      // Set isInserted based on whether value is present
-      indicator.isInserted = indicator.value != null;
+      this.indicatorForms[indicator.sai_id!] = this.fb.group(formControls);
+      indicator.isInserted = indicator.records?.some(record => record.value != null) ?? false;
     });
   }
 
-  onValueChange(indicator: Indicator, event: Event): void {
+  onValueChange(indicator: Indicator, event: Event, recordIndex: number): void {
     const inputElement = event.target as HTMLInputElement;
-    indicator.value = inputElement.value;
+    indicator.records![recordIndex].value = inputElement.value;
   }
 
   toggleEdit(indicator: Indicator): void {
     indicator.isInserted = !indicator.isInserted;
-
-    const formControl = this.indicatorForms[indicator.id].get('indicatorValue');
-    if (formControl) {
+    const form = this.indicatorForms[indicator.sai_id!];
+    if (form) {
       if (indicator.isInserted) {
-        formControl.disable();
+        Object.keys(form.controls).forEach(key => form.get(key)?.disable());
       } else {
-        formControl.enable();
+        Object.keys(form.controls).forEach(key => form.get(key)?.enable());
       }
     }
   }
 
-  trackByIndex(index: number, item: any): number {
-    return item.id;
-  }
-
-  navigateToCreateRecord(){
-    this.router.navigate(['createIndicators']);
+  trackByIndex(index: number, item: Indicator): number {
+    return item.sai_id!;
   }
 }

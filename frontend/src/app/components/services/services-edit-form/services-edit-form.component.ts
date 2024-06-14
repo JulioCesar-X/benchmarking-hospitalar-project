@@ -45,9 +45,11 @@ export class ServicesEditFormComponent {
     //vai ser preciso recorrer a tabela SAI - fazer metodo no backend para retornar actividades com base no id do serviço
     this.serviceService.serviceData$.subscribe(data => {
       this.serviceId = data.id
-      this.serviceName = data.service_name,
+      this.serviceName = data.name,
       this.description = data.description
     });
+
+
    }
 
   onSubmit(): void {

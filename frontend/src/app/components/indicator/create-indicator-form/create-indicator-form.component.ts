@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CreateFieldModalComponent } from '../create-field-modal/create-field-modal.component';
+import { CreateFieldModalComponent } from '../../indicators/create-field-modal/create-field-modal.component';
 import { CommonModule } from '@angular/common';
 import { IndicatorService } from '../../../services/indicator.service';
 import { FormsModule } from '@angular/forms';
@@ -33,7 +33,7 @@ export class CreateIndicatorFormComponent implements OnInit {
     activity_id: '',
     records: [],
     goal: {
-      sai_id: 0,
+      service_activity_indicator_id: 0,
       target_value: '',
       year: new Date().getFullYear()
     },
@@ -120,7 +120,7 @@ export class CreateIndicatorFormComponent implements OnInit {
       activity_id: '',
       records: [],
       goal: {
-        sai_id: 0,
+        service_activity_indicator_id: 0,
         target_value: '',
         year: new Date().getFullYear()
       },
@@ -138,7 +138,7 @@ export class CreateIndicatorFormComponent implements OnInit {
       this.indicator.goal.target_value = value;
     } else {
       this.indicator.goal = {
-        sai_id: 0,
+        service_activity_indicator_id: 0,
         target_value: value,
         year: new Date().getFullYear()
       };

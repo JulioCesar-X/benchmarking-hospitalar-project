@@ -1,11 +1,12 @@
-import { Component, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgModel } from '@angular/forms';
-import { Activity } from '../../../models/activity.model'
-import { ActivityService } from '../../../services/activity.service'
-import { IndicatorService } from '../../../services/indicator.service'
+import { Activity } from '../../../models/activity.model';
+import { ActivityService } from '../../../services/activity.service';
+import { IndicatorService } from '../../../services/indicator.service';
 import { ServiceService } from '../../../services/service.service';
 import { Service } from '../../../models/service.model';
+import { Indicator } from '../../../models/indicator.model';
 
 @Component({
   selector: 'app-indicator-filter-section',
@@ -18,20 +19,23 @@ import { Service } from '../../../models/service.model';
   styleUrl: './indicator-filter-section.component.scss'
 })
 export class IndicatorFilterSectionComponent implements OnInit {
+  @Input() selectedTab: string = 'Records';
 
   constructor(private indicatorService: IndicatorService, private activityService: ActivityService, private serviceService: ServiceService) { }
 
-  indicatorsList: Array<any> = [];
+  indicatorsList: Array<Indicator> = [];
   activitiesList: Array<Activity> = [];
   servicesList: Array<Service> = [];
 
-  activityId!: number;
-  serviceId!: number;
+  activity_id!: number;
+  service_id!: number;
   month!: number;
   year!: number;
   date!: Date;
+  isSubmitted = false;
 
-  @Output() indicatorsUpdated = new EventEmitter<any[]>();
+  @Output() indicatorsUpdated = new EventEmitter<Indicator[]>();
+  @Output() loadingStateChanged = new EventEmitter<boolean>(); // Adiciona um novo EventEmitter para o estado de carregamento
 
   ngOnInit() {
     this.getActivities();
@@ -50,68 +54,80 @@ export class IndicatorFilterSectionComponent implements OnInit {
     });
   }
 
-  // getIndicators(): void {
-  //   if (this.month < 1 || this.month > 12) {
-  //     console.error('Invalid month:', this.month);
-  //     return;
-  //   }
-  //   if (!this.year) {
-  //     console.error('Year is required');
-  //     return;
-  //   }
-  //   if (!this.serviceId) {
-  //     console.error('Service ID is required');
-  //     return;
-  //   }
-  //   if (!this.activityId) {
-  //     console.error('Activity ID is required');
-  //     return;
-  //   }
-
-  //   this.date = new Date(this.year, this.month - 1);
-  //   this.indicatorService.getAllSaiIndicators(this.serviceId, this.activityId, this.date).subscribe({
-  //     next: (data) => {
-  //       console.log('Indicators data:', data);
-  //       this.indicatorsList = data;
-  //       this.indicatorsUpdated.emit(this.indicatorsList);
-  //     },
-  //     error: (error) => {
-  //       console.error('Error fetching indicators:', error);
-  //     }
-  //   });
-  // }
-
   getIndicators(): void {
+    this.isSubmitted = true;
+    this.loadingStateChanged.emit(true); // Define isLoading como true
+    if (this.selectedTab === 'Records') {
+      this.getRecords();
+    } else {
+      this.getGoals();
+    }
+  }
+
+  getRecords(): void {
     if (this.month < 1 || this.month > 12) {
       console.error('Invalid month:', this.month);
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
       return;
     }
     if (!this.year) {
       console.error('Year is required');
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
       return;
     }
-    if (!this.serviceId) {
+    if (!this.service_id) {
       console.error('Service ID is required');
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
       return;
     }
-    if (!this.activityId) {
+    if (!this.activity_id) {
       console.error('Activity ID is required');
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
       return;
     }
-
     this.date = new Date(this.year, this.month - 1);
     const dateStr = this.date.toISOString().split('T')[0];
-    this.indicatorService.getAllSaiIndicators(this.serviceId, this.activityId, this.date).subscribe({
-      next: (data) => {
+    this.indicatorService.getAllSaiIndicators(this.service_id, this.activity_id, this.date).subscribe({
+      next: (data: Indicator[]) => {
         console.log('Indicators data:', data);
         this.indicatorsList = data;
         this.indicatorsUpdated.emit(this.indicatorsList);
+        this.loadingStateChanged.emit(false); // Define isLoading como false quando os dados forem recebidos
       },
       error: (error) => {
         console.error('Error fetching indicators:', error);
+        this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
       }
     });
   }
 
-
+  getGoals(): void {
+    if (!this.year) {
+      console.error('Year is required');
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
+      return;
+    }
+    if (!this.service_id) {
+      console.error('Service ID is required');
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
+      return;
+    }
+    if (!this.activity_id) {
+      console.error('Activity ID is required');
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
+      return;
+    }
+    this.indicatorService.getAllSaiGoals(this.service_id, this.activity_id, this.year).subscribe({
+      next: (data: Indicator[]) => {
+        console.log('Goals data:', data);
+        this.indicatorsList = data;
+        this.indicatorsUpdated.emit(this.indicatorsList);
+        this.loadingStateChanged.emit(false); // Define isLoading como false quando os dados forem recebidos
+      },
+      error: (error) => {
+        console.error('Error fetching goals:', error);
+        this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
+      }
+    });
+  }
 }

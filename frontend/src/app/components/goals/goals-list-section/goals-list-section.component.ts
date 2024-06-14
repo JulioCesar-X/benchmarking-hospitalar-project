@@ -1,47 +1,57 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
-
-interface Indicator {
-  id: number;
-  name: string;
-  value: string | null;
-  year: number;
-  isInserted: boolean;
-}
+import { Router } from '@angular/router';
+import { Indicator } from '../../../models/indicator.model';
 
 @Component({
   selector: 'app-goals-list-section',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './goals-list-section.component.html',
-  styleUrl: './goals-list-section.component.scss'
+  styleUrls: ['./goals-list-section.component.scss']
 })
-export class GoalsListSectionComponent {
-  indicators: Indicator[] = [
-    { id: 1, name: 'Indicator 1', value: '12', year: 0, isInserted: true },
-    { id: 2, name: 'Indicator 2', value: '', year: 0, isInserted: false },
-  ];
-
+export class GoalsListSectionComponent implements OnInit, OnChanges {
+  @Input() indicators: Indicator[] = [];
+  @Input() isLoading: boolean = false; // Adiciona a propriedade isLoading
   indicatorForms: { [key: number]: FormGroup } = {};
 
-  constructor(private router: Router) { }
+  constructor(private fb: FormBuilder, private router: Router) { }
 
   ngOnInit(): void {
+    this.buildForm();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['indicators']) {
+      if (changes['indicators'].currentValue !== changes['indicators'].previousValue) {
+        this.buildForm();
+      }
+    }
+  }
+
+  buildForm(): void {
+    this.indicatorForms = {};
     this.indicators.forEach(indicator => {
-      const formControl = new FormControl({ value: indicator.value, disabled: indicator.isInserted }, Validators.required);
-      this.indicatorForms[indicator.id] = new FormGroup({
-        indicatorValue: formControl
+      this.indicatorForms[indicator.sai_id!] = this.fb.group({
+        indicatorValue: new FormControl(indicator.goal?.target_value || '', Validators.required)
       });
+      indicator.isInserted = indicator.goal?.target_value != null;
     });
+  }
+
+  onValueChange(indicator: Indicator, event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    indicator.goal!.target_value = inputElement.value;
   }
 
   toggleEdit(indicator: Indicator): void {
     indicator.isInserted = !indicator.isInserted;
-
-    const formControl = this.indicatorForms[indicator.id].get('indicatorValue');
+    const formControl = this.indicatorForms[indicator.sai_id!].get('indicatorValue');
     if (formControl) {
       if (indicator.isInserted) {
         formControl.disable();
@@ -49,20 +59,9 @@ export class GoalsListSectionComponent {
         formControl.enable();
       }
     }
-
-    // logic to update the indicator in the DB if necessary
   }
 
-  onValueChange(indicator: Indicator, event: Event): void {
-    const inputElement = event.target as HTMLInputElement;
-    indicator.value = inputElement.value;
-  }
-
-  trackByIndex(index: number, item: any): any {
-    return index;
-  }
-
-  navigateToCreateGoal(){
-    this.router.navigate(['createIndicators']);
+  trackByIndex(index: number, item: Indicator): number {
+    return item.sai_id!;
   }
 }
