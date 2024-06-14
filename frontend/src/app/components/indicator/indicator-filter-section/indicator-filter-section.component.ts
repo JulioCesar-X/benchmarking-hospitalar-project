@@ -27,6 +27,7 @@ export class IndicatorFilterSectionComponent implements OnInit {
   activitiesList: Array<Activity> = [];
   servicesList: Array<Service> = [];
 
+
   activity_id!: number;
   service_id!: number;
   month!: number;
@@ -37,15 +38,27 @@ export class IndicatorFilterSectionComponent implements OnInit {
   @Output() indicatorsUpdated = new EventEmitter<Indicator[]>();
   @Output() loadingStateChanged = new EventEmitter<boolean>(); // Adiciona um novo EventEmitter para o estado de carregamento
 
-  ngOnInit() {
-    this.getActivities();
+  ngOnInit() { //pega tudo oque tem na tabela, de ser escolhido serviço libera um drop da atividade
+    //this.getActivities();
     this.getServices();
   }
 
-  getActivities() {
-    this.activityService.getActivities().subscribe(data => {
-      this.activitiesList = data;
-    });
+  getActivities(): void {
+    if (this.service_id) {
+      this.activityService.getActivitiesByServiceID(this.service_id).subscribe(
+        (data: Activity[]) => {
+          this.activitiesList = data; 
+        },
+        (error) => {
+          console.error('Error fetching activities:', error); 
+        }
+      );
+    }
+  }
+
+  onServiceSelected(serviceId: number) {
+    this.service_id = serviceId;
+    this.getActivities();
   }
 
   getServices() {
@@ -56,7 +69,7 @@ export class IndicatorFilterSectionComponent implements OnInit {
 
   getIndicators(): void {
     this.isSubmitted = true;
-    this.loadingStateChanged.emit(true); // Define isLoading como true
+    this.loadingStateChanged.emit(true); 
     if (this.selectedTab === 'Records') {
       this.getRecords();
     } else {

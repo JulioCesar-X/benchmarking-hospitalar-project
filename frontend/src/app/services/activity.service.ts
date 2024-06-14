@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient,HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Activity } from '../models/activity.model';
@@ -11,7 +11,23 @@ import { CookieService } from 'ngx-cookie-service';
 export class ActivityService {
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
-  getActivities(): Observable<Activity[]> {
+  getActivitiesByServiceID(service_id: number): Observable<Activity[]> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.cookieService.get('access_token')}`
+    });
+    const params = new HttpParams()
+      .set('service_id', service_id.toString());
+  
+    return this.http.get<Activity[]>(`/activities/ByService`, { params: params, headers: headers, withCredentials: true })
+      .pipe(
+        catchError(error => {
+          console.error('Erro ao buscar atividades:', error);
+          return throwError(() => new Error('Falha ao buscar lista c/ atividades'));
+        })
+      );
+  }
+
+  getActivities(): Observable<Activity[]> { 
     return this.http.get<Activity[]>('/activities', {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${this.cookieService.get('access_token')}`
@@ -59,7 +75,6 @@ export class ActivityService {
       catchError(this.handleError)
     );
   }
-
 
   private handleError(error: HttpErrorResponse): Observable < never > {
     let errorMessage = 'Unknown error occurred. Please try again.';

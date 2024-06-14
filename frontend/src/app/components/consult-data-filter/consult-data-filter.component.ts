@@ -46,7 +46,7 @@ export class ConsultDataFilterComponent {
 
   ngOnInit(): void {
    this.getIndicators();
-   this.getActivities();
+  //  this.getActivities();
     this.getService();
   }
 
@@ -80,23 +80,23 @@ export class ConsultDataFilterComponent {
     });
   }
 
-  getActivities(){
-    this.activityService.getActivities().subscribe({
-      next: (data) => {
-        if (data && Array.isArray(data)) { // Verifica se data não é null e é um array
-          this.activitiesList = data.map(activity => ({
-            id: activity.id,
-            activity_name: activity.activity_name
-          }));
-        } else {
-          console.warn('Data is not an array:', data);
-        }
-      },
-      error: (error) => {
-        console.error('Erro ao obter atividades', error);
-      }
-    });
-  }
+  // getActivities(){
+  //   this.activityService.getActivities().subscribe({
+  //     next: (data) => {
+  //       if (data && Array.isArray(data)) { // Verifica se data não é null e é um array
+  //         this.activitiesList = data.map(activity => ({
+  //           id: activity.id,
+  //           activity_name: activity.activity_name
+  //         }));
+  //       } else {
+  //         console.warn('Data is not an array:', data);
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('Erro ao obter atividades', error);
+  //     }
+  //   });
+  // }
   getService() {
     this.serviceService.getServices().subscribe({
       next: (data) => {

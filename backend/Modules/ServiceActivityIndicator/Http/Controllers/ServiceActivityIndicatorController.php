@@ -236,4 +236,31 @@ class ServiceActivityIndicatorController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
+    public function getActivitiesByServiceID(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'service_id' => 'required|integer',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+    
+        $serviceId = (int) $request->input('service_id');
+    
+        try {
+            $activities = ServiceActivityIndicator::where('service_id', $serviceId)
+                ->with('activity') // Load the 'activity' relation
+                ->select('activity_id') // Select only activity_id for distinct query
+                ->distinct() // Ensure distinct activities
+                ->get();
+    
+            return response()->json($activities, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+    
+
 }

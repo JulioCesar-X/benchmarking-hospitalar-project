@@ -4,6 +4,9 @@ import { IndicatorFilterSectionComponent } from '../../../components/indicator/i
 import { RecordsListSectionComponent } from '../../../components/records/records-list-section/records-list-section.component';
 import { CommonModule } from '@angular/common';
 import { GoalsListSectionComponent } from '../../../components/goals/goals-list-section/goals-list-section.component'
+import { FormsModule } from '@angular/forms';
+import { NgModule } from '@angular/core';
+
 
 @Component({
   selector: 'app-update-indicators-page',
