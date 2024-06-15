@@ -18,6 +18,8 @@ import {IndicatorsListPageComponent} from './pages/indicators/indicators-list-pa
 import { CreateIndicatorsPageComponent } from './pages/indicators/create-indicators-page/create-indicators-page.component'
 
 import { ActivitiesPageComponent } from './pages/activites/activities-page/activities-page.component'
+import { ActivitiesCreatePageComponent } from './pages/activites/activities-create-page/activities-create-page.component'
+import { ActivitiesInsertPageComponent } from './pages/activites/activities-insert-page/activities-insert-page.component'
 
 import {ServicesPageComponent} from './pages/services/services-page/services-page.component'
 import {CreateServicesPageComponent} from './pages/services/create-services-page/create-services-page.component'
@@ -41,13 +43,17 @@ export const routes: Routes = [
   { path: 'createUser', component: CreateUserPageComponent, canActivate: [AuthGuard] },
   { path: 'editUser/:id', component: EditUserPageComponent, canActivate: [AuthGuard] },
 
-  //actividades - single page
-  { path: 'activities', component: ActivitiesPageComponent },
-
+  //activities
+  {
+    path: 'activities',
+    children: [
+      { path: '', component: ActivitiesPageComponent },
+      { path: 'create', component: ActivitiesCreatePageComponent },
+      { path: 'update/:id', component: ActivitiesInsertPageComponent },
+    ]
+  },
 
   //Services
-/*   { path: 'services', component: ServicesPageComponent },
-  { path: 'servicesCreate', component: CreateServicesPageComponent }, */
   {
     path: 'services',
     children: [
@@ -56,6 +62,16 @@ export const routes: Routes = [
       { path: 'update/:id', component: UpdateServicesPageComponent },
     ]
   },
+
+
+
+
+
+
+
+
+
+
   { path: 'description/:serviceId', component: DescriptionServicePageComponent },
 
 

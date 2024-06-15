@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { RouterLink, Router } from '@angular/router';
+import {IndicatorService} from '../../../services/indicator.service'
 
 interface Indicator {
   id: number;
@@ -25,19 +26,48 @@ interface Indicator {
   styleUrl: './indicators-list-section.component.scss'
 })
 export class IndicatorsListSectionComponent {
-  isLoading: boolean = false;
+  isLoadingIndicators: boolean = true;
   totalIndicators: number = 0;
   pageSize: number = 10;
   currentPage: number = 0;
 
+  indicators: any[] = [];
 
-  @Input() indicators: Indicator[] = [];
   indicatorForms: { [key: number]: FormGroup } = {};
 
-  constructor(private fb: FormBuilder, private router: Router) { }
+  constructor(private fb: FormBuilder, private router: Router,
+    private indicatorService: IndicatorService
+  ) { }
 
   ngOnInit(): void {
     this.buildForm();
+    //busca todos indicadores
+    this.getIndicators();  
+  }
+
+  getIndicators(){
+    this.isLoadingIndicators = true;
+
+    this.indicatorService.getIndicators().subscribe({
+      next: (data) => {
+        if (data && Array.isArray(data)) { // Verifica se data não é null e é um array
+          this.indicators = data.map(indicator => ({
+            id: indicator.id,
+            name: indicator.indicator_name
+          }));
+        } else {
+          console.warn('Data is not an array:', data);
+        }
+      },
+      error: (error) => {      
+        console.error('Erro ao obter Indicadores', error);
+        this.isLoadingIndicators = false;
+      },
+      complete:() => {
+   
+        this.isLoadingIndicators = false;
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

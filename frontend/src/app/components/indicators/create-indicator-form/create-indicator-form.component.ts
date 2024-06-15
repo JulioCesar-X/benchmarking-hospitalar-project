@@ -25,8 +25,8 @@ import { NotificationComponent } from '../../shared/notification/notification.co
 })
 export class CreateIndicatorFormComponent implements OnInit {
   isModalVisible = false;
-  services: Service[] = [];
-  activities: Activity[] = [];
+  services: any[] = [];
+  activities: any[] = [];
   indicator: Indicator = {
     indicator_name: '',
     service_id: '',
@@ -44,6 +44,8 @@ export class CreateIndicatorFormComponent implements OnInit {
   notificationMessage: string = '';
   notificationType: 'success' | 'error' = 'success';
   isLoading = false;
+  isLoadingServices: boolean = true;
+  isLoadingAtividades: boolean = true;
 
   constructor(
     private indicatorService: IndicatorService,
@@ -61,21 +63,63 @@ export class CreateIndicatorFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fetchServices();
-    this.fetchActivities();
+    this.getServices();
+    this.getActivities();
   }
 
-  fetchServices() {
-    this.serviceService.getServices().subscribe(data => {
-      this.services = data;
+
+
+
+ getServices(){
+    this.isLoadingServices = true;
+
+    this.serviceService.getServices().subscribe({
+      next: (data) => {
+        if (data && Array.isArray(data)) { // Verifica se data não é null e é um array
+          this.services = data.map(service => ({
+            id: service.id,
+            service_name: service.service_name
+          }));
+        } else {
+          console.warn('Data is not an array:', data);
+        }
+      },
+      error: (error) => {      
+        console.error('Erro ao obter services', error);
+      },
+      complete:() => {
+        this.isLoadingServices = false;
+      }
     });
   }
 
-  fetchActivities() {
-    this.activityService.getActivities().subscribe(data => {
-      this.activities = data;
+  getActivities(){
+    this.isLoadingAtividades = true;
+
+    this.activityService.getActivities().subscribe({
+      next: (data) => {
+        if (data && Array.isArray(data)) { // Verifica se data não é null e é um array
+          this.activities = data.map(activity => ({
+            id: activity.id,
+            activity_name: activity.activity_name
+          }));
+        } else {
+          console.warn('Data is not an array:', data);
+        }
+      },
+      error: (error) => {
+        console.error('Erro ao obter atividades', error);
+      },
+      complete:() => {
+        this.isLoadingAtividades = false;
+      }
     });
   }
+
+
+
+
+
 
   createIndicator() {
     this.isLoading = true;

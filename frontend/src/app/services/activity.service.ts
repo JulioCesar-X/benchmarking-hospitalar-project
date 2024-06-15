@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient,HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Activity } from '../models/activity.model';
 import { CookieService } from 'ngx-cookie-service';
@@ -10,6 +10,15 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class ActivityService {
   constructor(private http: HttpClient, private cookieService: CookieService) { }
+
+    //para testar para passar o user a ser editado JMS...............
+    private activityDataSource = new BehaviorSubject<any>(null); // Use BehaviorSubject for initial value
+    activityData$ = this.activityDataSource.asObservable();
+  
+    setActivityData(data: any) {
+      this.activityDataSource.next(data);
+    }
+    //.................................JMS
 
   getActivities(): Observable<Activity[]> {
     return this.http.get<Activity[]>('/activities', {
