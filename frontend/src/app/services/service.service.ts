@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Service } from '../models/service.model';  // Certifique-se de que a interface Service esteja corretamente definida
 import { BehaviorSubject, Subject } from 'rxjs';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class ServiceService {
   }
   //........JMS
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private cookieService:CookieService) { }
 
   getServices(): Observable<Service[]> {
     return this.http.get<Service[]>('/services', { withCredentials: true })
@@ -40,5 +41,27 @@ export class ServiceService {
       errorMessage = `Error returned from server: ${error.error?.message || error.message}`;
     }
     return throwError(() => new Error(errorMessage));
+  }
+
+  createService(data: any): Observable<any> {
+    return this.http.post('/admin/services', data, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.cookieService.get('access_token')}`
+      }),
+      withCredentials: true
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  editService(id: number, data: any): Observable<any> {
+    return this.http.put(`/admin/services/${id}`, data, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.cookieService.get('access_token')}`,
+      }),
+      withCredentials: true
+    }).pipe(
+      catchError(this.handleError)
+    );
   }
 }

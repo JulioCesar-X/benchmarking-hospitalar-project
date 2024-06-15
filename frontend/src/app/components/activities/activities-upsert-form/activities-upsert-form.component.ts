@@ -44,9 +44,13 @@ export class ActivitiesUpsertFormComponent implements OnInit {
       this.getServices();
       this.getIndicators();
 
-      this.activityService.activityData$.subscribe(data => {
-        this.selectedActivity = data;
-      });
+      if(this.formsAction === "edit"){
+        this.activityService.activityData$.subscribe(data => {
+          this.selectedActivity = data;
+        });
+      }
+
+
       console.log(this.selectedActivity)
     }
     

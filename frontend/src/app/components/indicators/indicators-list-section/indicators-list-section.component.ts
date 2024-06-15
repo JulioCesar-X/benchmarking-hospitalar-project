@@ -112,16 +112,19 @@ export class IndicatorsListSectionComponent {
     return item.id;
   }
 
-  navigateToEditIndicator(indicatorID: any){
-    this.router.navigate([`indicatorsEdit/${indicatorID}`]);
+  navigateToEditIndicator(indicator: any){
+    const indicatorData = { id: indicator.id, name: indicator.name};
+    console.log(indicator)
+    this.indicatorService.setindicatorData(indicatorData);
+    this.router.navigate([`indicators/update/${indicator.id}`]);
   }
 
   navigateToCreateIndicator() {
-    this.router.navigate(['createIndicators']);
+    this.router.navigate(['indicators/create']);
   }
   
 
-  removeIndicator(id: any){
+  removeIndicator(indicator: any){
     //abrir modal para remover user
     //remover da lista local e da DB
   }

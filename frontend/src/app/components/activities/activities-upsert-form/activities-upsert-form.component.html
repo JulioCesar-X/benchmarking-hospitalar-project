@@ -11,9 +11,10 @@
 
           
             <div class="forms-container--inputContainer">
-              <label>Nome atividade:</label>
+              <label for="name">Nome atividade:</label>
 
-              <input [(ngModel)]="selectedActivity.name" name="name" type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }">
+              <input type="text" class="inputContainer--input" [(ngModel)]="selectedActivity.name" id="name" name="name" 
+               [ngClass]="{ 'inputContainer--input__error': isError }" required>
             </div>
 
             
@@ -39,7 +40,7 @@
               </div>
 
 
-              <div *ngIf="isLoadingIndicadores" class="loading-circle">
+              <div class="loading-circle" *ngIf="isLoadingIndicadores">
                 <div class="spinner"></div>
                 <p>A carregar indicadores..</p>
               </div>

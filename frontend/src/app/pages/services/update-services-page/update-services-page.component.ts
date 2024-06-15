@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MenuComponent } from '../../../components/user/menu/menu.component';
 import { CommonModule } from '@angular/common';
 import { FilterComponent } from '../../../components/shared/filter/filter.component'
-import {ServicesEditFormComponent} from '../../../components/services/services-edit-form/services-edit-form.component'
+import {ServiceUpsertFormComponent} from '../../../components/services/service-upsert-form/service-upsert-form.component'
 
 
 @Component({
@@ -10,7 +10,7 @@ import {ServicesEditFormComponent} from '../../../components/services/services-e
   standalone: true,
   imports: [FilterComponent,
     MenuComponent,
-    ServicesEditFormComponent],
+    ServiceUpsertFormComponent],
   templateUrl: './update-services-page.component.html',
   styleUrl: './update-services-page.component.scss'
 })

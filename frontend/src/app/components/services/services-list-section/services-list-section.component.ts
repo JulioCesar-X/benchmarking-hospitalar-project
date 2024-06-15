@@ -98,11 +98,12 @@ groupServices(services: Service[]): Service[] {
 
 navigateToEditService(service: any){
 
-  console.log(service)
+ 
   const serviceData = { id: service.id, name: service.service_name,
      description: service.description, imageUrl: service.imageUrl,
    };
   this.serviceService.setServiceData(serviceData);
+  console.log(serviceData);
 
   this.router.navigate([`services/update/${service.id}`]);
 }

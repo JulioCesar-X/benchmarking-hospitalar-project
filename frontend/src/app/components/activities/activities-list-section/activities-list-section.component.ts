@@ -219,7 +219,9 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges {
 
 
   createActivity(){
- this.isLoadingAtividades = true;
+    this.router.navigate([`activities/create`]);
+
+/*  this.isLoadingAtividades = true;
 
     console.log("Created", this.selectedActivity)
 
@@ -239,7 +241,7 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges {
           this.setNotification(errorMessage, 'error');
           this.isLoadingAtividades = false; // Define isLoadingAtividades como falso em caso de erro
       }
-  );
+  ); */
   }
 
   removeActivity(id: any){

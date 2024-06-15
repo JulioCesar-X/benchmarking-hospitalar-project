@@ -1,30 +1,34 @@
 <app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal>
+
 <app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
 
-<form (ngSubmit)="onSubmit()">
-  <div class="forms-container" [class.loading]="isLoading">
-    <h2 class="title">Criar indicador</h2>
+<form>
+  <div class="forms-container"><!--  [class.loading]="isLoading" -->
+
+    <h2 class="forms-container--title" *ngIf="formsAction === 'create'" >Criar indicador</h2>
+    <h2 class="forms-container--title" *ngIf="formsAction === 'edit'" >Editar indicador</h2>
+
     <button type="button" class="forms-Button" (click)="openModal($event)">Adicionar Campo</button>
 
-    <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
+    <div class="forms-container--inputContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
       <label for="name">Nome:</label>
-      <input id="name" type="text" class="inputContainer--input" placeholder="Name"
-        [(ngModel)]="indicator.indicator_name" name="indicatorName" required>
+      <input type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }"
+      [(ngModel)]="selectedIndicator.name" id="name" name="name" placeholder="Name" required>
       <span class="errorSpanMessage"></span>
     </div>
 
-    <div class="selectContainer" *ngIf="!isLoading || notificationType === 'error'">
+    <div class="selectContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
       <label for="service">Serviço:</label>
-      <select id="service" [(ngModel)]="indicator.service_id" name="serviceId" required>
+      <select [(ngModel)]="selectedIndicator.service_id" id="service" name="serviceId" required>
         <option *ngFor="let service of services" [value]="service.id">{{service.service_name}}</option>
         <option *ngIf="isLoadingServices == true" disabled selected>A carregar serviços...</option>
         <option *ngIf="services && services.length === 0 && isLoadingServices == false" disabled>No services available</option>
       </select>
     </div>
 
-    <div class="selectContainer" *ngIf="!isLoading || notificationType === 'error'">
+    <div class="selectContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
       <label for="activity">Atividade:</label>
-      <select id="activity" [(ngModel)]="indicator.activity_id" name="activityId" required>
+      <select [(ngModel)]="selectedIndicator.activity_id" id="activity" name="activity" required>
         <option *ngFor="let activity of activities" [value]="activity.id">{{activity.activity_name}}</option>
         <option *ngIf="isLoadingAtividades == true" disabled selected>A carregar atividades...</option>
         <option *ngIf="services && services.length === 0 && isLoadingAtividades == false" disabled>No services available</option>
@@ -32,26 +36,22 @@
       </select>
     </div>
 
-    <div class="selectContainer" *ngIf="!isLoading || notificationType === 'error'">
+    <div class="selectContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
       <label for="type">Tipo:</label>
-      <select id="type" [(ngModel)]="indicator.type" name="typeId" required>
+      <select [(ngModel)]="selectedIndicator.type" id="type" name="type" required>
         <option value="produção">Produção</option>
         <option value="desempenho">Desempenho</option>
         <option value="financeiro">Financeiro</option>
       </select>
     </div>
 
-    <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
+    <div class="forms-container--inputContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
       <label for="meta">Meta:</label>
-      <input id="meta" type="text" class="inputContainer--input" placeholder="Meta anual" [(ngModel)]="goalTargetValue"
-        name="goalValue" required>
+      <input type="text" class="inputContainer--input" [(ngModel)]="goalTargetValue" 
+      id="meta" name="meta" placeholder="Meta anual" required>
       <span class="errorSpanMessage"></span>
     </div>
 
-    <button type="submit" class="forms-Button" *ngIf="!isLoading">Atualizar</button>
-  </div>
-
-  <div *ngIf="isLoading" class="loading-circle">
-    <div class="spinner"></div>
+    <button type="submit" class="forms-Button" (click)="formSubmited()">Atualizar</button>
   </div>
 </form>
