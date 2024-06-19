@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('sai', 'ServiceActivityIndicatorController')->names('admin.sai');
     });
 
-    Route::prefix('coordinator')->middleware('role:coordinator-action')->group(function () {
-        Route::apiResource('sai', 'ServiceActivityIndicatorController')->only(['index', 'show', 'update'])->names('coordinator.sai');
+    Route::prefix('coordenador')->middleware('role:coordinator-action')->group(function () {
+        Route::apiResource('sai', 'ServiceActivityIndicatorController')->only(['index', 'show', 'update'])->names('coordenador.sai');
     });
 });
