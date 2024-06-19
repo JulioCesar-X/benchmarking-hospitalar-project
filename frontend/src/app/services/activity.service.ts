@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient,HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Activity } from '../models/activity.model';
 import { CookieService } from 'ngx-cookie-service';
@@ -11,21 +11,14 @@ import { CookieService } from 'ngx-cookie-service';
 export class ActivityService {
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
-  getActivitiesByServiceID(service_id: number): Observable<Activity[]> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.cookieService.get('access_token')}`
-    });
-    const params = new HttpParams()
-      .set('service_id', service_id.toString());
+    //para testar para passar o user a ser editado JMS...............
+    private activityDataSource = new BehaviorSubject<any>(null); // Use BehaviorSubject for initial value
+    activityData$ = this.activityDataSource.asObservable();
   
-    return this.http.get<Activity[]>(`/activities/ByService`, { params: params, headers: headers, withCredentials: true })
-      .pipe(
-        catchError(error => {
-          console.error('Erro ao buscar atividades:', error);
-          return throwError(() => new Error('Falha ao buscar lista c/ atividades'));
-        })
-      );
-  }
+    setActivityData(data: any) {
+      this.activityDataSource.next(data);
+    }
+    //.................................JMS
 
   getActivities(): Observable<Activity[]> { 
     return this.http.get<Activity[]>('/activities', {

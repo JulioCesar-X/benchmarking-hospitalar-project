@@ -1,12 +1,15 @@
 <section class="forms-container">
-    <div class="loading-circle" *ngIf="isLoading">
-      <div class="spinner"></div>
-    </div>
     <div class="headingSection">
         <h2>Lista de indicadores</h2>
         <img src="../../../assets/images/icons8-plus-30.png" class="icon" alt="Edit" (click)="navigateToCreateIndicator()">
     </div>
-    <div class="selectOptionContainer">
+
+    <div *ngIf="isLoadingIndicators" class="loading-circle">
+      <div class="spinner"></div>
+      <p>A carregar indicadores...</p>
+    </div>
+
+    <div *ngIf="!isLoadingIndicators" class="selectOptionContainer">
       <div class="selectOptionContainer--option __remove-paragraphMB">
         <p>Nome</p>
 
@@ -17,8 +20,8 @@
         class="selectOptionContainer--option">
         <p>{{ indicator.name }}</p>
         <div>
-          <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="navigateToEditIndicator(indicator.id)">
-          <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="removeIndicator(indicator.id)">
+          <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="navigateToEditIndicator(indicator)">
+          <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="removeIndicator(indicator)">
         </div>
       </div>
     </div>

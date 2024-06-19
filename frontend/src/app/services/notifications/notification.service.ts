@@ -55,12 +55,10 @@ export class NotificationService {
   // }
 
   getNotificationsReceived(): Observable<Notification[]> {
+    const userRole = this.cookieService.get('role').toLowerCase();
     const userEmail = this.cookieService.get('email');
     // const params = new HttpParams().set('email', this.cookieService.get('email'));
-    const userRole = this.cookieService.get('role').toLowerCase();
     const params = new HttpParams().set('email', userEmail);
-
-
     return this.http.get<Notification[]>(`/${userRole}/notifications/received`, {
       params,
       headers: new HttpHeaders({

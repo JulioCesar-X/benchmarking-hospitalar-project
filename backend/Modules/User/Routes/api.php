@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('search', 'UserController@search')->name('admin.users.search');
     });
 
-    Route::prefix('coordinator')->middleware('role:coordinator-action')->group(function () {
-        Route::apiResource('users', 'UserController')->only(['index', 'store', 'update','show'])->names('coordinator.users');
+    Route::prefix('coordenador')->middleware('role:coordinator-action')->group(function () {
+        Route::apiResource('users', 'UserController')->only(['index', 'store', 'update','show'])->names('coordenador.users');
     });
 });

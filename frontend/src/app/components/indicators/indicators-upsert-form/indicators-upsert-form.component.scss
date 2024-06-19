@@ -8,9 +8,14 @@
 
 .forms-container {
   @include forms-container();
-  width: 50%;
-  max-width: 500px;
+  width: 70%;
+
 }
+
+.forms-container--title {
+    color: $fill-white;
+    margin: 0;
+  }
 
 .forms-container--inputContainer {
   @include forms-container--inputContainer();

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpParams, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Indicator } from '../models/indicator.model';
 import { CookieService } from 'ngx-cookie-service';
@@ -10,6 +10,17 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class IndicatorService {
   constructor(private http: HttpClient, private cookieService: CookieService) { }
+
+
+  
+    //para testar para passar o user a ser editado JMS...............
+    private indicatorDataSource = new BehaviorSubject<any>(null); // Use BehaviorSubject for initial value
+    indicatorData$ = this.indicatorDataSource.asObservable();
+  
+    setindicatorData(data: any) {
+      this.indicatorDataSource.next(data);
+    }
+    //.................................JMS
 
   getIndicators(): Observable<any[]> {
     const headers = new HttpHeaders({
@@ -74,6 +85,29 @@ export class IndicatorService {
       withCredentials: true // Incluir para manter a sessão com cookies, se necessário
     });
   }
+
+  editIndicator(id: number, data: Indicator): Observable<any> {
+    return this.http.put(`/admin/indicators/${id}`, data, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.cookieService.get('access_token')}`,
+      }),
+      withCredentials: true
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: HttpErrorResponse): Observable < never > {
+    let errorMessage = 'Unknown error occurred. Please try again.';
+    if(error.error instanceof ErrorEvent) {
+    console.error('Client-side error:', error.error.message);
+    errorMessage = `An error occurred: ${error.error.message}`;
+  } else {
+    console.error(`Server returned code ${error.status}, body was: ${error.error}`);
+    errorMessage = `Error returned from server: ${error.error.message}`;
+  }
+  return throwError(() => new Error(errorMessage));
+    }
 
 }
 

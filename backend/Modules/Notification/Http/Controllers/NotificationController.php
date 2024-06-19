@@ -115,12 +115,27 @@ class NotificationController extends Controller
                 return response()->json(['error' => 'Usuário não encontrado'], 404);
             }
 
-            // Buscar todas as notificações recebidas pelo usuário com base no relacionamento
-            $notifications = $user->receivedNotifications()
-                ->whereRaw('receiver_id = ?', [$user->id])  // Checagem de ID válido
-                ->get();
+            // Adicione esta linha para garantir que o ID do usuário é um número válido
+            if (!is_numeric($user->id)) {
+                throw new \Exception('User ID is not a valid number');
+            }
 
-            return response()->json($notifications);
+            // Buscar todas as notificações recebidas pelo usuário com base no relacionamento
+            $notifications = $user->receivedNotifications()->with(['sender', 'receiver'])->get();
+
+            // Formatar as notificações para incluir os nomes dos remetentes e destinatários
+            $formattedNotifications = $notifications->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
+                    'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'created_at' => $notification->created_at
+                ];
+            });
+
+            return response()->json($formattedNotifications);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
         }

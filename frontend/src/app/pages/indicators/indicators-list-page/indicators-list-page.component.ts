@@ -17,5 +17,5 @@ import { FilterComponent } from '../../../components/shared/filter/filter.compon
   styleUrl: './indicators-list-page.component.scss'
 })
 export class IndicatorsListPageComponent {
-  currentIndicators: Array<any> = [];
+
 }

@@ -14,12 +14,19 @@ import { ConsultDataPageComponent } from './pages/consult-data-page/consult-data
 import { AuthGuard } from './guards/auth.guard'
 import {TesteComponent} from './teste/teste.component'
 
+//indicators
 import {IndicatorsListPageComponent} from './pages/indicators/indicators-list-page/indicators-list-page.component';
 import { CreateIndicatorsPageComponent } from './pages/indicators/create-indicators-page/create-indicators-page.component'
-
+import { UpdateIndicatorsPageComponent } from './pages/indicators/update-indicators-page/update-indicators-page.component'
+//activities
 import { ActivitiesPageComponent } from './pages/activites/activities-page/activities-page.component'
-
+import { ActivitiesCreatePageComponent } from './pages/activites/activities-create-page/activities-create-page.component'
+import { ActivitiesInsertPageComponent } from './pages/activites/activities-insert-page/activities-insert-page.component'
+//services
 import {ServicesPageComponent} from './pages/services/services-page/services-page.component'
+import {CreateServicesPageComponent} from './pages/services/create-services-page/create-services-page.component'
+import {UpdateServicesPageComponent} from './pages/services/update-services-page/update-services-page.component'
+
 
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
@@ -28,30 +35,50 @@ export const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'resetPassword', component: ResetPasswordPageComponent },
 
-  //Rotas indicadores
-  { path: 'indicatorsIndex', component: IndicatorsListPageComponent },
-  { path: 'createIndicators', component: CreateIndicatorsPageComponent },
-/*   { path: 'editIndicators/:id', component:  }, */
+
 
   //Rotas Users
   { path: 'consultUsers', component: ConsultUsersPageComponent, canActivate: [AuthGuard] },
   { path: 'createUser', component: CreateUserPageComponent, canActivate: [AuthGuard] },
   { path: 'editUser/:id', component: EditUserPageComponent, canActivate: [AuthGuard] },
-
-  //actividades
-  { path: 'activities', component: ActivitiesPageComponent },
-
+//nao esquecer de colocar os guards nas rotas
+  //activities
+  {
+    path: 'activities',
+    children: [
+      { path: '', component: ActivitiesPageComponent },
+      { path: 'create', component: ActivitiesCreatePageComponent },
+      { path: 'update/:id', component: ActivitiesInsertPageComponent },
+    ]
+  },
   //Services
-  { path: 'services', component: ServicesPageComponent },
+  {
+    path: 'services',
+    children: [
+      { path: '', component: ServicesPageComponent },
+      { path: 'create', component: CreateServicesPageComponent },
+      { path: 'update/:id', component: UpdateServicesPageComponent },
+    ]
+  },
+    //Rotas indicadores
+    {
+      path: 'indicators',
+      children: [
+        { path: '', component: IndicatorsListPageComponent },
+        { path: 'create', component: CreateIndicatorsPageComponent },
+        { path: 'update/:id', component: UpdateIndicatorsPageComponent },
+      ]
+    },
+
+
+
+
+  { path: 'description/:serviceId', component: DescriptionServicePageComponent },
+
 
 
   { path: 'teste', component: TesteComponent },
-
-  { path: 'description/:serviceId', component: DescriptionServicePageComponent },
   { path: 'consultData', component: ConsultDataPageComponent },
-
-
-
 
   { path: 'RecordGoalsUpdate', component: RecordsGoalsUpdatePageComponent, canActivate: [AuthGuard] },
 

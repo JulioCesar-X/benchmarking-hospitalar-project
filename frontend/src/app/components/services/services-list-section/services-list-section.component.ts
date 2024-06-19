@@ -24,8 +24,12 @@ export class ServicesListSectionComponent {
   currentPage: number = 0;
   notificationMessage: string = '';
   notificationType: 'success' | 'error' = 'success';
+
+  isError: boolean = false;
+  isModalOpen: boolean = false;
+  selectedService: any = "";
   
-  constructor(private serviceService: ServiceService){}
+  constructor(private serviceService: ServiceService, private router: Router){}
 
   ngOnInit(): void {
     this.loadServices();
@@ -33,6 +37,10 @@ export class ServicesListSectionComponent {
 
   ngOnDestroy(): void {
     this.isLoading = false; // Para a animação quando o componente é destruído
+  }
+
+  navigateToCreateServices(){
+    this.router.navigate(['services/create']);
   }
 
   loadServices(): void {
@@ -88,4 +96,36 @@ groupServices(services: Service[]): Service[] {
   return Array.from(grouped.values());
 }
 
+navigateToEditService(service: any){
+
+ 
+  const serviceData = { id: service.id, name: service.service_name,
+     description: service.description, imageUrl: service.imageUrl,
+   };
+  this.serviceService.setServiceData(serviceData);
+  console.log(serviceData);
+
+  this.router.navigate([`services/update/${service.id}`]);
+}
+
+openModal(service: any = ""){
+  this.selectedService = service != "" ? service.service_name : "";
+
+  this.isModalOpen = true;
+
+  console.log(this.selectedService)
+}
+
+closeModal(){
+  this.isModalOpen = false;
+  this.selectedService = "";
+}
+
+formSubmited(){
+    this.removeService(this.selectedService);
+}
+
+removeService(serviceToRemove:any){
+  //put logic to remove the serive
+}
 }
