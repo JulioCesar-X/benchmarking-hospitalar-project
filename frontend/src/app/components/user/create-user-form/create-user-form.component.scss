@@ -118,21 +118,23 @@
   align-self: flex-end;
 }
 
-/* Adicione o estilo para o spinner e container de loading */
-.loading-circle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+/* Loading circle styles for blue background!! */
+.loading-circle_forBlueBG {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   z-index: 1000;
+  color: $fill-white;
+  margin-block: 1em;
 }
 
-.spinner {
-  border: 8px solid #f3f3f3; /* Cor de fundo */
-  border-top: 8px solid #3498db; /* Cor do spinner */
+.spinner_forBlueBG {
+  border: 8px solid $secondary-blue;
+  border-top: 8px solid $fill-white; 
   border-radius: 50%;
-  width: 60px; /* Tamanho do spinner */
-  height: 60px; /* Tamanho do spinner */
+  width: 50px; 
+  height: 50px;
   animation: spin 2s linear infinite;
 }
 
@@ -140,7 +142,6 @@
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }

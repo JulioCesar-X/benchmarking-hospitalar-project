@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('coordenador')->middleware('role:coordinator-action')->group(function () {
         Route::get('notifications/received', 'NotificationController@getAllNotificationReceived')->name('coordenador.notifications.received');
@@ -21,5 +20,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('notifications/received', 'NotificationController@getAllNotificationReceived')->name('admin.notifications.received');
         Route::apiResource('notifications', 'NotificationController@index')->names('admin.notifications');
     });
-
 });

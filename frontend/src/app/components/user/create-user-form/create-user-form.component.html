@@ -2,8 +2,12 @@
 <app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
 
 <form (ngSubmit)="createUser()">
-  <div class="forms-container" [class.loading]="isLoading">
-    <h2 class="title">Criar User</h2>
+  <div class="forms-container"> <!-- [class.loading]="isLoading" -->
+    <div *ngIf="isLoading" class="loading-circle_forBlueBG">
+      <div class="spinner_forBlueBG"></div>
+      <p>A criar user...</p>
+    </div>
+    <h2 *ngIf="!isLoading" class="title">Criar User</h2>
     <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
       <input type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="name" name="name" required>
       <span class="errorSpanMessage"></span>
