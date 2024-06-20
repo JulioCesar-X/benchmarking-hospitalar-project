@@ -58,7 +58,7 @@
   </mat-paginator>
 </section> -->
 
-
+<app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
 <section class="forms-container">
   <div *ngIf="isLoading" class="loading-circle">
     <div class="spinner"></div>
@@ -79,9 +79,9 @@
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
           <td>{{ user.roles[0]?.role_name }}</td>
-          <td>
+          <td class="flex space-x-4 justify-center">
             <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="editUser(user)">
-            <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="removeUser(user.id)">
+            <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="openModal(user)">
           </td>
         </tr>
       </tbody>
@@ -91,3 +91,20 @@
     </mat-paginator>
   </div>
 </section>
+
+  <!-- MODAL -->
+  <div class="modal" [ngClass]="{'show': isModalOpen}" (click)="closeModal()">
+  
+    <div class="modal-container" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
+        <div class="modalHeader">
+            <h2>Tem a certeza que quer remover este user?</h2>
+          <span class="close" (click)="closeModal()">&times;</span>
+        </div>
+        <div *ngIf="isDeletingUser" class="loading-circle_forBlueBG">
+          <div class="spinner_forBlueBG"></div>
+          <p>A remover user...</p>
+        </div>
+      
+        <button (click)="formSubmited()" type="submit" class="forms-Button">Confirmar</button>
+    </div>
+</div>

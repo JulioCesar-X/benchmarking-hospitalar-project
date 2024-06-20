@@ -3,9 +3,10 @@
 
 .notification {
     position: fixed;
-    top: 1em;
-    right: 1em;
+    top:4em;
+    right: 2em;
     padding: 1em;
+    z-index: 1000;
     border-radius: 0.5em;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;

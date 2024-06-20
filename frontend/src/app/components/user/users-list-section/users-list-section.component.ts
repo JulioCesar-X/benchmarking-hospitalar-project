@@ -301,11 +301,12 @@ import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserService } from '../../../services/user.service';
 import { RouterLink, Router } from '@angular/router';
+import { NotificationComponent } from '../../shared/notification/notification.component';
 
 @Component({
   selector: 'app-users-list-section',
   standalone: true,
-  imports: [FormsModule, CommonModule, MatPaginatorModule, RouterLink],
+  imports: [FormsModule, CommonModule, MatPaginatorModule, RouterLink, NotificationComponent],
   templateUrl: './users-list-section.component.html',
   styleUrls: ['./users-list-section.component.scss']
 })
@@ -313,10 +314,19 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
   allUsers: any[] = [];
   displayedUsers: any[] = [];
   isLoading: boolean = false;
+  isDeletingUser: boolean = false;
+  
   totalUsers: number = 0;
   pageSize: number = 10;
   currentPage: number = 0;
   searchTerm: string = '';
+
+  isError: boolean = false;
+  isModalOpen: boolean = false;
+  selectedUser: any = "";
+
+  notificationMessage: string = '';
+  notificationType: 'success' | 'error' = 'success';
 
   constructor(private userService: UserService, private router: Router) { }
 
@@ -337,6 +347,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
           this.filterUsers();
           this.totalUsers = response.total;
         } else {
+          this.setNotification('Nenhum usuário foi carregado ou a resposta está mal formatada', 'error');
           console.warn('Nenhum usuário foi carregado ou a resposta está mal formatada', response);
         }
         this.isLoading = false;
@@ -347,6 +358,11 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
       }
     });
   }
+  
+  setNotification(message: string, type: 'success' | 'error') {
+    this.notificationMessage = message;
+    this.notificationType = type;
+}
 
   onSearch(searchTerm: string): void {
     this.searchTerm = searchTerm;
@@ -381,9 +397,14 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
       next: () => {
         this.allUsers = this.allUsers.filter(user => user.id !== id);
         this.filterUsers();
-        alert('User removido com sucesso');
+        this.isDeletingUser = false;
+        this.closeModal();
+        this.setNotification('User eliminado com sucesso', 'success');
       },
       error: (error) => {
+        this.isDeletingUser = false;
+        this.setNotification('Erro ao eliminar user', 'error');
+
         console.error('Error ao remover user:', error);
       }
     });
@@ -398,4 +419,22 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
     const end = start + this.pageSize;
     this.displayedUsers = this.allUsers.slice(start, end);
   }
+
+  openModal(user: any = ""){
+    this.selectedUser = user != "" ? user : "";
+  
+    this.isModalOpen = true;
+  
+    console.log(this.selectedUser.name)
+  }
+  
+  closeModal(){
+    this.isModalOpen = false;
+    this.selectedUser = "";
+  }
+
+  formSubmited(){
+    this.isDeletingUser = true;
+    this.removeUser(this.selectedUser.id);
+}
 }
