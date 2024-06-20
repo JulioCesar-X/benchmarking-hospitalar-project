@@ -1,49 +1,13 @@
-<!-- <div *ngIf="isVisible">
-    <h2>safasdas</h2>
-    <app-create-field-modal></app-create-field-modal>
-</div> -->
-<!--<app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()">
-
-</app-create-field-modal>-->
-
-
-<!--<form action="">
-    <div class="forms-container" >
-        <h2 class="title">Criar User</h2>
-<!--         <button class="forms-Button" (click)="openModal($event)">Adicionar Campo</button>-->
-<!--<div class="forms-container--inputContainer">
-            <input type="text" class="inputContainer--input" placeholder="Name">
-            <span class="errorSpanMessage"></span>
-        </div>
-        <div class="forms-container--inputContainer">
-            <input type="text" class="inputContainer--input" placeholder="Email">
-            <span class="errorSpanMessage"></span>
-        </div>-->
-<!-- Nif do user vai ser usado para criar a password inicial -->
-<!--<div class="forms-container--inputContainer">
-            <input type="password" class="inputContainer--input" placeholder="Nif">
-            <span class="errorSpanMessage"></span>
-        </div>
-        <div class="selectContainer">
-            <label for="">Role:</label>
-            <select name="" id="">
-                <option value="">User</option>
-                <option value="">Coordenador</option>
-                <option value="">Admin</option>
-            </select>
-        </div>
-
-        <button type="submit" class="forms-Button">Adicionar</button>
-    </div>
-</form>-->
-
-
 <app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal>
 <app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
 
 <form (ngSubmit)="createUser()">
-  <div class="forms-container" [class.loading]="isLoading">
-    <h2 class="title">Criar User</h2>
+  <div class="forms-container"> <!-- [class.loading]="isLoading" -->
+    <div *ngIf="isLoading" class="loading-circle_forBlueBG">
+      <div class="spinner_forBlueBG"></div>
+      <p>A criar user...</p>
+    </div>
+    <h2 *ngIf="!isLoading" class="title">Criar User</h2>
     <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
       <input type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="name" name="name" required>
       <span class="errorSpanMessage"></span>
@@ -67,8 +31,5 @@
     <button type="submit" class="forms-Button" *ngIf="!isLoading">Adicionar</button>
   </div>
 
-  <div *ngIf="isLoading" class="loading-circle">
-    <div class="spinner"></div>
-  </div>
 </form>
 

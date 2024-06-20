@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('records', 'RecordController')->names('admin.records');
     });
 
-    Route::prefix('coordinator')->middleware('role:coordinator-action')->group(function () {
-        Route::apiResource('records', 'RecordController')->names('coordinator.records');
+    Route::prefix('coordenador')->middleware('role:coordinator-action')->group(function () {
+        Route::apiResource('records', 'RecordController')->names('coordenador.records');
     });
 });

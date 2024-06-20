@@ -1,36 +1,7 @@
-// import { Component } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { CreateFieldModalComponent } from '../../indicator/create-field-modal/create-field-modal.component';
-
-
-// @Component({
-//   selector: 'app-create-user-form',
-//   standalone: true,
-//   imports: [
-//     CreateFieldModalComponent,
-//     CommonModule
-//   ],
-//   templateUrl: './create-user-form.component.html',
-//   styleUrl: './create-user-form.component.scss'
-// })
-
-// export class CreateUserFormComponent {
-//   isModalVisible = false;
-
-//   openModal(event: Event) {
-//     event.preventDefault();
-//     this.isModalVisible = true;
-//   }
-//   closeModal() {
-//     this.isModalVisible = false;
-//   }
-
-// }
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CreateFieldModalComponent } from '../../indicator/create-field-modal/create-field-modal.component';
+import { CreateFieldModalComponent } from '../../indicators/create-field-modal/create-field-modal.component';
 import { UserService } from '../../../services/user.service';
 import { NotificationComponent } from '../../shared/notification/notification.component';
 
@@ -46,7 +17,7 @@ import { NotificationComponent } from '../../shared/notification/notification.co
     templateUrl: './create-user-form.component.html',
     styleUrls: ['./create-user-form.component.scss']
 })
-export class CreateUserFormComponent {
+export class CreateUserFormComponent{
     isModalVisible = false;
     name: string = '';
     email: string = '';
@@ -57,7 +28,7 @@ export class CreateUserFormComponent {
 
     isLoading = false; // Adicionando a variável para controlar o estado de carregamento
 
-    constructor(private userService: UserService) { }
+    constructor(private userService: UserService) {}
 
     openModal(event: Event) {
         event.preventDefault();

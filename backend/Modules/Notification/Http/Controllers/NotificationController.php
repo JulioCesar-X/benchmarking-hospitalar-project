@@ -1,8 +1,11 @@
 <?php
 
 namespace Modules\Notification\Http\Controllers;
+
 use Modules\Notification\Entities\Notification;
 use App\Http\Controllers\Controller;
+use Modules\User\Entities\User;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 
@@ -63,7 +66,7 @@ class NotificationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,Notification $notification)
+    public function update(Request $request, Notification $notification)
     {
         try {
             $notification->update($request->all());
@@ -71,7 +74,6 @@ class NotificationController extends Controller
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
-
     }
 
     /**
@@ -88,6 +90,54 @@ class NotificationController extends Controller
             return response()->json(['message' => 'Deleted'], 205);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getAllNotificationReceived(Request $request)
+    {
+        // Validação de entrada
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        try {
+            // Obter o email fornecido na requisição
+            $email = $request->input('email');
+
+            // Verificar se o usuário existe
+            $user = User::where('email', $email)->first();
+
+            if (!$user) {
+                return response()->json(['error' => 'Usuário não encontrado'], 404);
+            }
+
+            // Adicione esta linha para garantir que o ID do usuário é um número válido
+            if (!is_numeric($user->id)) {
+                throw new \Exception('User ID is not a valid number');
+            }
+
+            // Buscar todas as notificações recebidas pelo usuário com base no relacionamento
+            $notifications = $user->receivedNotifications()->with(['sender', 'receiver'])->get();
+
+            // Formatar as notificações para incluir os nomes dos remetentes e destinatários
+            $formattedNotifications = $notifications->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
+                    'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'created_at' => $notification->created_at
+                ];
+            });
+
+            return response()->json($formattedNotifications);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
         }
     }
 }

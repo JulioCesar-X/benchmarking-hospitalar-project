@@ -24,7 +24,7 @@ services:
       - app-network
 
   db:
-    image: postgres:12
+    image: postgres:14
     restart: always
     environment:
       POSTGRES_DB: bh_db

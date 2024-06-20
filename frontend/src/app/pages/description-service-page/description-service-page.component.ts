@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Importe CommonModule
-import { NavbarComponent } from '../../components/ui/navbar/navbar.component';
-import { FooterComponent } from '../../components/ui/footer/footer.component';
 import { ServiceService } from '../../services/service.service';
 import { ActivatedRoute } from '@angular/router';
 
@@ -10,9 +8,7 @@ import { ActivatedRoute } from '@angular/router';
   standalone: true,
   imports: [
     CommonModule, // Inclua CommonModule nos imports
-    NavbarComponent,
-    FooterComponent
-  ],
+    ],
   templateUrl: './description-service-page.component.html',
   styleUrls: ['./description-service-page.component.scss'] // Corrigido para styleUrls
 })

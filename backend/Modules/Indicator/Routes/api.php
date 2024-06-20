@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('indicators', 'IndicatorController')->names('admin.indicators');
     });
 
-    Route::prefix('coordinator')->middleware('role:coordinator-action')->group(function () {
-        Route::apiResource('indicators', 'IndicatorController')->only(['index', 'show'])->names('coordinator.indicators');
+    Route::prefix('coordenador')->middleware('role:coordinator-action')->group(function () {
+        Route::apiResource('indicators', 'IndicatorController')->only(['index', 'show'])->names('coordenador.indicators');
     });
 });

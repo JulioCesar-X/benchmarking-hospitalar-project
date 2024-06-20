@@ -1,18 +1,16 @@
 @import '../../../../styles/_variables.scss';
 
-/* footer.component.scss */
 .footer {
-  margin-top: 0.5em;
-  background-color: $fill-white;
-  /* Cor de fundo branca */
-  padding: 0px 20px;
-  /* Espaçamento interno */
-  color: #948f8f;
-  /* Cor do texto */
-  font-size: 12px;
-  /* Tamanho da fonte do texto */
+  position: relative;
 
+display: flex;
+margin-bottom: auto;
+max-width: 100%;
+max-height: 99px;
+overflow: hidden;
+/*   min-width: 780px; */
 }
+
 
 .container {
   display: flex;
@@ -24,6 +22,19 @@
 .logo {
   height: 80px;
   /* Altura do logotipo */
+}
+
+.content{
+    padding-right: 1em;
+    padding-left: 6em;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+
+    background-color: $main-blue;
+    color: $fill-white;
+    clip-path: polygon(0 100%, 10% 0, 100% 0, 100% 100%);
 }
 
 @media (max-width: 768px) {

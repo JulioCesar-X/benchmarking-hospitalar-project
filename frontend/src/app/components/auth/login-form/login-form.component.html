@@ -1,3 +1,5 @@
+
+<app-password-recup-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-password-recup-modal>
 <form (ngSubmit)="onLogin()">
   <div [ngClass]="{'loginContainer--error': errorMessage}" class="loginContainer">
     <!-- Input containers apenas visíveis quando isLoading for falso -->
@@ -18,6 +20,6 @@
       <div class="spinner"></div>
     </div>
 
-    <a *ngIf="!isLoading" routerLink="/resetPassword" class="forgotPassLink">Forgot Password?</a>
+    <a *ngIf="!isLoading" routerLink="/resetPassword" class="forgotPassLink" (click)="openModal($event)">Forgot Password?</a>
   </div>
 </form>

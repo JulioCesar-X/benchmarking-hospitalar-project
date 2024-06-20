@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('goals', 'GoalController')->names('admin.goals');
     });
 
-    Route::prefix('coordinator')->middleware('role:coordinator-action')->group(function () {
-        Route::apiResource('goals', 'GoalController')->names('coordinator.goals');
+    Route::prefix('coordenador')->middleware('role:coordinator-action')->group(function () {
+        Route::apiResource('goals', 'GoalController')->names('coordenador.goals');
     });
 });

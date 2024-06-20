@@ -1,0 +1,67 @@
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Indicator } from '../../../models/indicator.model';
+
+@Component({
+  selector: 'app-goals-list-section',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule
+  ],
+  templateUrl: './goals-list-section.component.html',
+  styleUrls: ['./goals-list-section.component.scss']
+})
+export class GoalsListSectionComponent implements OnInit, OnChanges {
+  @Input() indicators: Indicator[] = [];
+  @Input() isLoading: boolean = false; // Adiciona a propriedade isLoading
+  indicatorForms: { [key: number]: FormGroup } = {};
+
+  constructor(private fb: FormBuilder, private router: Router) { }
+
+  ngOnInit(): void {
+    this.buildForm();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['indicators']) {
+      if (changes['indicators'].currentValue !== changes['indicators'].previousValue) {
+        this.buildForm();
+      }
+    }
+  }
+
+  buildForm(): void {
+    this.indicatorForms = {};
+    this.indicators.forEach(indicator => {
+      this.indicatorForms[indicator.sai_id!] = this.fb.group({
+        indicatorValue: new FormControl(indicator.goal?.target_value || '', Validators.required)
+      });
+      indicator.isInserted = indicator.goal?.target_value != null;
+    });
+  }
+
+  onValueChange(indicator: Indicator, event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    indicator.goal!.target_value = inputElement.value;
+  }
+
+  toggleEdit(indicator: Indicator): void {
+    indicator.isInserted = !indicator.isInserted;
+    const formControl = this.indicatorForms[indicator.sai_id!].get('indicatorValue');
+    if (formControl) {
+      if (indicator.isInserted) {
+        formControl.disable();
+      } else {
+        formControl.enable();
+      }
+    }
+  }
+
+  trackByIndex(index: number, item: Indicator): number {
+    return item.sai_id!;
+  }
+}

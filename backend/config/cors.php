@@ -20,8 +20,9 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        env('APP_URL_FRONT', 'https://main--hospital-metrics-analisys.netlify.app'),
-        // 'http://localhost:4200',
+        'http://localhost:4200',
+        'https://hosp-metrics-atec-ijw7ffhu3-atec.vercel.app',
+        'https://main--hospital-metrics-analisys.netlify.app',
     ],
 
     'allowed_origins_patterns' => [],
@@ -33,6 +34,5 @@ return [
     'max_age' => 0,
 
     'supports_credentials' => true, //in frontend need withCredentials: true
-
 
 ];

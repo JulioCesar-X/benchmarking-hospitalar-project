@@ -4,10 +4,7 @@ if (! function_exists('module_path')) {
     function module_path($name, $path = '')
     {
         $module = app('modules')->find($name);
-        if (!$module) {
-            // Considerar lançar uma exceção ou retornar um caminho padrão
-            return null; // ou throw new \Exception("Módulo '{$name}' não encontrado.");
-        }
+
         return $module->getPath() . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 }

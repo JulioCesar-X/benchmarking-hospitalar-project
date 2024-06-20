@@ -25,6 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('coordinator')->middleware('role:coordinator-action')->group(function () {
-        Route::apiResource('activities', 'ActivityController')->only(['index', 'show'])->names('coordinator.activities');
+        Route::apiResource('activities', 'ActivityController')->only(['index', 'show'])->names('coordenador.activities');
     });
 });

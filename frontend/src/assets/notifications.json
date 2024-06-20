@@ -1,0 +1,55 @@
+{
+    "notifications": [
+      {
+        "id": 1,
+        "Details": "You have a new message",
+        "isRead": false
+      },
+      {
+        "id": 2,
+        "Details": "Your order has been shipped",
+        "isRead": true
+      },
+      {
+        "id": 3,
+        "Details": "Reminder: Meeting at 3 PM",
+        "isRead": false
+      },
+      {
+        "id": 4,
+        "Details": "Your subscription will expire soon",
+        "isRead": true
+      },
+      {
+        "id": 5,
+        "Details": "New comment on your post",
+        "isRead": false
+      },
+      {
+        "id": 6,
+        "Details": "You received a friend request",
+        "isRead": false
+      },
+      {
+        "id": 7,
+        "Details": "Your password was changed successfully",
+        "isRead": true
+      },
+      {
+        "id": 8,
+        "Details": "Update available for your app",
+        "isRead": false
+      },
+      {
+        "id": 9,
+        "Details": "You have a new follower",
+        "isRead": true
+      },
+      {
+        "id": 10,
+        "Details": "Event invitation: Office Party",
+        "isRead": false
+      }
+    ]
+  }
+  
