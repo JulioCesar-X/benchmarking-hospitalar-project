@@ -2,6 +2,7 @@ import { Record } from './Record.model';
 import { Goal } from './Goal.model';
 
 export interface Indicator {
+  id?: number;                           // Identificador do indicador
   sai_id?: number;                   // Identificador do indicador de atividade do serviço
   service_id?: number|string;               // Identificador do serviço
   activity_id?: number|string;              // Identificador da atividade

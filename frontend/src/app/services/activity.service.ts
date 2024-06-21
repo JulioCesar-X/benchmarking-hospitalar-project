@@ -14,11 +14,11 @@ export class ActivityService {
     //para testar para passar o user a ser editado JMS...............
     private activityDataSource = new BehaviorSubject<any>(null); // Use BehaviorSubject for initial value
     activityData$ = this.activityDataSource.asObservable();
-  
+
     setActivityData(data: any) {
       this.activityDataSource.next(data);
     }
-    //.................................JMS
+    //.................................JMSa
 
   getActivities(): Observable<Activity[]> {
     return this.http.get<Activity[]>('/activities', {
@@ -48,7 +48,7 @@ export class ActivityService {
 
   updateActivity(id: number, data: any): Observable<any> {
     console.log(data)
-    return this.http.put(`admin//${id}`, data, {
+    return this.http.put(`admin/activities/${id}`, data, {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${this.cookieService.get('access_token')}`,
       }),
@@ -68,6 +68,8 @@ export class ActivityService {
       catchError(this.handleError)
     );
   }
+
+  getActivitiesByServiceId(activityId: number){}
 
 
   private handleError(error: HttpErrorResponse): Observable < never > {
