@@ -1,48 +1,60 @@
-<!-- <app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal> -->
-<app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
+<!-- Formulário para criação ou edição de serviços com abas para atividades e indicadores -->
+<form [formGroup]="form" (ngSubmit)="submitForm()">
+  <div class="forms-container bg-blue-800 text-white p-6 rounded-lg shadow-lg">
 
-<form>
-  <div class="forms-container"> 
-    <h2 class="forms-container--title" *ngIf="formsAction === 'create'" >Criar serviço</h2>
-    <h2 class="forms-container--title" *ngIf="formsAction === 'edit'" >Editar serviço</h2>
-
-    <div class="forms-container--inputContainer">
-      <label class="inputContainer--label" for="nomeServico">Nome:</label>
-      <input type="text" class="inputContainer--input" id="nomeServico" name="nomeServico"
-        [(ngModel)]="selectedService.name" placeholder="Nome do serviço">
+    <h2 class="text-lg">{{ formsAction === 'create' ? 'Criar' : 'Editar' }} Serviço</h2>
+    <div *ngIf="isLoadingActivities || isSubmitting" class="loading-circle">
+      <div class="spinner"></div>
+      <p>{{ isSubmitting ? 'Adicionando' : 'Carregando' }} serviço...</p>
+    </div>
+    <div class="mt-4">
+      <label for="service_name">Nome:</label>
+      <input type="text" id="service_name" formControlName="service_name" placeholder="Nome do serviço"
+        class="inputContainer--input">
     </div>
 
-    <div class="forms-container--inputContainer">
-      <label class="inputContainer--label" for="description">Descrição:</label>
-      <textarea class="inputContainer--input" id="description" name="description" [(ngModel)]="selectedService.description" placeholder="Descrição do serviço..."></textarea>
+    <div class="mt-4">
+      <label for="description">Descrição:</label>
+      <textarea id="description" formControlName="description" placeholder="Descrição do serviço..."
+        class="inputContainer--input"></textarea>
     </div>
 
-    <div class="forms-container--inputContainer _inputFieldset">
-        <label class="_inputFieldset--title">Imagem</label>
-        <label for="file-upload" class="custom-file-upload">
-          Escolher ficheiro
-        </label>
-        <input id="file-upload" type="file" (change)="onFileSelected($event)"/>
-        <div id="file-chosen">{{ fileName }}</div>
+    <div class="mt-4">
+      <label>Imagem:</label>
+      <label class="custom-file-upload">Escolher ficheiro
+        <input type="file" (change)="onFileSelected($event)">
+      </label>
+      <div id="file-chosen">{{ form.get('imageUrl')?.value ? 'Imagem carregada' : 'Ficheiro não escolhido' }}</div>
     </div>
 
-    <div class="checkboxContainer">
-      <h4 class="checkboxContainer-title">Associar atividades:</h4>
+    <!-- Abas para seleção de Atividades e Indicadores -->
+    <div class="flex gap-4 mt-4">
+      <button type="button" (click)="openTab('Activities')" class="py-2 px-4 bg-blue-500 rounded-lg">Atividades</button>
+      <button type="button" (click)="openTab('Indicators')"
+        class="py-2 px-4 bg-blue-500 rounded-lg">Indicadores</button>
+    </div>
 
-      <div class="checkboxContainer--option" *ngFor="let activity of activities; let i = index; trackBy: trackByIndex">
-        <input class="styled-checkbox" type="checkbox"
-        [checked]="isSelected(activity.id)" 
-        (click)="toggleSelection(activity.id)">
+    <div id="Activities" *ngIf="activeTab === 'Activities'" class="mt-4">
+      <h4>Associar atividades:</h4>
+      <div *ngFor="let activity of allActivities; trackBy: trackByIndex" class="mt-2">
+        <input type="checkbox" [checked]="isSelected(activity.id)" (click)="toggleActivitySelection(activity.id)">
         <label>{{ activity.activity_name }}</label>
       </div>
+    </div>
 
-      <div *ngIf="isLoadingAtivities" class="loading-circle">
-        <div class="spinner"></div>
-        <p>A carregar atividades...</p>
+    <div id="Indicators" *ngIf="activeTab === 'Indicators'" class="mt-4">
+      <h4>Associar indicadores:</h4>
+      <div *ngFor="let indicator of allIndicators; trackBy: trackByIndex" class="mt-2">
+        <div *ngIf="indicator.id !== undefined">
+          <input type="checkbox" [checked]="isSelectedIndicator(indicator.id)"
+            (click)="toggleIndicatorSelection(indicator.id)">
+          <label>{{ indicator.indicator_name }}</label>
+        </div>
       </div>
     </div>
 
-    <button type="submit" class="forms-Button" [disabled]="isLoadingAtivities">Adicionar</button>
+    <button type="submit" class="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
+      [disabled]="isLoadingActivities || !form.valid || selectedIndicatorIds.length === 0">Adicionar</button>
   </div>
 </form>
-
+<app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>

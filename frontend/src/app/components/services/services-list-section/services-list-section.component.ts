@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -10,15 +10,18 @@ import {ActivityService} from '../../../services/activity.service'
 @Component({
   selector: 'app-services-list-section',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     MatPaginatorModule,
-    FormsModule,],
+    FormsModule,
+  ],
   templateUrl: './services-list-section.component.html',
   styleUrl: './services-list-section.component.scss'
 })
 export class ServicesListSectionComponent {
   services: Service[] = [];
   isLoading: boolean = false;
+  isDeleting: boolean = false;  // Separate loading state for deletion
   totalActivities: number = 0;
   pageSize: number = 10;
   currentPage: number = 0;
@@ -27,9 +30,9 @@ export class ServicesListSectionComponent {
 
   isError: boolean = false;
   isModalOpen: boolean = false;
-  selectedService: any = "";
-  
-  constructor(private serviceService: ServiceService, private router: Router){}
+  selectedService: number = -1;
+
+  constructor(private serviceService: ServiceService, private router: Router, private cdr:ChangeDetectorRef){}
 
   ngOnInit(): void {
     this.loadServices();
@@ -39,13 +42,10 @@ export class ServicesListSectionComponent {
     this.isLoading = false; // Para a animação quando o componente é destruído
   }
 
-  navigateToCreateServices(){
-    this.router.navigate(['services/create']);
-  }
+
 
   loadServices(): void {
     this.isLoading = true; // Carregamento em andamento
-
     this.serviceService.getServices().subscribe({
       next: (data: Service[]) => {
         this.services = this.groupServices(data);
@@ -73,59 +73,62 @@ export class ServicesListSectionComponent {
     this.notificationType = type;
 }
 
-getErrorMessage(error: any): string {
-    if (error.status === 409) {
-        return 'User already exists';
-    }
-    if (error.status === 400) {
-        return 'Invalid email';
-    }
-    return 'An error occurred. Please try again later.';
-}
+  getErrorMessage(error: any): string {
+      if (error.status === 409) {
+          return 'User already exists';
+      }
+      if (error.status === 400) {
+          return 'Invalid email';
+      }
+      return 'An error occurred. Please try again later.';
+  }
 
-groupServices(services: Service[]): Service[] {
-  const grouped = new Map<string, Service>();
+  groupServices(services: Service[]): Service[] {
+    const grouped = new Map<string, Service>();
 
-  services.forEach(service => {
-    const key = service.service_name.startsWith('Internamento') ? 'Internamento' : service.service_name;
-    if (!grouped.has(key)) {
-      grouped.set(key, service);
-    }
-  });
+    services.forEach(service => {
+      const key = service.service_name.startsWith('Internamento') ? 'Internamento' : service.service_name;
+      if (!grouped.has(key)) {
+        grouped.set(key, service);
+      }
+    });
 
-  return Array.from(grouped.values());
-}
+    return Array.from(grouped.values());
+  }
 
-navigateToEditService(service: any){
+  navigateToEditService(service: Service): void {
+    this.router.navigate(['/services/update', service.id]);
+  }
+  navigateToCreateServices() {
+    this.router.navigate(['services/create']);
+  }
 
- 
-  const serviceData = { id: service.id, name: service.service_name,
-     description: service.description, imageUrl: service.imageUrl,
-   };
-  this.serviceService.setServiceData(serviceData);
-  console.log(serviceData);
+  openModal(service:number){
+    this.selectedService = service;
+    console.log("name??:" ,this.selectedService)
+    this.isModalOpen = true;
+  }
 
-  this.router.navigate([`services/update/${service.id}`]);
-}
+  closeModal() {
+    this.isModalOpen = false;
+    this.cdr.detectChanges();  // Opcional, se você quiser forçar a UI a atualizar após fechar
+  }
 
-openModal(service: any = ""){
-  this.selectedService = service != "" ? service.service_name : "";
+  formSubmitted(): void {
+    this.isDeleting = true;
+    this.serviceService.removeService(this.selectedService).subscribe({
+      next: () => {
+        this.setNotification('Serviço removido com sucesso!', 'success');
+        this.isDeleting = false;
+        this.closeModal();
+        this.loadServices();
+      },
+      error: (error) => {
+        console.error("Error removing service", error);
+        this.setNotification('Erro ao processar a requisição.', 'error');
+        this.isDeleting = false;
+      }
+    });
+  }
 
-  this.isModalOpen = true;
-
-  console.log(this.selectedService)
-}
-
-closeModal(){
-  this.isModalOpen = false;
-  this.selectedService = "";
-}
-
-formSubmited(){
-    this.removeService(this.selectedService);
-}
-
-removeService(serviceToRemove:any){
-  //put logic to remove the serive
-}
 }

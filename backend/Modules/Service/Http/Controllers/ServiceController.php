@@ -5,6 +5,7 @@ namespace Modules\Service\Http\Controllers;
 use Illuminate\Http\Request;
 use Modules\Service\Entities\Service;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Exception;
 
 
@@ -33,10 +34,30 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
+        DB::beginTransaction();
         try {
-            $service = Service::create($request->all());
-            return response()->json($service->load('serviceActivityIndicators'), 201);
-        } catch (Exception $exception) {
+            $service = new Service();
+            $service->service_name = $request->service_name;
+            $service->description = $request->description;
+            $service->imageUrl = $request->imageUrl;
+            $service->save();
+
+            // Associar atividades e indicadores ao serviço
+            if ($request->has('activities') && $request->has('indicators')) {
+                foreach ($request->activities as $activityId) {
+                    foreach ($request->indicators as $indicatorId) {
+                        $service->serviceActivityIndicators()->create([
+                            'activity_id' => $activityId,
+                            'indicator_id' => $indicatorId
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+            return response()->json($service->load(['serviceActivityIndicators', 'serviceActivityIndicators.indicator']), 201);
+        } catch (\Exception $exception) {
+            DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
@@ -50,8 +71,9 @@ class ServiceController extends Controller
     public function show($id)
     {
         try {
-            $service = Service::findOrFail($id);
-            return response()->json($service->load('serviceActivityIndicators'), 200);
+            $service = Service::with(['serviceActivityIndicators.activity', 'serviceActivityIndicators.indicator'])
+            ->findOrFail($id);
+            return response()->json($service, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -63,12 +85,29 @@ class ServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,Service $service)
+    public function update($serviceId, Request $request)
     {
+        DB::beginTransaction();
         try {
-            $service->update($request->all());
+            $service = Service::findOrFail($serviceId);
+            $service->update($request->only(['service_name', 'description', 'imageUrl']));
+
+            // Atualiza atividades associadas
+            $service->serviceActivityIndicators()->whereNotIn('activity_id', $request->activities ?? [])->delete();
+            foreach ($request->activities ?? [] as $activityId) {
+                $service->serviceActivityIndicators()->updateOrCreate(['activity_id' => $activityId]);
+            }
+
+            // Atualiza indicadores associados
+            $service->serviceActivityIndicators()->whereNotIn('indicator_id', $request->indicators ?? [])->delete();
+            foreach ($request->indicators ?? [] as $indicatorId) {
+                $service->serviceActivityIndicators()->updateOrCreate(['indicator_id' => $indicatorId]);
+            }
+
+            DB::commit();
             return response()->json($service, 200);
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
+            DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }

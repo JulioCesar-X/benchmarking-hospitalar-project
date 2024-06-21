@@ -17,7 +17,7 @@ import { NotificationComponent } from '../../shared/notification/notification.co
     templateUrl: './create-user-form.component.html',
     styleUrls: ['./create-user-form.component.scss']
 })
-export class CreateUserFormComponent {
+export class CreateUserFormComponent{
     isModalVisible = false;
     name: string = '';
     email: string = '';
@@ -28,7 +28,7 @@ export class CreateUserFormComponent {
 
     isLoading = false; // Adicionando a variável para controlar o estado de carregamento
 
-    constructor(private userService: UserService) { }
+    constructor(private userService: UserService) {}
 
     openModal(event: Event) {
         event.preventDefault();

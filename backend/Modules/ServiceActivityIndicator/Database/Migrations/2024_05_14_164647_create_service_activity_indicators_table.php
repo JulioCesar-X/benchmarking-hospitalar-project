@@ -18,7 +18,7 @@ class CreateServiceActivityIndicatorsTable extends Migration
             $table->foreignId('service_id')->constrained()->onDelete('cascade');
             $table->foreignId('indicator_id')->constrained()->onDelete('cascade');
             $table->foreignId('activity_id')->nullable()->constrained()->onDelete('cascade');
-            $table->string('type');
+            $table->string('type')->nullable();
             $table->timestamps();
 
         });
