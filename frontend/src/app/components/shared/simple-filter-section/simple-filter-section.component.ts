@@ -14,7 +14,8 @@ export class SimpleFilterSectionComponent {
   searchTerm: string = '';
 
   onSearch(): void {
-    console.log(`emited simple filter:`, this.searchTerm)
+    console.log(`emited simple filter:`, this.searchTerm);
+    
     this.searchEvent.emit(this.searchTerm);
   }
 }

@@ -25,7 +25,7 @@
         <label for="">Indicadores:</label>
         <select [(ngModel)]="filter.indicatorId" id="indicatorId" name="indicatorId">
           <option *ngFor="let indicator of indicatorsList ; let i = index;" [value]="indicator.id">
-            {{ indicator.service_name }}
+            {{ indicator.indicator_name }}
           </option>
           <option *ngIf="indicatorsList && indicatorsList.length === 0" disabled>No indicators available</option>
         </select>

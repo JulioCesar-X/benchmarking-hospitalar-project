@@ -19,7 +19,7 @@
         <tbody>
           <ng-container *ngIf="!isLoading">
             <tr *ngFor="let record of records; trackBy: trackByIndex" class="hover:bg-gray-100">
-              <td class="p-2">{{ record.id }}</td>
+              <td class="p-2">{{ record.indicatorName }}</td>
 
 
               <td class="p-2">
@@ -31,10 +31,13 @@
 
 
               <td class="p-2 text-center">
-                <button (click)="UpdateRecord(record)" class="forms-Button bg-main-blue text-white px-4 py-2 rounded disabled:opacity-50"
+                <button *ngIf="!record.isUpdating" (click)="UpdateRecord(record)" class="forms-Button bg-main-blue text-white px-4 py-2 rounded disabled:opacity-50"
                   type="button">
                   {{ !record.isInserted ? 'Atualizar' : 'Editar' }} 
                 </button>
+                <div *ngIf="record.isUpdating" class="loading-circle">
+                  <div class="spinner spinner_updateRecord-special"></div>
+                </div>
               </td>
 
 <!--               <td class="p-2">

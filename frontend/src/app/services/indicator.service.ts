@@ -39,7 +39,7 @@ export class IndicatorService {
     );
   }
 
-  getAllSaiIndicators(service_id: number, activity_id: number, date: Date): Observable<Indicator[]> {
+  getAllSaiRecords(service_id: number, activity_id: number, date: Date): Observable<Indicator[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`
     });
@@ -56,6 +56,7 @@ export class IndicatorService {
         })
       );
   }
+
   getAllSaiGoals(service_id: number, activity_id: number, year: number): Observable<Indicator[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`

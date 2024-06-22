@@ -27,6 +27,7 @@ export class RecordService {
     );
   }
 
+
   editRecord(id: number, data: any): Observable<any> {
     return this.http.put(`/admin/records/${id}`, data, {
       headers: new HttpHeaders({

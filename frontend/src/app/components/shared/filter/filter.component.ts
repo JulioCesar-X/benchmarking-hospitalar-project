@@ -36,15 +36,20 @@ export class FilterComponent {
 
   date!: Date;
 
-  @Output() indicatorsUpdated = new EventEmitter<Filter>();
+  @Output() filterEvent = new EventEmitter<Filter>();
 
   ngOnInit() {
     this.getActivities();
     this.getServices();
+
+    if(this.indicatorsInput){
+      this.getIndicators();
+    }
   }
 
   sendFilter() {
-    this.indicatorsUpdated.emit(this.filter);
+    console.log(`Filtro enviado:`, this.filter)
+    this.filterEvent.emit(this.filter);
   }
 
   getActivities() {
@@ -59,7 +64,16 @@ export class FilterComponent {
     });
   }
 
-  getIndicators(): void {
+  getIndicators(){
+    this.indicatorService.getIndicators().subscribe(data => {
+      this.indicatorsList = data;
+    });
+  }
+
+
+  //ESTE METODO ESTA PUXAR RECORDS PARA O FILTRO.
+  //SO QUEREMOS COISAS RELACIONADAS COM O SAI NO FILTRO. NADA DE LISTAS DE USERS/RECORSD/ OU DE DADOS
+/*   getIndicators(): void {
     if (this.filter.month < 1 || this.filter.month > 12) {
       console.error('Invalid month:', this.filter.month);
       return;
@@ -83,13 +97,13 @@ export class FilterComponent {
       next: (data) => {
         console.log('Indicators data:', data);
         this.indicatorsList = data;
-       /*  this.indicatorsUpdated.emit(this.indicatorsList);  *///porque emite os indicadores????
+         this.indicatorsUpdated.emit(this.indicatorsList);  
       },
       error: (error) => {
         console.error('Error fetching indicators:', error);
       }
     });
-  }
+  } */
 }
 
 
