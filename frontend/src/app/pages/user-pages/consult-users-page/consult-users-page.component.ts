@@ -32,7 +32,7 @@
 import { Component } from '@angular/core';
 import { MenuComponent } from '../../../components/user/menu/menu.component';
 import { UsersListSectionComponent } from '../../../components/user/users-list-section/users-list-section.component';
-import { UserFilterSectionComponent } from '../../../components/user/user-filter-section/user-filter-section.component';
+import { SimpleFilterSectionComponent } from '../../../components/shared/simple-filter-section/simple-filter-section.component';
 
 @Component({
   selector: 'app-consult-users-page',
@@ -40,12 +40,17 @@ import { UserFilterSectionComponent } from '../../../components/user/user-filter
   imports: [
     MenuComponent,
     UsersListSectionComponent,
-    UserFilterSectionComponent,
+    SimpleFilterSectionComponent,
 
   ],
   templateUrl: './consult-users-page.component.html',
   styleUrls: ['./consult-users-page.component.scss']
 })
 export class ConsultUsersPageComponent {
-  searchFilter: string | undefined;
+  searchFilter: string = "";
+
+//recebe filtro do componente filho filtro para enviar para o componente filho lista
+  handleSearch(searchTerm: string): void {
+    this.searchFilter = searchTerm;
+  }
 }

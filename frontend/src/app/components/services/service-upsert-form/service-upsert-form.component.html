@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <button type="submit" class="forms-Button" [disabled]="isLoadingAtivities">Adicionar</button>
+    <button (click)="formSubmited()" type="submit" class="forms-Button" [disabled]="isLoadingAtivities">Adicionar</button>
   </div>
 </form>
 

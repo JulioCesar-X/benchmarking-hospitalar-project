@@ -104,13 +104,10 @@ export class ServiceUpsertFormComponent {
           this.setNotification(errorMessage, 'error');
       }
   );
-
-
   }
 
   editService(){
     console.log("EDITED", this.selectedService)
-
     //tem de estar igual ao que esta na DB
     const updatedService = {
       service_name: this.selectedService.name,
@@ -126,10 +123,8 @@ export class ServiceUpsertFormComponent {
           const errorMessage = this.getErrorMessage(error);
           this.setNotification(errorMessage, 'error');
       }
-  ); 
+    ); 
   }
-
-
 
 setNotification(message: string, type: 'success' | 'error') {
   this.notificationMessage = message;

@@ -39,7 +39,7 @@ export const routes: Routes = [
 
   //Rotas Users
   { path: 'consultUsers', component: ConsultUsersPageComponent, canActivate: [AuthGuard] },
-  { path: 'createUser', component: CreateUserPageComponent, canActivate: [AuthGuard] },
+  { path: 'createUser', component: CreateUserPageComponent, },
   { path: 'editUser/:id', component: EditUserPageComponent, canActivate: [AuthGuard] },
 //nao esquecer de colocar os guards nas rotas
   //activities
@@ -80,8 +80,10 @@ export const routes: Routes = [
   { path: 'teste', component: TesteComponent },
   { path: 'consultData', component: ConsultDataPageComponent },
 
-  { path: 'RecordGoalsUpdate', component: RecordsGoalsUpdatePageComponent, canActivate: [AuthGuard] },
 
+    //o AuthGuard so funciona para o Admin, vais ser preciso criar um para o coordenador
+   //Fazer um role guard para distinguir o cord de admin
+  { path: 'RecordGoalsUpdate', component: RecordsGoalsUpdatePageComponent},
 
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];

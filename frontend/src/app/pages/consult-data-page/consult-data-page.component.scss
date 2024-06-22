@@ -5,6 +5,58 @@
     display: flex;
   }
 
+  //tabs styles
+  .tabs {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-headers {
+    display: flex;
+    margin-left: 8em;
+    margin-top: 1em;
+    overflow: hidden;
+    border-top-left-radius: 1em;
+    border-top-right-radius: 1em;
+    width: 20%;
+}
+
+.tab-link {
+    color: $fill-white;
+    width: 100%;
+    background-color: $secondary-blue;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 1em;
+    transition: 0.3s;
+
+}
+
+.tab-link:hover, .tab-link.active:hover {
+    background-color: $darker-main-blue;
+}
+
+.tab-link.active {
+    background-color: $main-blue;
+}
+
+//rest
+
+  .box{
+    display: flex;
+    justify-content: space-around;
+    background-color: $fill-white;
+    border-radius: 1em;
+    padding-block: 0.5em;
+    
+    h2{
+        margin:0;
+        color: $main-blue;
+    }
+}
+
 .descriptionBox{
     box-sizing: border-box;
     display: flex;
@@ -35,11 +87,11 @@
 
     display: flex;
     flex-direction: column;
+    gap: 1em;
 
     box-sizing: border-box;
     border-radius: 1em;
     margin-block: 0;
-    margin-top: 1em;
     border: none;
     width: 90%;
     display: flex;

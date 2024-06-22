@@ -3,6 +3,9 @@ import { RouterOutlet, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from './components/ui/navbar/navbar.component';
 import { FooterComponent } from './components/ui/footer/footer.component';
+import { CommonModule } from '@angular/common';
+
+
 
 @Component({
   selector: 'app-root',
@@ -12,9 +15,13 @@ import { FooterComponent } from './components/ui/footer/footer.component';
     HttpClientModule,
     RouterModule,
     FooterComponent,
-    NavbarComponent
+    NavbarComponent,
+    
+
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent { }
+export class AppComponent {
+
+ }

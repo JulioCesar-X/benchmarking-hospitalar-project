@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MenuComponent } from '../../../components/user/menu/menu.component';
-import { UserFilterSectionComponent } from '../../../components/user/user-filter-section/user-filter-section.component';
+import { SimpleFilterSectionComponent } from '../../../components/shared/simple-filter-section/simple-filter-section.component';
 import { CreateUserFormComponent } from '../../../components/user/create-user-form/create-user-form.component';
 
 @Component({
@@ -8,7 +8,7 @@ import { CreateUserFormComponent } from '../../../components/user/create-user-fo
   standalone: true,
   imports: [
     MenuComponent,
-    UserFilterSectionComponent,
+    SimpleFilterSectionComponent,
     CreateUserFormComponent,
   ],
   templateUrl: './create-user-page.component.html',

@@ -6,23 +6,33 @@ import { DataService } from '../../services/data.service';
 import { AccumulatedData } from '../../models/AccumulatedData.model'
 import { Filter } from '../../models/Filter.model'
 import {graphData} from '../../models/graphData.model'
+import { ChartComponent } from '../../components/chart/chart.component'
+import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-consult-data-page',
   standalone: true,
-  imports: [
+  imports: [CommonModule,
     ConsultDataFilterComponent,
     DataGraphicComponent,
     HttpClientModule,
+    ChartComponent
+
   ],
   templateUrl: './consult-data-page.component.html',
   styleUrl: './consult-data-page.component.scss'
 })
 
 export class ConsultDataPageComponent {
+  selectedTab: string = 'Records';
+
+  selectTab(tab: string) {
+    this.selectedTab = tab;
+  }
+
   requestedData: any;
   filteredData: any;
-
 
   data: Array<graphData> = [];
   year: string = "";
