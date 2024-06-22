@@ -18,16 +18,18 @@ class IndicatorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        try {
-            $indicators = Indicator::all();
-            return response()->json($indicators, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    }
+        $pageSize = $request->input('size', 10);
+        $page = $request->input('page', 1);
+        $indicators = Indicator::paginate($pageSize, ['*'], 'page', $page);
 
+        // Formatando a resposta para combinar com o frontend esperado
+        return response()->json([
+            'data' => $indicators->items(),
+            'total' => $indicators->total()
+        ], 200);
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -53,7 +55,7 @@ class IndicatorController extends Controller
                 'year' => $request->input('year')
             ]);
             return response()->json($indicator->load('serviceActivityIndicators'), 201);
-            
+
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

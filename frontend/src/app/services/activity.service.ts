@@ -69,9 +69,6 @@ export class ActivityService {
     );
   }
 
-  getActivitiesByServiceId(activityId: number){}
-
-
   private handleError(error: HttpErrorResponse): Observable < never > {
     let errorMessage = 'Unknown error occurred. Please try again.';
     if(error.error instanceof ErrorEvent) {

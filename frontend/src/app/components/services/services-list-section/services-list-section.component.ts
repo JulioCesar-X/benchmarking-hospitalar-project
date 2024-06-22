@@ -114,7 +114,7 @@ export class ServicesListSectionComponent {
     this.cdr.detectChanges();  // Opcional, se você quiser forçar a UI a atualizar após fechar
   }
 
-  formSubmitted(): void {
+  formSubmited(): void {
     this.isDeleting = true;
     this.serviceService.removeService(this.selectedService).subscribe({
       next: () => {

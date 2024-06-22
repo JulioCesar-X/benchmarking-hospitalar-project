@@ -1,27 +1,47 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
-.headingSection{
-    display: flex;
-    color: $main-blue;
+forms-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
 
-    img{
-        width: 25px;
-        height: 25px;
-        margin-left: auto;
-    }
-}
+  .headingSection {
+    margin-bottom: 20px;
+  }
 
-
-.forms-container{
-    @include forms-container();
-
-    margin-block: 0.5em;
-    border: 10px solid $main-blue;
-    background-color: $fill-white;
+  table {
     width: 100%;
-}
 
+    th,
+    td {
+      padding: 10px;
+      text-align: left;
+    }
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+  }
+}
 .forms-container--inputContainer{
     @include forms-container--inputContainer();
 }
@@ -56,7 +76,7 @@ mat-paginator {
     color: $fill-white;
     border-radius: 1em;
 
-    
+
   }
 
 ::ng-deep .div.mat-mdc-select-panel{
@@ -99,16 +119,16 @@ mat-paginator {
     color: $main-blue;
     margin-block: 1em;
   }
-  
+
   .spinner {
     border: 8px solid $secondary-blue;
-    border-top: 8px solid $main-blue; 
+    border-top: 8px solid $main-blue;
     border-radius: 50%;
-    width: 50px; 
+    width: 50px;
     height: 50px;
     animation: spin 2s linear infinite;
   }
-  
+
   @keyframes spin {
     0% {
       transform: rotate(0deg);

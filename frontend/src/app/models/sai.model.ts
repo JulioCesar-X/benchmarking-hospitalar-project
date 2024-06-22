@@ -1,5 +1,6 @@
 import { Activity } from "./activity.model";
 import { Indicator } from "./indicator.model";
+import { Service } from "./service.model";
 
 export interface ServiceActivityIndicator {
   id?: number;
@@ -8,5 +9,6 @@ export interface ServiceActivityIndicator {
   indicator?: Indicator
   indicator_id: number;
   service_id?: number;
+  service?: Service;
   type?: string;
 }

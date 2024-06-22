@@ -22,8 +22,23 @@ class ServiceActivityIndicatorController extends Controller
     public function index()
     {
         try {
-            $serviceActivityIndicators = ServiceActivityIndicator::with(['service', 'indicator', 'activity'])->get();
-            return response()->json($serviceActivityIndicators, 200);
+            $sais = ServiceActivityIndicator::with(['service', 'activity'])
+            ->get()
+                ->groupBy('service_id')
+                ->map(function ($group) {
+                    return [
+                        'service_id' => $group->first()->service_id,
+                        'service_name' => $group->first()->service->service_name,
+                        'activities' => $group->map(function ($item) {
+                            return [
+                                'activity_id' => $item->activity_id,
+                                'activity_name' => $item->activity->activity_name
+                            ];
+                        })->unique('activity_id')->values()
+                    ];
+                })->values();
+
+            return response()->json(['services' => $sais], 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
