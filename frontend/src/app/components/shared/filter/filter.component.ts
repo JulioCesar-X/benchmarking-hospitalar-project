@@ -7,6 +7,8 @@ import { IndicatorService } from '../../../services/indicator.service'
 import { ServiceService } from '../../../services/service.service';
 import { Service } from '../../../models/service.model';
 import { Filter } from '../../../models/Filter.model'
+import { forkJoin } from 'rxjs';
+
 
 @Component({
   selector: 'app-filter',
@@ -30,20 +32,59 @@ export class FilterComponent {
     serviceId: "",
     activityId: "",
     indicatorId: "",
-    month: 0,
-    year: 0,
-  }
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+  };
 
   date!: Date;
 
   @Output() filterEvent = new EventEmitter<Filter>();
 
   ngOnInit() {
-    this.getActivities();
-    this.getServices();
+    this.loadData();
+  }
 
-    if(this.indicatorsInput){
-      this.getIndicators();
+  private loadData() {
+    const requests = [
+      this.activityService.getActivities(),
+      this.serviceService.getServices()
+    ];
+
+    if (this.indicatorsInput) {
+      requests.push(this.indicatorService.getIndicators());
+    }
+
+    forkJoin(requests).subscribe(
+      (results: any[]) => {
+        this.activitiesList = results[0];
+        this.servicesList = results[1];
+        if (this.indicatorsInput) {
+          this.indicatorsList = results[2];
+        }
+        
+        this.initializeFilter();
+      },
+      error => {
+        console.error('Error fetching initial data:', error);
+      },
+      () => {
+        this.sendFilter();
+      }
+    );
+  }
+
+
+  //faz o select para o HTML
+  private initializeFilter() {
+    // Set initial filter values
+    if (this.servicesList.length > 0) {
+      this.filter.serviceId = this.servicesList[0].id.toString(); // Assuming 'id' is the property containing the ID
+    }
+    if (this.activitiesList.length > 0) {
+      this.filter.activityId = this.activitiesList[0].id.toString(); // Assuming 'id' is the property containing the ID
+    }
+    if (this.indicatorsInput && this.indicatorsList.length > 0) {
+      this.filter.indicatorId = this.indicatorsList[0].id; // Assuming 'id' is the property containing the ID
     }
   }
 

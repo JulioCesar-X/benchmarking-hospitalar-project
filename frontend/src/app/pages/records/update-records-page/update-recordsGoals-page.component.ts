@@ -19,13 +19,17 @@ import { Filter } from '../../../models/Filter.model'
   templateUrl: './update-recordsGoals-page.component.html',
   styleUrl: './update-recordsGoals-page.component.scss'
 })
-export class RecordsGoalsUpdatePageComponent {
-         
-                                                                          
-  filter: any = [];
-
+export class RecordsGoalsUpdatePageComponent {                                                                          
   currentIndicators: any[] = [];
   isLoading = false;  // Adiciona a propriedade isLoading
+
+  filter: Filter = {
+    indicatorId: undefined,
+    activityId: undefined,
+    serviceId: undefined,
+    month: new Date().getMonth() + 1,  // Current month (1-12)
+    year: new Date().getFullYear()    // Current year
+  };
 
   onIndicatorsUpdated(indicators: any[]) {
     this.currentIndicators = indicators;
@@ -42,7 +46,12 @@ export class RecordsGoalsUpdatePageComponent {
     this.selectedTab = tab;
   }
 
-  handleFilterData(event: any) {
-    this.filter = event;
+  handleFilterData(event: Partial<Filter>): void {
+    // Merge the received data into the existing filter object
+    this.filter = {
+      ...this.filter,  // Preserve existing values
+      ...event         // Overwrite with new values from event
+    };
   }
+  
 }
