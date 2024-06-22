@@ -1,15 +1,12 @@
-<app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal>
+
 
 <app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
-
 <form>
   <div class="forms-container"><!--  [class.loading]="isLoading" -->
 
     <h2 class="forms-container--title" *ngIf="formsAction === 'create'" >Criar indicador</h2>
     <h2 class="forms-container--title" *ngIf="formsAction === 'edit'" >Editar indicador</h2>
-
-    <button type="button" class="forms-Button" (click)="openModal($event)">Adicionar Campo</button>
-
+    
     <div class="forms-container--inputContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
       <label for="name">Nome:</label>
       <input type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }"
@@ -47,7 +44,7 @@
 
     <div class="forms-container--inputContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
       <label for="meta">Meta:</label>
-      <input type="text" class="inputContainer--input" [(ngModel)]="goalTargetValue" 
+      <input type="text" class="inputContainer--input" [(ngModel)]="goalTargetValue"
       id="meta" name="meta" placeholder="Meta anual" required>
       <span class="errorSpanMessage"></span>
     </div>

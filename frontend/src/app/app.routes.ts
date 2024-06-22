@@ -11,8 +11,7 @@ import { EditUserPageComponent } from './pages/user-pages/edit-user-page/edit-us
 import { ConsultDataPageComponent } from './pages/consult-data-page/consult-data-page.component'
 
 
-import { AuthGuard } from './guards/auth.guard'
-import {TesteComponent} from './teste/teste.component'
+import { AuthGuard } from './guards/auth.guard';
 
 //indicators
 import {IndicatorsListPageComponent} from './pages/indicators/indicators-list-page/indicators-list-page.component';
@@ -77,7 +76,6 @@ export const routes: Routes = [
 
 
 
-  { path: 'teste', component: TesteComponent },
   { path: 'consultData', component: ConsultDataPageComponent },
 
 

@@ -44,15 +44,20 @@
 
     <div id="Indicators" *ngIf="activeTab === 'Indicators'" class="mt-4">
       <h4>Associar indicadores:</h4>
-      <div *ngFor="let indicator of allIndicators; trackBy: trackByIndex" class="mt-2">
-        <div *ngIf="indicator.id !== undefined">
-          <input type="checkbox" [checked]="isSelectedIndicator(indicator.id)"
-            (click)="toggleIndicatorSelection(indicator.id)">
-          <label>{{ indicator.indicator_name }}</label>
+      <div *ngIf="allIndicators.length > 0; else noIndicators">
+        <div *ngFor="let indicator of allIndicators; trackBy: trackByIndex" class="mt-2">
+          <div *ngIf="indicator.id !== undefined">
+            <input type="checkbox" [checked]="isSelectedIndicator(indicator.id)"
+              (click)="toggleIndicatorSelection(indicator.id)">
+            <label>{{ indicator.indicator_name }}</label>
+          </div>
         </div>
       </div>
+      <ng-template #noIndicators>
+        <p>Nenhum indicador para mostrar.</p>
+      </ng-template>
     </div>
-
+    
     <button type="submit" class="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg"
       [disabled]="isLoadingActivities || !form.valid || selectedIndicatorIds.length === 0">Adicionar</button>
   </div>

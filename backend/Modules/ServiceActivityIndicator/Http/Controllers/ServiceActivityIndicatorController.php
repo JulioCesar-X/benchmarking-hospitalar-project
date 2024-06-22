@@ -8,6 +8,7 @@ use Modules\Goal\Entities\Goal;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Exception;
 
@@ -251,4 +252,105 @@ class ServiceActivityIndicatorController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
+    public function allin(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $year = $request->input('year');
+            $month = $request->input('month');
+
+            // Find the ServiceActivityIndicator ID (saiID)
+            $sai = ServiceActivityIndicator::where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->first();
+
+            if (!$sai) {
+                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
+            }
+
+            $saiId = $sai->id;
+
+            // Aggregate data from vw_indicator_accumulated view
+            $recordsMensal = DB::table('vw_indicator_accumulated')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->whereYear('data', $year)
+                ->pluck('valor_mensal');
+
+            $recordsAnual = DB::table('vw_indicator_accumulated')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->where('year', $year)
+                ->pluck('valor_acumulado_agregado');
+
+            // Get goals data from vw_goals_monthly view
+            $goalsMensal = DB::table('vw_goals_monthly')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->where('year', $year)
+                ->pluck('monthly_target');
+
+            $goalsAnual = DB::table('vw_goals_monthly')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->groupBy('year', 'meta_anual') // Inclui 'meta_anual' no GROUP BY
+                ->pluck('meta_anual'); // Use meta_anual instead of Meta_Anual
+
+            // Get data for last five years from vw_indicator_accumulated view
+            $lastFiveYears = DB::table('vw_indicator_accumulated')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->groupBy('year')
+                ->orderBy('year', 'desc')
+                ->limit(5)
+                ->select('year', DB::raw('SUM(valor_acumulado_agregado) as total'))
+                ->get();
+
+            // Get homologous year comparison from vw_variation_rate view
+            $previousYearTotal = DB::table('vw_variation_rate')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->where('year1', $year - 1)
+                ->where('month', $month)
+                ->value('total_accumulated_year1');
+
+            $currentYearTotal = DB::table('vw_variation_rate')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->where('year2', $year)
+                ->where('month', $month)
+                ->value('total_accumulated_year2');
+
+            // Format the response JSON
+            $response = [
+                'saiID' => $saiId,
+                'years' => $lastFiveYears->pluck('year')->toArray(),
+                'recordsMensal' => $recordsMensal->toArray(),
+                'recordsAnual' => $recordsAnual->toArray(),
+                'goalsMensal' => $goalsMensal->toArray(),
+                'goalsAnual' => $goalsAnual->toArray(),
+                'lastFiveYears' => $lastFiveYears->toArray(),
+                'previousYearTotal' => $previousYearTotal,
+                'currentYearTotal' => $currentYearTotal,
+            ];
+
+            return response()->json($response, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+
+
 }

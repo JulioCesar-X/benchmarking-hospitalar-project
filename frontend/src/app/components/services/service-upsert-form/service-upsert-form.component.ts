@@ -59,21 +59,29 @@ export class ServiceUpsertFormComponent implements OnInit {
   loadAllActivities(): void {
     this.activityService.getActivities().subscribe({
       next: (activities: Activity[]) => {
+        console.log('Activities:', activities); // Check what's logged here
         this.allActivities = activities;
         this.isLoadingActivities = false;
       },
-      error: () => this.setNotification('Falha ao carregar atividades.', 'error')
+      error: () => {
+        this.allActivities = []; // Default to empty array on error
+        this.setNotification('Falha ao carregar atividades.', 'error');
+      }
     });
   }
 
   loadAllIndicators(): void {
     this.indicatorService.getIndicators().subscribe({
-      next: (indicators: Indicator[]) => {
-        console.log(indicators);
-        this.allIndicators = indicators;
+      next: (response: any) => {
+        this.allIndicators = response.data; // Assuming the indicators are wrapped in a data property
         this.isLoadingActivities = false;
+        this.cdr.detectChanges();
       },
-      error: () => this.setNotification('Falha ao carregar indicadores.', 'error')
+      error: () => {
+        this.allIndicators = []; // Default to empty array on error
+        this.setNotification('Falha ao carregar indicadores.', 'error');
+        this.cdr.detectChanges();
+      }
     });
   }
 

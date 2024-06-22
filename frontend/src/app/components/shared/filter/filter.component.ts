@@ -7,6 +7,7 @@ import { IndicatorService } from '../../../services/indicator.service'
 import { ServiceService } from '../../../services/service.service';
 import { Service } from '../../../models/service.model';
 import { Filter } from '../../../models/Filter.model'
+import { Indicator } from '../../../models/indicator.model';
 
 @Component({
   selector: 'app-filter',
@@ -17,8 +18,8 @@ import { Filter } from '../../../models/Filter.model'
   styleUrl: './filter.component.scss'
 })
 export class FilterComponent {
-  @Input({required: true}) indicatorsInput: boolean = false; 
-  @Input({required: true}) dataInsertedCheckbox: boolean = false; 
+  @Input({required: true}) indicatorsInput: boolean = false;
+  @Input({required: true}) dataInsertedCheckbox: boolean = false;
 
   constructor(private indicatorService: IndicatorService, private activityService: ActivityService, private serviceService: ServiceService) { }
 
@@ -36,15 +37,16 @@ export class FilterComponent {
 
   date!: Date;
 
-  @Output() indicatorsUpdated = new EventEmitter<Filter>();
+  @Output() filterData = new EventEmitter<Filter>();
 
   ngOnInit() {
     this.getActivities();
     this.getServices();
+    this.getAllIndicators();
   }
 
   sendFilter() {
-    this.indicatorsUpdated.emit(this.filter);
+    this.filterData.emit(this.filter);
   }
 
   getActivities() {
@@ -56,6 +58,15 @@ export class FilterComponent {
   getServices() {
     this.serviceService.getServices().subscribe(data => {
       this.servicesList = data;
+    });
+  }
+
+  getAllIndicators() {
+    this.indicatorService.getIndicators().subscribe({
+      next: (response: any) => {
+        this.indicatorsList = response.data; // Assuming the indicators are wrapped in a data property
+        console.log('Indicators:', this.indicatorsList);
+      },
     });
   }
 
@@ -76,14 +87,13 @@ export class FilterComponent {
       console.error('Activity ID is required');
       return;
     }
-
     this.date = new Date(this.filter.year, this.filter.month - 1);
     const dateStr = this.date.toISOString().split('T')[0];
     this.indicatorService.getAllSaiIndicators(parseInt(this.filter.serviceId), parseInt(this.filter.activityId), this.date).subscribe({
       next: (data) => {
         console.log('Indicators data:', data);
         this.indicatorsList = data;
-       /*  this.indicatorsUpdated.emit(this.indicatorsList);  *///porque emite os indicadores????
+       /*  this.filterData.emit(this.indicatorsList);  *///porque emite os indicadores????
       },
       error: (error) => {
         console.error('Error fetching indicators:', error);

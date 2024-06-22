@@ -25,10 +25,8 @@ export class IndicatorService {
   getIndicators(): Observable<any[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`, // Uso do token de autenticação
-      'Content-Type': 'application/json' // Se necessário, definindo o tipo de conteúdo
     });
-
-    return this.http.get<Indicator[]>('/admin/indicators', {
+    return this.http.get<any[]>('/admin/indicators', {
       headers: headers,
       withCredentials: true // Certifique-se de enviar credenciais para sessões seguras
     }).pipe(
