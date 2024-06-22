@@ -295,13 +295,14 @@
 //   }
 // }
 
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserService } from '../../../services/user.service';
 import { RouterLink, Router } from '@angular/router';
 import { NotificationComponent } from '../../shared/notification/notification.component';
+
 
 @Component({
   selector: 'app-users-list-section',
@@ -311,6 +312,8 @@ import { NotificationComponent } from '../../shared/notification/notification.co
   styleUrls: ['./users-list-section.component.scss']
 })
 export class UsersListSectionComponent implements OnInit, OnChanges {
+@Input() filter: string = "";
+
   allUsers: any[] = [];
   displayedUsers: any[] = [];
   isLoading: boolean = false;
@@ -335,6 +338,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log(`users list - filtro recebido:`, this.filter)
     this.loadUsers();
   }
 
@@ -387,7 +391,9 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
   }
 
   editUser(user: any): void {
-    const userData = { id: user.id, name: user.name, email: user.email, password: user.password, roleId: user.role_id };
+
+    const userData = { id: user.id, name: user.name, email: user.email, password: user.password, roleId: user.roles[0]?.id };
+    
     this.userService.setUserData(userData);
     this.router.navigate(['/editUser/' + user.id]);
   }

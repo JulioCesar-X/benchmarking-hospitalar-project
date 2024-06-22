@@ -1,22 +1,70 @@
 <div class="mx-2 w-full">
 
     <app-consult-data-filter (filterData)="handleFilterData($event)"></app-consult-data-filter>
-    <h2 class="pageTitle">Dados por mês:</h2>
-    
-    <div class="graphicsContainer">
-        <div class="row">
-            <div>
-                <app-data-graphic [data]="homologData" typeOfGraph="month" [homologueYear]="homologueYear"></app-data-graphic>
+
+    <div class="tab-headers">
+      <button class="tab-link" [class.active]="selectedTab === 'Producao'" (click)="selectTab('Producao')">
+        Produção
+      </button>
+      <button class="tab-link" [class.active]="selectedTab === 'Metas'" (click)="selectTab('Metas')">
+        Metas
+      </button>
+    </div>
+    <div *ngIf="selectedTab === 'Producao'">
+        <div class="graphicsContainer">
+            <div class="row">
+                <div>
+                    <app-chart graphType="month" graphLabel="Produção"></app-chart>
+                </div>
+            </div>
+            <div class="row">
+                <div class="box">
+                    <h2>Diferença:</h2>
+                    <h2>Variação:</h2>
+               </div>
+            </div>
+            <div class="row">
+                <div>
+                    <app-chart graphType="lineChart" graphLabel="Variação currentYear"></app-chart>
             </div>
             <div>
-                <app-data-graphic [data]="data" typeOfGraph="month" [homologueYear]="year"></app-data-graphic>
-            </div>
+                <app-chart graphType="lineChart" graphLabel="Variação previousYear"></app-chart>
         </div>
-        <div class="row">
-            <div>
-                <app-data-graphic [data]="yearlyData" [homologueYear]="year" typeOfGraph="year"></app-data-graphic>
-            </div>
+         </div>
+            <div class="row">
+                <div>
+                    <app-chart graphType="homologYear" graphLabel="Comparação anual"></app-chart>
+              </div>
+              <div>
+                <app-chart graphType="fiveYear" graphLabel="5 anos anteriores"></app-chart>
+             </div>
         </div>
-    </div>    
+    </div>
+
+    </div>
+    <div *ngIf="selectedTab === 'Metas'">
+        <div class="graphicsContainer">
+            <div class="row">
+                <div>
+                    <app-chart graphType="month" graphLabel="Produção"></app-chart>
+                </div>
+                <div>
+                    <app-chart graphType="month" graphLabel="Metas"></app-chart>
+               </div>
+            </div>
+            <div class="row">
+                <div class="box">
+                    <h2>Diferença:</h2>
+                    <h2>Variação:</h2>
+               </div>
+            </div>
+            <div class="row">
+                <div>
+                    <app-chart graphType="year" graphLabel="Total anual"></app-chart>
+              </div>
+             </div>
+    </div>
 </div>
+
+
 
