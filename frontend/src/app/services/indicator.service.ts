@@ -51,6 +51,25 @@ export class IndicatorService {
       );
   }
 
+  getAllSaiRecords(service_id: number, activity_id: number, date: Date): Observable<Indicator[]> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.cookieService.get('access_token')}`
+    });
+    const params = new HttpParams()
+      .set('serviceId', service_id.toString())
+      .set('activityId', activity_id.toString())
+      .set('date', date.toISOString().split('T')[0]);
+
+    return this.http.get<Indicator[]>(`/sai/indicators/records`, { params: params, headers: headers, withCredentials: true })
+      .pipe(
+        catchError(error => {
+          console.error('Erro ao buscar records:', error);
+          return throwError(() => new Error('Falha ao buscar indicadores c/ records'));
+        })
+      );
+  }
+
+
   getAllSaiIndicators(service_id: number, activity_id: number, date: Date): Observable<Indicator[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`
@@ -68,6 +87,7 @@ export class IndicatorService {
         })
       );
   }
+
   getAllSaiGoals(service_id: number, activity_id: number, year: number): Observable<Indicator[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`

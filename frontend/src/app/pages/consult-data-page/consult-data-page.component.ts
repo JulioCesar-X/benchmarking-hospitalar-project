@@ -24,11 +24,11 @@ import { ServiceActivityIndicatorService } from '../../services/service-activity
 export class ConsultDataPageComponent implements OnInit {
   selectedTab: string = 'Producao';
   filter: Filter = {
-    serviceId: "1",
-    activityId: "1",
-    indicatorId: "1",
-    month: 1,
-    year: new Date().getFullYear() - 1
+    indicatorId: undefined,
+    activityId: undefined,
+    serviceId: undefined,
+    month: new Date().getMonth() + 1,  // Current month (1-12)
+    year: new Date().getFullYear()    // Current year
   };
   graphData: any;
 
@@ -48,9 +48,12 @@ export class ConsultDataPageComponent implements OnInit {
     });
   }
 
-  handleFilterData(event: Filter): void {
-    this.filter = event;
-    this.loadGraphData(); // Reload graph data with new filter
+  handleFilterData(event: Partial<Filter>): void {
+    // Merge the received data into the existing filter object
+    this.filter = {
+      ...this.filter,  // Preserve existing values
+      ...event         // Overwrite with new values from event
+    };
   }
 
   selectTab(tab: string): void {

@@ -1,6 +1,6 @@
 <div class="mx-2 w-full">
   <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false"
-    (filterData)="handleFilterData($event)"></app-filter>
+    (filter)="handleFilterData($event)"></app-filter>
   <div class="tab-headers">
     <button class="tab-link" [class.active]="selectedTab === 'Producao'"
       (click)="selectTab('Producao')">Produção</button>
