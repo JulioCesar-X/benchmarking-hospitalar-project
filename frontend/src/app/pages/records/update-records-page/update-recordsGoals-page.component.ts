@@ -46,7 +46,7 @@ export class RecordsGoalsUpdatePageComponent {
     this.selectedTab = tab;
   }
 
-  handleFilterData(event: Partial<Filter>): void {
+  handleFilterData(event: Filter): void {
     // Merge the received data into the existing filter object
     this.filter = {
       ...this.filter,  // Preserve existing values

@@ -23,6 +23,7 @@ import { ServiceActivityIndicatorService } from '../../services/service-activity
 })
 export class ConsultDataPageComponent implements OnInit {
   selectedTab: string = 'Producao';
+  
   filter: Filter = {
     indicatorId: undefined,
     activityId: undefined,

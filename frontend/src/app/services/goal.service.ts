@@ -33,4 +33,24 @@ import { CookieService } from 'ngx-cookie-service';
 /*    postGoal(goalData: any): Observable<any> {
      return this.http.post(`${this.apiUrl}/admin/goals`, goalData);
    } */
+
+
+
+     editGoal(id: number, data: any): Observable<any> {
+      console.log(data)
+      return this.http.put(`/admin/goals/${id}`, data, {
+        headers: new HttpHeaders({
+          'Authorization': `Bearer ${this.cookieService.get('access_token')}`,
+        }),
+        withCredentials: true
+      }).pipe(
+        catchError(this.handleError)
+      );
+    }
+    
+  
+
+
  }
+
+ 

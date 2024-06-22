@@ -29,6 +29,7 @@ export class RecordService {
 
 
   editRecord(id: number, data: any): Observable<any> {
+    console.log(data)
     return this.http.put(`/admin/records/${id}`, data, {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${this.cookieService.get('access_token')}`,

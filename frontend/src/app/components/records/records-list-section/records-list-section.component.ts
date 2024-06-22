@@ -53,57 +53,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
       this.GetRecords();
     }
   }
-  
-
-
-
-
-
-
-
-
-
-
-
-
-//metodo original de quando estava no componente do filtro
- /*  getRecords(): void {
-    if (this.month < 1 || this.month > 12) {
-      console.error('Invalid month:', this.month);
-      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
-      return;
-    }
-    if (!this.year) {
-      console.error('Year is required');
-      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
-      return;
-    }
-    if (!this.service_id) {
-      console.error('Service ID is required');
-      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
-      return;
-    }
-    if (!this.activity_id) {
-      console.error('Activity ID is required');
-      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
-      return;
-    }
-    this.date = new Date(this.year, this.month - 1);
-    const dateStr = this.date.toISOString().split('T')[0];
-    this.indicatorService.getAllSaiIndicators(this.service_id, this.activity_id, this.date).subscribe({
-      next: (data: Indicator[]) => {
-        console.log('Indicators data:', data);
-        this.indicatorsList = data;
-        this.indicatorsUpdated.emit(this.indicatorsList);
-        this.loadingStateChanged.emit(false); // Define isLoading como false quando os dados forem recebidos
-      },
-      error: (error) => {
-        console.error('Error fetching indicators:', error);
-        this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
-      }
-    });
-  } */
-
 
 GetRecords(){
 
@@ -218,4 +167,44 @@ GetRecords(){
     trackByIndex(index: number, item: Indicator): number {
       return item.sai_id!;
     }
+
+
+
+    //metodo original de quando estava no componente do filtro
+ /*  getRecords(): void {
+    if (this.month < 1 || this.month > 12) {
+      console.error('Invalid month:', this.month);
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
+      return;
+    }
+    if (!this.year) {
+      console.error('Year is required');
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
+      return;
+    }
+    if (!this.service_id) {
+      console.error('Service ID is required');
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
+      return;
+    }
+    if (!this.activity_id) {
+      console.error('Activity ID is required');
+      this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
+      return;
+    }
+    this.date = new Date(this.year, this.month - 1);
+    const dateStr = this.date.toISOString().split('T')[0];
+    this.indicatorService.getAllSaiIndicators(this.service_id, this.activity_id, this.date).subscribe({
+      next: (data: Indicator[]) => {
+        console.log('Indicators data:', data);
+        this.indicatorsList = data;
+        this.indicatorsUpdated.emit(this.indicatorsList);
+        this.loadingStateChanged.emit(false); // Define isLoading como false quando os dados forem recebidos
+      },
+      error: (error) => {
+        console.error('Error fetching indicators:', error);
+        this.loadingStateChanged.emit(false); // Define isLoading como false em caso de erro
+      }
+    });
+  } */
 }
