@@ -25,7 +25,7 @@ export class IndicatorService {
       const headers = new HttpHeaders({
         'Authorization': `Bearer ${this.cookieService.get('access_token')}`, // Uso do token de autenticação
       });
-      return this.http.get<Indicator[]>('/indicators/all', {
+      return this.http.get<Indicator[]>('/indicatorsAll', {
         headers: headers,
         withCredentials: true // Certifique-se de enviar credenciais para sessões seguras
       }).pipe(
@@ -41,7 +41,7 @@ export class IndicatorService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`, // Uso do token de autenticação
     });
-    return this.http.get<Indicator[]>('/admin/allIndicators', {
+    return this.http.get<Indicator[]>('/admin/indicators', {
       headers: headers,
       withCredentials: true // Certifique-se de enviar credenciais para sessões seguras
     }).pipe(

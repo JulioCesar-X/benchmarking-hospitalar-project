@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('indicators/accumulated', 'IndicatorController@getAccumulatedIndicators')->name('indicators.accumulated');
     Route::get('indicators', 'IndicatorController@index')->name('indicators');
     Route::get('indicators/{id}', 'IndicatorController@show')->name('indicators.show');
-    Route::get('indicators/all', 'IndicatorController@getAllIndicators')->name('indicators.all'); // JMS New Route
+    Route::get('indicatorsAll', 'IndicatorController@getAllIndicators'); // JMS New Route
 
 
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {

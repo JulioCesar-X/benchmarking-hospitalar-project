@@ -24,8 +24,7 @@ class IndicatorController extends Controller
         $page = $request->input('page', 1);
         $indicators = Indicator::paginate($pageSize, ['*'], 'page', $page);
 
-        // Formatando a resposta para combinar com o frontend esperado
-        
+        // Formatando a resposta para combinar com o frontend esperado para a pagination
         return response()->json([
             'data' => $indicators->items(),
             'total' => $indicators->total()
@@ -33,7 +32,7 @@ class IndicatorController extends Controller
     }
 
     //JMS - criei este metodo para obter indicadores todos sem a paginação para os dropdowns!
-    public function getAllIndicators(Request $request)
+    public function getAllIndicators()
     {
         try{
             $indicators = Indicator::all();

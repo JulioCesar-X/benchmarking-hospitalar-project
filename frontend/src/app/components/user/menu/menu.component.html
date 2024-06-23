@@ -32,7 +32,7 @@
       <div *ngIf="getRole() === 'admin'" class="subMenuItem">
         <a routerLink="/indicators" routerLinkActive="Ativo">Gerir indicadores</a>
       </div>
-      <div  class="subMenuItem">
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
                 <!-- So coordenador pode gerir dados?! -->
         <a routerLink="/RecordGoalsUpdate" routerLinkActive="Ativo">Gerir dados</a>
       </div>
