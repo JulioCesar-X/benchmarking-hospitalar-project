@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges, } from '@angular/core';
 import Chart, { ChartType, ChartData, ChartOptions } from 'chart.js/auto';
 import { Filter } from '../../models/Filter.model';
 import { ServiceActivityIndicatorService } from '../../services/service-activity-indicator.service';
@@ -21,10 +21,18 @@ export class ChartComponent implements OnInit {
   constructor(private saiService: ServiceActivityIndicatorService) { }
 
   ngOnInit() {
-    this.loadData();
+/*     this.loadData(); */
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
+      console.log('Filter changed:', this.filter);
+      this.loadData();
+    }
   }
 
   loadData() {
+    //O que e que o getAllIn faz?
     this.saiService.getAllIn(this.filter).subscribe({
       next: (data) => {
         console.log('Chart data loaded 2 :', data);

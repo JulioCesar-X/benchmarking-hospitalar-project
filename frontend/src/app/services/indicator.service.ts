@@ -21,12 +21,27 @@ export class IndicatorService {
       this.indicatorDataSource.next(data);
     }
     //.................................JMS
+    getAllIndicators(): Observable<Indicator[]> {
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${this.cookieService.get('access_token')}`, // Uso do token de autenticação
+      });
+      return this.http.get<Indicator[]>('/indicators/all', {
+        headers: headers,
+        withCredentials: true // Certifique-se de enviar credenciais para sessões seguras
+      }).pipe(
+        catchError(error => {
+          console.error('Erro ao buscar indicadores:', error);
+          return throwError(() => new Error('Falha ao buscar indicadores'));
+        })
+      );
+    }
 
-  getIndicators(): Observable<any[]> {
+
+  getIndicators(): Observable<Indicator[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`, // Uso do token de autenticação
     });
-    return this.http.get<any[]>('/admin/indicators', {
+    return this.http.get<Indicator[]>('/admin/allIndicators', {
       headers: headers,
       withCredentials: true // Certifique-se de enviar credenciais para sessões seguras
     }).pipe(
@@ -52,25 +67,6 @@ export class IndicatorService {
   }
 
   getAllSaiRecords(service_id: number, activity_id: number, date: Date): Observable<Indicator[]> {
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${this.cookieService.get('access_token')}`
-    });
-    const params = new HttpParams()
-      .set('serviceId', service_id.toString())
-      .set('activityId', activity_id.toString())
-      .set('date', date.toISOString().split('T')[0]);
-
-    return this.http.get<Indicator[]>(`/sai/indicators/records`, { params: params, headers: headers, withCredentials: true })
-      .pipe(
-        catchError(error => {
-          console.error('Erro ao buscar records:', error);
-          return throwError(() => new Error('Falha ao buscar indicadores c/ records'));
-        })
-      );
-  }
-
-
-  getAllSaiIndicators(service_id: number, activity_id: number, date: Date): Observable<Indicator[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`
     });

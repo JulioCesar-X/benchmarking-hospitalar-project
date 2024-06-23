@@ -25,10 +25,22 @@ class IndicatorController extends Controller
         $indicators = Indicator::paginate($pageSize, ['*'], 'page', $page);
 
         // Formatando a resposta para combinar com o frontend esperado
+        
         return response()->json([
             'data' => $indicators->items(),
             'total' => $indicators->total()
         ], 200);
+    }
+
+    //JMS - criei este metodo para obter indicadores todos sem a paginação para os dropdowns!
+    public function getAllIndicators(Request $request)
+    {
+        try{
+            $indicators = Indicator::all();
+            return response()->json($indicators, 200);
+        }catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
     }
     /**
      * Store a newly created resource in storage.

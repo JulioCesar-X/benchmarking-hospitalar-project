@@ -50,11 +50,12 @@ export class ConsultDataPageComponent implements OnInit {
   }
 
   handleFilterData(event: Partial<Filter>): void {
-    // Merge the received data into the existing filter object
+
     this.filter = {
       ...this.filter,  // Preserve existing values
       ...event         // Overwrite with new values from event
     };
+    console.log("filter received in parent:", this.filter)
   }
 
   selectTab(tab: string): void {

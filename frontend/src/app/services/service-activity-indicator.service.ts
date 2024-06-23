@@ -36,6 +36,7 @@ export class ServiceActivityIndicatorService {
       .set('indicatorId', filter.indicatorId)
       .set('month', filter.month.toString())
       .set('year', filter.year.toString());
+      console.log("servicos filtro", filter)
 
     return this.http.get<{ services: any }>('/sai/allin', { headers, params, withCredentials: true })
       .pipe(
