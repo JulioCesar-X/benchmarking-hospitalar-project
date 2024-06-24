@@ -25,7 +25,7 @@
         <label for="">Indicadores:</label>
         <select [(ngModel)]="filter.indicatorId" id="indicatorId" name="indicatorId">
           <option *ngFor="let indicator of indicatorsList ; let i = index;" [value]="indicator.id">
-            {{ indicator.service_name }}
+            {{ indicator.indicator_name }}
           </option>
           <option *ngIf="indicatorsList && indicatorsList.length === 0" disabled>No indicators available</option>
         </select>
@@ -42,7 +42,7 @@
         <input type="number" id="year" name="year" min="1900" max="2200" step="1" class="inputContainer--input"
           [(ngModel)]="filter.year">
       </div>
-  
+
       <!-- A função get indicatores filtra e retira os indicadores - Deveria estar na pagina? -->
 <!--       <button (click)="getIndicators()" class="forms-Button"
         [disabled]="!filter.month || !filter.year || !filter.serviceId || !filter.activityId">
@@ -58,4 +58,3 @@
       <label>Mostrar indicadores com dados não inseridos</label>
     </div>
   </section>
-  

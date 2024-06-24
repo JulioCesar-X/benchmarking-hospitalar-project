@@ -54,10 +54,20 @@ export class ServiceService {
     );
   }
 
-  editService(id: number, data: any): Observable<any> {
+  editService(id: number, data: Service): Observable<any> {
     return this.http.put(`/admin/services/${id}`, data, {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${this.cookieService.get('access_token')}`,
+      }),
+      withCredentials: true
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+  removeService(id: number): Observable<any> {
+    return this.http.delete(`/admin/services/${id}`, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.cookieService.get('access_token')}`
       }),
       withCredentials: true
     }).pipe(

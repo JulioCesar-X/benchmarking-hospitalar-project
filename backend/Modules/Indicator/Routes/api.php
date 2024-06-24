@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('indicators/search', 'IndicatorController@search')->name('indicators.search');
     Route::get('indicators/accumulated', 'IndicatorController@getAccumulatedIndicators')->name('indicators.accumulated');
-    Route::get('indicators', 'IndicatorController@index')->name('indicators.index');
+    Route::get('indicators', 'IndicatorController@index')->name('indicators');
     Route::get('indicators/{id}', 'IndicatorController@show')->name('indicators.show');
 
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {

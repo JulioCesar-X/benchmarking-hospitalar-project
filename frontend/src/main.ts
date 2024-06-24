@@ -10,7 +10,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { environment } from '../environments/env';
 
 
-
 if (environment.production) {
   enableProdMode();
 }

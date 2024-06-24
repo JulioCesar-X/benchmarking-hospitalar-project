@@ -12,11 +12,11 @@ export class IndicatorService {
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
 
-  
+
     //para testar para passar o user a ser editado JMS...............
     private indicatorDataSource = new BehaviorSubject<any>(null); // Use BehaviorSubject for initial value
     indicatorData$ = this.indicatorDataSource.asObservable();
-  
+
     setindicatorData(data: any) {
       this.indicatorDataSource.next(data);
     }
@@ -25,9 +25,7 @@ export class IndicatorService {
   getIndicators(): Observable<any[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`, // Uso do token de autenticação
-      'Content-Type': 'application/json' // Se necessário, definindo o tipo de conteúdo
     });
-
     return this.http.get<any[]>('/admin/indicators', {
       headers: headers,
       withCredentials: true // Certifique-se de enviar credenciais para sessões seguras
@@ -38,6 +36,39 @@ export class IndicatorService {
       })
     );
   }
+
+  getIndicatorsByPage(page: number, size: number): Observable<{ data: Indicator[], total: number }> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<{ data: Indicator[], total: number }>('/indicators/index', { params })
+      .pipe(
+        catchError(error => {
+          console.error('Erro ao buscar indicadores:', error);
+          return throwError(() => new Error('Falha ao buscar indicadores'));
+        })
+      );
+  }
+
+  getAllSaiRecords(service_id: number, activity_id: number, date: Date): Observable<Indicator[]> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.cookieService.get('access_token')}`
+    });
+    const params = new HttpParams()
+      .set('serviceId', service_id.toString())
+      .set('activityId', activity_id.toString())
+      .set('date', date.toISOString().split('T')[0]);
+
+    return this.http.get<Indicator[]>(`/sai/indicators/records`, { params: params, headers: headers, withCredentials: true })
+      .pipe(
+        catchError(error => {
+          console.error('Erro ao buscar records:', error);
+          return throwError(() => new Error('Falha ao buscar indicadores c/ records'));
+        })
+      );
+  }
+
 
   getAllSaiIndicators(service_id: number, activity_id: number, date: Date): Observable<Indicator[]> {
     const headers = new HttpHeaders({
@@ -56,6 +87,7 @@ export class IndicatorService {
         })
       );
   }
+
   getAllSaiGoals(service_id: number, activity_id: number, year: number): Observable<Indicator[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.cookieService.get('access_token')}`
@@ -90,6 +122,17 @@ export class IndicatorService {
     return this.http.put(`/admin/indicators/${id}`, data, {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${this.cookieService.get('access_token')}`,
+      }),
+      withCredentials: true
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  removeIndicator(id: number): Observable<any> {
+    return this.http.delete(`/admin/indicators/${id}`, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.cookieService.get('access_token')}`
       }),
       withCredentials: true
     }).pipe(

@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Indicator } from '../../../models/indicator.model';
-
+import {GoalService} from '../../../services/goal.service'
+import { Goal } from '../../../models/Goal.model';
 @Component({
   selector: 'app-goals-list-section',
   standalone: true,
@@ -20,12 +21,58 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
   @Input() isLoading: boolean = false; // Adiciona a propriedade isLoading
   indicatorForms: { [key: number]: FormGroup } = {};
 
-  constructor(private fb: FormBuilder, private router: Router) { }
+  isLoadingGoals: boolean = true;
+  totalGoals: number = 0;
+  pageSize: number = 10;
+  currentPage: number = 0;
+  goals: any[] = [];
+
+  constructor(private fb: FormBuilder, 
+    private router: Router,
+    private goalService: GoalService
+  ) { }
+
 
   ngOnInit(): void {
     this.buildForm();
+    this.GetRecords();
+    console.log(this.goals);
   }
 
+GetRecords(){
+  this.isLoadingGoals = true;
+
+  this.goalService.getRecords().subscribe({
+    next: (data) => {
+      if (data && Array.isArray(data)) { // Verifica se data não é null e é um array
+        console.log(data);
+
+        this.goals = data.map(record => ({
+          id: record.id,
+          saiId: record.service_activity_indicator_id,
+          value: record.value,
+          date: record.date,
+        }));
+
+        console.log(this.goals);
+
+      } else {
+        console.warn('Data is not an array:', data);
+        this.isLoadingGoals = false;
+      }
+    },
+    error: (error) => {      
+      console.error('Erro ao obter Indicadores', error);
+      this.isLoadingGoals = false;
+    },
+    complete:() => {
+      this.isLoadingGoals = false;
+    }
+  });
+}
+
+
+  //adaptar nomes indicators para goals abaixo?? confirmar!
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['indicators']) {
       if (changes['indicators'].currentValue !== changes['indicators'].previousValue) {

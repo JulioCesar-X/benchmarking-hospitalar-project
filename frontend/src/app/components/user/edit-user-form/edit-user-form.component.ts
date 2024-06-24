@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CreateFieldModalComponent } from '../../indicators/create-field-modal/create-field-modal.component';
 import { UserService } from '../../../services/user.service';
 import { NotificationComponent } from '../../shared/notification/notification.component';
+import { AuthService } from '../../../auth.service';
 
 @Component({
   selector: 'app-edit-user-form',
@@ -22,22 +23,22 @@ export class EditUserFormComponent implements OnInit {
   name: string = '';
   email: string = '';
   password: string = '';
-  role_id: number | null = null;
+  role_id: number | null = 1;
   notificationMessage: string = '';
   notificationType: 'success' | 'error' = 'success';
 
   isLoading = false; // Adicionando a variável para controlar o estado de carregamento
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private authService: AuthService) { }
 
   ngOnInit(){ // sera que este ngOnInit devera estar na pagina e passar os dados para o componente por INPUT - TESTER
     this.userService.userData$.subscribe(data => {
       this.name = data.name,
       this.email = data.email,
       this.password = data.password, //should be blank, or not show up at all
-      this.role_id = data.role_id
+      this.role_id = data.roleId
     });
-
+    console.log(this.password)
   }
 
   openModal(event: Event) {
@@ -65,6 +66,7 @@ editUser() {
       password: this.password,
       role_id: this.role_id,
   };
+  console.log(`user editado`, userData);
 
   //substituir com metodo de edit do service
   
@@ -102,5 +104,9 @@ clearForm() {
   this.email = '';
   this.password = '';
   this.role_id = null;
+}
+
+getRole() {
+  return this.authService.getRole();
 }
 }

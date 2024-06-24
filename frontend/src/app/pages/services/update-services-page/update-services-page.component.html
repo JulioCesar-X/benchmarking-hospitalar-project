@@ -1,8 +1,6 @@
-
 <div>
-    <app-menu></app-menu>
-  </div>
-  <div class="mx-2 w-full">
-    <app-service-upsert-form formsAction="edit"></app-service-upsert-form>
-  </div>
-
+  <app-menu></app-menu>
+</div>
+<div class="mx-2 w-full">
+  <app-service-upsert-form formsAction="edit" [selectedServiceId]="serviceId"></app-service-upsert-form>
+</div>

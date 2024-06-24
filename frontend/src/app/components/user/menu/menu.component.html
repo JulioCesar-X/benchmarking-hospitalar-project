@@ -4,7 +4,7 @@
 
   <div class="dashboardOptionsContainer">
     <!-- menuItem -->
-    <div class="dashboardOption" (click)="openManageUsers()" [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
+    <div *ngIf="getRole() === 'admin'" class="dashboardOption" (click)="openManageUsers()" [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
       <h2>Gerir Users</h2>
       <div class="plusIcon" #plusIconUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen}"></div>
     </div>
@@ -23,17 +23,16 @@
       <div class="plusIcon" [ngClass]="{'is-open': isManageContentSubMenuOpen}"></div>
     </div>
     <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageContentSubMenuOpen}">
-      <div class="subMenuItem">
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
         <a routerLink="/services" routerLinkActive="Ativo">Gerir serviços</a>
       </div>
-      <div class="subMenuItem">
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
         <a routerLink="/activities" routerLinkActive="Ativo">Gerir atividades</a>
       </div>
-      <div class="subMenuItem">
-
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
         <a routerLink="/indicators" routerLinkActive="Ativo">Gerir indicadores</a>
       </div>
-      <div class="subMenuItem">
+      <div  class="subMenuItem">
                 <!-- So coordenador pode gerir dados?! -->
         <a routerLink="/RecordGoalsUpdate" routerLinkActive="Ativo">Gerir dados</a>
       </div>

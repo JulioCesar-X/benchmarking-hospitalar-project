@@ -16,7 +16,7 @@
           <p class="card-title">{{ service.service_name }}</p>
           <div class="card-actions">
             <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="navigateToEditService(service)">
-            <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="openModal(service)">
+            <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="openModal(service.id)">
           </div>
         </div>
       </div>
@@ -27,16 +27,19 @@
   </section>
 
 
-  <!-- MODAL -->
+  <!-- MODAL com spinner de loading -->
   <div class="modal" [ngClass]="{'show': isModalOpen}" (click)="closeModal()">
-  
-        <div class="modal-container" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
-            <div class="modalHeader">
-                <h2>Tem a certeza que quer remover este serviço?</h2>
-              <span class="close" (click)="closeModal()">&times;</span>
-            </div>
-          
-            <button (click)="formSubmited()" type="submit" class="forms-Button">Confirmar</button>
-        </div>
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modalHeader">
+        <h2>Tem a certeza que quer remover este serviço?</h2>
+        <span class="close" (click)="closeModal()">&times;</span>
+      </div>
+      <button (click)="formSubmited()" type="submit" class="forms-Button" [disabled]="isLoading">
+        Confirmar
+      </button>
+      <div *ngIf="isLoading" class="loading-circle">
+        <div class="spinner"></div>
+        <p>Removendo serviço...</p>
+      </div>
     </div>
-  
+  </div>

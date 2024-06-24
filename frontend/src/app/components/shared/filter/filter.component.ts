@@ -7,6 +7,8 @@ import { IndicatorService } from '../../../services/indicator.service'
 import { ServiceService } from '../../../services/service.service';
 import { Service } from '../../../models/service.model';
 import { Filter } from '../../../models/Filter.model'
+import { forkJoin } from 'rxjs';
+
 
 @Component({
   selector: 'app-filter',
@@ -17,8 +19,8 @@ import { Filter } from '../../../models/Filter.model'
   styleUrl: './filter.component.scss'
 })
 export class FilterComponent {
-  @Input({required: true}) indicatorsInput: boolean = false; 
-  @Input({required: true}) dataInsertedCheckbox: boolean = false; 
+  @Input({required: true}) indicatorsInput: boolean = false;
+  @Input({required: true}) dataInsertedCheckbox: boolean = false;
 
   constructor(private indicatorService: IndicatorService, private activityService: ActivityService, private serviceService: ServiceService) { }
 
@@ -30,21 +32,66 @@ export class FilterComponent {
     serviceId: "",
     activityId: "",
     indicatorId: "",
-    month: 0,
-    year: 0,
-  }
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+  };
 
   date!: Date;
 
-  @Output() indicatorsUpdated = new EventEmitter<Filter>();
+  @Output() filterEvent = new EventEmitter<Filter>();
 
   ngOnInit() {
-    this.getActivities();
-    this.getServices();
+    this.loadData();
+  }
+
+  private loadData() {
+    const requests = [
+      this.activityService.getActivities(),
+      this.serviceService.getServices(),
+      this.indicatorService.getIndicators()
+    ];
+
+    // if (this.indicatorsInput) {
+    //   requests.push(this.indicatorService.getIndicators());
+    // }
+
+    forkJoin(requests).subscribe(
+      (results: any[]) => {
+        this.activitiesList = results[0];
+        this.servicesList = results[1];
+        if (this.indicatorsInput) {
+          this.indicatorsList = results[2];
+        }
+
+        this.initializeFilter();
+      },
+      error => {
+        console.error('Error fetching initial data:', error);
+      },
+      () => {
+        this.sendFilter();
+      }
+    );
+  }
+
+
+  //faz o select para o HTML
+  private initializeFilter() {
+    // Set initial filter values
+    if (this.servicesList.length > 0) {
+      this.filter.serviceId = this.servicesList[0].id.toString(); // Assuming 'id' is the property containing the ID
+    }
+    if (this.activitiesList.length > 0) {
+      this.filter.activityId = this.activitiesList[0].id.toString(); // Assuming 'id' is the property containing the ID
+    }
+    if (this.indicatorsInput && this.indicatorsList.length > 0) {
+      this.filter.indicatorId = this.indicatorsList[0].id; // Assuming 'id' is the property containing the ID
+    }
   }
 
   sendFilter() {
-    this.indicatorsUpdated.emit(this.filter);
+    console.log(`Filtro enviado:`, this.filter)
+    this.filterEvent.emit(this.filter);
   }
 
   getActivities() {
@@ -59,7 +106,18 @@ export class FilterComponent {
     });
   }
 
-  getIndicators(): void {
+  getIndicators(){
+    this.indicatorService.getIndicators().subscribe({
+      next: (response: any) => {
+        this.indicatorsList = response.data; // Assuming the indicators are wrapped in a data property
+      },
+    });
+  }
+
+
+  //ESTE METODO ESTA PUXAR RECORDS PARA O FILTRO.
+  //SO QUEREMOS COISAS RELACIONADAS COM O SAI NO FILTRO. NADA DE LISTAS DE USERS/RECORSD/ OU DE DADOS
+/*   getIndicators(): void {
     if (this.filter.month < 1 || this.filter.month > 12) {
       console.error('Invalid month:', this.filter.month);
       return;
@@ -76,20 +134,19 @@ export class FilterComponent {
       console.error('Activity ID is required');
       return;
     }
-
     this.date = new Date(this.filter.year, this.filter.month - 1);
     const dateStr = this.date.toISOString().split('T')[0];
     this.indicatorService.getAllSaiIndicators(parseInt(this.filter.serviceId), parseInt(this.filter.activityId), this.date).subscribe({
       next: (data) => {
         console.log('Indicators data:', data);
         this.indicatorsList = data;
-       /*  this.indicatorsUpdated.emit(this.indicatorsList);  *///porque emite os indicadores????
+         this.indicatorsUpdated.emit(this.indicatorsList);
       },
       error: (error) => {
         console.error('Error fetching indicators:', error);
       }
     });
-  }
+  } */
 }
 
 

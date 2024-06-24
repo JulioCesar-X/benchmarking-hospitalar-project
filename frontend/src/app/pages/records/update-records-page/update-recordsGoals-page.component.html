@@ -2,8 +2,8 @@
   <app-menu></app-menu>
 </div>
 <div class="mx-2 w-full">
-  <app-indicator-filter-section [selectedTab]="selectedTab" (indicatorsUpdated)="onIndicatorsUpdated($event)"
-    (loadingStateChanged)="setLoadingState($event)"></app-indicator-filter-section>
+  <app-filter [indicatorsInput]="false" [dataInsertedCheckbox]="true" (filterEvent)="handleFilterData($event)"></app-filter>
+
   <div class="tab-headers">
     <button class="tab-link" [class.active]="selectedTab === 'Records'" (click)="selectTab('Records')">
       Records
@@ -13,7 +13,7 @@
     </button>
   </div>
   <div *ngIf="selectedTab === 'Records'">
-    <app-records-list-section [indicators]="currentIndicators" [isLoading]="isLoading"></app-records-list-section>
+    <app-records-list-section [indicators]="currentIndicators" [isLoading]="isLoading" [filter]="filter"></app-records-list-section>
   </div>
   <div *ngIf="selectedTab === 'Metas'">
     <app-goals-list-section [indicators]="currentIndicators" [isLoading]="isLoading"></app-goals-list-section>
