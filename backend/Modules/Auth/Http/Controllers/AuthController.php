@@ -37,6 +37,7 @@ class AuthController extends Controller
         // $cookie = cookie('access_token', $token, 60 * 24, '/', null, true, true, false, 'None'); // 1 dia de expiração
 
         return response()->json([
+            'name' => $user->name, 
             'role' => $user->roles()->first()->role_name,
             'email' => $user->email, 
             'access_token' => $token,

@@ -32,14 +32,32 @@ class ActivityController extends Controller
      */
     public function store(Request $request)
     {
+        DB::beginTransaction();
         try {
-            
-            $activity = Activity::create($request->all());
-            return response()->json($activity->load('serviceActivityIndicators'), 201);
-        } catch (Exception $exception) {
+            $activity = new Activity();
+            $activity->activity_name = $request->activity_name;
+            $activity->save();
+    
+            // Associar atividades e indicadores à atividade
+            if ($request->has('activities') && $request->has('indicators')) {
+                foreach ($request->activities as $activityId) {
+                    foreach ($request->indicators as $indicatorId) {
+                        $activity->serviceActivityIndicators()->create([
+                            'activity_id' => $activityId,
+                            'indicator_id' => $indicatorId
+                        ]);
+                    }
+                }
+            }
+    
+            DB::commit();
+            return response()->json($activity->load('serviceActivityIndicators.indicator'), 201);
+        } catch (\Exception $exception) {
+            DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+    
 
     /**
      * Display the specified resource.
@@ -63,16 +81,34 @@ class ActivityController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,Activity $activity)
+    public function update(Request $request, Activity $activity)
     {
+        DB::beginTransaction();
         try {
-            $activity->update($request->all());
-            return response()->json($activity, 200);
-        } catch (Exception $exception) {
+            $activity->update($request->only(['activity_name']));
+    
+            // Atualiza atividades associadas
+            $activity->serviceActivityIndicators()->delete(); // Remove todas as associações existentes
+    
+            if ($request->has('activities') && $request->has('indicators')) {
+                foreach ($request->activities as $activityId) {
+                    foreach ($request->indicators as $indicatorId) {
+                        $activity->serviceActivityIndicators()->create([
+                            'activity_id' => $activityId,
+                            'indicator_id' => $indicatorId
+                        ]);
+                    }
+                }
+            }
+    
+            DB::commit();
+            return response()->json($activity->load('serviceActivityIndicators.indicator'), 200);
+        } catch (\Exception $exception) {
+            DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-
+    
     /**
      * Remove the specified resource from storage.
      *
@@ -106,5 +142,4 @@ class ActivityController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-
 }

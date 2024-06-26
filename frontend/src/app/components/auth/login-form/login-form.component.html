@@ -20,6 +20,8 @@
       <div class="spinner"></div>
     </div>
 
-    <a *ngIf="!isLoading" routerLink="/resetPassword" class="forgotPassLink" (click)="openModal($event)">Forgot Password?</a>
+    <a *ngIf="!isLoading" class="forgotPassLink" (click)="openModal($event)">Forgot Password?</a>
   </div>
 </form>
+
+<div *ngIf="isModalVisible"><app-password-recup-modal></app-password-recup-modal></div>

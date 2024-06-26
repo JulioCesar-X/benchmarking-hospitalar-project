@@ -8,7 +8,7 @@
  
   <div class="dashboardOptionsContainer" [ngClass]="{'is-open': isMenuOpen}">
     <!-- menuItem -->
-    <div *ngIf="getRole() === 'admin'" class="dashboardOption" (click)="openManageUsers()" [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
+    <div class="dashboardOption" (click)="openManageUsers()" [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
       <h2>Gerir Users</h2>
       <div class="plusIcon" [ngClass]="{'is-open': isManageUsersSubMenuOpen}"></div>
     </div>
@@ -18,7 +18,7 @@
         <a routerLink="/createUser" routerLinkActive="Ativo">Criar Novo User</a>
       </div>
       <div class="subMenuItem">
-        <a routerLink="/consultUsers" routerLinkActive="Ativo">Consultar Users</a>
+        <a *ngIf="getRole() === 'admin'" routerLink="/consultUsers" routerLinkActive="Ativo">Consultar Users</a>
       </div>
     </div>
 
@@ -36,7 +36,7 @@
       <div *ngIf="getRole() === 'admin'" class="subMenuItem">
         <a routerLink="/indicators" routerLinkActive="Ativo">Gerir indicadores</a>
       </div>
-      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
+      <div *ngIf="getRole() === 'admin' || getRole() === 'coordenador' " class="subMenuItem">
                 <!-- So coordenador pode gerir dados?! -->
         <a routerLink="/RecordGoalsUpdate" routerLinkActive="Ativo">Gerir dados</a>
       </div>

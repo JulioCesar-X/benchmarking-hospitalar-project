@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { GoalsListSectionComponent } from '../../../components/goals/goals-list-section/goals-list-section.component'
 import {FilterComponent} from "../../../components/shared/filter/filter.component"
 import { Filter } from '../../../models/Filter.model'
+import { FormsModule } from '@angular/forms';
+import { NgModule } from '@angular/core';
 
 @Component({
   selector: 'app-update-indicators-page',

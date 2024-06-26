@@ -27,26 +27,31 @@ export class LoginFormComponent {
   isLoading = false;
   errorMessage: string = '';
 
-  constructor(private AuthService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   @Output() loginEvent = new EventEmitter<{ email: string, password: string }>();
 
   onLogin() {
     this.isLoading = true;
 
-    this.AuthService.login(this.email, this.password).subscribe(
+    this.authService.login(this.email, this.password).subscribe(
       (response: any) => {
         this.isLoading = false;
 
         if (response == null) {
-          console.log('Login successful' + response);
+          console.log('Login failed' + response);
           this.errorMessage = 'Login failed!'
         } else {
           this.errorMessage = ''
           console.log('Login successful' + response);
-          this.router.navigate(['/consultUsers']);
+          
+          if(this.authService.getRole() == "admin" || this.authService.getRole() == "coordenador"){
+            this.router.navigate(['/consultUsers']);
+          }
+           else {
+            this.router.navigate(['/home']);
+          }
         }
-
       },
       error => {
         console.error('Login failed', error);

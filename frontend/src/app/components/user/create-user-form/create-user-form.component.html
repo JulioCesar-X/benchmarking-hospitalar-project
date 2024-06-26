@@ -73,8 +73,8 @@
         required
       >
         <option [value]="3">User</option>
-        <option [value]="2">Coordenador</option>
-        <option [value]="1">Admin</option>
+        <option [value]="2" *ngIf="getRole() === 'admin'">Coordenador</option>
+        <option [value]="1" *ngIf="getRole() === 'admin'">Admin</option>
       </select>
     </div>
     <button

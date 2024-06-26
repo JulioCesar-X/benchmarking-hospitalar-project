@@ -33,7 +33,7 @@
     </mat-paginator>
   </section>
 
-  <!-- MODAL -->
+
   <div class="modal" [ngClass]="{'show': isModalOpen}" (click)="closeModal()">
     <!-- Delete -->
     <div *ngIf="modalAction === 'delete'" class="modal-container" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
@@ -44,7 +44,4 @@
       
         <button (click)="formSubmited()" type="submit" class="self-end w-1/2 rounded-xl py-1 forms-Button">Confirmar</button>
     </div>
-  </div>
 
-
-  

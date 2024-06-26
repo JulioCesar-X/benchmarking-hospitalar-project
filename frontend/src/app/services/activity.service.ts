@@ -20,7 +20,7 @@ export class ActivityService {
     }
     //.................................JMSa
 
-  getActivities(): Observable<Activity[]> {
+  getActivities(): Observable<Activity[]> { 
     return this.http.get<Activity[]>('/activities', {
       headers: new HttpHeaders({
         'Authorization': `Bearer ${this.cookieService.get('access_token')}`
@@ -68,6 +68,13 @@ export class ActivityService {
       catchError(this.handleError)
     );
   }
+
+  getActivityById(activityId: number): Observable<Activity> {
+    return this.http.get<Activity>(`/services/${activityId}`, { withCredentials: true })
+      .pipe(catchError(this.handleError));
+  }
+
+
 
   private handleError(error: HttpErrorResponse): Observable < never > {
     let errorMessage = 'Unknown error occurred. Please try again.';
