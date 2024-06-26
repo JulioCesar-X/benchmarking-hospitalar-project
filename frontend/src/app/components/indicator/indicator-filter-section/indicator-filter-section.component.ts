@@ -45,7 +45,7 @@ export class IndicatorFilterSectionComponent implements OnInit {
 
   getActivities(): void {
     if (this.service_id) {
-      this.activityService.getActivitiesByServiceID(this.service_id).subscribe(
+      this.activityService.getActivities().subscribe(
         (data: Activity[]) => {
           this.activitiesList = data; 
         },

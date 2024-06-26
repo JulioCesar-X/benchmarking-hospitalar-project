@@ -69,7 +69,11 @@ export class ActivityService {
     );
   }
 
-  getActivitiesByServiceId(activityId: number){}
+  getActivityById(activityId: number): Observable<Activity> {
+    return this.http.get<Activity>(`/services/${activityId}`, { withCredentials: true })
+      .pipe(catchError(this.handleError));
+  }
+
 
 
   private handleError(error: HttpErrorResponse): Observable < never > {

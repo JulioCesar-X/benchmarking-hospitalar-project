@@ -26,6 +26,15 @@ export class ServiceService {
       .pipe(catchError(this.handleError));
   }
 
+  getPaginatedServices(page: number, pageSize: number): Observable<Service[]> {
+    const params = {
+      page: page.toString(),
+      pageSize: pageSize.toString()
+    };
+    return this.http.get<Service[]>('/services', { params, withCredentials: true })
+      .pipe(catchError(this.handleError));
+  }
+
   getServiceById(serviceId: number): Observable<Service> {
     return this.http.get<Service>(`/services/${serviceId}`, { withCredentials: true })
       .pipe(catchError(this.handleError));
@@ -74,4 +83,5 @@ export class ServiceService {
       catchError(this.handleError)
     );
   }
+  
 }

@@ -1,6 +1,6 @@
 <!-- <app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal> -->
  
-<app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
+<!-- <app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
 
 <form>
     <div [class.loading]="isLoadingIndicadores">
@@ -49,4 +49,51 @@
             <button (click)="formSubmited()" type="submit" class="forms-Button">Confirmar</button>
         </div>
     </div>
+</form> --> 
+
+<!-- <app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>-->
+
+
+<!-- activities-upsert-form.component.html -->
+<!-- activities-upsert-form.component.html -->
+
+<app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
+
+<form>
+  <div [class.loading]="isLoadingIndicadores">
+    <div class="forms-container" [ngClass]="{ 'forms-container__error': isError }">
+
+      <h2 class="forms-container--title" *ngIf="formsAction === 'create'">Criar atividade</h2>
+      <h2 class="forms-container--title" *ngIf="formsAction === 'edit'">Editar atividade</h2>
+
+      <div class="forms-container--inputContainer">
+        <label for="activity_name">Nome da atividade:</label>
+        <input type="text" class="inputContainer--input" [(ngModel)]="selectedActivity.activity_name"
+          id="activity_name" name="activity_name" [ngClass]="{ 'inputContainer--input__error': isError }" required>
+      </div>
+
+      <div class="selectContainer">
+        <label for="serviceId">Serviços:</label>
+        <select id="serviceId" name="serviceId" [(ngModel)]="selectedActivity.serviceId">
+          <option *ngFor="let service of servicesList" [value]="service.id">{{ service.service_name }}</option>
+          <option *ngIf="isLoadingServices" disabled selected>A carregar serviços...</option>
+          <option *ngIf="servicesList.length === 0 && !isLoadingServices" disabled>Nenhum serviço disponível</option>
+        </select>
+      </div>
+
+      <div class="checkboxContainer">
+        <h4 class="checkboxContainer-title">Associar indicadores:</h4>
+        <div *ngFor="let indicator of indicatorsList; let i = index">
+          <label>
+            <input type="checkbox" [checked]="isSelected(indicator.id)" (change)="toggleSelection(indicator.id)">
+            {{ indicator.indicator_name }}
+          </label>
+        </div>
+        <div *ngIf="isLoadingIndicadores" class="loading">A carregar indicadores...</div>
+        <div *ngIf="indicatorsList.length === 0 && !isLoadingIndicadores" class="error">Nenhum indicador disponível</div>
+      </div>
+
+      <button type="button" (click)="formSubmited()">Submeter</button>
+    </div>
+  </div>
 </form>

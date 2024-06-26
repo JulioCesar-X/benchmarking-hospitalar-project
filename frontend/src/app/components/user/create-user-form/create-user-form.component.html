@@ -24,8 +24,8 @@
       <label for="role">Role:</label>
       <select id="role" [(ngModel)]="role_id" name="role_id" required>
         <option [value]="3">User</option>
-        <option [value]="2">Coordenador</option>
-        <option [value]="1">Admin</option>
+        <option [value]="2" *ngIf="getRole() === 'admin'">Coordenador</option>
+        <option [value]="1" *ngIf="getRole() === 'admin'">Admin</option>
       </select>
     </div>
     <button type="submit" class="forms-Button" *ngIf="!isLoading">Adicionar</button>

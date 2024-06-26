@@ -1,30 +1,204 @@
-@import '../../../../styles/_variables.scss';
+// @import '../../../../styles/_variables.scss';
 
+// .dashboard{
+//     box-sizing: border-box;
+//     background-color: $main-blue;
+
+//     border-top-right-radius: 1em;
+//     min-width: 350px; /* change later to something more responsive?? */
+//     max-width: 30%;
+//     height: 100%; /* aprox value to make dashboard fill screen */
+//     clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);
+// }
+// .dashboardTitle{
+//     margin: 0;
+//     font-size: 1.2rem;
+//     color: $fill-white;
+//     padding-left: 2em;
+//     padding-top: 1em;
+// }
+
+// .dashboardOptionsContainer{
+//     margin-top: 1em;
+//     display: flex;
+//     flex-direction: column;
+//     gap: 0.5em;
+
+// }
+// .dashboardOption{
+//     cursor: pointer;
+//     display: flex;
+//     justify-content: flex-end;
+//     align-items: center;
+//     gap: 0.5em;
+//     background-color: transparent;
+//     color: $fill-white;
+//     width: 100%;
+//     padding-inline: 2em;
+//     box-sizing: border-box;
+//     h2{
+//         margin: 0.5em;
+//     }
+// }
+// .dashboardOption.is-open, .dashboardOption:hover{
+//     background-color: $secondary-blue;
+//     color: $main-blue;
+
+//     .plusIcon::before, .plusIcon::after{
+//         background: $main-blue;
+//     }
+// }
+
+
+// .subMenu{
+//     clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 0);
+//     margin-top: -0.3em;
+//     background-color: $secondary-blue;
+//     flex-direction: column;
+//     padding-block: 1em;
+//     padding-right: 2em;
+//     gap: 0.5em;
+//     align-items: flex-end;
+//     justify-content:  center;
+//     animation: collapseMenu 200ms ease-in forwards;
+// }
+// .subMenuItem{
+//     display: flex;
+//     align-items: center;
+//     gap: 0.5em;
+
+//     a{
+//         cursor: pointer;
+//         text-decoration: none;
+//         color: $main-blue;
+//     }
+//     a:hover{
+//         text-decoration: underline;
+//     }
+// }
+// .subMenu.is-open{
+//     display: flex;
+//     animation: expandMenu 200ms ease-in forwards;
+// }
+// @keyframes collapseMenu {
+//     0% {
+//         display: flex;
+//         height: auto;
+//         opacity: 1;
+//     }
+//     99% {
+//         height: 0;
+//         opacity: 0;
+//     }
+//     100%{
+//         display: none;
+//     }
+// }
+// @keyframes expandMenu {
+//     from {
+//         max-height: 0;
+//         opacity: 0;
+//     }
+//     to {
+//         max-height: 500px;
+//         opacity: 1;
+//     }
+// }
+
+// .plusIcon{
+//     transition: transform 100ms ease-out;
+// }
+
+// .plusIcon::before, .plusIcon::after {
+//     cursor: pointer;
+//     content: '';
+//     display: block;
+//     width: 1em;
+//     height: 3px;
+//     background: $fill-white;
+// }
+
+//   .plusIcon::before {
+//     transform: translateY(0px);
+//  }
+
+//   .plusIcon::after {
+//     transform: rotate(-90deg) translateX(3px);
+//  }
+
+//  /* vou precisar de JS para abrir e fechar conteudo */
+// .plusIcon.is-open::before, .plusIcon.is-open::after{
+//     background: $main-blue;
+
+// }
+// .plusIcon.is-open{
+//     transform: rotate(45deg) ;
+// }
+
+
+@import '../../../../styles/_variables.scss';
+ 
 .dashboard{
     box-sizing: border-box;
     background-color: $main-blue;
-
+    padding-block: 1em;
     border-top-right-radius: 1em;
     min-width: 350px; /* change later to something more responsive?? */
     max-width: 30%;
     height: 100%; /* aprox value to make dashboard fill screen */
     clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);
+    overflow: hidden;
+ 
+    @media(max-width:600px){
+        min-width: none;
+        max-width: none;
+        clip-path: none;
+        border-radius: 1em;
+/*         border-bottom-right-radius: 1em;
+        border-bottom-left-radius: 1em; */
+        margin: 0 auto;
+ 
+    }
 }
 .dashboardTitle{
     margin: 0;
     font-size: 1.2rem;
     color: $fill-white;
-    padding-left: 2em;
-    padding-top: 1em;
+ 
+ 
+    @media (max-width: 600px){
+        padding: 0;
+    }
 }
-
+ 
 .dashboardOptionsContainer{
     margin-top: 1em;
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-
+ 
+    @media (max-width:600px){
+        animation: collapseMenu 200ms ease-in forwards;
+    }
 }
+ 
+.dashboardOptionsContainer.is-open{
+    animation: expandMenu 200ms ease-in forwards;
+}
+ 
+.dashboardHeader{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.dashboardHeader.is-open{
+ 
+    .plusIcon.is-open::before, .plusIcon.is-open::after{
+        background: $fill-white;
+    }
+}
+ 
+ 
 .dashboardOption{
     cursor: pointer;
     display: flex;
@@ -36,6 +210,7 @@
     width: 100%;
     padding-inline: 2em;
     box-sizing: border-box;
+   
     h2{
         margin: 0.5em;
     }
@@ -43,13 +218,13 @@
 .dashboardOption.is-open, .dashboardOption:hover{
     background-color: $secondary-blue;
     color: $main-blue;
-
+ 
     .plusIcon::before, .plusIcon::after{
         background: $main-blue;
     }
 }
-
-
+ 
+ 
 .subMenu{
     clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 0);
     margin-top: -0.3em;
@@ -66,7 +241,7 @@
     display: flex;
     align-items: center;
     gap: 0.5em;
-
+ 
     a{
         cursor: pointer;
         text-decoration: none;
@@ -80,6 +255,7 @@
     display: flex;
     animation: expandMenu 200ms ease-in forwards;
 }
+ 
 @keyframes collapseMenu {
     0% {
         display: flex;
@@ -96,24 +272,20 @@
 }
 @keyframes expandMenu {
     from {
-        max-height: 0;
+        height: 0;
         opacity: 0;
     }
     to {
-        max-height: 500px;
+        height: auto;
         opacity: 1;
     }
 }
-
-
-
-
-
-
+ 
 .plusIcon{
     transition: transform 100ms ease-out;
+    cursor: pointer;
 }
-
+ 
 .plusIcon::before, .plusIcon::after {
     cursor: pointer;
     content: '';
@@ -122,20 +294,29 @@
     height: 3px;
     background: $fill-white;
 }
-
+ 
   .plusIcon::before {
     transform: translateY(0px);
  }
-
+ 
   .plusIcon::after {
     transform: rotate(-90deg) translateX(3px);
  }
-
+ 
  /* vou precisar de JS para abrir e fechar conteudo */
 .plusIcon.is-open::before, .plusIcon.is-open::after{
     background: $main-blue;
-
+ 
 }
 .plusIcon.is-open{
     transform: rotate(45deg) ;
 }
+ 
+._desktopHidden{
+    display: none;
+ 
+    @media (max-width: 600px){
+        display: block;
+    }
+}
+ 

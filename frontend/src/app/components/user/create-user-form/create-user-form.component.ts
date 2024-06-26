@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CreateFieldModalComponent } from '../../indicators/create-field-modal/create-field-modal.component';
 import { UserService } from '../../../services/user.service';
 import { NotificationComponent } from '../../shared/notification/notification.component';
+import { AuthService } from '../../../auth.service';
 
 @Component({
     selector: 'app-create-user-form',
@@ -12,7 +13,7 @@ import { NotificationComponent } from '../../shared/notification/notification.co
         CommonModule,
         FormsModule,
         CreateFieldModalComponent,
-        NotificationComponent
+        NotificationComponent, 
     ],
     templateUrl: './create-user-form.component.html',
     styleUrls: ['./create-user-form.component.scss']
@@ -28,7 +29,12 @@ export class CreateUserFormComponent{
 
     isLoading = false; // Adicionando a variável para controlar o estado de carregamento
 
-    constructor(private userService: UserService) {}
+    constructor(private userService: UserService, private authService: AuthService) {}
+
+
+    getRole() {
+        return this.authService.getRole();
+    }
 
     openModal(event: Event) {
         event.preventDefault();

@@ -6,6 +6,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { NotificationService } from '../../../services/notifications/notification.service';
 import { Notification } from '../../../models/notification.model';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 
 
 @Component({
@@ -15,6 +16,8 @@ import { MatIconModule } from '@angular/material/icon';
     RouterLink,
     CommonModule,
     MatBadgeModule,
+    MatIconModule, 
+    MatMenuModule
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
@@ -23,6 +26,7 @@ export class NavbarComponent implements OnInit {
   isNotificationsOpen: boolean = false;
   unreadNotifications: number = 0;
   allNotifications: Notification[] = [];
+  isDropdownOpen: boolean = false;
 
   constructor(private authService: AuthService, private notificationService: NotificationService) { }
 
@@ -41,6 +45,14 @@ export class NavbarComponent implements OnInit {
 
   getRole() {
     return this.authService.getRole();
+  }
+
+  getUserName(): string {
+    return this.authService.getUserName();
+  }
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
   }
 
   logout(): void {

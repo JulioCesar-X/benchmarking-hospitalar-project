@@ -28,6 +28,11 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  getUserName(): string {
+    return this.cookieService.get('name');
+  }
+
+
   login(email: string, password: string): Observable<any> {
     return this.http.post<LoginResponse>('/login', { email, password }, { withCredentials: true })
       .pipe(
@@ -35,6 +40,7 @@ export class AuthService {
           this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict' });
           this.cookieService.set('email', response.email, { secure: true, sameSite: 'Strict'}); 
           this.cookieService.set('role', response.role, { secure: true, sameSite: 'Strict' });
+          this.cookieService.set('name', response.name, { secure: true, sameSite: 'Strict' });
           return response;
         }),
         catchError(error => {

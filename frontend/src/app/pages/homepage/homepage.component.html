@@ -1,10 +1,10 @@
-<div class="w-full">
+<div class="w-full relative">
   <div class="headingSection">
     <h1 class="headingTitle">Departamento Psiquiatria</h1>
   </div>
   <div class="homepageCardsSections">
 
-    <div class="card" *ngFor="let service of uniqueServices" (click)="goToDescription(service.id)">
+    <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)">
       <div class="cardImg">
         <img [src]="service.imageUrl" class="imgSize" alt="{{ service.service_name }}">
       </div>
@@ -14,14 +14,35 @@
     </div>
   </div>
 
-    <div *ngIf="isLoading" class="random-demo">
+    <div *ngIf="isLoading || !displayedServices.length" class="random-demo">
       <div class="el"></div>
       <div class="el"></div>
       <div class="el"></div>
-      <div class="el"></div>
+      <div class="el"></div> 
     </div>
 
-</div>
+      <!-- Botão para carregar serviços anteriores *ngIf="page > 1"-->
+  <button *ngIf="!isLoading"
+    (click)="loadPreviousServices()"
+    class="navigation-button previous-button"
+    mat-icon-button
+    aria-label="Previous">
+<mat-icon>keyboard_arrow_left</mat-icon>
+</button>
 
+<!-- Botão para carregar serviços seguintes *ngIf="hasMoreServices" -->
+<button *ngIf="!isLoading"
+    (click)="loadNextServices()"
+    class="navigation-button next-button"
+    mat-icon-button
+    aria-label="Next">
+<mat-icon>keyboard_arrow_right</mat-icon>
+</button>
+
+    <!-- botao topo da pagina -->
+    <button (click)="scrollToTop()" class="fixed bottom-4 right-4 p-2 blue-bottom text-white rounded-full shadow-lg hover:bg-blue-700 focus:outline-none ">
+      Top
+    </button>
+  </div>
 
 

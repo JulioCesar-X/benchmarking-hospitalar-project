@@ -31,7 +31,7 @@
     </mat-paginator>
   </section>
 
-  <!-- MODAL -->
+
   <div class="modal" [ngClass]="{'show': isModalOpen}" (click)="closeModal()">
     <div [class.loading]="isLoadingIndicadores">
         <div *ngIf="modalAction !== 'delete'" (click)="$event.stopPropagation()" class="modal-container" [ngClass]="{ 'forms-container__error': isError }">
@@ -80,7 +80,7 @@
         </div>
 
 
-        <!-- Delete -->
+        <!
         <div *ngIf="modalAction === 'delete'" class="modal-container" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
             <div class="modalHeader">
                 <h2>Tem a certeza que quer remover esta atividade?</h2>
@@ -90,7 +90,4 @@
             <button (click)="formSubmited()" type="submit" class="forms-Button">Confirmar</button>
         </div>
     </div>
-  </div>
 
-
-  
