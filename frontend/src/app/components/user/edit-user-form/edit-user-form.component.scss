@@ -1,57 +1,3 @@
-// @import '../../../../styles/_variables.scss';
-// @import '../../../../styles/_mixins.scss';
-
-// .title{
-//     color: $fill-white;
-//     margin: 0;
-// }
-
-// .forms-container{
-//     @include forms-container();
-
-//     width: 50%;
-//     max-width: 500px;
-// }
-
-// .forms-container--inputContainer{
-//   @include forms-container--inputContainer();
-// }
-
-// .inputContainer--input{
-//     @include inputContainer--input();
-// }
-
-// .errorSpanMessage{
-//     @include errorSpanMessage();
-// }
-
-// .forms-Button{
-//     @include forms-Button();
-// }
-
-// .selectContainer{
-//     margin-left: auto;
-//     color: $fill-white;
-
-//     label{
-//         margin-right: 0.2em;
-//     }
-//     select{
-//         color: $main-blue;
-//         border-radius: 0.5em;
-//         padding-block: 0.2em;
-//         padding-inline: 0.5em;
-//         border: none;
-//         outline: $main-blue;
-//     }
-// }
-
-
-// .justify--end{
-//     align-self: flex-end;
-// }
-
-
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
@@ -61,10 +7,29 @@
 }
 
 .forms-container {
-  @include forms-container();
+  /*   @include forms-container(); */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1em;
+  margin: 0 auto;
+  margin-block: 7em;
+  box-sizing: border-box;
+  padding: 2em;
+  border-radius: 1em;
+  background-color: $main-blue;
+  border: $secondary-blue 7px solid;
   width: 50%;
   max-width: 500px;
-}
+  
+  &.forms-container__error{
+    border: $error-color 7px solid;
+  }
+  @media (max-width: 600px){
+    margin-block: 2em;
+    width: 80%;
+  }
+  }
 
 .forms-container--inputContainer {
   @include forms-container--inputContainer();

@@ -1,23 +1,8 @@
-/* .row {
-    display: flex;
-}
-
-.container{
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-main {
-    flex: 1;
-} */
-
-.full-w {
-    margin-inline: 0.5em;
-    width: 100%;
-}
-
 :host {
     flex: 1;
     display: flex;
+  } @media(max-width:600px){
+    :host{
+        flex-direction: column;
+    }
   }

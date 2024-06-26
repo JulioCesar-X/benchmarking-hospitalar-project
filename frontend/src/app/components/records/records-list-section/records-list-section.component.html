@@ -17,12 +17,12 @@
         <tbody>
           <ng-container *ngIf="!isLoading">
             <tr *ngFor="let record of records; trackBy: trackByIndex" class="hover:bg-gray-100">
-              <td class="p-2">{{ record.indicatorName }}</td>
+              <td class="p-2 blueTxt">{{ record.indicatorName }}</td>
               <td class="p-2">
                 <form>
                   <input
                     [disabled]="record.isInserted"
-                    class="inputContainer--input w-full p-2 border border-gray-300 rounded"
+                    class="inputContainer--input w-full p-1 border border-gray-300 rounded"
                     [(ngModel)]="record.value"
                     (ngModelChange)="onValueChange(record)"
                     name="recordValue"
@@ -33,7 +33,7 @@
                 <button
                   *ngIf="!record.isUpdating"
                   (click)="UpdateRecord(record)"
-                  class="forms-Button bg-main-blue text-white px-4 py-2 rounded disabled:opacity-50"
+                  class="self-end rounded-xl p-1 forms-Button disabled:opacity-50"
                   type="button"
                 >
                   {{ !record.isInserted ? 'Atualizar' : 'Editar' }}

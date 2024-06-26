@@ -1,12 +1,16 @@
 <aside class="dashboard">
-  <h2 *ngIf="getRole() == 'admin'" class="dashboardTitle">ADMIN MENU</h2>
-  <h2 *ngIf="getRole() == 'coordenador'" class="dashboardTitle">COORDENADOR MENU</h2>
-
-  <div class="dashboardOptionsContainer">
+  <div (click)="openMenu()" class="dashboardHeader" [ngClass]="{'is-open': isMenuOpen}">
+    <h2 *ngIf="getRole() == 'admin'" class="dashboardTitle">ADMIN MENU</h2>
+    <h2 *ngIf="getRole() == 'coordenador'" class="dashboardTitle">COORDENADOR MENU</h2>
+  
+    <div  class="plusIcon _desktopHidden" [ngClass]="{'is-open': isMenuOpen}"></div>
+  </div>
+ 
+  <div class="dashboardOptionsContainer" [ngClass]="{'is-open': isMenuOpen}">
     <!-- menuItem -->
     <div *ngIf="getRole() === 'admin'" class="dashboardOption" (click)="openManageUsers()" [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
       <h2>Gerir Users</h2>
-      <div class="plusIcon" #plusIconUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen}"></div>
+      <div class="plusIcon" [ngClass]="{'is-open': isManageUsersSubMenuOpen}"></div>
     </div>
     <!-- sub menuItem -->
     <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
@@ -22,7 +26,7 @@
       <h2>Gerir Conteúdo</h2>
       <div class="plusIcon" [ngClass]="{'is-open': isManageContentSubMenuOpen}"></div>
     </div>
-    <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageContentSubMenuOpen}">
+    <div class="subMenu" [ngClass]="{'is-open': isManageContentSubMenuOpen}">
       <div *ngIf="getRole() === 'admin'" class="subMenuItem">
         <a routerLink="/services" routerLinkActive="Ativo">Gerir serviços</a>
       </div>
@@ -46,7 +50,7 @@
       <h2>Gerir Notificações</h2>
       <div class="plusIcon" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}"></div>
     </div>
-    <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
+    <div class="subMenu" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
       <div class="subMenuItem">
         <a href="">Histórico</a>
       </div>

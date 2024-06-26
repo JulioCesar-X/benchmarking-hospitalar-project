@@ -1,14 +1,11 @@
-/* .row {
-    display: flex;
+@import '../../../../styles/_variables.scss';
 
-    div:last-child {
-        margin-inline: 0.5em;
-        width: 100%;
-    }
-}
- */
-
- :host {
+:host {
     flex: 1;
     display: flex;
+  } @media(max-width:600px){
+    :host{
+        flex-direction: column;
+    }
   }
+

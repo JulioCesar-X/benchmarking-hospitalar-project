@@ -1,12 +1,6 @@
 @import '../../../styles/_variables.scss';
 
-:host {
-  flex: 1;
-  display: flex;
-}
-
 .headingSection {
-
   width: 100%;
   background-image: url('../../../assets/images/g579.png');
   background-size: cover;
@@ -22,6 +16,11 @@
   font-size: 4em;
   margin-left: 2em;
   line-height: 1.1em;
+} @media (max-width: 600px) {
+  .headingTitle{
+    font-size: 1.5em;
+    font-weight: bold;
+  }
 }
 
 .homepageCardsSections {
@@ -32,6 +31,11 @@
   grid-auto-rows: 1fr;
   gap: 1em;
   width: 70%
+}@media (max-width: 600px) {
+  .homepageCardsSections{
+    grid-template-columns: repeat(1, 1fr);
+    width: 90%;
+  }
 }
 
 .card {
@@ -104,10 +108,6 @@
   min-height: 100vh;
 }
 
-main {
-  flex: 1;
-}
-
 // Load
 .random-demo {
   display: flex;
@@ -117,6 +117,13 @@ main {
   width: 30%;
   margin: 0 auto;
 }
+@media (max-width: 600px) {
+  .random-demo{
+    margin:0;
+    margin-right: 2em;
+    flex-direction: column;
+  }
+}
 
 .el {
   width: 50px;
@@ -125,10 +132,16 @@ main {
   border-radius: 50%;
 }
 
+main {
+  flex: 1;
+}
+
 :host {
   flex: 1;
   display: flex;
 }
+
+
 
 // .line-drawing-demo .text path {
 //   stroke: #000; // Defina a cor da linha

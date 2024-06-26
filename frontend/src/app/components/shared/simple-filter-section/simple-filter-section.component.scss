@@ -3,22 +3,101 @@
 
 
 .forms-container{
-    @include forms-container();
+/*     @include forms-container(); */
+display: flex;
+flex-direction: column;
+justify-content: center;
+gap: 1em;
 
-    margin-block: 0em;
-    border: none;
-    width: 100%;
+padding: 2em;
+border-radius: 1em;
+background-color: $main-blue;
+max-width: 100%;
+
+&.forms-container__error{
+  border: $error-color 7px solid;
+}
+@media (max-width:600px){
+    width: 90%;
+    margin: 0 auto;
+}
+
 }
 
 .forms-container--inputContainer{
-    @include forms-container--inputContainer();
+/*     @include forms-container--inputContainer(); */
+    display: flex;
+    gap: 0.5em;
+    color: $fill-white;
+    width: 100%;
+    text-align: start;
+    align-items: center;
+
+    @media (max-width:600px){
+        flex-direction: column;
+    }
 }
 
 .inputContainer--input{
-    @include inputContainer--input();
+/*     @include inputContainer--input(); */
+width: 100%;
+box-sizing: border-box;
+color: $main-blue;
+background-color: $fill-white;
+border-radius: 0.5em;
+padding-block: 0.5em;
+padding-inline: 1em;
+border: none;
+
+&::placeholder{
+  color: $main-blue;
+}
+&:focus{
+  outline: none;
+  border: none;
+  caret-color: $main-blue;
+}
+&:disabled{
+  background-color: $secondary-blue;
+  border: none;
+}
+&.inputContainer--input__error, .inputContainer--input__error:focus{
+  outline: none;
+  border: $error-red 2px solid;
+  caret-color: $error-red;
+  color: $error-red;
+}
+&.inputContainer--input__error::placeholder{
+  color: $error-red;
+}
+
+display: flex;
+gap: 0.5em;
+color: $fill-white;
+text-align: start;
+align-items: center;
 }
 
 .forms-Button{
-    @include forms-Button();
-    margin-top: 0;
+/*     @include forms-Button(); */
+    margin-top: 0em;
+    background-color: transparent;
+    color:  $fill-white;
+    border: $fill-white 2px solid;
+    text-transform: uppercase;
+    width: 50%; /* use widht or padding-inline??? */
+    padding-block: 0.4em;
+    border-radius: 1em;
+    cursor: pointer;
+    align-self: flex-end; /* overide this or delete later??? */
+  
+    &:active{
+      background-color: $fill-white;
+      color:  $main-blue;
+      border: $fill-white 2px solid;
+    }
+
+    @media (max-width:600px){
+        width: 100%;
+    }
 }

@@ -4,23 +4,23 @@
 
 <form>
     <div [class.loading]="isLoadingIndicadores">
-        <div class="forms-container" [ngClass]="{ 'forms-container__error': isError }">
+        <div class="flex flex-col justify-center w-[80%] max-w-500px p-8 rounded-xl gap-4 mx-auto my-4 forms-container" [ngClass]="{ 'forms-container__error': isError }">
 
               <h2 class="forms-container--title" *ngIf="formsAction === 'create'" >Criar atividade</h2>
               <h2 class="forms-container--title" *ngIf="formsAction === 'edit'" >Editar atividade</h2>
 
           
-            <div class="forms-container--inputContainer">
+            <div class="flex flex-col items-start w-full whiteTxt">
               <label for="name">Nome atividade:</label>
 
-              <input type="text" class="inputContainer--input" [(ngModel)]="selectedActivity.name" id="name" name="name" 
+              <input type="text" class="w-full rounded-md py-1 px-2 inputContainer--input" [(ngModel)]="selectedActivity.name" id="name" name="name" 
                [ngClass]="{ 'inputContainer--input__error': isError }" required>
             </div>
 
             
-            <div class="selectContainer">
+            <div class="flex flex-col items-start justify-between selectContainer">
               <label for="serviceId">Serviços:</label>
-              <select id="serviceId" name="serviceId">
+              <select id="serviceId" name="serviceId" class="w-full rounded-md py-1 px-2">
                 <option *ngFor="let service of servicesList; let i = index;" [value]="service.id">
                   {{ service.service_name }}
                 </option>
@@ -29,7 +29,8 @@
               </select>
             </div>
 
-            <div class="checkboxContainer">
+            <div class="flex flex-col w-full min-h-[50px] max-h-[300px] rounded-lg
+            checkboxContainer">
               <h4 class="checkboxContainer-title">Associar indicadores:</h4>
         
               <div class="checkboxContainer--option" *ngFor="let indicator of indicatorsList; let i = index; trackBy: trackByIndex">
@@ -46,7 +47,7 @@
               </div>
             </div>
           
-            <button (click)="formSubmited()" type="submit" class="forms-Button">Confirmar</button>
+            <button (click)="formSubmited()" type="submit" class="self-end w-1/2 rounded-xl py-1 forms-Button">Confirmar</button>
         </div>
     </div>
 </form>

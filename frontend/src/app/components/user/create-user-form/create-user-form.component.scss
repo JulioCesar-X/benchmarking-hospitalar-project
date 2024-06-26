@@ -1,57 +1,3 @@
-// @import '../../../../styles/_variables.scss';
-// @import '../../../../styles/_mixins.scss';
-
-// .title{
-//     color: $fill-white;
-//     margin: 0;
-// }
-
-// .forms-container{
-//     @include forms-container();
-
-//     width: 50%;
-//     max-width: 500px;
-// }
-
-// .forms-container--inputContainer{
-//   @include forms-container--inputContainer();
-// }
-
-// .inputContainer--input{
-//     @include inputContainer--input();
-// }
-
-// .errorSpanMessage{
-//     @include errorSpanMessage();
-// }
-
-// .forms-Button{
-//     @include forms-Button();
-// }
-
-// .selectContainer{
-//     margin-left: auto;
-//     color: $fill-white;
-
-//     label{
-//         margin-right: 0.2em;
-//     }
-//     select{
-//         color: $main-blue;
-//         border-radius: 0.5em;
-//         padding-block: 0.2em;
-//         padding-inline: 0.5em;
-//         border: none;
-//         outline: $main-blue;
-//     }
-// }
-
-
-// .justify--end{
-//     align-self: flex-end;
-// }
-
-
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
@@ -61,64 +7,87 @@
 }
 
 .forms-container {
-  @include forms-container();
-  width: 50%;
-  max-width: 500px;
-}
+/*   @include forms-container(); */
+box-sizing: border-box;
+background-color: $main-blue;
+border: $secondary-blue 7px solid;
 
-.forms-container--inputContainer {
-  @include forms-container--inputContainer();
+&.forms-container__error{
+  border: $error-color 7px solid;
+}
+@media (max-width: 600px){
+  margin-block: 2em;
+  width: 90%;
+}
 }
 
 .inputContainer--input {
-  @include inputContainer--input();
+box-sizing: border-box;
+border: none;
+
+color: $main-blue;
+background-color: $fill-white;
+
+&::placeholder{
+  color: $main-blue;
+}
+&:focus{
+  outline: none;
+  border: none;
+  caret-color: $main-blue;
+}
+&:disabled{
+  background-color: $secondary-blue;
+  border: none;
+}
+&.inputContainer--input__error, .inputContainer--input__error:focus{
+  outline: none;
+  border: $error-red 2px solid;
+  caret-color: $error-red;
+  color: $error-red;
+}
+&.inputContainer--input__error::placeholder{
+  color: $error-red;
+}
 }
 
 .errorSpanMessage {
-  @include errorSpanMessage();
+/*   @include errorSpanMessage(); */
+  color: $error-color;
+  margin-left: auto;
 }
 
 .forms-Button {
-  @include forms-Button();
+  /*   @include forms-Button(); */
+  background-color: transparent;
+  color:  $fill-white;
+  border: $fill-white 2px solid;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:active{
+    background-color: $fill-white;
+    color:  $main-blue;
+    border: $fill-white 2px solid;
+  }
 }
 
 .selectContainer {
   margin-left: auto;
   color: $fill-white;
 
-  label {
-    margin-right: 0.2em;
-  }
-
   select {
     color: $main-blue;
-    border-radius: 0.5em;
-    padding-block: 0.2em;
-    padding-inline: 0.5em;
     border: none;
     outline: $main-blue;
   }
-}
-
-.successMessage {
-  color: #28a745;
-  margin-bottom: 1em;
-  margin-bottom: 1em;
-  margin-top: 1em;
-}
-
-.errorMessage {
-  color: #dc3545;
-  margin-bottom: 1em;
-  margin-bottom: 1em; /* Adiciona margem inferior */
-  margin-top: 1em; /* Adiciona margem superior */
 }
 
 .justify--end {
   align-self: flex-end;
 }
 
-/* Loading circle styles for blue background!! */
+/* Loading circle styles for blue background */
 .loading-circle_forBlueBG {
   display: flex;
   flex-direction: column;
@@ -147,8 +116,25 @@
   }
 }
 
+
+
 /* Adicione a classe de estilo para ocultar o formulário enquanto estiver carregando */
 .loading {
   opacity: 0.5; /* Opacidade reduzida para indicar que está carregando */
   pointer-events: none; /* Desabilita interação com o formulário enquanto está carregando */
 }
+
+/* AVERIGUAR porque estilos abaixo foram colocadas anteriormente */
+/* .successMessage {
+  color: #28a745;
+  margin-bottom: 1em;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.errorMessage {
+  color: #dc3545;
+  margin-bottom: 1em;
+  margin-bottom: 1em;
+  margin-top: 1em; 
+} */

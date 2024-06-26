@@ -2,22 +2,56 @@
 @import '../../../../styles/_mixins.scss';
 
 
-.forms-container{
-    @include forms-container();
 
-    margin-block: 0;
+.forms-container{
+/*     @include forms-container(); */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1em;
+    margin: 0 auto;
+    margin-block: 0em;
+    box-sizing: border-box;
+    padding: 2em;
+    border-radius: 1em;
+    background-color: $main-blue;
     border: none;
-    width: 100%;
+    max-width: 100%;
+
+    &.forms-container__error{
+      border: $error-color 7px solid;
+    }
 }
 
+.forms-container--inputContainer{
+/*     @include forms-container--inputContainer(); */
+display: flex;
+gap: 1em;
+color: $fill-white;
+width: 100%;
+text-align: start;
+align-items: center;
+    div{
+        display: flex;
+        align-items: center;
+    }
+} @media (max-width:600px){
+    .forms-container--inputContainer{
+        flex-direction: column;
+        align-items: start;
+    }
+}
 
 .selectContainer{
     color: $fill-white;
-
+    width: 100%;
+    display: flex;
     label{
         margin-right: 0.2em;
     }
     select{
+        width: 100%;
         color: $main-blue;
         border-radius: 0.5em;
         padding-block: 0.2em;
@@ -25,23 +59,75 @@
         border: none;
         outline: $main-blue;
     }
-}
-
-.forms-container--inputContainer{
-    @include forms-container--inputContainer();
-    gap: 1em;
-
-    div{
+}  @media (max-width:600px){
+    label{
+        font-size: 1em;
+    }
+    .selectContainer{
+        flex-direction: column;
+        justify-content: start;
+        align-items: start;
+        gap:1em;
+    }
+    ._flex{
         display: flex;
-        align-items: center;
+        flex-direction: row;
     }
 }
 
-.inputContainer--input{
-    @include inputContainer--input();
+.forms-Button{
+/*     @include forms-Button(); */
+margin-top: 1em;
+background-color: transparent;
+color:  $fill-white;
+border: $fill-white 2px solid;
+text-transform: uppercase;
+width: 50%; /* use widht or padding-inline??? */
+padding-block: 0.4em;
+border-radius: 1em;
+cursor: pointer;
+
+&:active{
+  background-color: $fill-white;
+  color:  $main-blue;
+  border: $fill-white 2px solid;
+}
 }
 
-.forms-Button{
-    @include forms-Button();
-    margin-top: 0;
+
+
+
+.inputContainer--input{
+/*     @include inputContainer--input(); */
+width: 100%;
+box-sizing: border-box;
+color: $main-blue;
+background-color: $fill-white;
+border-radius: 0.5em;
+padding-block: 0.5em;
+padding-inline: 1em;
+border: none;
+
+&::placeholder{
+  color: $main-blue;
 }
+&:focus{
+  outline: none;
+  border: none;
+  caret-color: $main-blue;
+}
+&:disabled{
+  background-color: $secondary-blue;
+  border: none;
+}
+&.inputContainer--input__error, .inputContainer--input__error:focus{
+  outline: none;
+  border: $error-red 2px solid;
+  caret-color: $error-red;
+  color: $error-red;
+}
+&.inputContainer--input__error::placeholder{
+  color: $error-red;
+}
+}
+

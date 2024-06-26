@@ -2,22 +2,18 @@
 @import '../../../../styles/_mixins.scss';
 
 .forms-container {
-/*   @include forms-container(); */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1em;
-  width: 80%;
-  margin: 0 auto;
-  margin-block: 2em;
-  padding: 2em;
   box-sizing: border-box;
   border: $secondary-blue 7px solid;
   border-radius: 1em;
   background-color: $main-blue;
+  color: $fill-white;
 
   &.forms-container__error{
     border: $error-color 7px solid;
+  }
+
+  @media (max-width: 600px){
+    width: 90%;
   }
 }
 

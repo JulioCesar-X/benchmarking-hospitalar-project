@@ -24,12 +24,12 @@
           </tr>
           <ng-container *ngIf="!isLoading">
             <tr *ngFor="let goal of goals; trackBy: trackByIndex" class="hover:bg-gray-100">
-              <td class="p-2">{{ goal.indicatorName }}</td>
+              <td class="p-2 blueTxt">{{ goal.indicatorName }}</td>
               <td class="p-2">
                 <form>
                   <input
                     [disabled]="goal.isInserted"
-                    class="inputContainer--input w-full p-2 border border-gray-300 rounded"
+                    class="inputContainer--input w-full p-1 border border-gray-300 rounded"
                     [(ngModel)]="goal.target_value"
                     (ngModelChange)="onValueChange(goal)"
                     name="goalValue"
@@ -40,7 +40,7 @@
                 <button
                   *ngIf="!goal.isUpdating"
                   (click)="UpdateGoal(goal)"
-                  class="forms-Button bg-main-blue text-white px-4 py-2 rounded disabled:opacity-50"
+                  class="self-end rounded-xl p-1 forms-Button disabled:opacity-50"
                   type="button"
                 >
                   {{ !goal.isInserted ? 'Atualizar' : 'Editar' }}

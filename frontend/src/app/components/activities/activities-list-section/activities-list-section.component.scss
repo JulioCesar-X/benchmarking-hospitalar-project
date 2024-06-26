@@ -1,111 +1,48 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
-.headingSection{
-    display: flex;
-    color: $main-blue;
-
-    img{
-        width: 25px;
-        height: 25px;
-        margin-left: auto;
-    }
+.blueTxt{
+  color: $main-blue;
 }
 
+.whiteTxt{
+  color: $fill-white;
+}
 
 .forms-container{
-    @include forms-container();
+  box-sizing: border-box;
+  background-color: $fill-white;
+  border: $main-blue 10px solid;
 
-    margin-block: 0.5em;
-    border: 10px solid $main-blue;
+  &.forms-container__error {
+    border: $error-color 10px solid;
+  }
+  @media (max-width: 600px) {
+    margin-block: 2em;
+    width: 90%;
+  }
+}
+
+._listLine{
+  color: $main-blue;
+  border-bottom: solid 1px $main-blue;
+}
+
+.forms-Button {
+  background-color: transparent;
+  color: $fill-white;
+  border: $fill-white 2px solid;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:active {
     background-color: $fill-white;
-    width: 100%;
-}
-
-.forms-container--inputContainer{
-    @include forms-container--inputContainer();
-}
-
-.inputContainer--input{
-    @include inputContainer--input();
-}
-
-.selectOptionContainer--option{
-    @include selectOptionContainer--option();
-}
-
-.forms-Button{
-    @include forms-Button();
-    margin-top: 0;
-}
-
-.icon{
-    @include icon();
-}
-
-.__remove-paragraphMB{
-    p{
-        margin-bottom: 0;
-    }
-}
-
-
-.selectContainer{
-    color: $fill-white;
-
-    label{
-        margin-right: 0.2em;
-    }
-    select{
-        color: $main-blue;
-        border-radius: 0.5em;
-        padding-block: 0.2em;
-        padding-inline: 0.5em;
-        border: none;
-        outline: $main-blue;
-    }
-}
-
-/* styles to overide/customize mat-paginator */
-mat-paginator {
-    background-color: $main-blue; /* Example: customizing button background color */
-    color: $fill-white;
-    border-radius: 1em;
-
-    
+    color: $main-blue;
+    border: $fill-white 2px solid;
   }
-
-::ng-deep .div.mat-mdc-select-panel{
-    border: 1px solid red;
-    color:red;
-    background-color: $main-blue;
-  }
-
-::ng-deep .cdk-overlay-pane:not(.mat-mdc-select-panel-above) div.mat-mdc-select-panel {
-    border: 1px solid $main-dark-blue;
-    background-color: $main-blue;
-}
-
-::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted{
-    color:$fill-white;
-}
-
-::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted.mat-mdc-option-active{
-
-    background-color: $secondary-blue;
-}
-
-::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
-    color: $main-dark-blue !important;
-}
-
-::ng-deep .mat-mdc-form-field-type-mat-select:not(.mat-form-field-disabled) .mat-mdc-text-field-wrapper {
-    cursor: default !important;
-
 }
 
 //modal styles
-
 .modal-container {
     @include forms-container();
     z-index: 500;
@@ -193,66 +130,42 @@ mat-paginator {
     }
   }
   
-  /* checkbox section */
-.checkboxContainer {
-    /*   @include selectOptionContainer(); */
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-height: 50px;
-    max-height: 300px;
-    overflow-y: auto;
-    
-    scrollbar-width: thin;
-    scrollbar-color: $main-blue $fill-white;
-    
-    box-sizing: border-box;
-    padding-inline: 1em;
-    background-color: $fill-white;
-    border-radius: 1em;
-    }
-    
-    .checkboxContainer-title{
-      margin-block: 0.5em;
-      color: $main-blue;
-    }
-    
-    /* Custom checkboxes */
-    .styled-checkbox {
-      width: 15px;
-      height: 15px;
-      appearance: none; 
-      background-color: transparent; 
-      border: 2px solid $main-blue; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      position: relative; 
-    }
-    .styled-checkbox:checked {
-      background-color: $main-blue; 
-    }
-    
-    .styled-checkbox:checked::after {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 5px;
-      width: 3px;
-      height: 7px;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-    
-    .checkboxContainer--option{
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 1em;
-      color: $main-blue;
-      border-bottom: solid 1px $main-blue;
-      margin-block: 1em;
-    }
 
+/* styles to overide/customize mat-paginator */
+mat-paginator {
+  background-color: $main-blue; /* Example: customizing button background color */
+  color: $fill-white;
+  border-radius: 1em;
 
   
+}
+
+::ng-deep .div.mat-mdc-select-panel{
+  border: 1px solid red;
+  color:red;
+  background-color: $main-blue;
+}
+
+::ng-deep .cdk-overlay-pane:not(.mat-mdc-select-panel-above) div.mat-mdc-select-panel {
+  border: 1px solid $main-dark-blue;
+  background-color: $main-blue;
+}
+
+::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted{
+  color:$fill-white;
+}
+
+::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted.mat-mdc-option-active{
+
+  background-color: $secondary-blue;
+}
+
+::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+  color: $main-dark-blue !important;
+}
+
+::ng-deep .mat-mdc-form-field-type-mat-select:not(.mat-form-field-disabled) .mat-mdc-text-field-wrapper {
+  cursor: default !important;
+
+}
+

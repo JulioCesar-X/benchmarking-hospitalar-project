@@ -15,6 +15,7 @@ import { AuthService } from '../../../auth.service';
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent {
+  isMenuOpen = false;
   isManageUsersSubMenuOpen = false;
   isManageContentSubMenuOpen = false;
   isManageNotificationsSubMenuOpen = false;
@@ -43,5 +44,9 @@ export class MenuComponent {
 
     this.isManageUsersSubMenuOpen = this.isManageUsersSubMenuOpen == true ? false : false;
     this.isManageContentSubMenuOpen = this.isManageContentSubMenuOpen == true ? false : false;
+  }
+
+  openMenu(){
+    this.isMenuOpen = !this.isMenuOpen;
   }
 }

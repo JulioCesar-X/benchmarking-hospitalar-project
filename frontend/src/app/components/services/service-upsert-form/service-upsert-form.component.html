@@ -1,19 +1,20 @@
 <!-- Formulário para criação ou edição de serviços com abas para atividades e indicadores -->
 <form [formGroup]="form" (ngSubmit)="submitForm()">
-  <div class="forms-container bg-blue-800 text-white p-6 rounded-lg shadow-lg">
+  <div class="flex flex-col justify-center w-[80%] max-w-500px p-8 rounded-xl gap-4 mx-auto my-4 
+   shadow-lg forms-container">
 
     <h2 class="text-lg">{{ formsAction === 'create' ? 'Criar' : 'Editar' }} Serviço</h2>
     <div *ngIf="isLoadingActivities || isSubmitting" class="loading-circle">
       <div class="spinner"></div>
       <p>{{ isSubmitting ? 'Adicionando' : 'Carregando' }} serviço...</p>
     </div>
-    <div class="mt-4">
+    <div class="">
       <label for="service_name">Nome:</label>
       <input type="text" id="service_name" formControlName="service_name" placeholder="Nome do serviço"
         class="inputContainer--input">
     </div>
 
-    <div class="mt-4">
+    <div class="">
       <label for="description">Descrição:</label>
       <textarea id="description" formControlName="description" placeholder="Descrição do serviço..."
         class="inputContainer--input"></textarea>

@@ -21,24 +21,26 @@ main {
  :host {
     flex: 1;
     display: flex;
+  } @media(max-width:600px){
+    :host{
+        flex-direction: column;
+    }
   }
 
   
-  .tabs {
-
-    margin: 0 auto;
+  .tab-headers {
     display: flex;
-    flex-direction: column;
-}
-
-.tab-headers {
-    display: flex;
-    margin-left: 2em;
+    width: 30%;
+    margin-left: 8em;
     margin-top: 1em;
     overflow: hidden;
     border-top-left-radius: 1em;
     border-top-right-radius: 1em;
-    width: 20%;
+} @media(max-width:600px){
+    .tab-headers{
+        width: 50%;
+        margin-left: 4em;
+    }
 }
 
 .tab-link {

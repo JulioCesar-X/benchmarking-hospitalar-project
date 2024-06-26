@@ -1,21 +1,55 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
-.title {
+.whiteTxt{
   color: $fill-white;
-  margin: 0;
 }
-
 .forms-container {
-  @include forms-container();
-  width: 70%;
+  box-sizing: border-box;
+  background-color: $main-blue;
+  border: $secondary-blue 10px solid;
 
+  &.forms-container__error {
+    border: $error-color 10px solid;
+  }
+  @media (max-width: 600px) {
+    margin-block: 2em;
+    width: 90%;
+  }
 }
 
-.forms-container--title {
-    color: $fill-white;
-    margin: 0;
+.inputContainer--input {
+  box-sizing: border-box;
+  border: none;
+  
+  color: $main-blue;
+  background-color: $fill-white;
+  
+  &::placeholder{
+    color: $main-blue;
   }
+  &:focus{
+    outline: none;
+    border: none;
+    caret-color: $main-blue;
+  }
+  &:disabled{
+    background-color: $secondary-blue;
+    border: none;
+  }
+  &.inputContainer--input__error, .inputContainer--input__error:focus{
+    outline: none;
+    border: $error-red 2px solid;
+    caret-color: $error-red;
+    color: $error-red;
+  }
+  &.inputContainer--input__error::placeholder{
+    color: $error-red;
+  }
+}
+
+
+
 
 .forms-container--inputContainer {
   @include forms-container--inputContainer();
@@ -39,7 +73,6 @@
   label {
     margin-right: 0.2em;
   }
-
   select {
     color: $main-blue;
     border-radius: 0.5em;

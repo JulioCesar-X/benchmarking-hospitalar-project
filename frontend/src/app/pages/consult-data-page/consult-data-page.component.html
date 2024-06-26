@@ -1,63 +1,118 @@
-<div class="mx-2 w-full">
-  <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false" (filterEvent)="handleFilterData($event)"></app-filter>
+<div class="m-2 w-full">
+  <app-filter
+    [indicatorsInput]="true"
+    [dataInsertedCheckbox]="false"
+    (filterEvent)="handleFilterData($event)"
+  ></app-filter>
 
   <div class="tab-headers">
-    <button class="tab-link" [class.active]="selectedTab === 'Producao'"
-      (click)="selectTab('Producao')">Produção</button>
-    <button class="tab-link" [class.active]="selectedTab === 'Metas'" (click)="selectTab('Metas')">Metas</button>
+    <button
+      class="tab-link"
+      [class.active]="selectedTab === 'Producao'"
+      (click)="selectTab('Producao')"
+    >
+      Produção
+    </button>
+    <button
+      class="tab-link"
+      [class.active]="selectedTab === 'Metas'"
+      (click)="selectTab('Metas')"
+    >
+      Metas
+    </button>
   </div>
-  <div *ngIf="selectedTab === 'Producao'">
-    <div class="graphicsContainer">
-      <div class="row">
-        <div>
-          <app-chart graphType="month" graphLabel="Produção" [filter]="filter"></app-chart>
+
+  <div class="graphicsContainer">
+    
+    
+    <div *ngIf="selectedTab === 'Producao'">
+      <div class="flex w-full justify-around flex-wrap">
+        <div class="w-full lg:w-1/2 p-2">
+          <app-chart
+            graphType="month"
+            graphLabel="Produção"
+            [filter]="filter"
+          ></app-chart>
         </div>
       </div>
-      <div class="row">
-        <div class="box">
-          <h2>Diferença:</h2>
-          <h2>Variação:</h2>
+
+      <div class="flex w-full justify-around flex-wrap">
+        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
+          <h2 class="_blueTxt">Diferença:</h2>
+          <h2 class="_blueTxt">Variação:</h2>
         </div>
       </div>
-      <div class="row">
-        <div>
-          <app-chart graphType="lineChart" graphLabel="Variação currentYear" [filter]="filter"></app-chart>
+
+      <div class="flex w-full justify-around flex-wrap">
+        <div class="w-full lg:w-1/2 p-2">
+          <app-chart
+            graphType="lineChart"
+            graphLabel="Variação currentYear"
+            [filter]="filter"
+          ></app-chart>
         </div>
-        <div>
-          <app-chart graphType="lineChart" graphLabel="Variação previousYear" [filter]="filter"></app-chart>
+        <div class="w-full lg:w-1/2 p-2">
+          <app-chart
+            graphType="lineChart"
+            graphLabel="Variação previousYear"
+            [filter]="filter"
+          ></app-chart>
         </div>
       </div>
-      <div class="row">
-        <div>
-          <app-chart graphType="homologYear" graphLabel="Comparação anual" [filter]="filter"></app-chart>
+    
+      <div class="flex w-full justify-around flex-wrap">
+        <div class="w-full lg:w-1/2 p-2">
+          <app-chart
+            graphType="homologYear"
+            graphLabel="Comparação anual"
+            [filter]="filter"
+          ></app-chart>
         </div>
-        <div>
-          <app-chart graphType="fiveYear" graphLabel="5 anos anteriores" [filter]="filter"></app-chart>
+        <div class="w-full lg:w-1/2 p-2">
+          <app-chart
+            graphType="fiveYear"
+            graphLabel="5 anos anteriores"
+            [filter]="filter"
+          ></app-chart>
         </div>
       </div>
     </div>
-  </div>
-  <div *ngIf="selectedTab === 'Metas'">
-    <div class="graphicsContainer">
-      <div class="row">
-        <div>
-          <app-chart graphType="month" graphLabel="Produção" [filter]="filter"></app-chart>
+
+    <div *ngIf="selectedTab === 'Metas'">
+      <div class="flex w-full justify-around flex-wrap">
+        <div class="w-full lg:w-1/2 p-2">
+          <app-chart
+            graphType="month"
+            graphLabel="Produção"
+            [filter]="filter"
+          ></app-chart>
         </div>
-        <div>
-          <app-chart graphType="month" graphLabel="Metas" [filter]="filter"></app-chart>
+        <div class="w-full lg:w-1/2 p-2">
+          <app-chart
+            graphType="month"
+            graphLabel="Metas"
+            [filter]="filter"
+          ></app-chart>
         </div>
       </div>
-      <div class="row">
-        <div class="box">
-          <h2>Diferença:</h2>
-          <h2>Variação:</h2>
+
+      <div class="flex w-full justify-around flex-wrap">
+        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
+          <h2 class="_blueTxt">Diferença:</h2>
+          <h2 class="_blueTxt">Variação:</h2>
         </div>
       </div>
-      <div class="row">
-        <div>
-          <app-chart graphType="year" graphLabel="Total anual" [filter]="filter"></app-chart>
+
+      <div class="flex w-full justify-around flex-wrap">
+        <div class="w-full lg:w-1/2 p-2">
+          <app-chart
+            graphType="year"
+            graphLabel="Total anual"
+            [filter]="filter"
+          ></app-chart>
         </div>
       </div>
     </div>
+
   </div>
 </div>

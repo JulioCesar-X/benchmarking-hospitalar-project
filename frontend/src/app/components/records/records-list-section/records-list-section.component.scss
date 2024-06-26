@@ -1,6 +1,10 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
+
+.blueTxt{
+  color: $main-blue;
+}
 .headingSection {
   display: flex;
   color: $main-blue;
@@ -36,13 +40,18 @@
 }
 
 .forms-Button {
-  @include forms-Button();
+  /*   @include forms-Button(); */
+  background-color: transparent;
   color: $main-blue;
   border: $main-blue 2px solid;
   text-transform: uppercase;
-  width: 20%;
-  /* use widht or padding-inline??? */
-  margin-top: 0;
+  cursor: pointer;
+
+  &:active{
+    background-color: $fill-white;
+    color:  $main-blue;
+    border: $fill-white 2px solid;
+  }
 }
 
 .icon {
