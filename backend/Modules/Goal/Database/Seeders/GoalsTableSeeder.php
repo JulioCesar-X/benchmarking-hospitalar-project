@@ -81,7 +81,49 @@ class GoalsTableSeeder extends Seeder
                 'indicators' => [
                     ['name' => 'Total de Visitas Domiciliárias', 'target' => 7934]
                 ]
-            ]
+            ],
+            [
+                'service' => 'Consulta Externa',
+                'activity' => 'Psiquiatria Adultos',
+                'indicators' => [
+                    ['name' => 'Nº Consultas Total', 'target' => 48000],
+                    ['name' => 'Primeiras Consultas', 'target' => 11500],
+                    ['name' => 'Consultas Subsequentes', 'target' => 36500]
+                ]
+            ],
+            [
+                'service' => 'Consulta Externa',
+                'activity' => 'Quadro Resumo',
+                'indicators' => [
+                    ['name' => 'Nº de 1ªs Consultas Médicas', 'target' => 12500],
+                    ['name' => 'Nº de Consultas Médicas Subsequentes', 'target' => 37000]
+                ]
+            ],
+            [
+                'service' => 'Internamento Crónicos',
+                'activity' => null,
+                'indicators' => [
+                    ['name' => 'Dias de Internamento (Totais) Doentes Crónicos', 'target' => 14000],
+                    ['name' => 'Demora média Crónicos(HPA)', 'target' => 22],
+                    ['name' => 'Demora média Crónicos (Santa Casa Misericórdia Amarante)', 'target' => 11]
+                ]
+            ],
+            [
+                'service' => 'Hospital Dia',
+                'activity' => null,
+                'indicators' => [
+                    ['name' => 'Nº Sessões Total', 'target' => 25],
+                    ['name' => 'Nº Doentes', 'target' => 10]
+                ]
+            ],
+            [
+                'service' => 'Serviço Domiciliário',
+                'activity' => null,
+                'indicators' => [
+                    ['name' => 'Total de Visitas Domiciliárias', 'target' => 9000]
+                ]
+            ],
+
         ];
 
         foreach ($goalsData as $data) {

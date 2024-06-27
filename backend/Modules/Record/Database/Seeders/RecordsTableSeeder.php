@@ -105,6 +105,8 @@ class RecordsTableSeeder extends Seeder
             }
         }
     }
+
+
     private function insertRecordsForPsiquiatriaInfanciaAdolescencia($saiMap)
     {
         $serviceName = 'Consulta Externa';
@@ -475,6 +477,67 @@ class RecordsTableSeeder extends Seeder
                 'Consultas Subsequentes' => 600,
                 'Consultas Marcadas e não Realizadas' => 210,
             ],
+            '2025-1-31' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-2-28' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-3-31' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-4-30' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-5-31' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-6-30' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-7-31' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-8-31' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-9-30' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-10-31' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-11-30' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+            '2025-12-31' => [
+                'Primeiras Consultas' => 400,
+                'Consultas Subsequentes' => 600,
+                'Consultas Marcadas e não Realizadas' => 210,
+            ],
+
         ];
 
 
@@ -520,6 +583,14 @@ class RecordsTableSeeder extends Seeder
                 'Nº de 1ªs Consultas Médicas' => 1000,
                 'Nº de Consultas Médicas Subsequentes' => 361,
             ],
+            '2025-09-30' => [
+                'Nº de 1ªs Consultas Médicas' => 1000,
+                'Nº de Consultas Médicas Subsequentes' => 361,
+            ],
+            '2025-08-31' => [
+                'Nº de 1ªs Consultas Médicas' => 1000,
+                'Nº de Consultas Médicas Subsequentes' => 361,
+            ],
         ];
 
         foreach ($datesValues as $date => $values) {
@@ -561,6 +632,28 @@ class RecordsTableSeeder extends Seeder
                 'Encargos / Doentes Saídos' => 0,
             ],
             '2023-02-28' => [
+                'Lotação' => 20,
+                'Demora Média' => 7.8,
+                'Ocupacão' => 10,
+                'Taxa de Reinternamento (30 dias)' => 6,
+                'Índice Case-Mix' => 0,
+                'Doentes Saídos (Altas)' => 0,
+                'Doentes Saídos P/Cama' => 0,
+                'Encargos (rubricas)' => 0,
+                'Encargos / Doentes Saídos' => 0,
+            ],
+            '2025-02-28' => [
+                'Lotação' => 20,
+                'Demora Média' => 7.8,
+                'Ocupacão' => 10,
+                'Taxa de Reinternamento (30 dias)' => 6,
+                'Índice Case-Mix' => 0,
+                'Doentes Saídos (Altas)' => 0,
+                'Doentes Saídos P/Cama' => 0,
+                'Encargos (rubricas)' => 0,
+                'Encargos / Doentes Saídos' => 0,
+            ],
+            '2025-07-31' => [
                 'Lotação' => 20,
                 'Demora Média' => 7.8,
                 'Ocupacão' => 10,
@@ -623,6 +716,19 @@ class RecordsTableSeeder extends Seeder
                 'Preço de referência para diária (1)' => 100.00,
                 'Encargos / Doentes Saídos' => 0,
             ],
+            '2025-03-31' => [
+                'Doentes de Psiquiatria no Exterior (Trofa Saúde)' => 100,
+                'Total dias de internamentos' => 2000,
+                'Preço de referência para diária (1)' => 100.00,
+                'Encargos / Doentes Saídos' => 0,
+            ],
+            '2025-04-30' => [
+                'Doentes de Psiquiatria no Exterior (Trofa Saúde)' => 100,
+                'Total dias de internamentos' => 2000,
+                'Preço de referência para diária (1)' => 100.00,
+                'Encargos / Doentes Saídos' => 0,
+            ],
+
         ];
 
         foreach ($datesValues as $date => $values) {
@@ -683,6 +789,22 @@ class RecordsTableSeeder extends Seeder
                 'Doentes de Psiquiatria Crónicos (Santa Casa Misericórdia Amarante)' => 13,
                 'Doentes de Psiquiatria no Exterior (Ordens Religiosas e Outras Entidades)' => 0
             ],
+            '2025-06-30' => [
+                'Dias de Internamento (Totais) Doentes Crónicos' => 1203,
+                'Demora média Crónicos(HPA)' => 35,
+                'Demora média Crónicos (Santa Casa Misericórdia Amarante)' => 0,
+                'Doentes de Psiquiatria Crónicos (HPA)' => 2,
+                'Doentes de Psiquiatria Crónicos (Santa Casa Misericórdia Amarante)' => 13,
+                'Doentes de Psiquiatria no Exterior (Ordens Religiosas e Outras Entidades)' => 0
+            ],
+            '2025-11-30' => [
+                'Dias de Internamento (Totais) Doentes Crónicos' => 1203,
+                'Demora média Crónicos(HPA)' => 35,
+                'Demora média Crónicos (Santa Casa Misericórdia Amarante)' => 0,
+                'Doentes de Psiquiatria Crónicos (HPA)' => 2,
+                'Doentes de Psiquiatria Crónicos (Santa Casa Misericórdia Amarante)' => 13,
+                'Doentes de Psiquiatria no Exterior (Ordens Religiosas e Outras Entidades)' => 0
+            ],
         ];
 
         foreach ($datesValues as $date => $values) {
@@ -736,6 +858,18 @@ class RecordsTableSeeder extends Seeder
                 'Encargos Globais' => 0,
                 'Encargos/Sessão' => 0
             ],
+            '2025-01-31' => [
+                'Nº Sessões Total' => 1000,
+                'Nº Doentes' => 512,
+                'Encargos Globais' => 0,
+                'Encargos/Sessão' => 0
+            ],
+            '2024-12-31' => [
+                'Nº Sessões Total' => 1000,
+                'Nº Doentes' => 512,
+                'Encargos Globais' => 0,
+                'Encargos/Sessão' => 0
+            ],
         ];
 
         foreach ($datesValues as $date => $values) {
@@ -781,6 +915,16 @@ class RecordsTableSeeder extends Seeder
                 'Encargos/Visita' => 0
             ],
             '2024-02-28' => [
+                'Total de Visitas Domiciliárias' => 1000,
+                'Encargos Globais' => 0,
+                'Encargos/Visita' => 0
+            ],
+            '2025-09-30' => [
+                'Total de Visitas Domiciliárias' => 1000,
+                'Encargos Globais' => 0,
+                'Encargos/Visita' => 0
+            ],
+            '2025-05-28' => [
                 'Total de Visitas Domiciliárias' => 1000,
                 'Encargos Globais' => 0,
                 'Encargos/Visita' => 0

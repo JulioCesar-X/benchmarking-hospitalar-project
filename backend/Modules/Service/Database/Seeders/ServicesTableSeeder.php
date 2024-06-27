@@ -4,6 +4,8 @@ namespace Modules\Service\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Faker\Factory as Faker;
 
 class ServicesTableSeeder extends Seeder
 {
@@ -14,6 +16,10 @@ class ServicesTableSeeder extends Seeder
      */
     public function run()
     {
+        // Inicializar o Faker
+        $faker = Faker::create();
+
+        // Inserir registros iniciais com `id`s fixos
         DB::table('services')->insert([
             [
                 'service_name' => 'Consulta Externa',
@@ -58,6 +64,18 @@ class ServicesTableSeeder extends Seeder
                 'updated_at' => now()
             ]
         ]);
-    }
 
+        // Adicionar 100 novos registros fictícios com `id`s calculados dinamicamente
+        for ($i = 1; $i <= 100; $i++) {
+            DB::table('services')->insert([
+                'service_name' => 'Nome do Serviço ' . $i,
+                'description' => $faker->paragraph,
+                'imageUrl' => 'assets/images/Hospital de dia.jpg',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+    }
 }
+
+

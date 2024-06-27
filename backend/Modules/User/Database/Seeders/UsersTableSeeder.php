@@ -179,6 +179,22 @@ class UsersTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now()
             ],
+            
         ]);
+
+        // Adicionar 100 novos usuários
+        for ($i = 1; $i <= 100; $i++) {
+            $baseUsers[] = [
+                'name' => $faker->name,
+                'email' => $faker->unique()->safeEmail,
+                'password' => Hash::make('atec123'),
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+        }
+
+        // Inserir todos os registros no banco de dados
+        DB::table('users')->insert($baseUsers);
     }
 }
