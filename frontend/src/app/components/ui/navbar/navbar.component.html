@@ -1,5 +1,5 @@
 <div class="placeholder"></div>
-<div class="fixedCSS relative">
+<div class="w-full fixed top-0 z-[1000] whiteBG">
   <header class="flex justify-between relative navbar">
     <div class="flex items-center gap-2 logoSection">
       <div class="logoContainer">
@@ -10,13 +10,13 @@
         />
       </div>
 
-      <div class="logoTitleContainer">
-        <h3>Unidade local de Saúde</h3>
-        <h1>Tâmega e Sousa</h1>
+      <div class="hidden sm:block">
+        <h3 class="m-0 sm:text-lg darkBlueTxt">Unidade local de Saúde</h3>
+        <h1 class="m-0 sm:text-lg darkBlueTxt">Tâmega e Sousa</h1>
       </div>
     </div>
 
-    <div class="navbarLinksContainer">
+    <div class="relative w-[35%] sm:w-[60%] z-[1] whiteTxt">
       <svg
         class="background-svg"
         xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +68,7 @@
               (click)="toggleDropdown()"
             >
               <mat-icon>account_circle</mat-icon>
-              <span class="text-xl mr-10">{{ getUserName() }}</span>
+              <span class="text-xl mr-0 sm:mr-10">{{ getUserName() }}</span>
             </button>
           </div>
 

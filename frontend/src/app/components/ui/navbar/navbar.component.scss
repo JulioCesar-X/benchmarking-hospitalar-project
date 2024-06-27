@@ -1,62 +1,59 @@
 @import '../../../../styles/_variables.scss';
+@import 'tailwindcss/base';
 
 
 .placeholder{
   height: 90px;
 }
-.fixedCSS {
-
-  position: fixed; //preciso de arranja soluçõa
-  width: 100%;
-  top: 0;
-  z-index: 1000;
-  /* Garante que a navbar fique acima de outros elementos */
+.whiteBG {
   background-color: $fill-white;
-  /* Define uma cor de fundo para garantir legibilidade */
-  /* Opcional: uma linha para separar a navbar do conteúdo da página */
 }
+.whiteTxt {
+  color: $fill-white; 
+}
+.darkBlueTxt{
+  color: $main-dark-blue
+}
+.logoTxt{
+  @apply m-0 sm:text-lg darkBlueTxt;
+}
+
+
+
+
+
+/* @media (min-width:600px){
+  .logoTitleContainer{
+
+    h1,
+    h3 {
+      color: $main-dark-blue ;
+      font-size: 1.25rem;
+      margin: 0;
+    }
+  }
+} */
+
+
+
+
 
 
 .navbar {
-
   margin-bottom: auto;
   max-width: 100%;
   max-height: 99px;
-  //overflow: hidden;
-/*   min-width: 780px; */
-}   @media (max-width:600px){
-  .logoTitleContainer{
-    display: none;
-  }
-}
+}   
 
-/* i can make the logocontainer occupy space where i want with position absolute */
+
+
 .logoSection {
-  /*     top:0;
-    left: 0;
-    position: absolute; */
-
   width: auto;
   background-color: transparent;
   color: $main-blue;
 }
 
 
-/* .triangle {
-  width: 0;
-  height: 0;
-  margin-left: -12.5em;
-  border-left: 100px solid transparent;
-  border-right: 100px solid $main-blue;
-  border-top: 100px solid transparent;
-} */
-
-.navbarLinksContainer {
-  position: relative;
-  width: 60%;
-  color: $fill-white; /* Keep this here if it applies to text color of child elements */
-  z-index: 1; /* Ensure it's above the pseudo-element */
-}
 
 .background-svg {
   fill: $main-blue;
@@ -86,10 +83,6 @@
 }
 
 @media (max-width:600px){
-
-  .logoTitleContainer{
-    display: none;
-  }
   .links {
     z-index: 1;
     position: absolute;
@@ -111,7 +104,7 @@
     margin-left: 2em;
   }  
   .links.is-open{
-    left: 0;
+    left: -30vw; //adjustment to make links go beyond parent container to the left
   }
 
 }
@@ -141,19 +134,7 @@
   cursor: pointer;
 }
 
-.logoTitleContainer {
 
-  h1,
-  h3 {
-    color:#494747 ;
-    font-size: 1.25rem;
-    margin: 0;
-  }
-}  @media (max-width:600px){
-  .logoTitleContainer{
-   display: none;
-  }
-}
 
 .unread{
   background-color: $secondary-blue;

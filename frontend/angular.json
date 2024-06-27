@@ -30,8 +30,10 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
               "@angular/material/prebuilt-themes/pink-bluegrey.css",
+              "node_modules/tailwindcss/tailwind.css",
+              "src/styles.scss"
+
 
             ],
             "scripts": [
@@ -100,8 +102,10 @@
       "src/assets"
     ],
     "styles": [
-      "src/styles.scss",
-      "@angular/material/prebuilt-themes/pink-bluegrey.css"
+      "@angular/material/prebuilt-themes/pink-bluegrey.css",
+      "node_modules/tailwindcss/tailwind.css",
+      "src/styles.scss"
+
     ],
     "scripts": []
   }
