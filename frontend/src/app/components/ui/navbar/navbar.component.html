@@ -1,8 +1,9 @@
-<div class="placeholder"></div>
+<div class="placeholder"></div> <!-- this element is used to ocupy some space in the DOM at the top for the Navbar -->
+
 <div class="w-full fixed top-0 z-[1000] whiteBG">
-  <header class="flex justify-between relative navbar">
+  <header class="flex justify-between relative mb-auto max-w-full max-h-99">
     <div class="flex items-center gap-2 logoSection">
-      <div class="logoContainer">
+      <div class="">
         <img
           class="h-20 w-20 m-1"
           alt="SNS logo image"
@@ -10,9 +11,9 @@
         />
       </div>
 
-      <div class="hidden sm:block">
-        <h3 class="m-0 sm:text-lg darkBlueTxt">Unidade local de Saúde</h3>
-        <h1 class="m-0 sm:text-lg darkBlueTxt">Tâmega e Sousa</h1>
+      <div class="">
+        <h3 class="logoTxt darkBlueTxt">Unidade local de Saúde</h3>
+        <h1 class="logoTxt darkBlueTxt">Tâmega e Sousa</h1>
       </div>
     </div>
 
@@ -30,13 +31,13 @@
       </svg>
 
       <div class="links" [ngClass]="{ 'is-open': isNavbarOpen }">
-        <a routerLink="/home" class="navBarLink">Home</a>
+        <a routerLink="/home" class="flex no-underline uppercase text-lg whiteTxt underlineHover">Home</a>
         <a
           *ngIf="isLoggedIn() && getRole() === 'admin'"
           routerLinkActive="active-page"
           ariaCurrentWhenActive="page"
           routerLink="/consultUsers"
-          class="navBarLink"
+          class="flex no-underline uppercase text-lg whiteTxt underlineHover"
           >Menu</a
         >
         <a
@@ -44,16 +45,15 @@
           routerLinkActive="active-page"
           ariaCurrentWhenActive="page"
           routerLink="/RecordGoalsUpdate"
-          class="navBarLink"
-          >Menu</a
-        >
-        <div class="loginContainer">
+          class="flex no-underline uppercase text-lg whiteTxt underlineHover"
+          >Menu</a>
+        <div class="flex items-center ml-auto gap-4 mr-0 sm:mr-8">
           <a
             *ngIf="!isLoggedIn()"
             routerLink="/login"
             routerLinkActive="active-page"
             ariaCurrentWhenActive="page"
-            class="navBarLink"
+            class="flex no-underline uppercase text-lg whiteTxt underlineHover"
             >Login</a
           >
           <div
@@ -100,7 +100,7 @@
     >
       <img
         src="../../../../assets/images/notificationIcon.png"
-        class="icon"
+        class="w-[35px] cursor-pointer"
         alt="Notifications icon"
       />
     </button>
