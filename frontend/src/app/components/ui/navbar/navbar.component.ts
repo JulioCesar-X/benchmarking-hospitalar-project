@@ -23,6 +23,7 @@ import { MatMenuModule } from '@angular/material/menu';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
+  isNavbarOpen: boolean = false;
   isNotificationsOpen: boolean = false;
   unreadNotifications: number = 0;
   allNotifications: Notification[] = [];
@@ -84,5 +85,9 @@ export class NavbarComponent implements OnInit {
 
   toggleNotifications() {
     this.isNotificationsOpen = !this.isNotificationsOpen;
+  }
+
+  openNavBar(){
+    this.isNavbarOpen = !this.isNavbarOpen;
   }
 }
