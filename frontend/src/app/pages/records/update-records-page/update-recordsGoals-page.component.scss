@@ -19,6 +19,7 @@ main {
 }
  */
  :host {
+    margin-block: 0.5em;
     flex: 1;
     display: flex;
   } @media(max-width:600px){

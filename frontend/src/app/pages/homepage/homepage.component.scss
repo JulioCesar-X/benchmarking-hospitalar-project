@@ -7,7 +7,7 @@
   background-position: center;
   padding-block: 5%;
   margin-bottom: 2em;
-  margin-block: 0.5rem;
+
 
 }
 
@@ -140,6 +140,7 @@ main {
 :host {
   flex: 1;
   display: flex;
+  margin-block: 0.5rem;
 }
 
 
@@ -176,17 +177,17 @@ main {
 
   &.previous-button {
     left: 100px;
-    top: 490px;
+    top: 380px;
   }
 
   &.next-button {
     right: 100px;
-    top: 490px;
+    top: 380px;
   }
 
   &.top-button {
     right: 20px;
-    bottom: 140px;
+    bottom: 150px;
   }
 
   mat-icon {
