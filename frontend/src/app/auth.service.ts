@@ -50,25 +50,43 @@ export class AuthService {
       );
   }
 
-  logout(): void {
+  // logout(): void {
+  //   const token = this.getToken();
+  //   if (!token) {
+  //     console.error('No token found');
+  //     this.router.navigate(['/login']);
+  //     return;
+  //   }
+  //   this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
+  //     .subscribe(
+  //       () => {
+  //         this.cookieService.delete('access_token', '/');
+  //         this.cookieService.delete('role', '/');
+  //         console.log('Logout successful');
+  //         this.router.navigate(['/login']);
+  //       },
+  //       error => {
+  //         console.error('Logout failed', error);
+  //         this.router.navigate(['/login']);
+  //       }
+  //     );
+  // }
+
+  logout(): Observable<any> {
     const token = this.getToken();
     if (!token) {
       console.error('No token found');
       this.router.navigate(['/login']);
-      return;
+      return throwError('No token found');
     }
-    this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
-      .subscribe(
-        () => {
-          this.cookieService.delete('access_token', '/');
-          this.cookieService.delete('role', '/');
-          console.log('Logout successful');
-          this.router.navigate(['/login']);
-        },
-        error => {
+
+    return this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
+      .pipe(
+        catchError(error => {
           console.error('Logout failed', error);
           this.router.navigate(['/login']);
-        }
+          return throwError(error);
+        })
       );
   }
 

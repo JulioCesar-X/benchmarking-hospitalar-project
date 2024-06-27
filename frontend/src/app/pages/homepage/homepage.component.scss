@@ -7,8 +7,6 @@
   background-position: center;
   padding-block: 5%;
   margin-bottom: 2em;
-
-
 }
 
 .headingTitle {
@@ -138,6 +136,7 @@ main {
 }
 
 :host {
+  margin-block: 0.5rem;
   flex: 1;
   display: flex;
   margin-block: 0.5rem;
@@ -177,17 +176,28 @@ main {
 
   &.previous-button {
     left: 100px;
-    top: 380px;
+    top: 400px;
   }
 
   &.next-button {
     right: 100px;
-    top: 380px;
+    top: 400px;
   }
 
   &.top-button {
     right: 20px;
-    bottom: 150px;
+    bottom: 140px;
+  }
+  @media (max-width:600px){
+    &.previous-button {
+      left: 150px;
+      top: 550px;
+    }
+  
+    &.next-button {
+      right: 150px;
+      top: 550px;
+    }
   }
 
   mat-icon {

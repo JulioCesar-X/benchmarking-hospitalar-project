@@ -7,6 +7,7 @@ import { NotificationService } from '../../../services/notifications/notificatio
 import { Notification } from '../../../models/notification.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import anime from 'animejs/lib/anime.es.js';
 
 
 @Component({
@@ -23,10 +24,13 @@ import { MatMenuModule } from '@angular/material/menu';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
+  isNavbarOpen: boolean = false;
   isNotificationsOpen: boolean = false;
   unreadNotifications: number = 0;
   allNotifications: Notification[] = [];
   isDropdownOpen: boolean = false;
+  isLoginOut: boolean = false; 
+
 
   constructor(private authService: AuthService, private notificationService: NotificationService) { }
 
@@ -55,9 +59,28 @@ export class NavbarComponent implements OnInit {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
+  // logout(): void {
+  //   this.authService.logout();
+  // }
+
   logout(): void {
-    this.authService.logout();
+    this.isLoginOut = true;
+
+    this.authService.logout().subscribe(
+      (response: any) => {
+        console.log('Logout bem-sucedido', response);
+        this.isLoginOut = false;
+        // Redirecione ou faça outras ações após o logout
+      },
+      (error: any) => {
+        this.isLoginOut = false;
+
+        console.error('Erro durante o logout', error);
+        // Trate o erro ou forneça feedback ao usuário
+      }
+    );
   }
+  
 
   getNotifications() {
     this.notificationService.getNotificationsReceived().subscribe({
@@ -85,4 +108,24 @@ export class NavbarComponent implements OnInit {
   toggleNotifications() {
     this.isNotificationsOpen = !this.isNotificationsOpen;
   }
+
+  openNavBar(){
+    this.isNavbarOpen = !this.isNavbarOpen;
+  }
+
+  startLoadingAnimation() {
+    this.isLoginOut = true;
+    const animate = () => {
+      if (!this.isLoginOut) return;
+      anime({
+        targets: '.random-demo .el',
+        translateX: () => anime.random(0, 270),
+        easing: 'easeInOutQuad',
+        duration: 600,
+        complete: animate
+      });
+    };
+    animate();
+  }
+
 }

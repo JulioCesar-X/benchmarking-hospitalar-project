@@ -295,6 +295,10 @@
 //   }
 // }
 
+
+
+
+
 import { Component, OnInit, Input, OnChanges, SimpleChanges, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -348,7 +352,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
       next: (response) => {
         if (response && response.data) {
           this.allUsers = response.data;
-          this.filterUsers();
+          //this.filterUsers();
           this.totalUsers = response.total;
         } else {
           this.setNotification('Nenhum usuário foi carregado ou a resposta está mal formatada', 'error');
