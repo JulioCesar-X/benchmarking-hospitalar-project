@@ -1,45 +1,29 @@
 <section class="forms-container">
-    <div class="headingSection">
-      <h2>Lista de serviços</h2>
-      <img (click)="navigateToCreateServices()" src="../../../assets/images/icons8-plus-30.png" class="icon" alt="createIcon">
-    </div>
-
-    <div *ngIf="isLoading" class="loading-circle">
-      <div class="spinner"></div>
-      <p>A carregar serviços...</p>
-    </div>
-
-    <div class="cardsContainer">
-      <div *ngFor="let service of services; trackBy: trackByIndex" class="card">
-        <img [src]="service.imageUrl" class="card-image" alt="{{ service.service_name }}">
-        <div class="card-content">
-          <p class="card-title">{{ service.service_name }}</p>
-          <div class="card-actions">
-            <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="navigateToEditService(service)">
-            <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete" (click)="openModal(service.id)">
-          </div>
-        </div>
-      </div>
-    </div>
-    <mat-paginator class="mat-paginator" [length]="totalActivities" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]"
-      (page)="onPageChange($event)">
-    </mat-paginator>
-  </section>
-
-
-  <!-- MODAL com spinner de loading -->
-  <div class="modal" [ngClass]="{'show': isModalOpen}" (click)="closeModal()">
-    <div class="modal-container" (click)="$event.stopPropagation()">
-      <div class="modalHeader">
-        <h2>Tem a certeza que quer remover este serviço?</h2>
-        <span class="close" (click)="closeModal()">&times;</span>
-      </div>
-      <button (click)="formSubmited()" type="submit" class="forms-Button" [disabled]="isLoading">
-        Confirmar
-      </button>
-      <div *ngIf="isLoading" class="loading-circle">
-        <div class="spinner"></div>
-        <p>Removendo serviço...</p>
-      </div>
-    </div>
+  <div class="headingSection">
+    <h2>Lista de serviços</h2>
+    <img (click)="openDialog(null, 'create')" src="../../../assets/images/icons8-plus-30.png" class="icon"
+      alt="createIcon">
   </div>
+
+  <app-loading-spinner *ngIf="isLoading" message="A carregar serviços..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading">
+    <div class="cardsContainer" *ngIf="services.length; else noResults">
+      <app-card *ngFor="let service of services" [imageUrl]="service.imageUrl" [title]="service.service_name">
+        <div class="card-actions">
+          <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="openDialog(service, 'edit')">
+          <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete"
+            (click)="openDialog(service, 'delete')">
+        </div>
+      </app-card>
+    </div>
+    <ng-template #noResults>
+      <div class="no-results">
+        Nenhum serviço encontrado.
+      </div>
+    </ng-template>
+  </div>
+
+  <app-paginator [length]="totalLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+    (page)="handlePageEvent($event)" *ngIf="!isLoading"></app-paginator>
+</section>

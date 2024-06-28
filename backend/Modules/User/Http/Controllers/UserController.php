@@ -17,17 +17,32 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
         try {
-            $perPage = $request->input('pageSize', 10);  // Pega o pageSize da requisição ou usa 10 como padrão
+            $users = User::all();
+            return response()->json($users->load(['roles', 'sentNotifications', 'receivedNotifications']), 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getUsersPaginated(Request $request)
+    {
+        try {
+
+            $pageSize = $request->input('size');
+            $pageIndex = $request->input('page');
+
             $users = User::with(['roles', 'sentNotifications', 'receivedNotifications'])
-            ->paginate($perPage);
+                ->paginate($pageSize, ['*'], 'page', $pageIndex);
+
             return response()->json($users, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -139,12 +154,11 @@ class UserController extends Controller
     public function search(Request $request)
     {
         try {
-            $users = User::with(['roles', 'sentNotifications', 'receivedNotifications'])
-                ->where('name', 'LIKE', '%' . $request->search . '%')
+            $term = $request->input('q');
+            $users = User::where('name', 'LIKE', '%' . $term . '%')
                 ->orderBy('updated_at', 'desc')
                 ->get();
-
-            return response()->json($users->load(['roles', 'sentNotifications', 'receivedNotifications']), 200);
+            return response()->json($users->load(['roles']), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

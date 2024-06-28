@@ -1,29 +1,12 @@
 @import '../../../../styles/_variables.scss';
-/* .row {
-    display: flex;
 
-    div:last-child {
-        margin-inline: 1.5em;
-        width: 100%;
-    }
-}
-
-.container{
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-main {
-    flex: 1;
-}
- */
  :host {
     flex: 1;
     display: flex;
+    padding: 1px;
   }
 
-  
+
   .tabs {
 
     margin: 0 auto;

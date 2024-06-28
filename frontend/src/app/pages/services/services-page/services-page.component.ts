@@ -1,20 +1,48 @@
 import { Component } from '@angular/core';
-import { MenuComponent } from '../../../components/user/menu/menu.component';
 import { CommonModule } from '@angular/common';
-import { FilterComponent } from '../../../components/shared/filter/filter.component'
-import {ServicesListSectionComponent} from '../../../components/services/services-list-section/services-list-section.component'
-import { SimpleFilterSectionComponent } from '../../../components/shared/simple-filter-section/simple-filter-section.component';
+import { MenuComponent } from '../../../components/shared/menu/menu.component';
+import { ServicesListSectionComponent } from '../../../components/services/services-list-section/services-list-section.component';
+import { SearchFilterComponent } from '../../../components/shared/search-filter/search-filter.component';
+import { ServiceService } from '../../../core/services/service/service.service';
 
 @Component({
   selector: 'app-services-page',
   standalone: true,
-  imports: [    FilterComponent,
+  imports: [
+    CommonModule,
     MenuComponent,
-    ServicesListSectionComponent,
-    SimpleFilterSectionComponent],
+    SearchFilterComponent,
+    ServicesListSectionComponent
+  ],
   templateUrl: './services-page.component.html',
-  styleUrl: './services-page.component.scss'
+  styleUrls: ['./services-page.component.scss']
 })
 export class ServicesPageComponent {
+  filteredServices: any[] = [];
+  isLoadingSearch = false;
 
+  constructor(private serviceService: ServiceService) { }
+
+  onSearch(results: any[]): void {
+    this.filteredServices = results;
+    this.isLoadingSearch = false;
+  }
+
+  onSearchStarted(): void {
+    this.isLoadingSearch = true;
+  }
+
+  onReset(): void {
+    this.isLoadingSearch = true;
+    this.serviceService.getServicesPaginated(0, 10).subscribe({
+      next: (data) => {
+        this.filteredServices = data.data;
+        this.isLoadingSearch = false;
+      },
+      error: (error) => {
+        console.error('Error loading services:', error);
+        this.isLoadingSearch = false;
+      }
+    });
+  }
 }

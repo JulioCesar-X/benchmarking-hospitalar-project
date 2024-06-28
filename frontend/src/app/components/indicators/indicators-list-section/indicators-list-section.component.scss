@@ -1,139 +1,59 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
-forms-container {
+.headingSection {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f9f9f9;
+  color: $main-blue;
 
-  .headingSection {
-    margin-bottom: 20px;
-  }
-
-  table {
-    width: 100%;
-
-    th,
-    td {
-      padding: 10px;
-      text-align: left;
-    }
-  }
-
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-
-    .modal-content {
-      background-color: #fff;
-      margin: 15% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-    }
+  img {
+    width: 25px;
+    height: 25px;
+    margin-left: auto;
+    cursor: pointer;
   }
 }
-.forms-container--inputContainer{
-    @include forms-container--inputContainer();
+
+.table-container {
+  @include forms-container();
+  margin-block: 0.5em;
+  border: 10px solid $main-blue;
+  background-color: $fill-white;
+  width: 100%;
+  overflow-x: auto; // Permite rolagem horizontal se necessário
 }
 
-.inputContainer--input{
-    @include inputContainer--input();
-}
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
 
-.selectOptionContainer--option{
-    @include selectOptionContainer--option();
-}
-
-.forms-Button{
-    @include forms-Button();
-    margin-top: 0;
-}
-
-.icon{
-    @include icon();
-}
-
-.__remove-paragraphMB{
-    p{
-        margin-bottom: 0;
-    }
-}
-
-
-/* styles to overide/customize mat-paginator */
-mat-paginator {
-    background-color: $main-blue; /* Example: customizing button background color */
+  th {
+    background-color: $main-blue;
     color: $fill-white;
-    border-radius: 1em;
-
-
+    padding: 12px;
+    font-weight: bold;
   }
 
-::ng-deep .div.mat-mdc-select-panel{
-    border: 1px solid red;
-    color:red;
-    background-color: $main-blue;
+  td {
+    padding: 12px;
+    border-bottom: 1px solid $secondary-blue;
   }
 
-::ng-deep .cdk-overlay-pane:not(.mat-mdc-select-panel-above) div.mat-mdc-select-panel {
-    border: 1px solid $main-dark-blue;
-    background-color: $main-blue;
-}
-
-::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted{
-    color:$fill-white;
-}
-
-::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted.mat-mdc-option-active{
-
+  tr:hover {
     background-color: $secondary-blue;
-}
-
-::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
-    color: $main-dark-blue !important;
-}
-
-::ng-deep .mat-mdc-form-field-type-mat-select:not(.mat-form-field-disabled) .mat-mdc-text-field-wrapper {
-    cursor: default !important;
-
-}
-
-
- /* Loading circle styles */
- .loading-circle {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 0;
-    color: $main-blue;
-    margin-block: 1em;
   }
 
-  .spinner {
-    border: 8px solid $secondary-blue;
-    border-top: 8px solid $main-blue;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 2s linear infinite;
-  }
+  .edit-button,
+  .delete-button {
+    padding: 4px 8px;
+    margin-right: 10px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
 
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
+    .icon {
+      height: 20px; // Ajuste conforme necessário
+      width: auto;
     }
   }
+}

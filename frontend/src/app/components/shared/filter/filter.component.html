@@ -1,60 +1,47 @@
-
 <section class="forms-container">
-    <div class="forms-container--inputContainer">
-      <div class="special">
-        <div class="selectContainer">
-          <label for="">Serviços:</label>
-          <select [(ngModel)]="filter.serviceId" id="serviceId" name="serviceId">
-            <option *ngFor="let service of servicesList ; let i = index;" [value]="service.id">
-              {{ service.service_name }}
-            </option>
-            <option *ngIf="servicesList && servicesList.length === 0" disabled>No services available</option>
-          </select>
-        </div>
-        <div class="selectContainer">
-          <label for="">Atividade:</label>
-          <select [(ngModel)]="filter.activityId" id="activityId" name="activityId">
-            <option *ngFor="let activity of activitiesList; let i = index;" [value]="activity.id">
-              {{ activity.activity_name }}
-            </option>
-            <option *ngIf="activitiesList && activitiesList.length === 0" disabled>No activities available</option>
-          </select>
-        </div>
+  <div class="forms-container--inputContainer">
+    <div class="special">
+      <div class="selectContainer">
+        <label for="serviceId">Serviços:</label>
+        <select [(ngModel)]="selectedServiceId" (change)="onServiceSelect($event)">
+          <option *ngFor="let service of servicesList" [value]="service.id">{{ service.name }}</option>
+        </select>
       </div>
-      <div class="selectContainer" *ngIf="indicatorsInput === true">
-        <label for="">Indicadores:</label>
-        <select [(ngModel)]="filter.indicatorId" id="indicatorId" name="indicatorId">
-          <option *ngFor="let indicator of indicatorsList ; let i = index;" [value]="indicator.id">
-            {{ indicator.indicator_name }}
-          </option>
-          <option *ngIf="indicatorsList && indicatorsList.length === 0" disabled>No indicators available</option>
+      <div class="selectContainer">
+        <label for="activityId">Atividade:</label>
+        <select [(ngModel)]="selectedActivityId" (change)="onActivitySelect($event)" [disabled]="!selectedServiceId">
+          <option *ngIf="activitiesList.length === 0" [value]="0">N/A</option>
+          <option *ngFor="let activity of activitiesList" [value]="activity.id">{{ activity.name }}</option>
         </select>
       </div>
     </div>
-    <div class="forms-container--inputContainer">
-      <div>
-        <label for="month">Mês:</label>
-        <input type="number" id="month" name="month" min="1" max="12" step="1" class="inputContainer--input"
-          [(ngModel)]="filter.month">
-      </div>
-      <div>
-        <label for="year">Ano:</label>
-        <input type="number" id="year" name="year" min="1900" max="2200" step="1" class="inputContainer--input"
-          [(ngModel)]="filter.year">
-      </div>
-
-      <!-- A função get indicatores filtra e retira os indicadores - Deveria estar na pagina? -->
-<!--       <button (click)="getIndicators()" class="forms-Button"
-        [disabled]="!filter.month || !filter.year || !filter.serviceId || !filter.activityId">
-        Procurar
-    </button> -->
+    <div class="selectContainer" *ngIf="indicatorsInput">
+      <label for="indicatorId">Indicadores:</label>
+      <select [(ngModel)]="selectedIndicatorId" [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId !== 0) ">
+        <option *ngFor="let indicator of indicatorsList" [value]="indicator.id">{{ indicator.name }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="forms-container--inputContainer">
+    <div>
+      <label for="month">Mês:</label>
+      <input type="number" id="month" name="month" min="1" max="12" step="1" class="inputContainer--input"
+        [(ngModel)]="filter.month"
+        [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId !== 0) || (!selectedIndicatorId && indicatorsInput)">
+    </div>
+    <div>
+      <label for="year">Ano:</label>
+      <input type="number" id="year" name="year" min="1900" max="2200" step="1" class="inputContainer--input"
+        [(ngModel)]="filter.year"
+        [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId !== 0) || (!selectedIndicatorId && indicatorsInput)">
+    </div>
     <button (click)="sendFilter()" class="forms-Button"
-        [disabled]="!filter.month || !filter.year || !filter.serviceId || !filter.activityId">
-        Procurar
+      [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId !== 0) || (!selectedIndicatorId && indicatorsInput) || !filter.month || !filter.year">
+      Procurar
     </button>
-    </div>
-    <div *ngIf="dataInsertedCheckbox === true" class="forms-container--inputContainer">
-      <input type="checkbox">
-      <label>Mostrar indicadores com dados não inseridos</label>
-    </div>
-  </section>
+  </div>
+  <div *ngIf="dataInsertedCheckbox" class="forms-container--inputContainer">
+    <input type="checkbox" [disabled]="!selectedServiceId">
+    <label>Mostrar indicadores com dados não inseridos</label>
+  </div>
+</section>

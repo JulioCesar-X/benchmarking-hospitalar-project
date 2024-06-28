@@ -1,54 +1,53 @@
+<app-feedback [message]="notificationMessage" [type]="Type"></app-feedback>
 
+<form (ngSubmit)="formSubmited()" #indicatorForm="ngForm">
+  <div class="forms-container" [ngClass]="{ 'forms-container__error': isError }">
+    <h2 class="forms-container--title" *ngIf="formsAction === 'create'">Criar indicador</h2>
+    <h2 class="forms-container--title" *ngIf="formsAction === 'edit'">Editar indicador</h2>
 
-<app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
-<form>
-  <div class="forms-container"><!--  [class.loading]="isLoading" -->
-
-    <h2 class="forms-container--title" *ngIf="formsAction === 'create'" >Criar indicador</h2>
-    <h2 class="forms-container--title" *ngIf="formsAction === 'edit'" >Editar indicador</h2>
-    
-    <div class="forms-container--inputContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
-      <label for="name">Nome:</label>
-      <input type="text" class="inputContainer--input" [ngClass]="{ 'inputContainer--input__error': isError }"
-      [(ngModel)]="selectedIndicator.name" id="name" name="name" placeholder="Name" required>
-      <span class="errorSpanMessage"></span>
+    <div class="forms-container--inputContainer">
+      <label for="name">Nome do indicador:</label>
+      <input type="text" class="inputContainer--input" [(ngModel)]="selectedIndicator.indicator_name" id="name"
+        name="name" [ngClass]="{ 'inputContainer--input__error': isError }" required>
     </div>
 
-    <div class="selectContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
-      <label for="service">Serviço:</label>
-      <select [(ngModel)]="selectedIndicator.service_id" id="service" name="serviceId" required>
-        <option *ngFor="let service of services" [value]="service.id">{{service.service_name}}</option>
-        <option *ngIf="isLoadingServices == true" disabled selected>A carregar serviços...</option>
-        <option *ngIf="services && services.length === 0 && isLoadingServices == false" disabled>No services available</option>
-      </select>
-    </div>
-
-    <div class="selectContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
-      <label for="activity">Atividade:</label>
-      <select [(ngModel)]="selectedIndicator.activity_id" id="activity" name="activity" required>
-        <option *ngFor="let activity of activities" [value]="activity.id">{{activity.activity_name}}</option>
-        <option *ngIf="isLoadingAtividades == true" disabled selected>A carregar atividades...</option>
-        <option *ngIf="services && services.length === 0 && isLoadingAtividades == false" disabled>No services available</option>
-        <option value="none">None</option>
-      </select>
-    </div>
-
-    <div class="selectContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
+    <div class="forms-container--inputContainer">
       <label for="type">Tipo:</label>
-      <select [(ngModel)]="selectedIndicator.type" id="type" name="type" required>
+      <select class="inputContainer--input" [(ngModel)]="selectedType" id="type" name="type" required>
         <option value="produção">Produção</option>
         <option value="desempenho">Desempenho</option>
         <option value="financeiro">Financeiro</option>
       </select>
     </div>
 
-    <div class="forms-container--inputContainer"> <!-- *ngIf="!isLoading || notificationType === 'error'" -->
+    <div class="forms-container--inputContainer">
       <label for="meta">Meta:</label>
-      <input type="text" class="inputContainer--input" [(ngModel)]="goalTargetValue"
-      id="meta" name="meta" placeholder="Meta anual" required>
-      <span class="errorSpanMessage"></span>
+      <input type="number" class="inputContainer--input" [(ngModel)]="goalTargetValue" id="meta" name="meta"
+        placeholder="Meta anual" required>
     </div>
 
-    <button type="submit" class="forms-Button" (click)="formSubmited()">Atualizar</button>
+    <div class="tab-buttons">
+      <button type="button" [class.active]="activeTab === 'services'" (click)="selectTab('services')">Serviços</button>
+      <button type="button" [class.active]="activeTab === 'activities'"
+        (click)="selectTab('activities')">Atividades</button>
+    </div>
+
+    <div *ngIf="activeTab === 'services'" class="checkboxContainer">
+      <h4 class="checkboxContainer-title">Associar Serviços:</h4>
+      <app-loading-spinner *ngIf="isLoadingServices" message="A carregar serviços..."></app-loading-spinner>
+      <app-selectable-list *ngIf="!isLoadingServices" [items]="servicesList" displayProperty="service_name"
+        (selectionChange)="onServicesSelectionChange($event)"
+        [preSelectedItems]="selectedServicesIDs"></app-selectable-list>
+    </div>
+
+    <div *ngIf="activeTab === 'activities'" class="checkboxContainer">
+      <h4 class="checkboxContainer-title">Associar Atividades:</h4>
+      <app-loading-spinner *ngIf="isLoadingActivities" message="A carregar atividades..."></app-loading-spinner>
+      <app-selectable-list *ngIf="!isLoadingActivities" [items]="activitiesList" displayProperty="activity_name"
+        (selectionChange)="onActivitiesSelectionChange($event)"
+        [preSelectedItems]="selectedActivitiesIDs"></app-selectable-list>
+    </div>
+
+    <button type="submit" class="forms-Button" [disabled]="!formValid()">Confirmar</button>
   </div>
 </form>

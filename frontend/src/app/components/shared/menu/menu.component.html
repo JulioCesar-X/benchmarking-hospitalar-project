@@ -1,0 +1,57 @@
+<aside class="dashboard">
+  <h2 *ngIf="getRole() == 'admin'" class="dashboardTitle">ADMIN MENU</h2>
+  <h2 *ngIf="getRole() == 'coordenador'" class="dashboardTitle">COORDENADOR MENU</h2>
+
+  <div class="dashboardOptionsContainer">
+    <!-- menuItem -->
+    <div *ngIf="getRole() === 'admin'" class="dashboardOption" (click)="openManageUsers()" [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
+      <h2>Gerir Users</h2>
+      <div class="plusIcon" #plusIconUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen}"></div>
+    </div>
+    <!-- sub menuItem -->
+    <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
+      <div class="subMenuItem">
+        <a routerLink="/users/create" routerLinkActive="Ativo">Criar novo Utilizador</a>
+      </div>
+      <div class="subMenuItem">
+        <a routerLink="/users" routerLinkActive="Ativo">Consultar Utilizadores</a>
+      </div>
+    </div>
+    
+    <div class="dashboardOption" (click)="openManageContent()" [ngClass]="{'is-open': isManageContentSubMenuOpen}">
+      <h2>Gerir Conteúdo</h2>
+      <div class="plusIcon" [ngClass]="{'is-open': isManageContentSubMenuOpen}"></div>
+    </div>
+    <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageContentSubMenuOpen}">
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
+        <a routerLink="/services" routerLinkActive="Ativo">Gerir serviços</a>
+      </div>
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
+        <a routerLink="/activities" routerLinkActive="Ativo">Gerir atividades</a>
+      </div>
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
+        <a routerLink="/indicators" routerLinkActive="Ativo">Gerir indicadores</a>
+      </div>
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
+        <a routerLink="/RecordGoalsUpdate" routerLinkActive="Ativo">Gerir dados</a>
+      </div>
+
+      <div class="subMenuItem">
+        <a routerLink="/charts" routerLinkActive="Ativo">View Dashboards</a>
+      </div>
+    </div>
+    <div class="dashboardOption" (click)="openManageNotifications()"
+      [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
+      <h2>Gerir Notificações</h2>
+      <div class="plusIcon" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}"></div>
+    </div>
+    <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
+      <div class="subMenuItem">
+        <a href="">Histórico</a>
+      </div>
+      <div class="subMenuItem">
+        <a href="">Gerir</a>
+      </div>
+    </div>
+  </div>
+</aside>

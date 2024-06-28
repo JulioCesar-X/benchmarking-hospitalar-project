@@ -1,0 +1,75 @@
+@import '../../../../styles/_variables.scss';
+@import '../../../../styles/_mixins.scss';
+
+:host {
+  flex: 1;
+  display: flex;
+  padding: 1px;
+}
+
+.descriptionBox {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  padding-inline: 4em;
+  padding-block: 2em;
+  background-color: $darker-main-blue;
+  color: $fill-white;
+  border: none;
+  width: 74%;
+  height: 74%;
+  margin: 0 auto;
+  margin-block: 12em;
+  border-radius: 1em;
+  margin-top: 50px;
+  position: relative;
+}
+
+h2 {
+  text-align: center;
+  font-size: 2em;
+  line-height: 1.5em;
+}
+
+p {
+
+  font-size: 1.5em;
+  line-height: 1.5em;
+}
+
+.close-button {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  background-color: $main-red;
+  color: $fill-white;
+
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 1.5em;
+  font-weight: bolder;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: -4%;
+  margin-top: -4%;
+}
+
+.close-button:hover {
+  background-color: $darker-main-red;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}

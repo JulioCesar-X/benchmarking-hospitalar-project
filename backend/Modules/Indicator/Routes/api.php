@@ -18,13 +18,18 @@ use Modules\Indicator\Http\Controllers\IndicatorController;
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('indicators/search', 'IndicatorController@search')->name('indicators.search');
-    Route::get('indicators/accumulated', 'IndicatorController@getAccumulatedIndicators')->name('indicators.accumulated');
+
+    Route::get('indicators/sai/charts', 'IndicatorController@getAllInDataGraphs');
+    Route::get('indicators/sai/paginated', 'IndicatorController@getSAIPaginated')->name('indicators.sai.paginated');
+
+    Route::get('/indicators/sai/records', 'IndicatorController@getIndicatorsRecords');
+    Route::get('/indicators/sai/goals', 'IndicatorController@getIndicatorsGoals');
     Route::get('indicators', 'IndicatorController@index')->name('indicators');
     Route::get('indicators/{id}', 'IndicatorController@show')->name('indicators.show');
-    Route::get('indicatorsAll', 'IndicatorController@getAllIndicators'); // JMS New Route
 
 
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {
+        Route::get('indicators/paginated', 'IndicatorController@getIndicatorsPaginated')->name('admin.indicators.paginated');
         Route::apiResource('indicators', 'IndicatorController')->names('admin.indicators');
     });
 

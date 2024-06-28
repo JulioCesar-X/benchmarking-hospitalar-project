@@ -1,0 +1,55 @@
+<app-feedback [message]="notificationMessage" [type]="Type"></app-feedback>
+
+<form (ngSubmit)="formSubmited()" #serviceForm="ngForm">
+  <div class="forms-container" [ngClass]="{ 'forms-container__error': isError }">
+    <h2 class="forms-container--title" *ngIf="formsAction === 'create'">Criar serviço</h2>
+    <h2 class="forms-container--title" *ngIf="formsAction === 'edit'">Editar serviço</h2>
+
+    <div class="forms-container--inputContainer">
+      <label for="name">Nome do serviço:</label>
+      <input type="text" class="inputContainer--input" [(ngModel)]="selectedService.service_name" id="name" name="name"
+        [ngClass]="{ 'inputContainer--input__error': isError }" required>
+    </div>
+
+    <div class="forms-container--inputContainer">
+      <label for="description">Descrição:</label>
+      <textarea class="inputContainer--input" [(ngModel)]="selectedService.description" id="description"
+        name="description" [ngClass]="{ 'inputContainer--input__error': isError }" required></textarea>
+    </div>
+
+    <div class="forms-container--inputContainer">
+      <label class="custom-file-upload" for="image">carregar imagem:</label>
+      <input  type="file" class="inputContainer--input" (change)="onFileSelected($event)" id="image" name="image"
+        accept="image/*">
+      <div *ngIf="selectedService.imageUrl" class="image-preview">
+        <img [src]="selectedService.imageUrl" alt="Image Preview" class="image-preview-img">
+        <p id="file-chosen">Imagem carregada com sucesso</p>
+      </div>
+    </div>
+
+    <div class="tab-buttons">
+      <button type="button" [class.active]="activeTab === 'activities'"
+        (click)="selectTab('activities')">Atividades</button>
+      <button type="button" [class.active]="activeTab === 'indicators'"
+        (click)="selectTab('indicators')">Indicadores</button>
+    </div>
+
+    <div *ngIf="activeTab === 'activities'" class="checkboxContainer">
+      <h4 class="checkboxContainer-title">Associar Atividades:</h4>
+      <app-loading-spinner *ngIf="isLoadingActivities" message="A carregar atividades..."></app-loading-spinner>
+      <app-selectable-list *ngIf="!isLoadingActivities" [items]="activitiesList" displayProperty="activity_name"
+        (selectionChange)="onActivitiesSelectionChange($event)"
+        [preSelectedItems]="selectedActivityIDs"></app-selectable-list>
+    </div>
+
+    <div *ngIf="activeTab === 'indicators'" class="checkboxContainer">
+      <h4 class="checkboxContainer-title">Associar Indicadores:</h4>
+      <app-loading-spinner *ngIf="isLoadingIndicators" message="A carregar indicadores..."></app-loading-spinner>
+      <app-selectable-list *ngIf="!isLoadingIndicators" [items]="indicatorsList" displayProperty="indicator_name"
+        (selectionChange)="onIndicatorsSelectionChange($event)"
+        [preSelectedItems]="selectedIndicatorIDs"></app-selectable-list>
+    </div>
+
+    <button type="submit" class="forms-Button" [disabled]="!formValid()">Confirmar</button>
+  </div>
+</form>

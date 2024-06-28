@@ -7,10 +7,10 @@ import { LoginFormComponent } from '../../../components/auth/login-form/login-fo
   selector: 'app-login-page',
   standalone: true,
   imports: [
-    
+
     LoginFormComponent,
     FormsModule,
-    
+
   ],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss'

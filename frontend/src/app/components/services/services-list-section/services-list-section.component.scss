@@ -1,152 +1,29 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
-.headingSection{
-    display: flex;
-    color: $main-blue;
-
-    img{
-      cursor: pointer;
-        width: 25px;
-        height: 25px;
-        margin-left: auto;
-    }
-}
-
-.forms-container{
-    @include forms-container();
-
-    margin-block: 0.5em;
-    border: 10px solid $main-blue;
-    background-color: $fill-white;
-    width: 100%;
-}
-
-.cardsContainer {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .card {
-
-    background-color: transparent;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    width: 200px;
-    text-align: center;
-  }
-  .card:hover{
-    border: 2px solid $main-blue;
-  }
-
-  .card-image {
-    cursor: pointer;
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-  }
-
-  .card-content {
-
-    padding: 15px;
-  }
-
-  .card-title {
-    cursor: pointer;
-    color: $main-blue;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-
-  .card-actions {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .card-actions .icon {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-  }
-
-
-  //styles for the paginators
-  mat-paginator {
-    background-color: $main-blue; /* Example: customizing button background color */
-    color: $fill-white;
-    border-radius: 1em;
-
-
-  }
-
-::ng-deep .div.mat-mdc-select-panel{
-    border: 1px solid red;
-    color:red;
-    background-color: $main-blue;
-  }
-
-::ng-deep .cdk-overlay-pane:not(.mat-mdc-select-panel-above) div.mat-mdc-select-panel {
-    border: 1px solid $main-dark-blue;
-    background-color: $main-blue;
-}
-
-::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted{
-    color:$fill-white;
-}
-
-::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted.mat-mdc-option-active{
-
-    background-color: $secondary-blue;
-}
-
-::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
-    color: $main-dark-blue !important;
-}
-
-::ng-deep .mat-mdc-form-field-type-mat-select:not(.mat-form-field-disabled) .mat-mdc-text-field-wrapper {
-    cursor: default !important;
-
-}
-
-/* Loading circle styles */
-.loading-circle {
+.headingSection {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
   color: $main-blue;
-  margin-block: 1em;
+
+  img {
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    margin-left: auto;
+  }
 }
 
-.spinner {
-  border: 8px solid $secondary-blue;
-  border-top: 8px solid $main-blue;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.forms-container {
+  @include forms-container();
+  margin-block: 0.5em;
+  border: 10px solid $main-blue;
+  background-color: $fill-white;
+  width: 100%;
 }
 
 .forms-Button {
   @include forms-Button();
 }
-
-//modal styles
 
 .modal-container {
   @include forms-container();
@@ -167,28 +44,20 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.modalHeader{
+.modalHeader {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   color: $fill-white;
 
-  h2{
-      margin-bottom: 0;
+  h2 {
+    margin-bottom: 0;
   }
 }
 
 .modal.show {
   display: block;
-}
-
-.modal-content {
-  background-color: #fff;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
 }
 
 .close {
@@ -203,4 +72,62 @@
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+.cardsContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.card {
+  background-color: transparent;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 200px;
+  text-align: center;
+
+  &:hover {
+    border: 2px solid $main-blue;
+  }
+}
+
+.card-image {
+  cursor: pointer;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 15px;
+}
+
+.card-title {
+  cursor: pointer;
+  color: $main-blue;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.card-actions .icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+    margin: 0 auto; // Centers the card on smaller screens
+  }
 }

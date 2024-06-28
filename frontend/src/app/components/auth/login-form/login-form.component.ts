@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { NgForm, FormsModule, NgModel } from '@angular/forms';
-import { AuthService } from '../../../auth.service';
+import { AuthService } from '../../../core/services/auth/auth.service';
 import { EventEmitter, Output } from '@angular/core';
 import { PasswordRecupModalComponent } from '../../../components/auth/password-recup-modal/password-recup-modal.component'
 

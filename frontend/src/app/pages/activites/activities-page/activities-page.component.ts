@@ -1,21 +1,43 @@
 import { Component } from '@angular/core';
-import { MenuComponent } from '../../../components/user/menu/menu.component';
 import { CommonModule } from '@angular/common';
-import { FilterComponent } from '../../../components/shared/filter/filter.component'
-import {ActivitiesListSectionComponent} from '../../../components/activities/activities-list-section/activities-list-section.component'
-import { SimpleFilterSectionComponent } from '../../../components/shared/simple-filter-section/simple-filter-section.component';
-
+import { MenuComponent } from '../../../components/shared/menu/menu.component';
+import { ActivitiesListSectionComponent } from '../../../components/activities/activities-list-section/activities-list-section.component';
+import { SearchFilterComponent } from '../../../components/shared/search-filter/search-filter.component';
+import { ActivityService } from '../../../core/services/activity/activity.service';
 
 @Component({
   selector: 'app-activities-page',
   standalone: true,
-  imports: [    CommonModule, MenuComponent,
-    FilterComponent,
-    ActivitiesListSectionComponent,
-    SimpleFilterSectionComponent],
+  imports: [CommonModule, MenuComponent, SearchFilterComponent, ActivitiesListSectionComponent],
   templateUrl: './activities-page.component.html',
-  styleUrl: './activities-page.component.scss'
+  styleUrls: ['./activities-page.component.scss']
 })
 export class ActivitiesPageComponent {
+  filteredActivities: any[] = [];
+  isLoadingSearch = false;
 
+  constructor(private activityService: ActivityService) { }
+
+  onSearch(results: any[]): void {
+    this.filteredActivities = results;
+    this.isLoadingSearch = false;
+  }
+
+  onSearchStarted(): void {
+    this.isLoadingSearch = true;
+  }
+
+  onReset(): void {
+    this.isLoadingSearch = true;
+    this.activityService.getActivitiesPaginated(0, 10).subscribe({
+      next: (data) => {
+        this.filteredActivities = data.data;
+        this.isLoadingSearch = false;
+      },
+      error: (error) => {
+        console.error('Error loading activities:', error);
+        this.isLoadingSearch = false;
+      }
+    });
+  }
 }

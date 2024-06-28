@@ -17,10 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('activities/search', 'ActivityController@search')->name('activities.search');
-    Route::get('activities', 'ActivityController@index')->name('activities.index');
-    Route::get('activities/{id}', 'ActivityController@show')->name('activities.show');
 
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {
+        Route::get('activities/paginated', 'ActivityController@getActivitiesPaginated')->name('admin.activities.paginated');
         Route::apiResource('activities', 'ActivityController')->names('admin.activities');
     });
 

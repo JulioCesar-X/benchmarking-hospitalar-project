@@ -26,7 +26,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { LoginPageComponent } from './login-page.component';
 import { LoginFormComponent } from '../../../components/auth/login-form/login-form.component';
 import { NavbarComponent } from '../../../components/ui/navbar/navbar.component';
-import { FooterComponent } from '../../../components/ui/footer/footer.component';
+import { FooterComponent } from '../../../components/shared/footer/footer.component';
 
 describe('LoginPageComponent', () => {
   let component: LoginPageComponent;

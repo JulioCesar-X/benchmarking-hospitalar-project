@@ -1,0 +1,8 @@
+<div class="descriptionBox mx-2 w-full">
+  <button class="close-button" (click)="goToHomepage()">X</button>
+  <app-loading-spinner *ngIf="isLoading" [message]="'Carregando...'"></app-loading-spinner>
+  <div *ngIf="!isLoading">
+    <h2>{{ service?.service_name }}</h2>
+    <p>{{ service?.description }}</p>
+  </div>
+</div>

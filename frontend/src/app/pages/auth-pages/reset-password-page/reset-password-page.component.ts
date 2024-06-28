@@ -11,5 +11,5 @@ import { ResetPasswordFormComponent } from '../../../components/auth/reset-passw
   styleUrl: './reset-password-page.component.scss'
 })
 export class ResetPasswordPageComponent {
-  
+
 }

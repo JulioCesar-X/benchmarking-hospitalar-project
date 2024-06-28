@@ -1,21 +1,6 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
-.title {
-  color: $fill-white;
-  margin: 0;
-}
-
-.forms-container {
-  @include forms-container();
-  width: 70%;
-
-}
-
-.forms-container--title {
-    color: $fill-white;
-    margin: 0;
-  }
 
 .forms-container--inputContainer {
   @include forms-container--inputContainer();
@@ -25,13 +10,25 @@
   @include inputContainer--input();
 }
 
-.errorSpanMessage {
-  @include errorSpanMessage();
+.selectOptionContainer--option {
+  @include selectOptionContainer--option();
 }
 
 .forms-Button {
   @include forms-Button();
+  margin-top: 0;
 }
+
+.icon {
+  @include icon();
+}
+
+.__remove-paragraphMB {
+  p {
+    margin-bottom: 0;
+  }
+}
+
 
 .selectContainer {
   color: $fill-white;
@@ -50,39 +47,134 @@
   }
 }
 
-.justify--end {
-  align-self: flex-end;
+
+
+.forms-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1em;
+  width: 80%;
+  margin: 0 auto;
+  margin-block: 2em;
+  padding: 2em;
+  box-sizing: border-box;
+  border: $secondary-blue 7px solid;
+  border-radius: 1em;
+  background-color: $main-blue;
+
+  &.forms-container__error {
+    border: $error-color 7px solid;
+  }
 }
 
-/* Adicione o estilo para o spinner e container de loading */
-.loading-circle {
+.forms-container--title {
+  color: $fill-white;
+  margin: 0;
+}
+
+.forms-container--inputContainer {
+  @include forms-container--inputContainer();
+}
+
+.inputContainer--input {
+  @include inputContainer--input();
+}
+
+.tab-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1em;
+
+  button {
+    background-color: $main-blue;
+    color: $fill-white;
+    border: none;
+    padding: 0.5em 1em;
+    cursor: pointer;
+
+    &.active {
+      background-color: $secondary-blue;
+    }
+  }
+}
+
+.selectContainer,
+.checkboxContainer {
+  color: $fill-white;
+}
+
+.selectContainer label,
+.checkboxContainer-title {
+  margin-right: 0.2em;
+  margin-bottom: 0.5em;
+}
+
+select {
+  color: $main-blue;
+  border-radius: 0.5em;
+  padding-block: 0.2em;
+  padding-inline: 0.5em;
+  border: none;
+  outline: $main-blue;
+}
+
+/* checkbox section */
+.checkboxContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: $main-blue;
+  min-height: 50px;
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: $main-blue $fill-white;
+  box-sizing: border-box;
+  padding-inline: 1em;
+  background-color: $fill-white;
+  border-radius: 1em;
+}
+
+.checkboxContainer-title {
+  margin-block: 0.5em;
+  color: $main-blue;
+}
+
+/* Custom checkboxes */
+.styled-checkbox {
+  width: 15px;
+  height: 15px;
+  appearance: none;
+  background-color: transparent;
+  border: 2px solid $main-blue;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+}
+
+.styled-checkbox:checked {
+  background-color: $main-blue;
+}
+
+.styled-checkbox:checked::after {
+  content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
+  top: 3px;
+  left: 5px;
+  width: 3px;
+  height: 7px;
+  border: solid $fill-white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
-.spinner {
-  border: 8px solid #f3f3f3; /* Cor de fundo */
-  border-top: 8px solid #3498db; /* Cor do spinner */
-  border-radius: 50%;
-  width: 60px; /* Tamanho do spinner */
-  height: 60px; /* Tamanho do spinner */
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Adicione a classe de estilo para ocultar o formulário enquanto estiver carregando */
-.loading {
-  opacity: 0.5; /* Opacidade reduzida para indicar que está carregando */
-  pointer-events: none; /* Desabilita interação com o formulário enquanto está carregando */
+.checkboxContainer--option {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1em;
+  color: $main-blue;
+  border-bottom: solid 1px $main-blue;
+  margin-block: 1em;
 }

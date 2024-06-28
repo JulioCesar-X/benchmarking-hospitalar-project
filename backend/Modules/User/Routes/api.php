@@ -16,10 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {
-        Route::apiResource('users',
-            'UserController'
-        )->names('admin.users');
+        Route::get('users/paginated', 'UserController@getUsersPaginated')->name('admin.users.paginated');
         Route::get('search', 'UserController@search')->name('admin.users.search');
+        Route::apiResource('users','UserController')->names('admin.users');
     });
 
     Route::prefix('coordenador')->middleware('role:coordinator-action')->group(function () {

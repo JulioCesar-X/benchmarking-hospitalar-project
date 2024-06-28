@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CreateFieldModalComponent } from '../../indicators/create-field-modal/create-field-modal.component';
-import { UserService } from '../../../services/user.service';
-import { NotificationComponent } from '../../shared/notification/notification.component';
+import { CreateFieldModalComponent } from '../../shared/create-field-modal/create-field-modal.component';
+import { UserService } from '../../../core/services/user/user.service';
+import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 
 @Component({
     selector: 'app-create-user-form',
@@ -12,12 +12,12 @@ import { NotificationComponent } from '../../shared/notification/notification.co
         CommonModule,
         FormsModule,
         CreateFieldModalComponent,
-        NotificationComponent
+        FeedbackComponent
     ],
     templateUrl: './create-user-form.component.html',
     styleUrls: ['./create-user-form.component.scss']
 })
-export class CreateUserFormComponent{
+export class CreateUserFormComponent {
     isModalVisible = false;
     name: string = '';
     email: string = '';
@@ -28,7 +28,7 @@ export class CreateUserFormComponent{
 
     isLoading = false; // Adicionando a variável para controlar o estado de carregamento
 
-    constructor(private userService: UserService) {}
+    constructor(private userService: UserService) { }
 
     openModal(event: Event) {
         event.preventDefault();
@@ -55,7 +55,7 @@ export class CreateUserFormComponent{
             role_id: this.role_id,
         };
 
-        this.userService.createUser(userData).subscribe(
+        this.userService.storeUser(userData).subscribe(
             (response: any) => {
                 this.setNotification('User created successfully', 'success');
                 this.clearForm();

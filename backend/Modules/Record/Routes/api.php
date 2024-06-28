@@ -15,10 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('records/variation-rates', 'RecordController@getVariationRates')->name('records.variation-rates');
-    Route::get('records', 'RecordController@index')->name('records.index');
-    Route::get('records/{id}', 'RecordController@show')->name('records.show');
-
+    
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {
         Route::apiResource('records', 'RecordController')->names('admin.records');
     });

@@ -1,190 +1,229 @@
-import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { RouterLink, Router } from '@angular/router';
-import {ServiceService} from '../../../services/service.service'
-import {ActivityService} from '../../../services/activity.service'
-import {IndicatorService} from '../../../services/indicator.service'
-import { NotificationComponent } from '../../shared/notification/notification.component';
+import { Router } from '@angular/router';
+import { ServiceService } from '../../../core/services/service/service.service';
+import { ActivityService } from '../../../core/services/activity/activity.service';
+import { IndicatorService } from '../../../core/services/indicator/indicator.service';
+import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
+import { SelectableListComponent } from '../../shared/selectable-list/selectable-list.component';
+import { Activity } from '../../../core/models/activity.model';
 
 @Component({
   selector: 'app-activities-upsert-form',
   standalone: true,
-  imports: [CommonModule,
-    MatPaginatorModule,
+  imports: [
+    CommonModule,
     FormsModule,
-    NotificationComponent],
+    FeedbackComponent,
+    LoadingSpinnerComponent,
+    SelectableListComponent
+  ],
   templateUrl: './activities-upsert-form.component.html',
-  styleUrl: './activities-upsert-form.component.scss'
+  styleUrls: ['./activities-upsert-form.component.scss']
 })
-export class ActivitiesUpsertFormComponent implements OnInit {
+export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
+  @Input() formsAction: string = '';
+  @Input() selectedActivity: Activity = { id: -1, activity_name: '' };
 
-    @Input({required: true})formsAction: string = "";
+  notificationMessage: string = '';
+  Type: 'success' | 'error' = 'success';
 
-    notificationMessage: string = '';
-    notificationType: 'success' | 'error' = 'success';
+  isLoadingServices: boolean = true;
+  isLoadingIndicadores: boolean = true;
+  isLoading: boolean = false;
+  isError: boolean = false;
 
-    selectedActivity:any = "";
+  servicesList: any = [];
+  indicatorsList: any = [];
+  selectedIndicatorsIDs: any[] = [];
+  selectedServicesIDs: any[] = [];
 
-    isLoadingServices: boolean = true;
-    isLoadingIndicadores: boolean = true; 
-    isError: boolean = false;
+  activeTab: 'services' | 'indicators' = 'services';
 
-    servicesList: any = [];
-    indicatorsList: any = [];
-    selectedIndicatorsIDs: any = [];
+  constructor(
+    private router: Router,
+    private serviceService: ServiceService,
+    private activityService: ActivityService,
+    private indicatorService: IndicatorService,
+    private cdRef: ChangeDetectorRef
+  ) { }
 
-  constructor(private router: Router,
-    private serviceService:ServiceService,
-    private activityService:ActivityService,
-    private indicatorService:IndicatorService) { }
+  ngOnInit(): void {
+    this.loadInitialData();
+  }
 
-    ngOnInit(): void {
-      this.getServices();
-      this.getIndicators();
-
-      if(this.formsAction === "edit"){
-        this.activityService.activityData$.subscribe(data => {
-          this.selectedActivity = data;
-        });
-      }
-
-
-      console.log(this.selectedActivity)
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedActivity'] && this.formsAction === 'edit' && this.selectedActivity.id !== -1) {
+      this.loadActivity(this.selectedActivity.id);
     }
-    
-  getServices(){
-    this.isLoadingServices = true;
+  }
 
-    this.serviceService.getServices().subscribe({
-      next: (data) => {
-        if (data && Array.isArray(data)) { 
-          this.servicesList = data.map(service => ({
-            id: service.id,
-            service_name: service.service_name
-          }));
-        } else {
-          console.warn('Data is not an array:', data);
-        }
+  async loadInitialData() {
+    this.isLoading = true;
+    try {
+      await Promise.all([this.getServices(), this.getIndicators()]);
+      this.isLoading = false;
+      this.cdRef.detectChanges();
+    } catch (error) {
+      console.error('Error loading initial data', error);
+      this.isLoading = false;
+    }
+  }
+
+  loadActivity(activityId: number): void {
+    this.isLoading = true;
+    this.activityService.showActivity(activityId).subscribe({
+      next: (data: Activity) => {
+        this.selectedActivity = data;
+        this.selectedServicesIDs = data.service_activity_indicators?.map(sai => sai.service.id) || [];
+        this.selectedIndicatorsIDs = data.service_activity_indicators?.map(sai => sai.indicator.id) || [];
+        this.cdRef.detectChanges();
       },
-      error: (error) => {      
-        console.error('Erro ao obter services', error);
+      error: (error) => {
+        console.error('Error loading activity', error);
+        this.isLoading = false;
       },
-      complete:() => {
-        this.isLoadingServices = false;
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
 
-  getIndicators(){
-    this.isLoadingIndicadores = true;
-
-    this.indicatorService.getIndicators().subscribe({
-      next: (data) => {
-        if (data && Array.isArray(data)) { 
-          this.indicatorsList = data.map(indicator => ({
-            id: indicator.id,
-            indicator_name: indicator.indicator_name
-          }));
-        } else {
-          console.warn('Data is not an array:', data);
+  getServices(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.serviceService.indexServices().subscribe({
+        next: (data) => {
+          if (data && Array.isArray(data)) {
+            this.servicesList = data.map(service => ({
+              id: service.id,
+              service_name: service.service_name
+            }));
+          } else {
+            console.warn('Data is not an array:', data);
+          }
+          resolve();
+        },
+        error: (error) => {
+          console.error('Erro ao obter services', error);
+          reject(error);
+        },
+        complete: () => {
+          this.isLoadingServices = false;
+          this.cdRef.detectChanges();
         }
-      },
-      error: (error) => {      
-        console.error('Erro ao obter Indicadores', error);
-      },
-      complete:() => {
-   
-        this.isLoadingIndicadores = false;
-      }
+      });
     });
   }
 
+  getIndicators(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.indicatorService.indexIndicators().subscribe({
+        next: (data) => {
+          if (data && Array.isArray(data)) {
+            this.indicatorsList = data.map(indicator => ({
+              id: indicator.id,
+              indicator_name: indicator.indicator_name
+            }));
+          } else {
+            console.warn('Data is not an array:', data);
+          }
+          resolve();
+        },
+        error: (error) => {
+          console.error('Erro ao obter Indicadores', error);
+          reject(error);
+        },
+        complete: () => {
+          this.isLoadingIndicadores = false;
+          this.cdRef.detectChanges();
+        }
+      });
+    });
+  }
 
-  formSubmited(){
+  onServicesSelectionChange(selectedServices: any[]) {
+    this.selectedServicesIDs = selectedServices.map(service => service.id);
+  }
 
-    if(this.formsAction === "create"){
+  onIndicatorsSelectionChange(selectedIndicators: any[]) {
+    this.selectedIndicatorsIDs = selectedIndicators.map(indicator => indicator.id);
+  }
+
+  formSubmited() {
+    if (!this.formValid()) {
+      this.setNotification('Por favor, associe pelo menos um serviço e um indicador.', 'error');
+      return;
+    }
+
+    if (this.formsAction === 'create') {
       this.createActivity();
-    } 
-    else if ( this.formsAction === "edit"){
+    } else if (this.formsAction === 'edit') {
       this.editActivity();
     }
-    else {
-      //navigate to a not found page
-    }
   }
 
+  editActivity() {
+    const updatedActivity: Activity = {
+      id: this.selectedActivity.id,
+      activity_name: this.selectedActivity.activity_name,
+      service_ids: this.selectedServicesIDs,
+      indicator_ids: this.selectedIndicatorsIDs
+    };
 
-
-  editActivity(){
-
-    console.log("EDITED", this.selectedActivity)
-
-    const updatedActivity = {
-      activity_name: this.selectedActivity.name,
-    }
-
-    this.activityService.updateActivity(this.selectedActivity.id, updatedActivity).subscribe(
+    this.activityService.updateActivity(this.selectedActivity.id!, updatedActivity).subscribe(
       (response: any) => {
-          this.setNotification('Atividade criada com sucesso', 'success');
+        this.setNotification('Atividade atualizada com sucesso', 'success');
+        setTimeout(() => this.router.navigate(['/activities']), 2000); // Redirect after success message
       },
       (error: any) => {
-          const errorMessage = this.getErrorMessage(error);
-          this.setNotification(errorMessage, 'error');
+        const errorMessage = this.getErrorMessage(error);
+        this.setNotification(errorMessage, 'error');
       }
-  ); 
+    );
   }
 
+  createActivity() {
+    const createdActivity: Activity = {
+      id: -1,
+      activity_name: this.selectedActivity.activity_name,
+      service_ids: this.selectedServicesIDs,
+      indicator_ids: this.selectedIndicatorsIDs
+    };
 
-
-  createActivity(){
-
-    const createdActivity = {
-      activity_name: this.selectedActivity,
-    }
-
-    this.activityService.createActivity(createdActivity).subscribe(
+    this.activityService.storeActivity(createdActivity).subscribe(
       (response: any) => {
-          this.setNotification('Atividade criada com sucesso', 'success');
+        this.setNotification('Atividade criada com sucesso', 'success');
+        setTimeout(() => this.router.navigate(['/activities']), 2000); // Redirect after success message
       },
       (error: any) => {
-          const errorMessage = this.getErrorMessage(error);
-          this.setNotification(errorMessage, 'error');
+        const errorMessage = this.getErrorMessage(error);
+        this.setNotification(errorMessage, 'error');
       }
-  );
-  }
-
-
-  trackByIndex(index: number, item: any): number {
-    return item.id;
+    );
   }
 
   setNotification(message: string, type: 'success' | 'error') {
     this.notificationMessage = message;
-    this.notificationType = type;
-}
+    this.Type = type;
+  }
 
-getErrorMessage(error: any): string {
+  getErrorMessage(error: any): string {
     if (error.status === 409) {
-        return 'User already exists';
+      return 'Atividade já existe';
     }
     if (error.status === 400) {
-        return 'Invalid email';
+      return 'Entrada inválida';
     }
-    return 'An error occurred. Please try again later.';
-}
-
-  //Estes metodos gerem os Ids das atividades na lista de acordo com checkboxs selecionadas!
-  toggleSelection(activityId: number) {
-    const index = this.selectedIndicatorsIDs.indexOf(activityId);
-    if (index > -1) {
-      this.selectedIndicatorsIDs.splice(index, 1);
-    } else {
-      this.selectedIndicatorsIDs.push(activityId);
-    }
+    return 'Ocorreu um erro. Por favor, tente novamente mais tarde.';
   }
-  isSelected(activityId: number): boolean {
-    return this.selectedIndicatorsIDs.includes(activityId);
+
+  formValid(): boolean {
+    return this.selectedServicesIDs.length > 0 && this.selectedIndicatorsIDs.length > 0;
+  }
+
+  selectTab(tab: 'services' | 'indicators') {
+    this.activeTab = tab;
   }
 }

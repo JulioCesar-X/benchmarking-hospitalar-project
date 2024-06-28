@@ -5,6 +5,8 @@ namespace Modules\Activity\Http\Controllers;
 use Illuminate\Http\Request;
 use Modules\Activity\Entities\Activity;
 use App\Http\Controllers\Controller;
+use Modules\ServiceActivityIndicator\Entities\ServiceActivityIndicator;
+use Illuminate\Support\Facades\DB;
 use Exception;
 
 class ActivityController extends Controller
@@ -17,12 +19,40 @@ class ActivityController extends Controller
     public function index()
     {
         try {
-            $activities = Activity::all();
+            // Carregando todas as atividades e pré-carregando os relacionamentos de SAI com serviços e indicadores
+            $activities = Activity::with(['serviceActivityIndicators.service', 'serviceActivityIndicators.indicator'])->get();
+
+            // Verifica se há atividades para evitar enviar uma resposta vazia
+            if ($activities->isEmpty()) {
+                return response()->json(['message' => 'No activities found'], 404);
+            }
+
+            return response()->json(['data' => $activities], 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Display a listing of the resource paginated.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getActivitiesPaginated(Request $request)
+    {
+        try {
+            $pageSize = $request->input('size');
+            $pageIndex = $request->input('page');
+            $activities = Activity::query()
+                ->orderBy('created_at', 'desc')
+                ->paginate($pageSize, ['*'], 'page', $pageIndex);
+
             return response()->json($activities, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -32,11 +62,25 @@ class ActivityController extends Controller
      */
     public function store(Request $request)
     {
+        DB::beginTransaction();
         try {
-            
-            $activity = Activity::create($request->all());
+            $activity = Activity::create(['activity_name' => $request->activity_name]);
+
+            foreach ($request->service_ids as $serviceId) {
+                foreach ($request->indicator_ids as $indicatorId) {
+                    ServiceActivityIndicator::create([
+                        'service_id' => $serviceId,
+                        'activity_id' => $activity->id,
+                        'indicator_id' => $indicatorId,
+                        'type' => 'default'
+                    ]);
+                }
+            }
+
+            DB::commit();
             return response()->json($activity->load('serviceActivityIndicators'), 201);
         } catch (Exception $exception) {
+            DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
@@ -51,7 +95,7 @@ class ActivityController extends Controller
     {
         try {
             $activity = Activity::findOrFail($id);
-            return response()->json($activity->load('serviceActivityIndicators.indicator'), 200);
+            return response()->json($activity->load('serviceActivityIndicators.indicator', 'serviceActivityIndicators.service'), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -63,12 +107,28 @@ class ActivityController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,Activity $activity)
+    public function update(Request $request, Activity $activity)
     {
+        DB::beginTransaction();
         try {
-            $activity->update($request->all());
-            return response()->json($activity, 200);
+            $activity->update(['activity_name' => $request->activity_name]);
+
+            // Create new SAIs
+            foreach ($request->service_ids as $serviceId) {
+                foreach ($request->indicator_ids as $indicatorId) {
+                    ServiceActivityIndicator::create([
+                        'service_id' => $serviceId,
+                        'activity_id' => $activity->id,
+                        'indicator_id' => $indicatorId,
+                        'type' => 'default'
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json($activity->load('serviceActivityIndicators'), 200);
         } catch (Exception $exception) {
+            DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
@@ -98,7 +158,8 @@ class ActivityController extends Controller
     public function search(Request $request)
     {
         try {
-            $activities = Activity::where('activity_name', 'LIKE', '%' . $request->search . '%')
+            $query = $request->query('q');
+            $activities = Activity::where('activity_name', 'LIKE', '%' . $query . '%')
                 ->orderBy('updated_at', 'desc')
                 ->get();
             return response()->json($activities, 200);

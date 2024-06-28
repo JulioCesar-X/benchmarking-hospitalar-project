@@ -1,5 +1,5 @@
 <app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal>
-<app-notification [message]="notificationMessage" [type]="notificationType"></app-notification>
+<app-feedback [message]="notificationMessage" [type]="notificationType"></app-feedback>
 
 <form (ngSubmit)="createUser()">
   <div class="forms-container"> <!-- [class.loading]="isLoading" -->

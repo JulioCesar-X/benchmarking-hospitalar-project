@@ -1,9 +1,9 @@
-
 <div>
-    <app-menu></app-menu>
-  </div>
-  <div class="mx-2 w-full">
-    <app-user-filter-section></app-user-filter-section>
-    <app-activities-list-section></app-activities-list-section>
-  </div>
-
+  <app-menu></app-menu>
+</div>
+<div class="mx-2 w-full">
+  <app-search-filter (search)="onSearch($event)" (searchStarted)="onSearchStarted()" (reset)="onReset()"
+    type="activities"></app-search-filter>
+  <app-activities-list-section [activities]="filteredActivities"
+    [isLoading]="isLoadingSearch"></app-activities-list-section>
+</div>

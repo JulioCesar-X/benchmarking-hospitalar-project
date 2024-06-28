@@ -1,91 +1,125 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { IndicatorService } from '../../../services/indicator.service';
-import { Indicator } from '../../../models/indicator.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
-
+import { PageEvent } from '@angular/material/paginator';
+import { IndicatorService } from '../../../core/services/indicator/indicator.service';
+import { CommonModule } from '@angular/common';
+import { MatDialogModule } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
+import { PaginatorComponent } from '../../shared/paginator/paginator.component';
+import { Indicator } from '../../../core/models/indicator.model';
+import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
 
 @Component({
   selector: 'app-indicators-list-section',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatPaginatorModule],
   templateUrl: './indicators-list-section.component.html',
-  styleUrls: ['./indicators-list-section.component.scss']
+  styleUrls: ['./indicators-list-section.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    FormsModule,
+    LoadingSpinnerComponent,
+    PaginatorComponent,
+    DialogContentComponent
+  ]
 })
-export class IndicatorsListSectionComponent implements OnInit {
-  isLoadingIndicators: boolean = true;
-  pageSize: number = 10;
-  currentPage: number = 0;
-  totalIndicators: number = 0; // Adicionando total de indicadores
-  indicators: Indicator[] = [];
+export class IndicatorsListSectionComponent implements OnInit, OnChanges {
+  @Input() indicators: Indicator[] = [];
+  @Input() isLoading = true;
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 20, 50, 100];
+  currentPage = 0;
+  totalLength = 0;
 
   constructor(
-    private router: Router,
     private indicatorService: IndicatorService,
-    private cdr: ChangeDetectorRef,
-    private snackBar: MatSnackBar
+    private dialog: MatDialog,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.loadPageIndicators();
+    if (!this.indicators.length) {
+      this.loadIndicators();
+    } else {
+      this.isLoading = false;
+    }
   }
 
-  loadPageIndicators(): void {
-    this.isLoadingIndicators = true;
-    this.indicatorService.getIndicatorsByPage(this.currentPage + 1, this.pageSize).subscribe({
-      next: (response: { data: Indicator[], total: number }) => {
-        console.log('Indicators loaded:', response);
-        this.indicators = response.data;
-        this.totalIndicators = response.total;
-        this.isLoadingIndicators = false;
-        this.cdr.detectChanges();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['indicators'] && !changes['indicators'].isFirstChange()) {
+      this.isLoading = false;
+      this.totalLength = this.indicators.length;
+    }
+    if (changes['isLoading'] && !changes['isLoading'].isFirstChange()) {
+      this.isLoading = changes['isLoading'].currentValue;
+    }
+  }
+
+  loadIndicators(pageIndex = 0, pageSize = 10): void {
+    this.isLoading = true;
+    this.indicatorService.getIndicatorsPaginated(pageIndex, pageSize).subscribe({
+      next: (data) => {
+        console.log("Indicators Data Received:", data);
+        this.indicators = data.data;
+        this.totalLength = data.total;
+        this.currentPage = pageIndex; // Adjust the current page index
+        this.isLoading = false;
+        console.log("Total length:", this.totalLength);
+        console.log("Indicators list:", this.indicators);
+        console.log("Current page:", this.currentPage);
       },
       error: (error) => {
-        console.error('There was an error!', error);
-        this.isLoadingIndicators = false;
-        this.cdr.detectChanges();
+        console.error("Error loading paginated indicators:", error);
+        this.isLoading = false;
+      },
+      complete: () => {
+        console.log("Indicator loading complete.");
       }
     });
   }
 
-  onPageChange(event: PageEvent): void {
-    this.currentPage = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
-    this.loadPageIndicators();
-  }
-
-
-  navigateToCreateIndicator(): void {
-    this.router.navigate(['indicators/create']);
-  }
-
-  navigateToEditIndicator(indicator: Indicator): void {
-    this.router.navigate([`indicators/update/${indicator.id}`]);
-  }
-
-  removeIndicator(indicator: Indicator): void {
-    if (indicator.id !== undefined) {
-      this.indicatorService.removeIndicator(indicator.id).subscribe({
-        next: () => {
-          this.snackBar.open('Indicador removido com sucesso!', 'Fechar', { duration: 3000 });
-          this.loadPageIndicators(); // Recarrega a lista de indicadores
-        },
-        error: (error) => {
-          this.snackBar.open('Erro ao remover o indicador.', 'Fechar', { duration: 3000 });
-          console.error('Error removing indicator:', error);
+  openDialog(indicator: Indicator | null, action: string): void {
+    if (action === 'delete' && indicator) {
+      const dialogRef = this.dialog.open(DialogContentComponent, {
+        data: {
+          message: `Tem a certeza que quer remover o indicador ${indicator.indicator_name}?`,
+          loadingMessage: 'Removendo indicador...'
         }
       });
-    } else {
-      this.snackBar.open('Falha ao tentar remover indicador sem ID.', 'Fechar', { duration: 3000 });
-      console.error('Attempted to remove an indicator without an ID');
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.deleteIndicator(indicator.id? indicator.id : 0);
+        }
+      });
+    } else if (action === 'edit' && indicator) {
+      this.router.navigate([`/indicators/update/${indicator.id}`]);
+    } else if (action === 'create') {
+      this.router.navigate(['/indicators/create']);
     }
   }
 
-  trackByIndex(index: number, item: any): number {
-    return item.id;
+  deleteIndicator(indicatorId: number): void {
+    this.indicatorService.destroyIndicator(indicatorId).subscribe({
+      next: (data) => {
+        console.log("Indicator deleted:", data);
+        this.loadIndicators(this.currentPage, this.pageSize);
+      },
+      error: (error) => {
+        console.error("Error deleting indicator:", error);
+      },
+      complete: () => {
+        console.log("Indicator deletion complete.");
+      }
+    });
+  }
+
+  handlePageEvent(event: PageEvent): void {
+    console.log("Page Event Triggered:", event);
+    this.pageSize = event.pageSize;
+    this.currentPage = event.pageIndex;
+    this.loadIndicators(this.currentPage, this.pageSize);
   }
 }

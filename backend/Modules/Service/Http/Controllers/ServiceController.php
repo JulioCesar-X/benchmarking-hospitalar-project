@@ -5,6 +5,7 @@ namespace Modules\Service\Http\Controllers;
 use Illuminate\Http\Request;
 use Modules\Service\Entities\Service;
 use App\Http\Controllers\Controller;
+use Modules\ServiceActivityIndicator\Entities\ServiceActivityIndicator;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -19,7 +20,55 @@ class ServiceController extends Controller
     public function index()
     {
         try {
-            $services = Service::all();
+            // Carregar todos os serviços com os relacionamentos ServiceActivityIndicators
+            $services = Service::with(['serviceActivityIndicators.activity', 'serviceActivityIndicators.indicator'])
+            ->get()
+                ->map(function ($service) {
+                    // Transformar os dados para incluir atividades e indicadores associados
+                    $activities = $service->serviceActivityIndicators->map(function ($sai) {
+                        if (isset($sai->activity) && !is_null($sai->activity)) {
+                            return [
+                                'id' => $sai->activity->id,
+                                'name' => $sai->activity->activity_name
+                            ];
+                        }
+                        return null;
+                    })->filter()->unique('id')->values();
+
+                    $indicators = $service->serviceActivityIndicators->map(function ($sai) {
+                        if (isset($sai->indicator) && !is_null($sai->indicator)) {
+                            return [
+                                'id' => $sai->indicator->id,
+                                'name' => $sai->indicator->indicator_name
+                            ];
+                        }
+                        return null;
+                    })->filter()->unique('id')->values();
+
+                    return [
+                        'id' => $service->id,
+                        'name' => $service->service_name,
+                        'imageUrl' => $service->imageUrl,
+                        'activities' => $activities,
+                        'indicators' => $indicators
+                    ];
+                });
+
+            return response()->json(['data' => $services], 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getServicesPaginated(Request $request){
+        try {
+            $pageSize = $request->input('size');
+            $pageIndex = $request->input('page');
+
+            $services = Service::query()
+                ->orderBy('created_at', 'desc')
+                ->paginate($pageSize, ['*'], 'page', $pageIndex);
+
             return response()->json($services, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -36,31 +85,31 @@ class ServiceController extends Controller
     {
         DB::beginTransaction();
         try {
-            $service = new Service();
-            $service->service_name = $request->service_name;
-            $service->description = $request->description;
-            $service->imageUrl = $request->imageUrl;
-            $service->save();
+            $service = Service::create([
+                'service_name' => $request->service_name,
+                'description' => $request->description,
+                'imageUrl' => $request->imageUrl
+            ]);
 
-            // Associar atividades e indicadores ao serviço
-            if ($request->has('activities') && $request->has('indicators')) {
-                foreach ($request->activities as $activityId) {
-                    foreach ($request->indicators as $indicatorId) {
-                        $service->serviceActivityIndicators()->create([
-                            'activity_id' => $activityId,
-                            'indicator_id' => $indicatorId
-                        ]);
-                    }
+            foreach ($request->activity_ids as $activityId) {
+                foreach ($request->indicator_ids as $indicatorId) {
+                    ServiceActivityIndicator::create([
+                        'activity_id' => $activityId,
+                        'service_id' => $service->id,
+                        'indicator_id' => $indicatorId,
+                        'type' => 'default'
+                    ]);
                 }
             }
 
             DB::commit();
-            return response()->json($service->load(['serviceActivityIndicators', 'serviceActivityIndicators.indicator']), 201);
-        } catch (\Exception $exception) {
+            return response()->json($service->load('serviceActivityIndicators'), 201);
+        } catch (Exception $exception) {
             DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -85,28 +134,31 @@ class ServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update($serviceId, Request $request)
+    public function update(Request $request, Service $service)
     {
         DB::beginTransaction();
         try {
-            $service = Service::findOrFail($serviceId);
-            $service->update($request->only(['service_name', 'description', 'imageUrl']));
+            $service->update([
+                'service_name' => $request->service_name,
+                'description' => $request->description,
+                'imageUrl' => $request->imageUrl
+            ]);
 
-            // Atualiza atividades associadas
-            $service->serviceActivityIndicators()->whereNotIn('activity_id', $request->activities ?? [])->delete();
-            foreach ($request->activities ?? [] as $activityId) {
-                $service->serviceActivityIndicators()->updateOrCreate(['activity_id' => $activityId]);
-            }
-
-            // Atualiza indicadores associados
-            $service->serviceActivityIndicators()->whereNotIn('indicator_id', $request->indicators ?? [])->delete();
-            foreach ($request->indicators ?? [] as $indicatorId) {
-                $service->serviceActivityIndicators()->updateOrCreate(['indicator_id' => $indicatorId]);
+            // Create new SAIs
+            foreach ($request->activity_ids as $activityId) {
+                foreach ($request->indicator_ids as $indicatorId) {
+                    ServiceActivityIndicator::create([
+                        'activity_id' => $activityId,
+                        'service_id' => $service->id,
+                        'indicator_id' => $indicatorId,
+                        'type' => 'default'
+                    ]);
+                }
             }
 
             DB::commit();
-            return response()->json($service, 200);
-        } catch (\Exception $exception) {
+            return response()->json($service->load('serviceActivityIndicators'), 200);
+        } catch (Exception $exception) {
             DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -121,7 +173,6 @@ class ServiceController extends Controller
     public function destroy($id)
     {
         try {
-            //Quando deletar um serviço perco todos os registros para aquele serviço?
             $service = Service::findOrFail($id);
             $service->delete();
             return response()->json(['message' => 'Deleted'], 205);
@@ -130,7 +181,7 @@ class ServiceController extends Controller
         }
     }
     /**
-     * Search for activities based on a keyword.
+     * Search for service based on a keyword.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -138,12 +189,13 @@ class ServiceController extends Controller
     public function search(Request $request)
     {
         try {
-
-            return response()->json(Service::all()->orderBy('updated_at', 'desc')->where('name', 'LIKE', '%' . $request->search . '%')->get(), 200); //search = name do form
-
+            $query = $request->query('q');
+            $service = Service::where('service_name', 'LIKE', '%' . $query . '%')
+                ->orderBy('updated_at', 'desc')
+                ->get();
+            return response()->json($service, 200);
         } catch (Exception $exception) {
-
-            return response()->json(['error' => $exception], 500);
+            return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 }

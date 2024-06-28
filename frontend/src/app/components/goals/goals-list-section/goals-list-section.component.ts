@@ -1,11 +1,13 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { Indicator } from '../../../models/indicator.model';
-import { Filter } from '../../../models/Filter.model';
-import { GoalService } from '../../../services/goal.service';
-import { IndicatorService } from '../../../services/indicator.service';
+import { Filter } from '../../../core/models/filter.model';
+import { GoalService } from '../../../core/services/goal/goal.service';
+import { IndicatorService } from '../../../core/services/indicator/indicator.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { PaginatorComponent } from '../../shared/paginator/paginator.component';
+import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-goals-list-section',
@@ -13,116 +15,88 @@ import { IndicatorService } from '../../../services/indicator.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    PaginatorComponent,
+    LoadingSpinnerComponent
   ],
   templateUrl: './goals-list-section.component.html',
   styleUrls: ['./goals-list-section.component.scss']
 })
 export class GoalsListSectionComponent implements OnInit, OnChanges {
   @Input() filter: Filter | undefined;
-  @Input() indicators: Indicator[] = [];
+  @Input() indicators: any[] = []; // Add this line to define the 'indicators' input
   @Input() isLoading: boolean = false;
-  indicatorForms: { [key: number]: FormGroup } = {};
 
-  isLoadingGoals: boolean = true;
-  totalGoals: number = 0;
-  pageSize: number = 10;
-  currentPage: number = 0;
+  isLoadingGoals = true;
+  totalGoals = 0;
+  pageSize = 10;
+  currentPage = 0;
   goals: any[] = [];
-
-  notificationMessage: string = '';
+  notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
     private goalService: GoalService,
     private indicatorService: IndicatorService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    this.GetGoals();
-    console.log(this.goals);
+    this.loadGoals();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
-      console.log('Filter changed:', this.filter);
-      this.GetGoals();
+      this.loadGoals();
     }
   }
 
-  GetGoals(): void {
-    if (this.filter && this.filter.year && this.filter.month && this.filter.serviceId && this.filter.activityId) {
+  loadGoals(): void {
+    if (this.filter?.year && this.filter?.month && this.filter?.serviceId && this.filter?.activityId) {
       this.isLoadingGoals = true;
-      const serviceID = parseInt(this.filter.serviceId);
-      const activityId = parseInt(this.filter.activityId);
+      const serviceId = Number(this.filter.serviceId);
+      const activityId = Number(this.filter.activityId);
+      const year = this.filter.year;
 
-      this.indicatorService.getAllSaiGoals(serviceID, activityId, this.filter.year).subscribe({
-        next: (data) => {
-          if (data && Array.isArray(data)) {
-            console.log(data);
-            this.goals = data.map(item => {
-              if (item.goal && item.goal !== undefined) {
-                return {
-                  id: item.goal.goal_id,
-                  indicatorName: item.indicator_name,
-                  target_value: item.goal.target_value,
-                  year: item.goal.year,
-                  isInserted: item.goal.target_value !== '0',
-                  isUpdating: false
-                };
-              } else {
-                return null;
-              }
-            }).filter(item => item !== null);
-
-            console.log(this.goals);
-          } else {
-            console.warn('Data is not an array:', data);
-            this.isLoadingGoals = false;
-          }
-        },
-        error: (error) => {
-          console.error('Error fetching goals', error);
-          this.isLoadingGoals = false;
-        },
-        complete: () => {
-          this.isLoadingGoals = false;
-        }
-      });
+      this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, this.currentPage, this.pageSize)
+        .pipe(
+          catchError(error => {
+            console.error('Error fetching goals', error);
+            return of([]);
+          }),
+          finalize(() => this.isLoadingGoals = false)
+        )
+        .subscribe(data => {
+          this.goals = data.filter((item: any) => item.goal).map((item: any) => ({
+            id: item.goal.goal_id,
+            indicator_name: item.indicator_name,
+            target_value: item.goal.target_value,
+            year: item.goal.year,
+            isInserted: item.goal.target_value !== '0',
+            isUpdating: false
+          }));
+        });
     }
   }
 
-  UpdateGoal(goalUpdate: any): void {
-    if (goalUpdate.isInserted) {
-      goalUpdate.isInserted = false;
+  editGoal(goal: any): void {
+    if (goal.isInserted) {
+      goal.isInserted = false;
     } else {
-      goalUpdate.isUpdating = true;
-      goalUpdate.isInserted = true;
-
-      this.goalService.editGoal(goalUpdate.id, goalUpdate).subscribe(
-        (response: any) => {
-          goalUpdate.isUpdating = false;
-          this.setNotification('Meta atualizada com sucesso', 'success');
-          alert('updated');
-          console.log("goalUpdate", goalUpdate);
-          console.log("response", response);
-        },
-        (error: any) => {
-          goalUpdate.isUpdating = false;
-          const errorMessage = this.getErrorMessage(error);
-          this.setNotification(errorMessage, 'error');
-        }
-      );
+      goal.isUpdating = true;
+      this.goalService.updateGoal(goal.id, goal)
+        .pipe(finalize(() => goal.isUpdating = false))
+        .subscribe(
+          () => this.setNotification('Meta atualizada com sucesso', 'success'),
+          error => this.setNotification(this.getErrorMessage(error), 'error')
+        );
     }
-    console.log(goalUpdate);
   }
 
   onValueChange(goal: any): void {
     const index = this.goals.findIndex(r => r.id === goal.id);
-    this.goals[index].value = goal.value;
-    console.log(this.goals[index].value);
+    if (index !== -1) {
+      this.goals[index].target_value = goal.target_value;
+    }
   }
 
   setNotification(message: string, type: 'success' | 'error'): void {
@@ -131,28 +105,23 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
   }
 
   getErrorMessage(error: any): string {
-    if (error.status === 409) {
-      return 'User already exists';
-    }
-    if (error.status === 400) {
-      return 'Invalid email';
-    }
-    return 'An error occurred. Please try again later.';
-  }
-
-  toggleEdit(indicator: Indicator): void {
-    indicator.isInserted = !indicator.isInserted;
-    const formControl = this.indicatorForms[indicator.sai_id!].get('indicatorValue');
-    if (formControl) {
-      if (indicator.isInserted) {
-        formControl.disable();
-      } else {
-        formControl.enable();
-      }
+    switch (error.status) {
+      case 409:
+        return 'User already exists';
+      case 400:
+        return 'Invalid email';
+      default:
+        return 'An error occurred. Please try again later.';
     }
   }
+  
+  handlePageEvent(event: any): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadGoals();
+  }
 
-  trackByIndex(index: number, item: Indicator): number {
-    return item.sai_id!;
+  trackByIndex(index: number, item: any): number {
+    return item.id;
   }
 }

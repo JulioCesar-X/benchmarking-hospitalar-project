@@ -15,12 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('goals/monthly', 'GoalController@getMonthlyGoals')->name('goals.monthly');
-    Route::get('goals', 'GoalController@index')->name('goals.index');
-    Route::get('goals/{id}',
-        'GoalController@show'
-    )->name('goals.show');
-
+    
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {
         Route::apiResource('goals', 'GoalController')->names('admin.goals');
     });

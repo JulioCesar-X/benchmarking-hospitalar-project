@@ -1,134 +1,118 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
+import { PageEvent } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { RouterLink, Router } from '@angular/router';
-import { ServiceService } from '../../../services/service.service';
-import { Service } from '../../../models/service.model';
-import {ActivityService} from '../../../services/activity.service'
+import { CommonModule } from '@angular/common';
+import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { SelectableListComponent } from '../../shared/selectable-list/selectable-list.component';
+import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
+import { PaginatorComponent } from '../../shared/paginator/paginator.component';
+import { CardComponent } from '../../shared/card/card.component';
+import { Service } from '../../../core/models/service.model';
+import { ServiceService } from '../../../core/services/service/service.service';
+
 
 @Component({
   selector: 'app-services-list-section',
+  templateUrl: './services-list-section.component.html',
+  styleUrls: ['./services-list-section.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    MatPaginatorModule,
+    MatDialogModule,
     FormsModule,
-  ],
-  templateUrl: './services-list-section.component.html',
-  styleUrl: './services-list-section.component.scss'
+    LoadingSpinnerComponent,
+    PaginatorComponent,
+    SelectableListComponent,
+    DialogContentComponent,
+    CardComponent
+  ]
 })
-export class ServicesListSectionComponent {
-  services: Service[] = [];
-  isLoading: boolean = false;
-  isDeleting: boolean = false;  // Separate loading state for deletion
-  totalActivities: number = 0;
-  pageSize: number = 10;
-  currentPage: number = 0;
-  notificationMessage: string = '';
-  notificationType: 'success' | 'error' = 'success';
+export class ServicesListSectionComponent implements OnInit, OnChanges {
+  @Input() services: Service[] = [];
+  @Input() isLoading = true;
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 20, 50, 100];
+  currentPage = 0;
+  totalLength = 0;
 
-  isError: boolean = false;
-  isModalOpen: boolean = false;
-  selectedService: number = -1;
-
-  constructor(private serviceService: ServiceService, private router: Router, private cdr:ChangeDetectorRef){}
+  constructor(
+    private serviceService: ServiceService,
+    private dialog: MatDialog,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    this.loadServices();
+    if (!this.services.length) {
+      this.loadServices();
+    } else {
+      this.isLoading = false;
+    }
   }
 
-  ngOnDestroy(): void {
-    this.isLoading = false; // Para a animação quando o componente é destruído
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['services'] && !changes['services'].isFirstChange()) {
+      this.isLoading = false;
+      this.totalLength = this.services.length;
+    }
+    if (changes['isLoading'] && !changes['isLoading'].isFirstChange()) {
+      this.isLoading = changes['isLoading'].currentValue;
+    }
   }
 
-
-
-  loadServices(): void {
-    this.isLoading = true; // Carregamento em andamento
-    this.serviceService.getServices().subscribe({
-      next: (data: Service[]) => {
-        this.services = this.groupServices(data);
-      },
-      error: (err) => {
-        console.error('Error loading services:', err);
-      },
-      complete: () => {
-        this.isLoading = false; // Indica que o carregamento foi concluído
-      }
-    });
-  }
-
-  trackByIndex(index: number, item: any): number {
-    return item.id;
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.currentPage = event.pageIndex;
-    this.pageSize = event.pageSize;
-   /*  this.loadIndicators();  */ // Carrega os usuários com a página e tamanho de página atualizados
-  }
-  setNotification(message: string, type: 'success' | 'error') {
-    this.notificationMessage = message;
-    this.notificationType = type;
-}
-
-  getErrorMessage(error: any): string {
-      if (error.status === 409) {
-          return 'User already exists';
-      }
-      if (error.status === 400) {
-          return 'Invalid email';
-      }
-      return 'An error occurred. Please try again later.';
-  }
-
-  groupServices(services: Service[]): Service[] {
-    const grouped = new Map<string, Service>();
-
-    services.forEach(service => {
-      const key = service.service_name.startsWith('Internamento') ? 'Internamento' : service.service_name;
-      if (!grouped.has(key)) {
-        grouped.set(key, service);
-      }
-    });
-
-    return Array.from(grouped.values());
-  }
-
-  navigateToEditService(service: Service): void {
-    this.router.navigate(['/services/update', service.id]);
-  }
-  navigateToCreateServices() {
-    this.router.navigate(['services/create']);
-  }
-
-  openModal(service:number){
-    this.selectedService = service;
-    console.log("name??:" ,this.selectedService)
-    this.isModalOpen = true;
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-    this.cdr.detectChanges();  // Opcional, se você quiser forçar a UI a atualizar após fechar
-  }
-
-  formSubmited(): void {
-    this.isDeleting = true;
-    this.serviceService.removeService(this.selectedService).subscribe({
-      next: () => {
-        this.setNotification('Serviço removido com sucesso!', 'success');
-        this.isDeleting = false;
-        this.closeModal();
-        this.loadServices();
+  loadServices(pageIndex = 1, pageSize = 10): void {
+    this.isLoading = true;
+    this.serviceService.getServicesPaginated(pageIndex, pageSize).subscribe({
+      next: (data) => {
+        this.services = data.data;
+        this.totalLength = data.total;
+        this.currentPage = pageIndex;
+        this.isLoading = false;
       },
       error: (error) => {
-        console.error("Error removing service", error);
-        this.setNotification('Erro ao processar a requisição.', 'error');
-        this.isDeleting = false;
+        console.error('Error loading paginated services:', error);
+        this.isLoading = false;
       }
     });
   }
 
+  openDialog(service: Service | null, action: string): void {
+    if (action === 'delete' && service) {
+      const dialogRef = this.dialog.open(DialogContentComponent, {
+        data: {
+          message: `Tem a certeza que quer remover o serviço ${service.service_name}?`,
+          loadingMessage: 'Removendo serviço...'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.deleteService(service.id);
+        }
+      });
+    } else if (action === 'edit' && service) {
+      this.router.navigate([`/services/update/${service.id}`]);
+    } else if (action === 'create') {
+      this.router.navigate(['/services/create']);
+    }
+  }
+
+  deleteService(serviceId: number): void {
+    this.serviceService.destroyService(serviceId).subscribe({
+      next: (data) => {
+        this.loadServices(this.currentPage, this.pageSize);
+      },
+      error: (error) => {
+        console.error("Error deleting service:", error);
+      }
+    });
+  }
+
+  handlePageEvent(event: PageEvent): void {
+    this.pageSize = event.pageSize;
+    this.currentPage = event.pageIndex;
+    this.loadServices(this.currentPage, this.pageSize);
+  }
 }

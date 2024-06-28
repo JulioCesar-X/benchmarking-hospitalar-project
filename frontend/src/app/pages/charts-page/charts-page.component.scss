@@ -1,0 +1,75 @@
+@import '../../../styles/_variables.scss';
+
+
+:host {
+  flex: 1;
+  display: flex;
+}
+
+.graphicsContainer {
+  background-color: $main-blue;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+
+  box-sizing: border-box;
+  border-radius: 1em;
+  margin-block: 0;
+  border: none;
+  max-width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+._whiteBG {
+  background-color: $fill-white;
+}
+
+._blueTxt {
+  margin: 0;
+  color: $main-blue;
+}
+
+//tabs styles UPDATED VERSION
+.tab-headers {
+  display: flex;
+  width: 30%;
+  margin-left: 8em;
+  margin-top: 1em;
+  overflow: hidden;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
+}
+
+@media(max-width:600px) {
+  .tab-headers {
+    width: 50%;
+    margin-left: 4em;
+  }
+}
+
+.tab-link {
+  color: $fill-white;
+  width: 100%;
+  background-color: $secondary-blue;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 1em;
+  transition: 0.3s;
+
+}
+
+.tab-link:hover,
+.tab-link.active:hover {
+  background-color: $darker-main-blue;
+}
+
+.tab-link.active {
+  background-color: $main-blue;
+}
+
+.m-2 {
+  margin: none;
+}

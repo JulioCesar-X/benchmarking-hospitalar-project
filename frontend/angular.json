@@ -31,12 +31,13 @@
             ],
             "styles": [
               "src/styles.scss",
-              "@angular/material/prebuilt-themes/pink-bluegrey.css",
+              "@angular/material/prebuilt-themes/pink-bluegrey.css"
 
             ],
             "scripts": [
-              "node_modules/animejs/lib/anime.min.js"
-            ]
+              "node_modules/animejs/lib/anime.min.js",
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/paginationjs/dist/pagination.min.js"          ]
           },
           "configurations": {
             "production": {

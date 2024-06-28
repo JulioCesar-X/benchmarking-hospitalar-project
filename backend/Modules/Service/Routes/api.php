@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::get('services/paginated', 'ServiceController@getServicesPaginated');
+Route::get('services/search', 'ServiceController@search')->name('services.search');
 Route::get('services', 'ServiceController@index')->name('services.index');
 Route::get('services/{id}', 'ServiceController@show')->name('services.show');
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin')->middleware('role:admin-action')->group(function () {
         Route::apiResource('services', 'ServiceController')->names('admin.services');
     });
-
 });
