@@ -3,17 +3,17 @@
   [type]="notificationType"
 ></app-notification>
 
-<section class="">
+<section class="w-full p-0 rounded-xl gap-4 mx-auto my-2 forms-container">
   <!-- forms-container -->
   <div *ngIf="isLoading" class="loading-circle">
     <div class="spinner"></div>
     <p>A carregar users...</p>
   </div>
 
-  <div *ngIf="!isLoading">
-    <table class="w-[90%] my-2 mx-auto user-table">
-      <thead class="bg-gray-100">
-        <tr>
+  <div *ngIf="!isLoading" >
+    <table class="w-[90%] mx-auto user-table rounded-xl">
+      <thead class="bg-gray-100 sticky top-[-2px] z-120">
+        <tr class="">
           <th class="p-2">Nome</th>
           <th class="p-2 sm:px-4 hidden md:table-cell">Email</th>
           <th class="p-2">Role</th>
@@ -51,27 +51,27 @@
         </tr>
       </tbody>
     </table>
-    <mat-paginator
-    #paginator
-    class="demo-paginator"
-    (page)="handlePageEvent($event)"
-    [length]="length"
-    [pageSize]="pageSize"
-    [disabled]="disabled"
-    [showFirstLastButtons]="showFirstLastButtons"
-    [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
-    [hidePageSize]="hidePageSize"
-    [pageIndex]="pageIndex"
-    aria-label="Select page">
-    >
-    </mat-paginator>
   </div>
 </section>
+<mat-paginator
+#paginator
+class="demo-paginator"
+(page)="handlePageEvent($event)"
+[length]="length"
+[pageSize]="pageSize"
+[disabled]="disabled"
+[showFirstLastButtons]="showFirstLastButtons"
+[pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
+[hidePageSize]="hidePageSize"
+[pageIndex]="pageIndex"
+aria-label="Select page">
+>
+</mat-paginator>
 
 <!-- MODAL -->
 <div class="modal" [ngClass]="{ show: isModalOpen }" (click)="closeModal()">
   <div
-    class="forms-container"
+    class="modal-container"
     (click)="$event.stopPropagation()"
     [ngClass]="{ 'forms-container__error': isError }"
   >

@@ -1,6 +1,27 @@
 @import "../../../../styles/_variables.scss";
 @import "../../../../styles/_mixins.scss";
 
+
+.forms-container{
+  box-sizing: border-box;
+  background-color: $fill-white;
+  border: $main-blue 10px solid;
+  max-height: 60vh;
+  overflow-y: scroll;
+
+  &.forms-container__error {
+    border: $error-color 10px solid;
+  }
+  @media (max-width: 600px) {
+    overflow-y: visible;
+    border: none;
+    margin-block: 2em;
+    width: 90%;
+    height: auto;
+  }
+}
+
+
 .forms-Button {
   /*   @include forms-Button(); */
   background-color: transparent;
@@ -18,10 +39,12 @@
 
 .user-table {
   border-collapse: collapse;
+  min-width: 100%;
 
   @media (max-width: 600px) {
     max-width: 100%;
   }
+
 
   th,
   td {
@@ -104,7 +127,7 @@
 }
 
 //modal styles
-.forms-container {
+.modal-container {
   @include forms-container();
 
   align-items: start;

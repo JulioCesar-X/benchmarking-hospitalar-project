@@ -2,7 +2,7 @@
 <div>
   <app-menu></app-menu>
 </div>
-<div class="sm:mx-0 md:mx-1 lg:mx-2 w-full">
+<div class="sm:mx-0 md:mx-1 lg:mx-2 w-full max-h-full">
   <app-user-filter-section (searchEvent)="handleSearch($event)"></app-user-filter-section>
-  <app-users-list-section [filter]="searchFilter"></app-users-list-section>
+  <app-users-list-section [filter]="searchFilter" class="h-full"></app-users-list-section>
 </div>

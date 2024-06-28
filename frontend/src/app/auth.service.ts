@@ -50,27 +50,55 @@ export class AuthService {
       );
   }
 
-  logout(): void {
-    const token = this.getToken();
-    if (!token) {
-      console.error('No token found');
-      this.router.navigate(['/login']);
-      return;
-    }
-    this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
-      .subscribe(
-        () => {
-          this.cookieService.delete('access_token', '/');
-          this.cookieService.delete('role', '/');
-          console.log('Logout successful');
-          this.router.navigate(['/login']);
-        },
-        error => {
-          console.error('Logout failed', error);
-          this.router.navigate(['/login']);
-        }
-      );
+  // logout(): void {
+  //   const token = this.getToken();
+  //   if (!token) {
+  //     console.error('No token found');
+  //     this.router.navigate(['/login']);
+  //     return;
+  //   }
+  //   this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
+  //     .subscribe(
+  //       () => {
+  //         this.cookieService.delete('access_token', '/');
+  //         this.cookieService.delete('role', '/');
+  //         console.log('Logout successful');
+  //         this.router.navigate(['/login']);
+  //       },
+  //       error => {
+  //         console.error('Logout failed', error);
+  //         this.router.navigate(['/login']);
+  //       }
+  //     );
+  // }
+
+  logout(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const token = this.getToken();
+      if (!token) {
+        console.error('No token found');
+        this.router.navigate(['/login']);
+        reject('No token found');
+        return;
+      }
+  
+      this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
+        .subscribe(
+          () => {
+            this.cookieService.delete('access_token', '/');
+            this.cookieService.delete('role', '/');
+            console.log('Logout successful');
+            this.router.navigate(['/login']);
+            resolve(true);
+          },
+          error => {
+            console.error('Logout failed', error);
+            reject(error);
+          }
+        );
+    });
   }
+
 
   getRole(): string {
     return this.cookieService.get('role').toLowerCase() || 'guest';

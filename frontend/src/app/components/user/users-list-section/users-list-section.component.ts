@@ -48,14 +48,14 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
   loadUsers(): void {
     this.isLoading = true;
 
-    this.userService.getAllUsers(this.pageIndex, this.pageSize).subscribe({
+    this.userService.getAllUsers(this.pageIndex + 1, this.pageSize).subscribe({
       next: (response) => {
         if (response && response.data) {
           this.allUsers = response.data;
-          this.filterUsers();
-          this.totalUsers = response.total;
+          //this.filterUsers();
+          this.length = response.total;
           
-          console.log(this.allUsers, this.totalUsers)
+          console.log(this.allUsers, this.length)
         } else {
           this.setNotification('Nenhum usuário foi carregado ou a resposta está mal formatada', 'error');
           console.warn('Nenhum usuário foi carregado ou a resposta está mal formatada', response);
@@ -90,6 +90,8 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
     }
   }
 
+  
+
 
   //JMS
   length = 50;
@@ -111,7 +113,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
     this.pageIndex = e.pageIndex;
 
 
-    console.log(this.pageIndex, this.pageSize)
+    console.log(this.pageIndex + 1, this.pageSize)
     this.loadUsers();
   }
 

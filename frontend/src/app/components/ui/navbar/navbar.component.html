@@ -1,6 +1,6 @@
 <div class="placeholder"></div> <!-- this element is used to ocupy some space in the DOM at the top for the Navbar -->
 
-<div class="w-full fixed top-0 z-[1000] whiteBG">
+<div class="w-full fixed top-0 z-[1000] whiteBG whiteBorder">
   <header class="flex justify-between relative mb-auto max-w-full max-h-99">
     <div class="flex items-center gap-2 logoSection">
       <div class="">
@@ -61,14 +61,16 @@
             class="relative"
             (mouseleave)="isDropdownOpen = false"
           >
-            <button
+            <button 
               class="flex items-center gap-x-1"
               mat-button
               [matMenuTriggerFor]="menu"
-              (click)="toggleDropdown()"
-            >
-              <mat-icon>account_circle</mat-icon>
-              <span class="text-xl mr-0 sm:mr-10">{{ getUserName() }}</span>
+              (click)="toggleDropdown()">
+              <mat-icon class="icon-login">account_circle</mat-icon>
+              <div class="flex flex-col items-start ">
+                <span class="text-xl mr-0 sm:mr-10 ">{{ getUserName() }},</span>
+                <span class="text-xl mr-0 sm:mr-10">{{ getRole() }}</span>
+              </div>
             </button>
           </div>
 
@@ -148,4 +150,24 @@
       </div>
     </div>
   </div>
+
+
 </div>
+
+
+<div class="modal" [ngClass]="{ show: isLoginOut }" >
+  <div class=" w-1/2 rounded-xl m-auto mt-20 forms-container">
+    <div class="loading-circle_forBlueBG">
+      <div class="spinner_forBlueBG"></div>
+      <p>A fazer logout...</p>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+

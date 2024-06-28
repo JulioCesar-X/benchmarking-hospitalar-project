@@ -7,6 +7,9 @@
 .whiteBG {
   background-color: $fill-white;
 }
+.whiteBorder{
+  border-bottom: 5px solid $fill-white;
+}
 .whiteTxt {
   color: $fill-white; 
 }
@@ -86,7 +89,6 @@
   border-radius: 1em;
 }
 
-
 /* Estilos para customizar componente de angular material */
 ::ng-deep {
   .menu-custom {
@@ -135,3 +137,91 @@
     transform: rotate(-90deg) translateX(3px); }
   .hamburger.is-open::before {
     opacity: 0; }
+
+
+    .icon-login{
+      transform: scale(2);
+      margin-right: 0.7em;
+    }
+
+    // Load
+.random-demo {
+  display: flex;
+/*   flex-direction: column; */
+  gap:0.5em;
+
+  width: 30%;
+  margin: 0 auto;
+}
+@media (max-width: 600px) {
+  .random-demo{
+    margin:0;
+    margin-right: 2em;
+    flex-direction: column;
+  }
+}
+
+.el {
+  width: 50px;
+  height: 50px;
+  background-color: $main-dark-blue;
+  border-radius: 50%;
+}
+
+  /* Spinner styles */
+  .loading-circle_forBlueBG {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    color: $fill-white;
+    margin-block: 1em;
+  }
+  
+  .spinner_forBlueBG {
+    border: 8px solid $secondary-blue;
+    border-top: 8px solid $fill-white; 
+    border-radius: 50%;
+    width: 50px; 
+    height: 50px;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .forms-container {
+    box-sizing: border-box;
+    background-color: $main-blue;
+    border: $secondary-blue 7px solid;
+    
+    &.forms-container__error{
+      border: $error-color 7px solid;
+    }
+    @media (max-width: 600px){
+      margin-block: 2em;
+      width: 90%;
+    }
+    }
+/* Modal styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .modal.show {
+    display: block;
+  }

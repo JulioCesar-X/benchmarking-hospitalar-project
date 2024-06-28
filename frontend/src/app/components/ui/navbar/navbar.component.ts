@@ -7,6 +7,7 @@ import { NotificationService } from '../../../services/notifications/notificatio
 import { Notification } from '../../../models/notification.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import anime from 'animejs/lib/anime.es.js';
 
 
 @Component({
@@ -28,6 +29,8 @@ export class NavbarComponent implements OnInit {
   unreadNotifications: number = 0;
   allNotifications: Notification[] = [];
   isDropdownOpen: boolean = false;
+  isLoginOut: boolean = false; 
+
 
   constructor(private authService: AuthService, private notificationService: NotificationService) { }
 
@@ -56,9 +59,18 @@ export class NavbarComponent implements OnInit {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
-  logout(): void {
-    this.authService.logout();
+  async logout(): Promise<void> {
+    this.isLoginOut = true;
+    try {
+      await this.authService.logout();
+    } catch (error) {
+      // Handle the error if needed
+      console.error('Error during logout:', error);
+    } finally {
+      this.isLoginOut = false;
+    }
   }
+  
 
   getNotifications() {
     this.notificationService.getNotificationsReceived().subscribe({
@@ -90,4 +102,20 @@ export class NavbarComponent implements OnInit {
   openNavBar(){
     this.isNavbarOpen = !this.isNavbarOpen;
   }
+
+/*   startLoadingAnimation() {
+    this.isLoginOut = true;
+    const animate = () => {
+      if (!this.isLoginOut) return;
+      anime({
+        targets: '.random-demo .el',
+        translateX: () => anime.random(0, 270),
+        easing: 'easeInOutQuad',
+        duration: 600,
+        complete: animate
+      });
+    };
+    animate();
+  } */
+
 }
