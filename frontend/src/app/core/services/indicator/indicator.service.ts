@@ -35,12 +35,19 @@ export class IndicatorService {
   }
 
   getAllInDataGraphs(filter: Filter): Observable<any> {
-    return this.http.get<any>('/indicators/sai/charts').pipe(
-        catchError(error => {
-          console.error('Error fetching data:', error);
-          return throwError(() => new Error('Failed to fetch data'));
-        })
-      );
+    const params = new HttpParams()
+      .set('serviceId', filter.serviceId?.toString() || '0')
+      .set('activityId', filter.activityId?.toString() || '0')
+      .set('indicatorId', filter.indicatorId?.toString() || '0')
+      .set('year', filter.year?.toString() || '0')
+      .set('month', filter.month?.toString() || '0');
+    console.log('params >>', params.toString());
+    return this.http.get<any>('/indicators/sai/charts', { params }).pipe(
+      catchError(error => {
+        console.error('Error fetching data:', error);
+        return throwError(() => new Error('Failed to fetch data'));
+      })
+    );
   }
 
   getIndicatorsRecords(serviceId: number, activityId: number | null, year: number, month: number, pageIndex: number, pageSize: number): Observable<any> {
@@ -68,7 +75,7 @@ export class IndicatorService {
       .set('year', year)
       .set('page', (pageIndex + 1))
       .set('size', pageSize);
-    console.log('params >>', params);
+    console.log('params >>', params.toString());
 
     return this.http.get<any>('/indicators/sai/goals', { params }).pipe(
       catchError(error => {

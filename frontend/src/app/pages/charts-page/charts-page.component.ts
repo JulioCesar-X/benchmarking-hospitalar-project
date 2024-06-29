@@ -36,20 +36,20 @@ export class ChartsPageComponent  {
 
   constructor(private indicatorService: IndicatorService) { }
 
-  // ngOnInit(): void {
-  //   this.filterSubject.pipe(
-  //     debounceTime(300),
-  //     switchMap(filter => this.indicatorService.getAllInDataGraphs({ ...this.filter, ...filter }))
-  //   ).subscribe({
-  //     next: (data) => {
-  //       console.log('Graph data loaded:', data);
-  //       this.graphData = data; // Store data for children to use
-  //     },
-  //     error: (error) => console.error('Error loading graph data:', error)
-  //   });
+  ngOnInit(): void {
+    this.filterSubject.pipe(
+      debounceTime(300),
+      switchMap(filter => this.indicatorService.getAllInDataGraphs({ ...this.filter, ...filter }))
+    ).subscribe({
+      next: (data) => {
+        console.log('Graph data loaded:', data);
+        this.graphData = data; // Store data for children to use
+      },
+      error: (error) => console.error('Error loading graph data:', error)
+    });
 
-  //   this.loadGraphData();
-  // }
+    this.loadGraphData();
+  }
 
   loadGraphData(): void {
     this.filterSubject.next(this.filter);

@@ -22,13 +22,13 @@ export class ChartsComponent implements OnInit, OnChanges {
   constructor(private indicatorService: IndicatorService) { }
 
   ngOnInit() {
-    this.loadData();
+    // this.loadData();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
       console.log('Filter changed:', this.filter);
-      this.loadData();
+      // this.loadData();
     }
   }
 
