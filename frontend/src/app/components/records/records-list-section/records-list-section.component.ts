@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Filter } from '../../../core/models/filter.model';
 import { RecordService } from '../../../core/services/record/record.service';
@@ -24,7 +24,7 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
 })
 export class RecordsListSectionComponent implements OnInit, OnChanges {
   @Input() filter: Filter | undefined;
-  @Input() indicators: any[] = []; // Add this line to define the 'indicators' input
+  @Input() indicators: any[] = [];
   @Input() isLoading: boolean = false;
 
   isLoadingRecords = true;
@@ -51,14 +51,14 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
   }
 
   loadRecords(): void {
-    if (this.filter?.year && this.filter?.month && this.filter?.serviceId && this.filter?.activityId) {
+    if (this.filter?.year && this.filter?.month && this.filter?.serviceId) {
       this.isLoadingRecords = true;
-      const date = new Date(Number(this.filter.year), Number(this.filter.month) - 1);
-      const dateStr = date.toISOString().split('T')[0];
+      const year = this.filter.year;
+      const month = this.filter.month;
       const serviceId = Number(this.filter.serviceId);
-      const activityId = Number(this.filter.activityId);
+      const activityId = this.filter.activityId !== null && this.filter.activityId !== undefined ? Number(this.filter.activityId) : null;
 
-      this.indicatorService.getIndicatorsRecords(serviceId, activityId, dateStr, this.currentPage, this.pageSize)
+      this.indicatorService.getIndicatorsRecords(serviceId, activityId, year, month, this.currentPage, this.pageSize)
         .pipe(
           catchError(error => {
             console.error('Error fetching records', error);
@@ -66,36 +66,40 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
           }),
           finalize(() => this.isLoadingRecords = false)
         )
-        .subscribe(data => {
-          this.records = data.filter((item: any) => item.records && item.records[0]).map((item: any) => ({
-            id: item.records[0].record_id,
+        .subscribe(response => {
+          console.log('records >>', response);
+          this.totalRecords = response.total;
+          this.records = response.data.flatMap((item: any) => item.records.map((record: any) => ({
+            record_id: record.record_id,
             indicator_name: item.indicator_name,
             saiId: item.sai_id,
-            value: item.records[0].value,
-            isInserted: item.records[0].value !== '0',
+            value: record.value,
+            date: record.date,
+            isInserted: record.value !== '0',
             isUpdating: false
-          }));
+          })));
         });
     }
   }
+
+  editRecord(record: any): void {
+    if (record.isInserted) {
+      record.isInserted = false;
+    } else {
+      record.isUpdating = true;
+      this.recordService.updateRecord(record.record_id, record)
+        .pipe(finalize(() => record.isUpdating = false))
+        .subscribe(
+          () => this.setNotification('Registro atualizado com sucesso', 'success'),
+          error => this.setNotification(this.getErrorMessage(error), 'error')
+        );
+    }
+  }
+
   onValueChange(record: any): void {
     const index = this.records.findIndex(r => r.id === record.id);
     if (index !== -1) {
       this.records[index].value = record.value;
-    }
-  }
-
-  editRecord(recordUpdate: any): void {
-    if (recordUpdate.isInserted) {
-      recordUpdate.isInserted = false;
-    } else {
-      recordUpdate.isUpdating = true;
-      this.recordService.updateRecord(recordUpdate.id, recordUpdate)
-        .pipe(finalize(() => recordUpdate.isUpdating = false))
-        .subscribe(
-          () => this.setNotification('Record updated successfully', 'success'),
-          error => this.setNotification(this.getErrorMessage(error), 'error')
-        );
     }
   }
 

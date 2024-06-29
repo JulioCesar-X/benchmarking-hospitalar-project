@@ -123,3 +123,54 @@ main {
   background-color: $main-dark-blue;
   border-radius: 50%;
 }
+
+.navigation-button {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: $main-blue ;
+  color: white;
+  border: none;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: $main-dark-blue;
+  }
+
+  &.previous-button {
+    left: 100px;
+    top: 400px;
+  }
+
+  &.next-button {
+    right: 100px;
+    top: 400px;
+  }
+
+  &.top-button {
+    right: 20px;
+    bottom: 140px;
+  }
+
+  @media (max-width:600px) {
+    &.previous-button {
+      left: 150px;
+      top: 550px;
+    }
+
+    &.next-button {
+      right: 150px;
+      top: 550px;
+    }
+  }
+
+  mat-icon {
+    font-size: 24px;
+  }
+}
+
+.blue-bottom {
+  background-color: $main-dark-blue;
+}

@@ -2,7 +2,7 @@
   <app-menu></app-menu>
 </div>
 <div class="mx-2 w-full">
-  <app-filter [indicatorsInput]="false" [dataInsertedCheckbox]="true"
+  <app-filter [showMonthInput]="selectedTab === 'Records'" [indicatorsInput]="false" [dataInsertedCheckbox]="true"
     (filterEvent)="handleFilterData($event)"></app-filter>
 
   <div class="tab-headers">

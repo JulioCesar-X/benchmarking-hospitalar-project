@@ -47,6 +47,7 @@ export class RecordsGoalsUpdatePageComponent {
   }
 
   handleFilterData(event: Filter): void {
+    console.log('Filter data received:', event);
     this.filter = {
       ...this.filter,
       ...event

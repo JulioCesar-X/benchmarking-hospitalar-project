@@ -24,7 +24,7 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
 })
 export class GoalsListSectionComponent implements OnInit, OnChanges {
   @Input() filter: Filter | undefined;
-  @Input() indicators: any[] = []; // Add this line to define the 'indicators' input
+  @Input() indicators: any[] = [];
   @Input() isLoading: boolean = false;
 
   isLoadingGoals = true;
@@ -51,12 +51,16 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
   }
 
   loadGoals(): void {
-    if (this.filter?.year && this.filter?.month && this.filter?.serviceId && this.filter?.activityId) {
+    if (this.filter?.year && this.filter?.serviceId) {
       this.isLoadingGoals = true;
       const serviceId = Number(this.filter.serviceId);
-      const activityId = Number(this.filter.activityId);
+      const activityId = this.filter.activityId !== null && this.filter.activityId !== undefined ? Number(this.filter.activityId) : null;
       const year = this.filter.year;
-
+      console.log('serviceId >>', serviceId);
+      console.log('activityId >>', activityId);
+      console.log('year >>', year);
+      console.log('currentPage >>', this.currentPage);
+      console.log('pageSize >>', this.pageSize);
       this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, this.currentPage, this.pageSize)
         .pipe(
           catchError(error => {
@@ -65,8 +69,10 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
           }),
           finalize(() => this.isLoadingGoals = false)
         )
-        .subscribe(data => {
-          this.goals = data.filter((item: any) => item.goal).map((item: any) => ({
+        .subscribe(response => {
+          console.log('goals >>', response);
+          this.totalGoals = response.total;
+          this.goals = response.data.map((item: any) => ({
             id: item.goal.goal_id,
             indicator_name: item.indicator_name,
             target_value: item.goal.target_value,
@@ -114,7 +120,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
         return 'An error occurred. Please try again later.';
     }
   }
-  
+
   handlePageEvent(event: any): void {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;

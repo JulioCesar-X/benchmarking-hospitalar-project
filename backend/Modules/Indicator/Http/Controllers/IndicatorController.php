@@ -182,67 +182,57 @@ class IndicatorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getIndicatorsRecords(Request $request)
     {
-        // Validação inicial dos parâmetros de entrada
-        $validator = Validator::make($request->all(), [
-            'serviceId' => 'required|integer',
-            'activityId' => 'required|integer',
-            'date' => 'required|date_format:Y-m-d'  // Garante que a data está no formato correto
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
-
-        // Extração dos parâmetros após validação
         $serviceId = $request->input('serviceId');
         $activityId = $request->input('activityId');
-        $date = $request->input('date');
-
-        // Parsing da data para extrair o ano e o mês
-        $year = Carbon::createFromFormat('Y-m-d', $date)->year;
-        $month = Carbon::createFromFormat('Y-m-d', $date)->month;
+        $year = $request->input('year');
+        $month = $request->input('month');
+        $page = $request->input('page', 1);
+        $size = $request->input('size', 10);
 
         try {
-            // Consulta principal para buscar indicadores, incluindo pré-carregamento de relações
-            $serviceActivityIndicators = ServiceActivityIndicator::with([
-                'indicator', // Carrega os detalhes do indicador
-                'records' => function ($query) use ($year, $month) {
-                    $query->whereYear('date', '=', $year)
-                        ->whereMonth('date', '=', $month); // Filtra os registros pelo mês e ano
-                },
-                'service',
-                'activity'
-            ])
-                ->where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->get();
+            // Consulta principal para buscar registros
+            $query = ServiceActivityIndicator::with(['indicator', 'records' => function ($query) use ($year, $month) {
+                $query->whereYear('date', $year)
+                    ->whereMonth('date', $month);
+            }])
+                ->where('service_id', $serviceId);
 
-            // Formatação da resposta para enviar dados já estruturados
-            $response = $serviceActivityIndicators->map(function ($sai) {
-                return [
-                    'sai_id' => $sai->id,
-                    'indicator_name' => $sai->indicator->indicator_name,
-                    'records' => $sai->records->map(function ($record) {
-                        // Assegura que a data é um objeto Carbon
-                        $date = $record->date instanceof Carbon ? $record->date : Carbon::createFromFormat('Y-m-d', $record->date);
-                        return [
-                            'record_id' => $record->id,
-                            'value' => $record->value,
-                            'date' => $date->toDateString()  // Formata a data corretamente
-                        ];
-                    })
-                ];
-            });
+            if (!is_null($activityId) && $activityId !== '') {
+                $query->where('activity_id', $activityId);
+            }
+
+            $total = $query->count();
+            $records = $query->skip(($page - 1) * $size)->take($size)->get();
+
+            $response = [
+                'total' => $total,
+                'data' => $records->map(function ($sai) {
+                    return [
+                        'sai_id' => $sai->id,
+                        'indicator_name' => $sai->indicator->indicator_name,
+                        'records' => $sai->records->map(function ($record) {
+                            return [
+                                'record_id' => $record->id,
+                                'value' => $record->value,
+                                'date' => $record->date
+                            ];
+                        })->toArray()
+                    ];
+                })->toArray()
+            ];
 
             return response()->json($response);
         } catch (Exception $exception) {
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
-
-
 
     /**
      * Display a listing of the resource.
@@ -251,34 +241,32 @@ class IndicatorController extends Controller
      */
     public function getIndicatorsGoals(Request $request)
     {
-        // Validação dos parâmetros de entrada
-        $validator = Validator::make($request->all(), [
-            'service_id' => 'required|integer',
-            'activity_id' => 'required|integer',
-            'year' => 'required|integer|min:1900|max:2100' // Validar o ano
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
-
-        // Extração dos parâmetros após validação
-        $serviceId = $request->input('service_id');
-        $activityId = $request->input('activity_id');
+        $serviceId = $request->input('serviceId');
+        $activityId = $request->input('activityId');
         $year = $request->input('year');
+        $page = $request->input('page', 1);
+        $size = $request->input('size', 10);
 
         try {
-            // Consulta principal para buscar indicadores, incluindo pré-carregamento de relações
-            $serviceActivityIndicators = ServiceActivityIndicator::with([
+            // Paginação dos resultados
+            $query = ServiceActivityIndicator::with([
                 'indicator',
                 'goals' => function ($query) use ($year) {
                     $query->where('year', '=', $year);
                 },
                 'service',
                 'activity'
-            ])
-                ->where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
+            ])->where('service_id', $serviceId);
+
+            // Verifica se o activityId é nulo ou vazio
+            if ($activityId !== null && $activityId !== '') {
+                $query->where('activity_id', $activityId);
+            }
+
+            $total = $query->count();
+
+            $serviceActivityIndicators = $query->skip(($page - 1) * $size)
+                ->take($size)
                 ->get();
 
             // Formatação da resposta para enviar dados já estruturados
@@ -296,7 +284,12 @@ class IndicatorController extends Controller
                 ];
             });
 
-            return response()->json($response);
+            return response()->json([
+                'total' => $total,
+                'page' => $page,
+                'size' => $size,
+                'data' => $response
+            ]);
         } catch (Exception $exception) {
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
