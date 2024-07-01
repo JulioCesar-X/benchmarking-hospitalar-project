@@ -34,8 +34,11 @@
               </tr>
             </tbody>
           </table>
+          
           <app-paginator [length]="totalLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
             (page)="handlePageEvent($event)" *ngIf="!isLoading"></app-paginator>
+
+
         </div>
       </div>
       <ng-template #noResults>
