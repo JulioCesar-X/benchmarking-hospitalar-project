@@ -34,7 +34,7 @@ export class IndicatorsPageComponent {
 
   onReset(): void {
     this.isLoadingSearch = true;
-    this.indicatorService.getIndicatorsPaginated(0, 10).subscribe({
+    this.indicatorService.getIndicatorsPaginated(1, 10).subscribe({
       next: (data) => {
         this.filteredIndicators = data.data;
         this.isLoadingSearch = false;

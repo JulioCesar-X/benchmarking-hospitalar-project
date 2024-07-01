@@ -1,8 +1,8 @@
 <section class="forms-container">
-  <form [formGroup]="filterForm" (ngSubmit)="onSearch()">
+  <form [formGroup]="filterForm" >
     <div class="forms-container--inputContainer">
       <input type="text" formControlName="searchTerm" class="inputContainer--input" placeholder="Procurar...">
-      <button type="submit" class="forms-Button">Procurar</button>
+      <button (click)="onSearch()" type="submit" class="forms-Button">Procurar</button>
     </div>
   </form>
 </section>

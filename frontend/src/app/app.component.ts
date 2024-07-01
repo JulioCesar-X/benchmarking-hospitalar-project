@@ -16,8 +16,6 @@ import { CommonModule } from '@angular/common';
     RouterModule,
     FooterComponent,
     NavbarComponent,
-
-
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']

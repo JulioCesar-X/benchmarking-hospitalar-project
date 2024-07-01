@@ -11,7 +11,7 @@ export class GoalService {
   constructor(private http: HttpClient) { }
 
   updateGoal(id: number, goal: any): Observable<any> {
-    return this.http.put(`/admin/goals/${id}`, goal).pipe(
+    return this.http.put(`/goals/${id}`, goal).pipe(
       catchError(error => {
         console.error('Error updating goal:', error);
         return throwError(() => new Error('Failed to update goal'));

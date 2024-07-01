@@ -59,7 +59,7 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
 
   loadIndicators(pageIndex = 0, pageSize = 10): void {
     this.isLoading = true;
-    this.indicatorService.getIndicatorsPaginated(pageIndex, pageSize).subscribe({
+    this.indicatorService.getIndicatorsPaginated(pageIndex + 1, pageSize).subscribe({
       next: (data) => {
         console.log("Indicators Data Received:", data);
         this.indicators = data.data;

@@ -12,7 +12,7 @@ export class RecordService {
   constructor(private http: HttpClient) { }
 
   updateRecord(id: number, record: any): Observable<any> {
-    return this.http.put(`/admin/records/${id}`, record).pipe(
+    return this.http.put(`/records/${id}`, record).pipe(
       catchError(error => {
         console.error('Error updating record:', error);
         return throwError(() => new Error('Failed to update record'));

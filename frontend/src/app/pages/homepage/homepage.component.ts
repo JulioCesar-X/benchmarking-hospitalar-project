@@ -22,7 +22,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   displayedServices: any[] = [];
   isLoading: boolean = false;
   page: number = 1;
-  pageSize: number = 2;
+  pageSize: number = 8;
   totalServices: number = 0;
 
   constructor(private serviceService: ServiceService, private router: Router) { }
@@ -39,10 +39,10 @@ export class HomepageComponent implements OnInit, OnDestroy {
   loadServices(): void {
     this.isLoading = true;
     this.serviceService.indexServices().subscribe({
-      next: (data:any) => {
-        this.services = data;
+      next: (data: any) => {
+        this.services = data.data; // Assumindo que os serviços estão na propriedade 'data'
+        this.totalServices = data.total; // Assumindo que o total está na propriedade 'total'
         console.log('Services:', this.services);
-        this.totalServices = this.services.length;
         this.updateDisplayedServices();
       },
       error: (err) => {

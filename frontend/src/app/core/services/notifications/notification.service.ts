@@ -16,7 +16,8 @@ export class NotificationService {
     const userRole = this.cookieService.get('role').toLowerCase();
     const userEmail = this.cookieService.get('email');
     const params = new HttpParams().set('email', userEmail);
-    return this.http.get<Notification[]>(`/${userRole}/notifications/received`, {
+
+    return this.http.get<Notification[]>(`/notifications/received`, {
       params,
       headers: new HttpHeaders({
         'Authorization': `Bearer ${this.cookieService.get('access_token')}`

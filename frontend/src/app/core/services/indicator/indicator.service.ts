@@ -13,13 +13,13 @@ export class IndicatorService {
   constructor(private http: HttpClient) { }
 
   indexIndicators(): Observable<Indicator[]> {
-    return this.http.get<Indicator[]>('/admin/indicators').pipe(
+    return this.http.get<Indicator[]>('/indicators').pipe(
       catchError(error => throwError(() => new Error('Failed to fetch indicators')))
     );
   }
 
   getIndicatorsPaginated(pageIndex: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(`/admin/indicators/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
+    return this.http.get<any>(`/indicators/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
       catchError(error => throwError(() => new Error('Failed to fetch paginated indicators')))
     );
   }
@@ -87,25 +87,25 @@ export class IndicatorService {
 
 
   storeIndicator(indicator: Indicator): Observable<Indicator> {
-    return this.http.post<Indicator>('/admin/indicators', indicator).pipe(
+    return this.http.post<Indicator>('/indicators', indicator).pipe(
       catchError(error => throwError(() => new Error('Failed to create indicator')))
     );
   }
 
   showIndicator(id: number): Observable<Indicator> {
-    return this.http.get<Indicator>(`/admin/indicators/${id}`).pipe(
+    return this.http.get<Indicator>(`/indicators/${id}`).pipe(
       catchError(error => throwError(() => new Error('Failed to fetch indicator')))
     );
   }
 
   updateIndicator(id: number, indicator: Indicator): Observable<Indicator> {
-    return this.http.put<Indicator>(`/admin/indicators/${id}`, indicator).pipe(
+    return this.http.put<Indicator>(`/indicators/${id}`, indicator).pipe(
       catchError(error => throwError(() => new Error('Failed to update indicator')))
     );
   }
 
   destroyIndicator(id: number): Observable<any> {
-    return this.http.delete(`/admin/indicators/${id}`).pipe(
+    return this.http.delete(`/indicators/${id}`).pipe(
       catchError(error => throwError(() => new Error('Failed to delete indicator')))
     );
   }

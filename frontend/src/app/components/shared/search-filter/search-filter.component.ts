@@ -38,6 +38,7 @@ export class SearchFilterComponent implements OnInit {
           return throwError(() => new Error('Search failed'));
         })
       ).subscribe(results => {
+        console.log(results)
         this.search.emit(results);
       });
     } else {

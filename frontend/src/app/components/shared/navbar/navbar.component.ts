@@ -29,10 +29,10 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     this.getNotifications();
 
-    // Polling for new notifications every 30 seconds
-    setInterval(() => {
-      this.getNotifications();
-    }, 30000);
+    // // Polling for new notifications every 30 seconds
+    // setInterval(() => {
+    //   this.getNotifications();
+    // }, 30000);
   }
 
   isLoggedIn(): boolean {
