@@ -1,7 +1,7 @@
 <div>
   <app-menu></app-menu>
 </div>
-<div class="mx-2 w-full">
+<div class="sm:mx-0 md:mx-1 lg:mx-2 w-full max-h-full">
   <app-search-filter (search)="onSearch($event)" (searchStarted)="onSearchStarted()" (reset)="onReset()"
     type="users"></app-search-filter>
   <app-users-list-section [users]="filteredUsers" [isLoading]="isLoadingSearch"></app-users-list-section>
