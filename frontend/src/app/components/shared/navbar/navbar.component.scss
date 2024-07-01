@@ -1,109 +1,85 @@
 @import '../../../../styles/_variables.scss';
+@import 'tailwindcss/base';
 
-
-.fixedCSS {
-
-  //position: fixed; preciso de arranja soluçõa
-
-  top: 0;
-  z-index: 1000;
-  /* Garante que a navbar fique acima de outros elementos */
+.placeholder{
+  height: 90px;
+}
+.whiteBG {
   background-color: $fill-white;
-  /* Define uma cor de fundo para garantir legibilidade */
-  /* Opcional: uma linha para separar a navbar do conteúdo da página */
+}
+.whiteBorder{
+  border-bottom: 5px solid $fill-white;
+}
+.whiteTxt {
+  color: $fill-white; 
+}
+.darkBlueTxt{
+  color: $main-dark-blue
+}
+.underlineHover:hover {
+  text-decoration: underline;
 }
 
-
-.navbar {
-      position: relative;
-
-  display: flex;
-  margin-bottom: auto;
-  max-width: 100%;
-  max-height: 99px;
-  overflow: hidden;
-/*   min-width: 780px; */
-}
-
-/* i can make the logocontainer occupy space where i want with position absolute */
 .logoSection {
-  /*     top:0;
-    left: 0;
-    position: absolute; */
-  display: flex;
-  align-items: center;
   width: auto;
   background-color: transparent;
   color: $main-blue;
 }
-
-.logoContainer {
-  width: 25%;
-  margin-right: 1em;
+.logoTxt{ /* Issue! class created to override angular material styles on headings  */
+  @apply m-0 text-sm sm:text-lg darkBlueTxt;
 }
 
-/* .triangle {
-  width: 0;
-  height: 0;
-  margin-left: -12.5em;
-  border-left: 100px solid transparent;
-  border-right: 100px solid $main-blue;
-  border-top: 100px solid transparent;
-} */
+.background-svg {
+  fill: $main-blue;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; 
+}
 
-.navbarLinksContainer {
+.links{
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  position: relative;
   padding-right: 1em;
   padding-left: 6em;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 1em;
-  width: 60%;
-  background-color: $main-blue;
-  color: $fill-white;
-  clip-path: polygon(0 100%, 10% 0, 100% 0, 100% 100%);
+  height: 100%;
+  z-index: 1; 
 }
-
-.navBarLink {
-  display: flex;
-
-  text-decoration: none;
-  text-transform: uppercase;
-  font-size: 1.2rem;
-  color: $fill-white;
-}
-
-.navBarLink:hover {
-  text-decoration: underline;
-}
-
-.loginContainer {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-  gap: 1em;
-}
-
-.icon {
-  width: 35px;
-  cursor: pointer;
-}
-
-.logoTitleContainer {
-
-  h1,
-  h3 {
-    color:#494747 ;
-    font-size: 1.25rem;
-    margin: 0;
+@media (max-width:600px){
+  .links {
+    flex-direction: column;
+    align-items: end;
+    gap: 1em;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 100%;
+    font-size: 1.2rem;
+    overflow: visible;
+    transition: all ease-in-out 250ms; 
+    padding: 1em;
+    padding-top: 4em;
+    margin-left: 2em;
+    height: 100vh;
+    background-color: $main-dark-blue;
+  }  
+  .links.is-open{
+    left: -30vw; //adjustment to make links go beyond parent container to the left
   }
 }
 
-.logo {
-
-  height: 85px;
+.bellIcon_mobile{
+  z-index: 50;
+  position: absolute;
+  top: 25px;
+  right: 20px;
 }
 
+/* styles for the notifications */
 .unread{
   background-color: $secondary-blue;
   border-radius: 1em;
@@ -113,4 +89,139 @@
   border-radius: 1em;
 }
 
+/* Estilos para customizar componente de angular material */
+::ng-deep {
+  .menu-custom {
+    background-color: $fill-white !important;
+    border: 1px solid $fill-white !important;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1) !important;
+  }
 
+  .blue-custom{
+    color: $main-dark-blue !important; 
+  }
+}
+
+/* Hamburguer styles */
+.nav-toggle {
+  z-index: 5;
+  display: block;
+  padding: 1em;
+  position: absolute;
+  right: 50px;
+  top: 27px;
+  cursor: pointer; }
+  @media (min-width: 600px) {
+    .nav-toggle {
+      display: none; } }
+
+.hamburger, .hamburger::before, .hamburger::after {
+  content: '';
+  display: block;
+  width: 2em;
+  height: 3px;
+  background: $fill-white;
+  transition: all ease-in-out 250ms;
+
+}
+
+.hamburger::before {
+  transform: translateY(-6px); }
+
+.hamburger::after {
+  transform: translateY(3px); }
+
+.hamburger.is-open {
+  transform: rotate(45deg); }
+  .hamburger.is-open::after {
+    transform: rotate(-90deg) translateX(3px); }
+  .hamburger.is-open::before {
+    opacity: 0; }
+
+
+    .icon-login{
+      transform: scale(2);
+      margin-right: 0.7em;
+    }
+
+    // Load
+.random-demo {
+  display: flex;
+/*   flex-direction: column; */
+  gap:0.5em;
+
+  width: 30%;
+  margin: 0 auto;
+}
+@media (max-width: 600px) {
+  .random-demo{
+    margin:0;
+    margin-right: 2em;
+    flex-direction: column;
+  }
+}
+
+.el {
+  width: 50px;
+  height: 50px;
+  background-color: $main-dark-blue;
+  border-radius: 50%;
+}
+
+  /* Spinner styles */
+  .loading-circle_forBlueBG {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    color: $fill-white;
+    margin-block: 1em;
+  }
+  
+  .spinner_forBlueBG {
+    border: 8px solid $secondary-blue;
+    border-top: 8px solid $fill-white; 
+    border-radius: 50%;
+    width: 50px; 
+    height: 50px;
+    animation: spin 2s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .forms-container {
+    box-sizing: border-box;
+    background-color: $main-blue;
+    border: $secondary-blue 7px solid;
+    
+    &.forms-container__error{
+      border: $error-color 7px solid;
+    }
+    @media (max-width: 600px){
+      margin-block: 2em;
+      width: 90%;
+    }
+    }
+/* Modal styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .modal.show {
+    display: block;
+  }

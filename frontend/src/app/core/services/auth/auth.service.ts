@@ -20,6 +20,10 @@ export class AuthService {
     return this.cookieService.get('access_token');
   }
 
+  getUserName(): string {
+    return this.cookieService.get('name');
+  }
+
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
@@ -35,6 +39,7 @@ export class AuthService {
           this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict' });
           this.cookieService.set('email', response.email, { secure: true, sameSite: 'Strict' });
           this.cookieService.set('role', response.role, { secure: true, sameSite: 'Strict' });
+          this.cookieService.set('name', response.name, { secure: true, sameSite: 'Strict' });
           return response;
         }),
         catchError(error => {
@@ -44,26 +49,31 @@ export class AuthService {
       );
   }
 
-  logout(): void {
-    const token = this.getToken();
-    if (!token) {
-      console.error('No token found');
-      this.router.navigate(['/login']);
-      return;
-    }
-    this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
-      .subscribe(
-        () => {
-          this.cookieService.delete('access_token', '/');
-          this.cookieService.delete('role', '/');
-          console.log('Logout successful');
-          this.router.navigate(['/login']);
-        },
-        error => {
-          console.error('Logout failed', error);
-          this.router.navigate(['/login']);
-        }
-      );
+  logout(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const token = this.getToken();
+      if (!token) {
+        console.error('No token found');
+        this.router.navigate(['/login']);
+        reject('No token found');
+        return;
+      }
+  
+      this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
+        .subscribe(
+          () => {
+            this.cookieService.delete('access_token', '/');
+            this.cookieService.delete('role', '/');
+            console.log('Logout successful');
+            this.router.navigate(['/login']);
+            resolve(true);
+          },
+          error => {
+            console.error('Logout failed', error);
+            reject(error);
+          }
+        );
+    });
   }
 
   getRole(): string {

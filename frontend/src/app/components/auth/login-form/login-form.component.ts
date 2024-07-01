@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NgForm, FormsModule, NgModel } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { EventEmitter, Output } from '@angular/core';
+import { LoadingSpinnerBlueBGComponent } from '../../shared/loading-spinner-blue-bg/loading-spinner-blue-bg.component';
 import { PasswordRecupModalComponent } from '../../../components/auth/password-recup-modal/password-recup-modal.component'
 
 @Component({
@@ -13,7 +14,8 @@ import { PasswordRecupModalComponent } from '../../../components/auth/password-r
     FormsModule,
     CommonModule,
     RouterLink,
-    PasswordRecupModalComponent
+    PasswordRecupModalComponent,
+    LoadingSpinnerBlueBGComponent
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'
@@ -45,8 +47,14 @@ export class LoginFormComponent {
           this.errorMessage = ''
           console.log('Login successful' + response);
           this.router.navigate(['/consultUsers']);
-        }
 
+          if(this.AuthService.getRole() == "admin" || this.AuthService.getRole() == "coordenador"){
+            this.router.navigate(['/users']);
+          }
+           else {
+            this.router.navigate(['/home']);
+          }
+        }
       },
       error => {
         console.error('Login failed', error);

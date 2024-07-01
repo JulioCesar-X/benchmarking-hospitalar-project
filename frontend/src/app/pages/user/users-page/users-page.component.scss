@@ -1,6 +1,8 @@
-
 :host {
-    flex: 1;
-    display: flex;
-    padding: 1px;
+  flex: 1;
+  display: flex;
+} @media(max-width:600px){
+  :host{
+      flex-direction: column;
   }
+}

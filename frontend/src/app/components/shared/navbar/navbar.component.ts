@@ -6,6 +6,8 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { NotificationService } from '../../../core/services/notifications/notification.service';
 import { Notification } from '../../../core/models/notification.model';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+
 
 
 @Component({
@@ -15,11 +17,16 @@ import { MatIconModule } from '@angular/material/icon';
     RouterLink,
     CommonModule,
     MatBadgeModule,
+    MatMenuModule,
+    MatIconModule
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
+  isNavbarOpen: boolean = false;
+  isDropdownOpen: boolean = false;
+  isLoginOut: boolean = false; 
   isNotificationsOpen: boolean = false;
   unreadNotifications: number = 0;
   allNotifications: Notification[] = [];
@@ -42,9 +49,21 @@ export class NavbarComponent implements OnInit {
   getRole() {
     return this.authService.getRole();
   }
+  getUserName(): string {
+    return this.authService.getUserName();
+  }
 
-  logout(): void {
-    this.authService.logout();
+  async logout(): Promise<void> {
+    alert("this ran")
+    this.isLoginOut = true;
+    try {
+      await this.authService.logout();
+    } catch (error) {
+      // Handle the error if needed
+      console.error('Error during logout:', error);
+    } finally {
+      this.isLoginOut = false;
+    }
   }
 
   getNotifications() {
@@ -73,4 +92,13 @@ export class NavbarComponent implements OnInit {
   toggleNotifications() {
     this.isNotificationsOpen = !this.isNotificationsOpen;
   }
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+  openNavBar(){
+    this.isNavbarOpen = !this.isNavbarOpen;
+  }
+  
+
 }
