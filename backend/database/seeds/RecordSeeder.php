@@ -20,10 +20,10 @@ class RecordSeeder extends Seeder
         $sais = Sai::with(['service', 'activity', 'indicator'])->get();
 
         // Inserir dados para 2023 com valores aleatórios
-        $this->insertYearlyRecords($sais, 2023, true);
+        $this->insertYearlyRecords($sais, 2023, false);
 
         // Inserir dados para 2024 com valores zero
-        $this->insertYearlyRecords($sais, 2024, true);
+        $this->insertYearlyRecords($sais, 2024, false);
     }
 
     private function insertYearlyRecords($sais, $year, $isZero)

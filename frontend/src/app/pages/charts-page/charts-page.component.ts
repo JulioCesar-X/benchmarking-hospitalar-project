@@ -1,4 +1,4 @@
-import { Component} from '@angular/core';
+import { Component, HostListener} from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ChartsComponent } from '../../components/charts/charts.component';
@@ -66,5 +66,17 @@ export class ChartsPageComponent  {
 
   selectTab(tab: string): void {
     this.selectedTab = tab;
+  }
+
+  toTopBtnVisible = false;
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const threshold = 200; // Change this to set a different scroll threshold
+    this.toTopBtnVisible = window.scrollY > threshold;
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

@@ -17,4 +17,24 @@
 main {
     flex: 1;
     display: flex;
+    position: relative;
+}
+
+#toTopIcon {
+    --lord-icon-primary: var(--main-dark-blue);
+  }
+
+.toTopBtn {
+    cursor: pointer;
+    right: 50%; 
+    bottom: -50px; 
+    transition: bottom 0.5s ease-in-out; 
+}
+
+.toTopBtnVisible {
+    bottom: 50px !important; /* End position */
+}
+
+.toTopBtnHidden {
+    bottom: -50px; /* Position when hidden */
 }

@@ -14,31 +14,31 @@ class CreateVwIndicatorAccumulatedView extends Migration
     public function up()
     {
         DB::statement("
-    CREATE OR REPLACE VIEW vw_goals_monthly AS
-    SELECT
-        g.sai_id,
-        sai.service_id,
-        sai.activity_id,
-        i.id AS indicator_id,
-        g.year,
-        g.target_value AS meta_anual,
-        MONTH(r.date) AS month,
-        ROUND(g.target_value / 12.0, 2) AS monthly_target,
-        i.indicator_name AS nome_do_indicador,
-        (
-            SELECT SUM(ROUND(g2.target_value / 12.0, 2) * MONTH(r2.date))
-            FROM goals g2
-            JOIN records r2 ON r2.sai_id = g2.sai_id
-            WHERE g2.sai_id = g.sai_id AND
-                r2.date <= r.date AND
-                YEAR(r2.date) = g.year
-        ) AS valor_acumulado_mensal
-    FROM goals g
-    JOIN sais sai ON g.sai_id = sai.id
-    JOIN indicators i ON sai.indicator_id = i.id
-    LEFT JOIN records r ON r.sai_id = g.sai_id AND YEAR(r.date) = g.year
-    GROUP BY
-        g.sai_id, sai.service_id, sai.activity_id, i.id, g.year, MONTH(r.date), i.indicator_name, g.target_value, r.date;
+        CREATE OR REPLACE VIEW vw_indicator_accumulated AS
+        SELECT
+            s.service_name AS nome_do_servico,
+            a.activity_name AS nome_da_atividade,
+            i.indicator_name AS nome_do_indicador,
+            i.id AS indicator_id,
+            r.value AS valor_mensal,
+            r.date AS data,
+            sai.service_id,
+            sai.activity_id,
+            YEAR(r.date) AS year,
+            MONTH(r.date) AS month,
+            (
+                SELECT SUM(r2.value)
+                FROM records r2
+                WHERE r2.sai_id = r.sai_id AND
+                    r2.date <= r.date AND
+                    YEAR(r2.date) = YEAR(r.date)
+            ) AS valor_acumulado_agregado
+        FROM records r
+        JOIN sais sai ON r.sai_id = sai.id
+        JOIN indicators i ON sai.indicator_id = i.id
+        JOIN services s ON sai.service_id = s.id
+        LEFT JOIN activities a ON sai.activity_id = a.id;
+   
 ");
 
     }

@@ -66,5 +66,22 @@
     background-color: $main-blue;
 }
 
+#toTopIcon {
+    --lord-icon-primary: var(--main-dark-blue); /* Correct usage of the CSS variable */
+  }
 
+.toTopBtn {
+    cursor: pointer;
+    right: 50%; /* Adjust as needed */
+    bottom: -50px; /* Start from below the viewport */
+    transition: bottom 0.5s ease-in-out; /* Smooth transition for moving up */
+}
+
+.toTopBtnVisible {
+    bottom: 30px; /* End position */
+}
+
+.toTopBtnHidden {
+    bottom: -50px; /* Position when hidden */
+}
 
