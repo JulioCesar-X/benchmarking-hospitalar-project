@@ -1,13 +1,14 @@
-<app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal>
+<!-- <app-create-field-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-create-field-modal>
 <app-feedback [message]="notificationMessage" [type]="notificationType"></app-feedback>
 
-<form (ngSubmit)="createUser()">
-  <div class="forms-container"> <!-- [class.loading]="isLoading" -->
+<form (ngSubmit)="formSubmited()"">
+  <div class="forms-container"> 
     <div *ngIf="isLoading" class="loading-circle_forBlueBG">
       <div class="spinner_forBlueBG"></div>
       <p>A criar user...</p>
     </div>
-    <h2 *ngIf="!isLoading" class="title">Criar User</h2>
+    <h2 class="title" *ngIf="formsAction === 'create'">Criar User</h2>
+
     <div class="forms-container--inputContainer" *ngIf="!isLoading || notificationType === 'error'">
       <input type="text" class="inputContainer--input" placeholder="Name" [(ngModel)]="name" name="name" required>
       <span class="errorSpanMessage"></span>
@@ -33,3 +34,4 @@
 
 </form>
 
+ -->

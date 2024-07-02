@@ -3,46 +3,59 @@
 
 
 .forms-container {
-  @include forms-container();
+  background-color: $main-blue;
+/*   border: $secondary-blue 7px solid; */
 
-  margin-block: 0;
-  border: none;
-  width: 100%;
+  &.forms-container__error{
+    border: $error-color 7px solid;
+  }
 }
 
-
-.selectContainer {
+.txtWhite{
   color: $fill-white;
-
-  label {
-    margin-right: 0.2em;
-  }
-
-  select {
-    color: $main-blue;
-    border-radius: 0.5em;
-    padding-block: 0.2em;
-    padding-inline: 0.5em;
-    border: none;
-    outline: $main-blue;
-  }
-}
-
-.forms-container--inputContainer {
-  @include forms-container--inputContainer();
-  gap: 1em;
-
-  div {
-    display: flex;
-    align-items: center;
-  }
 }
 
 .inputContainer--input {
-  @include inputContainer--input();
+  box-sizing: border-box;
+  color: $main-blue;
+  background-color: $fill-white;
+  border: none;
+
+  &::placeholder{
+    color: $main-blue;
+  }
+  &:focus{
+    outline: none;
+    border: none;
+    caret-color: $main-blue;
+  }
+  &:disabled{
+    background-color: $secondary-blue;
+    border: none;
+  }
+  &.inputContainer--input__error, .inputContainer--input__error:focus{
+    outline: none;
+    border: $error-red 2px solid;
+    caret-color: $error-red;
+    color: $error-red;
+  }
+  &.inputContainer--input__error::placeholder{
+    color: $error-red;
+  }
 }
 
 .forms-Button {
-  @include forms-Button();
-  margin-top: 0;
+  background-color: transparent;
+  color:  $fill-white;
+  border: $fill-white 2px solid;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  align-self: flex-end; 
+
+  &:active{
+    background-color: $fill-white;
+    color:  $main-blue;
+    border: $fill-white 2px solid;
+  }
 }

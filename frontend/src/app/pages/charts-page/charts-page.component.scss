@@ -9,8 +9,6 @@
 .graphicsContainer{
     background-color: $main-blue;
     margin: auto;
-    display: flex;
-    flex-direction: column;
     gap: 1em;
 
     box-sizing: border-box;
@@ -67,3 +65,6 @@
 .tab-link.active {
     background-color: $main-blue;
 }
+
+
+
