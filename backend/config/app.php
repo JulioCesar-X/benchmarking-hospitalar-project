@@ -161,7 +161,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        Laravel\Sanctum\SanctumServiceProvider::class,
+
         /*
          * Package Service Providers...
          */
@@ -169,30 +169,12 @@ return [
         /*
          * Application Service Providers...
          */
-        // App\Providers\AppServiceProvider::class,
-        // // App\Providers\BroadcastServiceProvider::class,
-        // App\Providers\EventServiceProvider::class,
+        App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
+        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Modules\Auth\Providers\AuthServiceProvider::class,
-        Modules\Auth\Providers\RouteServiceProvider::class,
-        Modules\User\Providers\RouteServiceProvider::class,
-        Modules\Role\Providers\RouteServiceProvider::class,
-        Modules\Notification\Providers\RouteServiceProvider::class,
-        Modules\Activity\Providers\RouteServiceProvider::class,
-        Modules\Goal\Providers\RouteServiceProvider::class,
-        Modules\Indicator\Providers\RouteServiceProvider::class,
-        Modules\Record\Providers\RouteServiceProvider::class,
-        Modules\Service\Providers\RouteServiceProvider::class,
-        Modules\User\Providers\UserServiceProvider::class,
-        Modules\Notification\Providers\NotificationServiceProvider::class,
-        Modules\Activity\Providers\ActivityServiceProvider::class,
-        Modules\Goal\Providers\GoalServiceProvider::class,
-        Modules\Indicator\Providers\IndicatorServiceProvider::class,
-        Modules\Record\Providers\RecordServiceProvider::class,
-        Modules\Role\Providers\RoleServiceProvider::class,
-        Modules\Service\Providers\ServiceServiceProvider::class,
-        Modules\ServiceActivityIndicator\Providers\RouteServiceProvider::class,
-        Modules\ServiceActivityIndicator\Providers\ServiceActivityIndicatorServiceProvider::class,
+
     ],
 
     /*
@@ -246,4 +228,5 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
+
 ];

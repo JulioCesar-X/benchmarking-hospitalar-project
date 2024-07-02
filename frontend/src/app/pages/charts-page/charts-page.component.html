@@ -25,10 +25,10 @@
 
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="lineChart" graphLabel="Variação currentYear" [filter]="filter"></app-charts>
+          <app-charts graphType="lineChart" graphLabel="Ano atual" [filter]="filter"></app-charts>
         </div>
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="lineChart" graphLabel="Variação previousYear" [filter]="filter"></app-charts>
+          <app-charts graphType="lineChart" graphLabel="Ano anterior" [filter]="filter"></app-charts>
         </div>
       </div>
 
@@ -48,7 +48,7 @@
           <app-charts graphType="month" graphLabel="Produção" [filter]="filter"></app-charts>
         </div>
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="month" graphLabel="Metas" [filter]="filter"></app-charts>
+          <app-charts graphType="month-metas" graphLabel="Metas" [filter]="filter"></app-charts>
         </div>
       </div>
 
@@ -61,7 +61,7 @@
 
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="year" graphLabel="Total anual" [filter]="filter"></app-charts>
+          <app-charts graphType="year" graphLabel="Comparação Anual" [filter]="filter"></app-charts>
         </div>
       </div>
     </div>

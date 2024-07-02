@@ -22,13 +22,13 @@ export class ChartsComponent implements OnInit, OnChanges {
   constructor(private indicatorService: IndicatorService) { }
 
   ngOnInit() {
-    // this.loadData();
+    this.loadData();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
       console.log('Filter changed:', this.filter);
-      // this.loadData();
+      this.loadData();
     }
   }
 
@@ -65,24 +65,30 @@ export class ChartsComponent implements OnInit, OnChanges {
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         datasetData = data.recordsMensal;
         break;
-      case 'year':
+      case 'month-metas':
+        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        datasetData = data.goalsMensal;
+        break;
+      case 'year-metas':
         labels = data.years;
-        datasetData = data.recordsAnual;
+        datasetData = data.goalAnual;
         break;
       case 'homologYear':
-        labels = ['Previous Year', 'Current Year'];
+        labels = ['Ano anterior', 'Ano atual'];
+        //currentYearTotal deve ser o total produzido até o momento e previousYearTotal deve ser o total produzido no ano anterior
         datasetData = [data.previousYearTotal, data.currentYearTotal];
         break;
       case 'fiveYear':
+        //mesma coisa so que para os ultimos 5 anos
         labels = data.lastFiveYears.map((yr: any) => yr.year);
         datasetData = data.lastFiveYears.map((yr: any) => yr.total);
         break;
       case 'lineChart':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        if (this.graphLabel === 'Variação currentYear') {
-          datasetData = data.recordsMensal; // Assumindo que data.recordsMensal contém os dados para o gráfico de linha do ano atual
-        } else if (this.graphLabel === 'Variação previousYear') {
-          datasetData = data.recordsMensal; // Ajustar conforme necessário para os dados do ano anterior
+        if (this.graphLabel === 'Ano atual') {
+          datasetData = data.recordsAnual;
+        } else if (this.graphLabel === 'Ano anterior') {
+          datasetData = data.recordsAnualLastYear; // Ajustar conforme necessário para os dados do ano anterior
         }
         break;
       default:

@@ -36,6 +36,8 @@
           </table>
           <app-paginator [length]="totalLength"
             (page)="handlePageEvent($event)" *ngIf="!isLoading"></app-paginator>
+
+
         </div>
       </div>
       <ng-template #noResults>

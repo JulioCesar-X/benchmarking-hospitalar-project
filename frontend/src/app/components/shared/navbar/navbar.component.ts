@@ -54,7 +54,6 @@ export class NavbarComponent implements OnInit {
   }
 
   async logout(): Promise<void> {
-    alert("this ran")
     this.isLoginOut = true;
     try {
       await this.authService.logout();

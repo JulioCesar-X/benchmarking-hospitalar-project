@@ -15,15 +15,11 @@ return [
     |
     */
 
-    'paths' => ['*'],
+    'paths' => ['api/*','sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'http://localhost:4200',
-        'https://hosp-metrics-atec-ijw7ffhu3-atec.vercel.app',
-        'https://main--hospital-metrics-analisys.netlify.app',
-    ],
+    'allowed_origins' => ['*'], // Adicione seu frontend URL aqui
 
     'allowed_origins_patterns' => [],
 
@@ -33,6 +29,5 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => true, //in frontend need withCredentials: true
-
+    'supports_credentials' => true,
 ];
