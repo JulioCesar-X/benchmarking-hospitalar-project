@@ -1,8 +1,8 @@
-<section class="forms-container">
+<section class="mx-auto rounded-xl p-2 forms-container">
   <form [formGroup]="filterForm" (ngSubmit)="onSearch()">
-    <div class="forms-container--inputContainer">
-      <input type="text" formControlName="searchTerm" class="inputContainer--input" placeholder="Procurar...">
-      <button type="submit" class="forms-Button">Procurar</button>
+    <div class="flex gap-1 w-full items-center text-start txtWhite">
+      <input type="text" formControlName="searchTerm" class="w-full rounded-md py-1 px-2 inputContainer--input" placeholder="Procurar...">
+      <button type="submit" class="py-1 w-1/2 rounded-md cursor-pointer self-end forms-Button">Procurar</button>
     </div>
   </form>
 </section>
