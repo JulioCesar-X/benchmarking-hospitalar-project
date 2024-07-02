@@ -4,9 +4,10 @@
  //styles for the paginators
  mat-paginator {
    background-color: $main-blue;
-   /* Example: customizing button background color */
    color: $fill-white;
-   border-radius: 1em;
+   border-bottom-left-radius: 1em;
+   border-bottom-right-radius: 1em;
+
  }
 
  ::ng-deep .div.mat-mdc-select-panel {

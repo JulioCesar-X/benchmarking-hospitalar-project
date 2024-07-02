@@ -1,65 +1,230 @@
-@import '../../../../styles/_variables.scss';
-@import '../../../../styles/_mixins.scss';
+@import "../../../../styles/_variables.scss";
+@import "../../../../styles/_mixins.scss";
 
-.headingSection {
-  display: flex;
-  color: $main-blue;
+.forms-container{
+  box-sizing: border-box;
+  background-color: $fill-white;
+  border: $main-blue 10px solid;
+  max-height: 62vh;
+  overflow-y: scroll;
 
-  img {
-    width: 25px;
-    height: 25px;
-    margin-left: auto;
-    cursor: pointer;
+  &.forms-container__error {
+    border: $error-color 10px solid;
+  }
+  @media (max-width: 600px) {
+    overflow-y: visible;
+    border: none;
+    margin-block: 2em;
+    width: 90%;
+    height: auto;
   }
 }
 
-.table-container {
-  @include forms-container();
-  margin-block: 0.5em;
-  border: 10px solid $main-blue;
-  background-color: $fill-white;
-  width: 100%;
-  overflow-x: auto; // Permite rolagem horizontal se necessário
+
+.forms-Button {
+  /*   @include forms-Button(); */
+  background-color: transparent;
+  color: $fill-white;
+  border: $fill-white 2px solid;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:active {
+    background-color: $fill-white;
+    color: $main-blue;
+    border: $fill-white 2px solid;
+  }
 }
 
 .user-table {
-  width: 100%;
   border-collapse: collapse;
-  text-align: center;
+  min-width: 100%;
+
+  @media (max-width: 600px) {
+    max-width: 100%;
+  }
+
+
+  th,
+  td {
+    border: 1px solid $main-blue;
+  }
 
   th {
-      background-color: $main-blue;
-      color: $fill-white;
-      padding: 12px;
-      font-weight: bold;
-    }
+    background-color: $main-blue;
+    color: $fill-white;
+    font-weight: bold;
+  }
 
-    td {
+  tr:nth-child(even) {
+    background-color: $secondary-blue;
+  }
 
-      border-bottom: 1px solid $secondary-blue;
-    }
-
-    tr:hover {
-      background-color: $secondary-blue;
-    }
-
-    .edit-button,
-    .delete-button {
-      padding: 4px 8px;
-      margin-right: 10px;
-      border: none;
-      background-color: transparent;
-      cursor: pointer;
-
-      .icon {
-        height: 20px; // Ajuste conforme necessário
-        width: auto;
-      }
-    }
+  tr:hover {
+    background-color: $secondary-blue;
+  }
 }
 
-//Para n desformatar os users
-.p-2{
-  padding: 1em;
-  width: 28%;
+/* Loading circle styles */
+.loading-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  color: $main-blue;
+  margin-block: 1em;
+}
+
+.spinner {
+  border: 8px solid $secondary-blue;
+  border-top: 8px solid $main-blue;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading circle styles for blue background!! */
+.loading-circle_forBlueBG {
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  color: $fill-white;
+  margin-block: 1em;
+}
+
+.spinner_forBlueBG {
+  border: 8px solid $secondary-blue;
+  border-top: 8px solid $fill-white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+//modal styles
+.modal-container {
+  @include forms-container();
+
+  align-items: start;
+  width: 60%;
+  max-width: 800px;
+
+  @media (max-width: 600px) {
+    width: 80%;
+  }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: $fill-white;
+
+  h2 {
+    margin-bottom: 0;
+  }
+}
+
+.modal.show {
+  display: block;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: $fill-white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+//styles for the paginators
+mat-paginator {
+  background-color: $main-blue; /* Example: customizing button background color */
+  color: $fill-white;
+  border-radius: 1em;
+}
+
+::ng-deep .div.mat-mdc-select-panel {
+  border: 1px solid red;
+  color: red;
+  background-color: $main-blue;
+}
+
+::ng-deep
+  .cdk-overlay-pane:not(.mat-mdc-select-panel-above)
+  div.mat-mdc-select-panel {
+  border: 1px solid $main-dark-blue;
+  background-color: $main-blue;
+}
+
+::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted {
+  color: $fill-white;
+}
+
+::ng-deep
+  .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted.mat-mdc-option-active {
+  background-color: $secondary-blue;
+}
+
+::ng-deep
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled)
+  .mdc-list-item__primary-text {
+  color: $main-dark-blue !important;
+}
+
+::ng-deep
+  .mat-mdc-form-field-type-mat-select:not(.mat-form-field-disabled)
+  .mat-mdc-text-field-wrapper {
+  cursor: default !important;
 }

@@ -5,7 +5,7 @@
   <header class="flex justify-between relative mb-auto max-w-full max-h-99">
     <div class="flex items-center gap-2 logoSection">
       <div class="">
-        <img class="h-20 w-20 m-1"
+        <img class="h-[50px] w-[50px] m-1"
         src="../../../../assets/images/novoLogo.png" alt="SNS logo image">
       </div>
       <div class="">
@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="relative w-[35%] sm:w-[60%] z-[1] whiteTxt">
+    <div class="relative w-[35%] sm:w-[70%] z-[1] whiteTxt">
       <svg
       class="background-svg"
       xmlns="http://www.w3.org/2000/svg"
@@ -55,8 +55,9 @@
           (click)="toggleDropdown()">
           <mat-icon class="icon-login">account_circle</mat-icon>
           <div class="flex flex-col items-start ">
-            <span class="text-xl mr-0 sm:mr-10 ">{{ getUserName() }}</span>
-            <span class="text-xl mr-0 sm:mr-10">{{ getRole() }}</span>
+<!--             <span class="text-xl mr-0 sm:mr-10">Bem vindo,</span> -->
+            <span class="text-xl mr-0 sm:mr-10 ">Bem vindo, {{ getUserName() }}</span>
+
           </div>
         </button>
       </div>

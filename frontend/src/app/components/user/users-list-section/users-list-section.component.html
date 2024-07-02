@@ -1,50 +1,59 @@
-<div class="users-list-container">
-  <div class="table-container">
-    <div class="headingSection">
+  <section class="w-full p-0 gap-4 mx-auto h-[100%] forms-container">
+<!--     <div class=" flex headingSection">
       <h2>Lista de Utilizadores</h2>
       <img src="../../../assets/images/icons8-plus-30.png" class="icon" alt="createIcon"
         (click)="openDialog(null, 'create')">
-    </div>
-    <app-loading-spinner *ngIf="isLoading" message="A carregar Utilizadores..."></app-loading-spinner>
+    </div> -->
+
+
+    <app-loading-spinner class="my-auto" *ngIf="isLoading" message="A carregar Utilizadores..."></app-loading-spinner>
+
     <div *ngIf="!isLoading">
       <div *ngIf="users.length; else noResults">
-        <div class="overflow-x-auto relative">
-          <table class="user-table min-w-full">
-            <thead class="bg-main-blue text-fill-white">
-              <tr>
-                <th class="w-1/3 p-2">Nome</th>
-                <th class="w-1/3 p-2">Email</th>
-                <th class="w-1/3 p-2">Role</th>
-                <th class="w-1/3 p-2">Ações</th>
+
+        <table class="w-[90%] mx-auto user-table rounded-xl">
+          
+          <thead class="bg-gray-100 sticky top-[-2px] z-10 bottomBorder">
+            <tr>
+              <th class="p-2">Nome</th>
+              <th class="p-2 sm:px-4 hidden md:table-cell">Email</th>
+              <th class="p-2">Role</th>
+              <th class="p-2">Opções</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let user of users">
-                <td class="p-2">{{ user.name }}</td>
-                <td class="p-2">{{ user.email }}</td>
-                <td class="p-2">{{ user.roles[0]?.role_name }}</td>
-                <td class="p-2 text-center">
-                  <button (click)="openDialog(user, 'edit')" class="edit-button">
-                    <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit">
-                  </button>
-                  <button (click)="openDialog(user, 'delete')" class="delete-button">
-                    <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete">
-                  </button>
+                <td class="border p-2">{{ user.name }}</td>
+                <td class="border p-2 sm:px4 hidden md:table-cell">
+                  {{ user.email }}
+                </td>
+                <td class="border p-2">{{ user.roles[0]?.role_name }}</td>
+                <td class="border p-2 flex justify-center space-x-4">
+                  <img
+                  src="../../../assets/images/pencil-96.png"
+                  class="w-5 h-5 cursor-pointer"
+                  alt="Edit"
+                  (click)="openDialog(user, 'edit')"
+                />
+                <img
+                  src="../../../assets/images/trash-96.png"
+                  class="w-5 h-5 cursor-pointer"
+                  alt="Delete"
+                  (click)="openDialog(user, 'delete')"
+                />
                 </td>
               </tr>
             </tbody>
           </table>
-          <app-paginator [length]="totalLength"
-            (page)="handlePageEvent($event)" *ngIf="!isLoading"></app-paginator>
-
-
-        </div>
       </div>
       <ng-template #noResults>
         <div class="no-results">
           Nenhum utilizador encontrado.
         </div>
       </ng-template>
+
     </div>
-  </div>
-</div>
+  </section>
+  <app-paginator [length]="totalLength"
+  (page)="handlePageEvent($event)"></app-paginator> <!-- *ngIf="!isLoading" -->
+
