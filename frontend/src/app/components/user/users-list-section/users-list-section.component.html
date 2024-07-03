@@ -2,8 +2,9 @@
   <div class="table-container">
     <div class="headingSection">
       <h2>Lista de Utilizadores</h2>
-      <img src="../../../assets/images/icons8-plus-30.png" class="icon" alt="createIcon"
-        (click)="openDialog(null, 'create')">
+      <app-tooltip-button [tooltipText]="'Clique para registrar um novo utilizador'" [tooltipPosition]="'right'"
+        [icon]="'../../../assets/images/icons8-plus-30.png'" [altText]="'createIcon'" (click)="openDialog(null, 'create')">
+      </app-tooltip-button>
     </div>
     <app-loading-spinner *ngIf="isLoading" message="A carregar Utilizadores..."></app-loading-spinner>
     <div *ngIf="!isLoading">

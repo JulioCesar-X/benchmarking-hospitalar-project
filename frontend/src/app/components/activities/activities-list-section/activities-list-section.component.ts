@@ -11,6 +11,7 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { Activity } from '../../../core/models/activity.model';
 import { ActivityService } from '../../../core/services/activity/activity.service';
+import { TooltipButtonComponent } from '../../shared/tooltip-button/tooltip-button.component';
 
 @Component({
   selector: 'app-activities-list-section',
@@ -24,7 +25,8 @@ import { ActivityService } from '../../../core/services/activity/activity.servic
     LoadingSpinnerComponent,
     PaginatorComponent,
     SelectableListComponent,
-    DialogContentComponent
+    DialogContentComponent,
+    TooltipButtonComponent
   ]
 })
 export class ActivitiesListSectionComponent implements OnInit, OnChanges {

@@ -4,13 +4,8 @@
 .headingSection {
   display: flex;
   color: $main-blue;
-
-  img {
-    cursor: pointer;
-    width: 25px;
-    height: 25px;
-    margin-left: auto;
-  }
+  justify-content: space-between;
+  align-items: center;
 }
 
 .forms-container {

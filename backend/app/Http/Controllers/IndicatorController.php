@@ -143,24 +143,39 @@ class IndicatorController extends Controller
                 ->groupBy('year')
                 ->orderBy('year', 'desc')
                 ->limit(5)
-                ->select('year', DB::raw('SUM(valor_acumulado_agregado) as total'))
+                ->select('year', DB::raw('SUM(valor_mensal) as total'))
                 ->get();
 
-            // Totais acumulados do ano anterior
+            // Totais produzidos do ano anterior
             $previousYearTotal = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->whereYear('data', $year - 1)
-                ->sum('valor_acumulado_agregado');
+                ->sum('valor_mensal');
 
-            // Totais acumulados do ano atual
+            // Totais produzidos do ano atual
             $currentYearTotal = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->whereYear('data', $year)
-                ->sum('valor_acumulado_agregado');
+                ->sum('valor_mensal');
+
+            // Variações do período homólogo
+            $variations = DB::table('vw_variation_rate')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->where('year1', $year - 1)
+                ->where('year2', $year)
+                ->where('month', $month)
+                ->first([
+                    'variation_rate_homologous_abs',
+                    'variation_rate_homologous',
+                    'variation_rate_contractual_abs',
+                    'variation_rate_contractual'
+                ]);
 
             // Formatando a resposta JSON
             $response = [
@@ -174,6 +189,10 @@ class IndicatorController extends Controller
                 'lastFiveYears' => $lastFiveYears->toArray(),
                 'previousYearTotal' => $previousYearTotal,
                 'currentYearTotal' => $currentYearTotal,
+                'variation_rate_homologous_abs' => $variations->variation_rate_homologous_abs,
+                'variation_rate_homologous' => $variations->variation_rate_homologous,
+                'variation_rate_contractual_abs' => $variations->variation_rate_contractual_abs,
+                'variation_rate_contractual' => $variations->variation_rate_contractual
             ];
 
             return response()->json($response, 200);

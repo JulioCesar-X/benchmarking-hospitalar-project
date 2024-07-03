@@ -1,8 +1,9 @@
 <section class="forms-container">
   <div class="headingSection">
-    <h2>Lista de serviços</h2>
-    <img (click)="openDialog(null, 'create')" src="../../../assets/images/icons8-plus-30.png" class="icon"
-      alt="createIcon">
+    <h2>Lista de Serviços</h2>
+    <app-tooltip-button [tooltipText]="'Clique para adicionar um novo Serviço'" [tooltipPosition]="'right'"
+      [icon]="'../../../assets/images/icons8-plus-30.png'" [altText]="'createIcon'" (click)="openDialog(null, 'create')">
+    </app-tooltip-button>
   </div>
 
   <app-loading-spinner *ngIf="isLoading" message="A carregar serviços..."></app-loading-spinner>

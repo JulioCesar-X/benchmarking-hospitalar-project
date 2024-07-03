@@ -12,6 +12,7 @@ import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CardComponent } from '../../shared/card/card.component';
 import { Service } from '../../../core/models/service.model';
 import { ServiceService } from '../../../core/services/service/service.service';
+import { TooltipButtonComponent } from '../../shared/tooltip-button/tooltip-button.component';
 
 
 @Component({
@@ -27,7 +28,8 @@ import { ServiceService } from '../../../core/services/service/service.service';
     PaginatorComponent,
     SelectableListComponent,
     DialogContentComponent,
-    CardComponent
+    CardComponent,
+    TooltipButtonComponent
   ]
 })
 export class ServicesListSectionComponent implements OnInit, OnChanges {

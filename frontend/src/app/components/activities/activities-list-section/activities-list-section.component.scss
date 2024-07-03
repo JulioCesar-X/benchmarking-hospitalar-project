@@ -4,13 +4,8 @@
 .headingSection {
   display: flex;
   color: $main-blue;
-
-  img {
-    width: 25px;
-    height: 25px;
-    margin-left: auto;
-    cursor: pointer;
-  }
+  justify-content: space-between;
+  align-items: center;
 }
 
 .table-container {

@@ -12,56 +12,62 @@
     <div *ngIf="selectedTab === 'Producao'">
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="month" graphLabel="Produção" [filter]="filter"></app-charts>
+          <app-charts graphType="month" graphLabel="Produção" [graphData]="graphData"></app-charts>
+        </div>
+      </div>
+      <div class="flex w-full justify-center flex-wrap">
+        <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
+          <h1 class="_blueTxt">Variação de produção do periodo homologo</h1>
         </div>
       </div>
 
       <div class="flex w-full justify-around flex-wrap">
+        <div class="w-full lg:w-1/2 p-2">
+          <app-charts graphType="lineChart" graphLabel="Ano atual" [graphData]="graphData"></app-charts>
+        </div>
+        <div class="w-full lg:w-1/2 p-2">
+          <app-charts graphType="lineChart" graphLabel="Ano anterior" [graphData]="graphData"></app-charts>
+        </div>
+      </div>
+      <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
-          <h2 class="_blueTxt">Diferença:</h2>
-          <h2 class="_blueTxt">Variação:</h2>
+          <h2 class="_blueTxt">Diferença absoluta: {{ graphData?.variation_rate_homologous_abs }}</h2>
+        </div>
+        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
+          <h2 class="_blueTxt">(%)Diferença percentual: {{ graphData?.variation_rate_homologous }}%</h2>
         </div>
       </div>
 
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="lineChart" graphLabel="Ano atual" [filter]="filter"></app-charts>
+          <app-charts graphType="homologYear" graphLabel="Comparação anual" [graphData]="graphData"></app-charts>
         </div>
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="lineChart" graphLabel="Ano anterior" [filter]="filter"></app-charts>
-        </div>
-      </div>
-
-      <div class="flex w-full justify-around flex-wrap">
-        <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="homologYear" graphLabel="Comparação anual" [filter]="filter"></app-charts>
-        </div>
-        <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="fiveYear" graphLabel="5 anos anteriores" [filter]="filter"></app-charts>
+          <app-charts graphType="fiveYear" graphLabel="5 anos anteriores" [graphData]="graphData"></app-charts>
         </div>
       </div>
     </div>
 
     <div *ngIf="selectedTab === 'Metas'">
-      <div class="flex w-full justify-around flex-wrap">
-        <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="month" graphLabel="Produção" [filter]="filter"></app-charts>
-        </div>
-        <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="month-metas" graphLabel="Metas" [filter]="filter"></app-charts>
+      <div class="flex w-full justify-center flex-wrap">
+        <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
+          <h1 class="_blueTxt">Variação conctratualizada do periodo homologo</h1>
         </div>
       </div>
-
-      <div class="flex w-full justify-around flex-wrap">
+      <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
-          <h2 class="_blueTxt">Diferença:</h2>
-          <h2 class="_blueTxt">Variação:</h2>
+          <h2 class="_blueTxt">Diferença absoluta: {{ graphData?.variation_rate_contractual_abs }}</h2>
+        </div>
+        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
+          <h2 class="_blueTxt">Diferença percentual (%): {{ graphData?.variation_rate_contractual }}%</h2>
         </div>
       </div>
-
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="year" graphLabel="Comparação Anual" [filter]="filter"></app-charts>
+          <app-charts graphType="month" graphLabel="Produção" [graphData]="graphData"></app-charts>
+        </div>
+        <div class="w-full lg:w-1/2 p-2">
+          <app-charts graphType="month-metas" graphLabel="Metas" [graphData]="graphData"></app-charts>
         </div>
       </div>
     </div>
