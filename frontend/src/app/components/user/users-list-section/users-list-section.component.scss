@@ -13,9 +13,6 @@
   }
   @media (max-width: 600px) {
     overflow-y: visible;
-    border: none;
-    margin-block: 2em;
-    width: 90%;
     height: auto;
   }
 }
@@ -37,7 +34,7 @@
 }
 
 .user-table {
-  border-collapse: collapse;
+/*   border-collapse: collapse; */
   min-width: 100%;
 
   @media (max-width: 600px) {
