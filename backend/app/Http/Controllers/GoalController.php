@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Goal;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 
 
 class GoalController extends Controller
@@ -31,9 +32,26 @@ class GoalController extends Controller
         try {
             // Atualização da meta
             $goal->update($request->all());
+
+            // Invalida o cache após a atualização
+            $this->invalidateCache($goal->service_id, $goal->activity_id, $goal->indicator_id);
+
             return response()->json($goal, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    private function invalidateCache($serviceId, $activityId, $indicatorId)
+    {
+        $years = range(date('Y') - 5, date('Y'));
+        $months = range(1, 12);
+
+        foreach ($years as $year) {
+            foreach ($months as $month) {
+                $cacheKey = "graph_data_{$serviceId}_{$activityId}_{$indicatorId}_{$year}_{$month}";
+                Cache::forget($cacheKey);
+            }
         }
     }
 }

@@ -22,19 +22,19 @@ SELECT
     vf1.year AS year1,
     vf2.year AS year2,
     vf1.month,
-    vf1.valor_mensal AS total_monthly_year1,
-    vf2.valor_mensal AS total_monthly_year2,
-    vf2.valor_mensal - vf1.valor_mensal AS variation_rate_homologous_abs,
+    vf1.valor_acumulado_agregado AS total_accumulated_year1,
+    vf2.valor_acumulado_agregado AS total_accumulated_year2,
+    vf2.valor_acumulado_agregado - vf1.valor_acumulado_agregado AS variation_rate_homologous_abs,
     CASE
-        WHEN vf2.valor_mensal = 0 THEN NULL
-        ELSE ((vf2.valor_mensal - vf1.valor_mensal) / vf2.valor_mensal) * 100
+        WHEN vf1.valor_acumulado_agregado = 0 THEN NULL
+        ELSE ((vf2.valor_acumulado_agregado - vf1.valor_acumulado_agregado) / vf1.valor_acumulado_agregado) * 100
     END AS variation_rate_homologous,
     gm1.valor_acumulado_mensal AS monthly_target_year1,
     gm2.valor_acumulado_mensal AS monthly_target_year2,
-    vf2.valor_mensal - gm2.valor_acumulado_mensal AS variation_rate_contractual_abs,
+    vf2.valor_acumulado_agregado - gm2.valor_acumulado_mensal AS variation_rate_contractual_abs,
     CASE
         WHEN gm2.valor_acumulado_mensal = 0 THEN NULL
-        ELSE ((vf2.valor_mensal - gm2.valor_acumulado_mensal) / gm2.valor_acumulado_mensal) * 100
+        ELSE ((vf2.valor_acumulado_agregado - gm2.valor_acumulado_mensal) / gm2.valor_acumulado_mensal) * 100
     END AS variation_rate_contractual
 FROM
     vw_indicator_accumulated vf1

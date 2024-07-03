@@ -98,8 +98,8 @@ export class IndicatorService {
     );
   }
 
-  updateIndicator(id: number, indicator: Indicator): Observable<Indicator> {
-    return this.http.put<Indicator>(`/indicators/${id}`, indicator).pipe(
+  updateIndicator(id: number, indicator: any): Observable<any> {
+    return this.http.put<any>(`/indicators/${id}`, indicator).pipe(
       catchError(error => throwError(() => new Error('Failed to update indicator')))
     );
   }
