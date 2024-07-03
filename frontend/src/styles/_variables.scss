@@ -1,4 +1,4 @@
-// Cores
+// Cores SCSS
 $main-blue: #9CCCDE;
 $darker-main-blue: #88B8CA;
 $main-dark-blue: #131D47;
@@ -7,6 +7,14 @@ $error-red: #FE557D;
 $main-red: #FF5A5F;
 $fill-white: #fff;
 $darker-main-red:#b02529;
+
+/* below we assign the global colors to css variables, this way we can expand in the way we use them,
+for example to customize colors in lordIcons icons */
+:root{
+    --main-blue: #{$main-blue};
+    --main-dark-blu: #($main-dark-blue);
+}
+
 
 $primary-color: #70c6d6;
 $secondary-color: #f5f5f5;

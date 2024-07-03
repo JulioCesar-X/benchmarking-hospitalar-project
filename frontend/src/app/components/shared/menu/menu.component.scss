@@ -7,8 +7,9 @@
     padding-block: 1em;
     border-top-right-radius: 1em;
     border-bottom-right-radius: 1em;
-    min-width: 350px; /* change later to something more responsive?? */
+    min-width: 270px; /* change later to something more responsive?? */
     max-width: 30%;
+
     height: 100%; /* aprox value to make dashboard fill screen */
 /*     clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); */
     overflow: hidden;
@@ -17,17 +18,11 @@
         min-width: none;
         max-width: none;
         clip-path: none;
+        border: 10px solid $darker-main-blue;
         border-radius: 1em;
         margin: 0 auto;
     }
 }
-.sticky-menu {
-    position: -webkit-sticky; /* For Safari */
-    position: sticky;
-    top: 100px; /* Adjust this value based on how much you want the menu to stick from the top */
-    z-index: 1000; /* Ensure it appears above other content */
-  }
-
 .dashboardTitle{
     margin: 0;
     font-size: 1.2rem;
@@ -70,7 +65,7 @@
 .dashboardOption{
     cursor: pointer;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     gap: 0.5em;
     background-color: transparent;
@@ -81,6 +76,9 @@
     
     h2{
         margin: 0.5em;
+    }
+    @media (max-width:600px){
+
     }
 }
 .dashboardOption.is-open, .dashboardOption:hover{
