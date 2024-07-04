@@ -1,6 +1,5 @@
 {
-    "root": "dist",
-    "clean_urls": true,
+    "root": "dist/browser/",
     "routes": {
         "/**": "index.html"
     }
