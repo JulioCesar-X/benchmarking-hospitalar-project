@@ -3,27 +3,31 @@
 # Wait for the database to be ready
 dockerize -wait tcp://$DB_HOST:$DB_PORT -timeout 60s
 
-# Start the Laravel application in the background
-php artisan serve --host=0.0.0.0 --port=8000 &
-
-echo "Laravel application started."
-
 # Clear caches
 php artisan clear:all
 
-echo "Running migrations and seeders in the background."
+# Função para rodar migrations e seeds
+run_migrations_and_seeds() {
+    if [ "$RESET_SEEDERS" = "true" ]; then
+        php artisan migrate:fresh --seed
+    else
+        php artisan migrate --force
+    fi
 
-# Run migrations and seeders in the background
-if [ "$RESET_SEEDERS" = "true" ]; then
-    php artisan migrate:fresh --seed &
-else
-    php artisan migrate --force &
-fi
+    # Ajustar sequências do banco de dados se necessário
+    php artisan db:adjust-sequences
 
-# Ajustar sequências do banco de dados se necessário em background
-php artisan db:adjust-sequences &
+    # Criar arquivo de controle indicando que o processo foi concluído
+    touch /tmp/seeding_completed
+}
 
-# Wait for background processes to finish
-wait
+# Rodar migrations e seeds em background
+run_migrations_and_seeds &
 
-echo "Migrations and seeders completed."
+# Esperar até que o arquivo de controle seja criado
+while [ ! -f /tmp/seeding_completed ]; do
+  sleep 1
+done
+
+# Start the Laravel application
+php artisan serve --host=0.0.0.0 --port=8000
