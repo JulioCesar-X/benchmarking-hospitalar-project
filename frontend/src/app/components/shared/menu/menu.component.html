@@ -31,10 +31,19 @@
     </div>
     <div class="subMenu" [ngClass]="{'is-open': isManageContentSubMenuOpen}">
       <div *ngIf="getRole() === 'admin'" class="subMenuItem">
+        <a routerLink="/services/create" routerLinkActive="Ativo">Criar serviço</a>
+      </div>
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
         <a routerLink="/services" routerLinkActive="Ativo">Gerir serviços</a>
       </div>
       <div *ngIf="getRole() === 'admin'" class="subMenuItem">
+        <a routerLink="/activities/create" routerLinkActive="Ativo">Criar atividades</a>
+      </div>
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
         <a routerLink="/activities" routerLinkActive="Ativo">Gerir atividades</a>
+      </div>
+      <div *ngIf="getRole() === 'admin'" class="subMenuItem">
+        <a routerLink="/indicators/create" routerLinkActive="Ativo">Criar indicadores</a>
       </div>
       <div *ngIf="getRole() === 'admin'" class="subMenuItem">
         <a routerLink="/indicators" routerLinkActive="Ativo">Gerir indicadores</a>
