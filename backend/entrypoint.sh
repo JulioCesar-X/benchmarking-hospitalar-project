@@ -18,8 +18,8 @@ php artisan clear:all
 run_migrations_and_seeds() {
     echo "Running migrations and seeders..."
     if [ "$RESET_SEEDERS" = "true" ]; then
-        echo "Running migrate:fresh --seed"
-        php artisan migrate:fresh --seed
+        echo "Running migrate:fresh --seed --force"
+        php artisan migrate:fresh --seed --force
     else
         echo "Running migrate --force"
         php artisan migrate --force
