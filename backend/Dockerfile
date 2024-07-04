@@ -27,8 +27,12 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize
 # Set working directory inside the container
 WORKDIR /var/www/html
 
+
 # Copy the application code to the container
 COPY . .
+
+# Copy the .env file to the container
+COPY .env .env
 
 
 # Install Composer dependencies

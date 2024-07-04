@@ -3,6 +3,8 @@
 # Wait for the database to be ready
 dockerize -wait tcp://$DB_HOST:$DB_PORT -timeout 60s
 
+php artisan clear:all
+
 # Run migrations
 if [ "$RESET_SEEDERS" = "true" ]; then
     php artisan migrate:fresh --seed
