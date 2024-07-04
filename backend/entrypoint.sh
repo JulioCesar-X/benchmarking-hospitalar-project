@@ -19,6 +19,9 @@ run_migrations_and_seeds() {
 
     # Criar arquivo de controle indicando que o processo foi concluído
     touch /tmp/seeding_completed
+
+    # Exibir mensagem de feedback
+    echo "Seeding completed successfully."
 }
 
 # Rodar migrations e seeds em background

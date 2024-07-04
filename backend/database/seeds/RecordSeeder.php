@@ -29,7 +29,7 @@ class RecordSeeder extends Seeder
     private function insertYearlyRecords($sais, $year, $isZero)
     {
         foreach ($sais as $sai) {
-            for ($month = 1; $month <= 12; $month++) {
+            for ($month = 1; $month <= 1; $month++) {
                 $date = Carbon::create($year, $month, 1)->format('Y-m-d');
                 $value = $isZero ? 0 : $this->generateRandomValue($sai->indicator->indicator_name);
 

@@ -24,8 +24,8 @@ class GoalSeeder extends Seeder
         $nextYear = 2024;      // Próximo ano para metas a zero
 
         foreach ($sais as $sai) {
-            // Inserir meta para o ano atual com valores aleatórios
-            $this->createGoal($sai, $currentYear, $this->generateRandomTarget());
+            // // Inserir meta para o ano atual com valores aleatórios
+            // $this->createGoal($sai, $currentYear, $this->generateRandomTarget());
 
             // Inserir meta para o próximo ano com valor zero
             $this->createGoal($sai, $nextYear, 0);
