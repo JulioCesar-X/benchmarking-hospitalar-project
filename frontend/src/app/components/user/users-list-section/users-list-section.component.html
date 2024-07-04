@@ -1,24 +1,26 @@
-  <section class=" w-full p-0 gap-4 mx-auto h-[100%] forms-container">
-<!--     <div class=" flex headingSection">
-      <h2>Lista de Utilizadores</h2>
-      <img src="../../../assets/images/icons8-plus-30.png" class="icon" alt="createIcon"
-        (click)="openDialog(null, 'create')">
-    </div> -->
+  <section class="w-full mt-2 p-0 gap-4 mx-auto  forms-container">
+    <div class="flex justify-center items-center text-xl pb-5 gap-10 blueBG ">
+      <h2 class="whiteTxt mt-2 my-0">Lista de Utilizadores</h2>
 
+      <div class="p-1 mt-2 whiteBG createBtn">      
+        <img src="../../../assets/images/icons8-plus-30.png" class="w-[20px] h-[20px]" alt="createIcon"
+        (click)="openDialog(null, 'create')">
+      </div>
+    </div>
 
     <app-loading-spinner class="my-auto" *ngIf="isLoading" message="A carregar Utilizadores..."></app-loading-spinner>
 
-    <div *ngIf="!isLoading">
-      <div *ngIf="users.length; else noResults">
+    <div *ngIf="!isLoading" class="">
+      <div *ngIf="users.length; else noResults" class="">
 
-        <table class="w-[90%] mx-auto user-table rounded-xl">
+        <table class="w-[90%] h-[100%] mx-auto user-table rounded-xl ">
           
-          <thead class="bg-gray-100 sticky top-[-2px] z-10">
-            <tr class="headerT">
+          <thead class="sticky top-[-2px] z-10">
+            <tr class="">
               <th class="p-2">Nome</th>
               <th class="p-2 sm:px-4 hidden md:table-cell">Email</th>
               <th class="p-2">Role</th>
-              <th class="p-2">Opções</th>
+              <th class="py-2">Opções</th>
               </tr>
             </thead>
             <tbody>
@@ -28,17 +30,17 @@
                   {{ user.email }}
                 </td>
                 <td class="border p-2">{{ user.roles[0]?.role_name }}</td>
-                <td class="border p-2">
+                <td class="border py-2">
                   <div class=" flex justify-center space-x-4">
                     <img
                     src="../../../assets/images/pencil-96.png"
-                    class="w-5 h-5 cursor-pointer"
+                    class="w-5 h-5 cursor-pointer optionBtns"
                     alt="Edit"
                     (click)="openDialog(user, 'edit')"
                   />
                   <img
                     src="../../../assets/images/trash-96.png"
-                    class="w-5 h-5 cursor-pointer"
+                    class="w-5 h-5 cursor-pointer optionBtns"
                     alt="Delete"
                     (click)="openDialog(user, 'delete')"
                   />
@@ -59,4 +61,5 @@
   </section>
   <app-paginator [length]="totalLength"
   (page)="handlePageEvent($event)"></app-paginator> <!-- *ngIf="!isLoading" -->
+  
 

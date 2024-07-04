@@ -1,10 +1,44 @@
 @import "../../../../styles/_variables.scss";
 @import "../../../../styles/_mixins.scss";
 
+.blueBG{
+  background-color: $main-blue;
+}
+.whiteBG{
+  background-color: $fill-white;
+}
+.whiteTxt{
+  color: $fill-white;
+}
+.createBtn{
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.5ms ease-in-out;
+
+}
+.createBtn:hover{
+  background-color: $secondary-blue;
+  transform: scale(1.1);
+}
+
+.optionBtns{
+  transition: transform 0.5ms ease-in-out;
+
+}
+.optionBtns:hover{
+  transform: scale(1.1);
+}
+
+
+
+
 .forms-container{
   box-sizing: border-box;
   background-color: $fill-white;
   border: $main-blue 10px solid;
+  height: 100%;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
   max-height: 62vh;
   overflow-y: scroll;
 
@@ -35,20 +69,20 @@
 
 .user-table {
 /*   border-collapse: collapse; */
+
   min-width: 100%;
+  
 
   @media (max-width: 600px) {
     max-width: 100%;
   }
-
-
   th,
   td {
     border: 1px solid $main-blue;
   }
 
   th {
-    background-color: $main-blue;
+    background-color: darken($main-blue, 20);
     color: $fill-white;
     font-weight: bold;
   }

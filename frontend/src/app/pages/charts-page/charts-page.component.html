@@ -1,27 +1,26 @@
 <div class="m-2 w-full">
   <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false"
     (filterEvent)="handleFilterData($event)"></app-filter>
-
+ 
   <div class="tab-headers">
     <button class="tab-link" [class.active]="selectedTab === 'Producao'"
       (click)="selectTab('Producao')">Produção</button>
     <button class="tab-link" [class.active]="selectedTab === 'Metas'" (click)="selectTab('Metas')">Metas</button>
   </div>
-
-  <div class="graphicsContainer">
+ 
+  <div class="flex gap-4 rounded-lg my-0 max-w-9/10 p-4 justify-around bg-white shadow-md graphicsContainer">
     <div *ngIf="selectedTab === 'Producao'">
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
           <app-charts graphType="month" graphLabel="Produção" [filter]="filter"></app-charts>
         </div>
       </div>
-
       <div class="flex w-full justify-center flex-wrap">
         <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
           <h1 class="_blueTxt">Variação de produção do periodo homologo</h1>
         </div>
       </div>
-
+ 
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
           <app-charts graphType="lineChart" graphLabel="Ano atual" [filter]="filter"></app-charts>
@@ -30,26 +29,16 @@
           <app-charts graphType="lineChart" graphLabel="Ano anterior" [filter]="filter"></app-charts>
         </div>
       </div>
-
-<!--       <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
+      <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
-          <h2 class="_blueTxt">Diferença absoluta:{{variation_rate_homologous_abs}}</h2>
+          <h2 class="_blueTxt">Diferença absoluta: {{ graphData?.variation_rate_homologous_abs }}</h2>
         </div>
         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
-          <h2 class="_blueTxt">Diferença percentual(%):{{variation_rate_homologous}}</h2>
+          <h2 class="_blueTxt">Diferença percentual(%): {{ graphData?.variation_rate_homologous }}</h2>
         </div>
-      </div> -->
-
-
-
-
+      </div>
+ 
       <div class="flex w-full justify-around flex-wrap">
-        <div class="flex w-full justify-center flex-wrap">
-          <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
-            <h1 class="_blueTxt">Variação conctratualizada do periodo homologo</h1>
-          </div>
-        </div>
-
         <div class="w-full lg:w-1/2 p-2">
           <app-charts graphType="homologYear" graphLabel="Comparação anual" [filter]="filter"></app-charts>
         </div>
@@ -58,8 +47,13 @@
         </div>
       </div>
     </div>
-
+ 
     <div *ngIf="selectedTab === 'Metas'">
+      <div class="flex w-full justify-center flex-wrap">
+        <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
+          <h1 class="_blueTxt">Variação conctratualizada do periodo homologo</h1>
+        </div>
+      </div>
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
           <app-charts graphType="month" graphLabel="Produção" [filter]="filter"></app-charts>
@@ -68,17 +62,19 @@
           <app-charts graphType="month-metas" graphLabel="Metas" [filter]="filter"></app-charts>
         </div>
       </div>
-
-      <div class="flex w-full justify-around flex-wrap">
+ 
+      <div class="flex justify-center w-full pt-2 pb-2 rounded-lg _whiteBG">
         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
-          <h2 class="_blueTxt">Diferença:</h2>
-          <h2 class="_blueTxt">Variação:</h2>
+          <h2 class="_blueTxt">Diferença absoluta: {{ graphData?.variation_rate_contractual_abs }}</h2>
+        </div>
+        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 rounded-lg _whiteBG">
+          <h2 class="_blueTxt">Diferença percentual(%): {{ graphData?.variation_rate_contractual }}</h2>
         </div>
       </div>
-
+ 
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="year" graphLabel="Comparação Anual" [filter]="filter"></app-charts>
+          <app-charts graphType="year-metas" graphLabel="Comparação Anual" [filter]="filter"></app-charts>
         </div>
       </div>
     </div>

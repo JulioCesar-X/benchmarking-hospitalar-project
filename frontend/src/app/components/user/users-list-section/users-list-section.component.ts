@@ -20,7 +20,7 @@ import { DialogContentComponent } from '../../shared/dialog-content/dialog-conte
     LoadingSpinnerComponent,
     PaginatorComponent,
     DialogContentComponent
-  ]
+  ],
 })
 export class UsersListSectionComponent implements OnInit, OnChanges {
   @Input() users: any[] = [];

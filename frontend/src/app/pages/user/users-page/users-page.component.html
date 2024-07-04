@@ -2,8 +2,8 @@
    <app-menu></app-menu>
 </div>
 
-<div class="sm:mx-1 w-full max-h-full">
+<div class="sm:mx-1 w-full flex flex-col">
   <app-search-filter (search)="onSearch($event)" (searchStarted)="onSearchStarted()" (reset)="onReset()"
     type="users"></app-search-filter>
-  <app-users-list-section [users]="filteredUsers" [isLoading]="isLoadingSearch"></app-users-list-section>
+  <app-users-list-section class="" [users]="filteredUsers" [isLoading]="isLoadingSearch"></app-users-list-section>
 </div>

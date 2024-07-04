@@ -12,8 +12,8 @@
   <div class="dashboardOptionsContainer" [ngClass]="{'is-open': isMenuOpen}">
     <!-- menuItem -->
     <div class="dashboardOption" (click)="openManageUsers()" [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
-      <h2>Gerir Users</h2>
       <div class="plusIcon" [ngClass]="{'is-open': isManageUsersSubMenuOpen}"></div>
+      <h2>Gerir Users</h2>
     </div>
     <!-- sub menuItem -->
     <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
@@ -26,8 +26,8 @@
     </div>
 
     <div class="dashboardOption" (click)="openManageContent()" [ngClass]="{'is-open': isManageContentSubMenuOpen}">
-      <h2>Gerir Conteúdo</h2>
       <div class="plusIcon" [ngClass]="{'is-open': isManageContentSubMenuOpen}"></div>
+      <h2>Gerir Conteúdo</h2>
     </div>
     <div class="subMenu" [ngClass]="{'is-open': isManageContentSubMenuOpen}">
       <div *ngIf="getRole() === 'admin'" class="subMenuItem">
@@ -50,8 +50,9 @@
     </div>
     <div class="dashboardOption" (click)="openManageNotifications()"
       [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
-      <h2>Gerir Notificações</h2>
       <div class="plusIcon" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}"></div>
+      <h2>Gerir Notificações</h2>
+
     </div>
     <div class="subMenu" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
       <div class="subMenuItem">

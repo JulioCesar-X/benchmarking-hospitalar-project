@@ -2,13 +2,18 @@
 @import '../../../../styles/_mixins.scss';
 
 
-.forms-container {
-  background-color: $main-blue;
-/*   border: $secondary-blue 7px solid; */
 
-  &.forms-container__error{
-    border: $error-color 7px solid;
-  }
+.searchBtn{
+  cursor: pointer;
+  background-color: $fill-white;
+}
+.searchBtn:hover{
+  background-color: $secondary-blue;
+}
+
+#searchIcon {
+  box-sizing: border-box;
+  --lord-icon-primary: var(--main-blue);
 }
 
 .txtWhite{
@@ -19,7 +24,7 @@
   box-sizing: border-box;
   color: $main-blue;
   background-color: $fill-white;
-  border: none;
+  border: solid 2px $main-blue;
 
   &::placeholder{
     color: $main-blue;

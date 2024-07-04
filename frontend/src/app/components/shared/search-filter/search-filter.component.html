@@ -1,8 +1,19 @@
-<section class="mx-auto rounded-t-xl p-2 forms-container">
+<section class="">
   <form [formGroup]="filterForm" (ngSubmit)="onSearch()">
-    <div class="flex gap-1 w-full items-center text-start txtWhite">
+    <div class="flex gap-1 w-[50%] mx-auto items-center txtWhite">
       <input type="text" formControlName="searchTerm" class="w-full rounded-md py-1 px-2 inputContainer--input" placeholder="Procurar...">
-      <button type="submit" class="py-1 w-[20%] max-w-[100px] rounded-md cursor-pointer self-end forms-Button">Procurar</button>
-    </div>
+    
+      <button type="submit" class="pr-1 flex items-center rounded-lg searchBtn">
+          <lord-icon
+          src="https://cdn.lordicon.com/fkdzyfle.json"
+
+          style="width:40px;height:30px"
+          id="searchIcon">
+        </lord-icon>
+      </button>
+      
+  
+<!--       <button type="submit" class="py-1 w-[20%] max-w-[100px] rounded-md cursor-pointer self-end forms-Button">Procurar</button>
+ -->    </div>
   </form>
 </section>

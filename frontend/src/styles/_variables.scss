@@ -1,8 +1,12 @@
 // Cores SCSS
-$main-blue: #9CCCDE;
+$main-blue: #78A1BB;
 $darker-main-blue: #88B8CA;
-$main-dark-blue: #131D47;
-$secondary-blue: #D2E8ED;
+$main-dark-blue: #283044;
+$secondary-blue: #EBF5EE;
+$khaki: #BFA89E;
+$cinereous: #8B786D;
+
+
 $error-red: #FE557D;
 $main-red: #FF5A5F;
 $fill-white: #fff;
@@ -12,7 +16,8 @@ $darker-main-red:#b02529;
 for example to customize colors in lordIcons icons */
 :root{
     --main-blue: #{$main-blue};
-    --main-dark-blu: #($main-dark-blue);
+    --main-dark-blue: #($main-dark-blue);
+    --fill-white: #($fill-white);
 }
 
 

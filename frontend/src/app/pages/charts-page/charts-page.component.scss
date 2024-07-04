@@ -7,18 +7,18 @@
   }
 
 .graphicsContainer{
-    background-color: $main-blue;
-    margin: auto;
     gap: 1em;
-
-    box-sizing: border-box;
     border-radius: 1em;
     margin-block: 0;
-    border: none;
     max-width: 90%;
     display: flex;
     padding: 1em;
     justify-content: space-around;
+
+    background-color: $main-blue;
+    margin: auto;
+    box-sizing: border-box;
+    border: none;
 }
 
 ._whiteBG{

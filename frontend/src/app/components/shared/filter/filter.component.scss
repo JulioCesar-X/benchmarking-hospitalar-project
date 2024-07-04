@@ -3,11 +3,17 @@
 
 
 .forms-container{
-    @include forms-container();
-
-    margin-block: 0;
+    box-sizing: border-box;
     border: none;
-    width: 100%;
+    background-color: $main-blue;
+  
+    &.forms-container__error{
+      border: $error-color 7px solid;
+    }
+}
+
+.whiteTxt{
+    color: $fill-white;
 }
 
 
@@ -27,21 +33,19 @@
     }
 }
 
-.forms-container--inputContainer{
-    @include forms-container--inputContainer();
-    gap: 1em;
-
-    div{
-        display: flex;
-        align-items: center;
-    }
-}
-
 .inputContainer--input{
     @include inputContainer--input();
 }
 
 .forms-Button{
-    @include forms-Button();
+    color:  $fill-white;
+    border: $fill-white 2px solid;
+    text-transform: uppercase;
+
+    &:active{
+      background-color: $fill-white;
+      color:  $main-blue;
+      border: $fill-white 2px solid;
+    }
     margin-top: 0;
 }
