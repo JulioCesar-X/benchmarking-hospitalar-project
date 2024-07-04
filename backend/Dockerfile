@@ -46,7 +46,7 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expor a porta em que o PHP-FPM vai rodar
-EXPOSE 9000
+EXPOSE 8000
 
 # Use the entrypoint script to setup the application
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
