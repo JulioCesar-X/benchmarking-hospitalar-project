@@ -36,8 +36,7 @@ JOIN
     (SELECT 1 AS month UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
      UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8
      UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12) AS m
-ON
-    m.month IS NOT NULL
+ON TRUE
 GROUP BY
     g.sai_id, sai.service_id, sai.activity_id, i.id, g.year, m.month, i.indicator_name, g.target_value;
 ");

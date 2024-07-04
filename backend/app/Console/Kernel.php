@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\Cleanner::class,
+        \App\Console\Commands\AdjustSequences::class,
     ];
 
     /**
