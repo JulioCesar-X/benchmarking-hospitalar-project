@@ -16,18 +16,10 @@ run_migrations_and_seeds() {
 
     # Ajustar sequências do banco de dados se necessário
     php artisan db:adjust-sequences
-
-    # Criar arquivo de controle indicando que o processo foi concluído
-    touch /tmp/seeding_completed
 }
 
-# Rodar migrations e seeds em background
-run_migrations_and_seeds &
+# Rodar migrations e seeds
+run_migrations_and_seeds
 
-# Esperar até que o arquivo de controle seja criado
-while [ ! -f /tmp/seeding_completed ]; do
-  sleep 1
-done
-
-# Start the Laravel application
+# Iniciar a aplicação Laravel
 php artisan serve --host=0.0.0.0 --port=8000
