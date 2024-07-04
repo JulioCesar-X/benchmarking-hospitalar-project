@@ -3,7 +3,6 @@
 use Illuminate\Database\Seeder;
 use App\Goal;
 use App\Sai;
-use Carbon\Carbon;
 
 class GoalSeeder extends Seeder
 {
@@ -18,17 +17,15 @@ class GoalSeeder extends Seeder
     private function insertGoals()
     {
         $sais = Sai::with(['service', 'activity', 'indicator'])->get();
-        
-        // Definir os anos específicos para inserção de metas
-        $currentYear = [2020,2021,2022,2023,2024];
-        foreach($currentYear as $year){
-            
+        $currentYears = [2020, 2021, 2022, 2023, 2024];
+
+        foreach ($currentYears as $year) {
             foreach ($sais as $sai) {
-                // Inserir meta para o ano atual com valores aleatórios
-                $this->createGoal($sai, $year, $this->generateRandomTarget());
+                if ($sai) {
+                    $this->createGoal($sai, $year, $this->generateRandomTarget());
+                }
             }
         }
-
     }
 
     private function createGoal($sai, $year, $target)
