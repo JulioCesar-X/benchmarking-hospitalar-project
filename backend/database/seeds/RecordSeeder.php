@@ -19,17 +19,20 @@ class RecordSeeder extends Seeder
     {
         $sais = Sai::with(['service', 'activity', 'indicator'])->get();
 
-        // Inserir dados para 2023 com valores aleatórios
-        $this->insertYearlyRecords($sais, 2023, true);
+        $currentYear = [2020,2021,2022,2023,2024];
 
-        // Inserir dados para 2024 com valores zero
-        $this->insertYearlyRecords($sais, 2024, true);
+        foreach($currentYear as $year){
+            foreach ($sais as $sai) {
+                // Inserir dados para o ano atual com valores aleatórios
+                $this->insertYearlyRecords($sai, $year, true);
+            }
+        }
     }
 
     private function insertYearlyRecords($sais, $year, $isZero)
     {
         foreach ($sais as $sai) {
-            for ($month = 1; $month <= 1; $month++) {
+            for ($month = 1; $month <= 12; $month++) {
                 $date = Carbon::create($year, $month, 1)->format('Y-m-d');
                 $value = $isZero ? 0 : $this->generateRandomValue($sai->indicator->indicator_name);
 
@@ -54,7 +57,6 @@ class RecordSeeder extends Seeder
             // Adicione outros indicadores conforme necessário
             'default' => ['min' => 150, 'max' => 1000] // Valor padrão
         ];
-
         $range = $ranges[$indicatorName] ?? $ranges['default'];
         return rand($range['min'], $range['max']);
     }

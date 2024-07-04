@@ -2,13 +2,23 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
-// Serve only the static files form the dist directory
-app.use(express.static(__dirname + '/dist/browser'));
+const distDir = path.join(__dirname, 'dist/browser');
 
-app.get('/*', function(req, res) {
-    res.sendFile(path.join(__dirname + '/dist/browser/index.html'));
+app.use(express.static(distDir));
+
+app.get('*', (req, res) => {
+  const indexPath = path.join(distDir, 'index.html');
+  console.log(`Serving index.html from: ${indexPath}`);
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error(`Error serving index.html: ${err}`);
+      res.status(500).send(err);
+    }
+  });
 });
 
-// Start the app by listening on the default Render port
-app.listen(process.env.PORT || 8080);
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
