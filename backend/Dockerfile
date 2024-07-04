@@ -31,9 +31,6 @@ WORKDIR /var/www/html
 # Copy the application code to the container
 COPY . .
 
-# Copy the .env file to the container
-COPY .env .env
-
 
 # Install Composer dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader \
