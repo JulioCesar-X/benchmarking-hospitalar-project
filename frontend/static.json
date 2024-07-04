@@ -1,9 +1,6 @@
 {
-    "redirects": [
-        {
-            "source": "/*",
-            "destination": "/index.html",
-            "type": 200
-        }
-    ]
+    "root": "dist/browser",
+    "routes": {
+        "/**": "index.html"
+    }
 }

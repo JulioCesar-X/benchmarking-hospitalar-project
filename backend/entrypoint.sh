@@ -1,40 +1,34 @@
 #!/bin/bash
 
-set -e
-
-echo "Starting entrypoint script..."
-
 # Wait for the database to be ready
-echo "Waiting for the database to be ready..."
 dockerize -wait tcp://$DB_HOST:$DB_PORT -timeout 60s
 
-echo "Database is ready."
-
 # Clear caches
-echo "Clearing caches..."
 php artisan clear:all
 
 # Função para rodar migrations e seeds
 run_migrations_and_seeds() {
-    echo "Running migrations and seeders..."
     if [ "$RESET_SEEDERS" = "true" ]; then
-        echo "Running migrate:fresh --seed --force"
         php artisan migrate:fresh --seed --force
     else
-        echo "Running migrate --force"
         php artisan migrate --force
     fi
 
     # Ajustar sequências do banco de dados se necessário
-    echo "Adjusting database sequences"
     php artisan db:adjust-sequences
+
+    # Criar arquivo de controle indicando que o processo foi concluído
+    touch /tmp/seeding_completed
 }
 
-# Rodar migrations e seeds
-run_migrations_and_seeds
+# Rodar migrations e seeds em background
+run_migrations_and_seeds &
 
-echo "Migrations and seeders completed."
+# Iniciar um processo que mantém a aplicação ativa enquanto o seeding está em andamento
+( while [ ! -f /tmp/seeding_completed ]; do
+    echo "Waiting for seeding to complete..."
+    sleep 60
+  done ) &
 
 # Start the Laravel application
-echo "Starting Laravel application..."
 php artisan serve --host=0.0.0.0 --port=8000
