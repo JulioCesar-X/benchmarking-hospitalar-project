@@ -1,25 +1,10 @@
 @import '../../../styles/_variables.scss';
 
-
 :host {
     flex: 1;
     display: flex;
   }
 
-.graphicsContainer{
-    gap: 1em;
-    border-radius: 1em;
-    margin-block: 0;
-    max-width: 90%;
-    display: flex;
-    padding: 1em;
-    justify-content: space-around;
-
-    background-color: $main-blue;
-    margin: auto;
-    box-sizing: border-box;
-    border: none;
-}
 
 ._whiteBG{
     background-color: $fill-white;
@@ -29,16 +14,24 @@
     margin:0;
     color: $main-blue;
 }
+.borderColorBlue{
+    border-color: $main-blue;
+}
 
-  //tabs styles UPDATED VERSION
+.graphicsContainer{
+    background-color: $main-blue;
+    box-sizing: border-box;
+    border: none;
+}
+
+.tab-headers-wrapper{
+    background-color: $darker-main-blue;
+}
 .tab-headers {
     display: flex;
     width: 30%;
-    margin-left: 8em;
-    margin-top: 1em;
     overflow: hidden;
-    border-top-left-radius: 1em;
-    border-top-right-radius: 1em;
+
 } @media(max-width:600px){
     .tab-headers{
         width: 50%;
@@ -49,7 +42,7 @@
 .tab-link {
     color: $fill-white;
     width: 100%;
-    background-color: $secondary-blue;
+    background-color: darken($main-blue, 10);
     border: none;
     outline: none;
     cursor: pointer;
@@ -59,29 +52,30 @@
 }
 
 .tab-link:hover, .tab-link.active:hover {
-    background-color: $darker-main-blue;
+    background-color: darken($main-blue, 40);
 }
 
 .tab-link.active {
-    background-color: $main-blue;
+    background-color: darken($darker-main-blue, 40);
 }
 
+/* To top button styles */
 #toTopIcon {
-    --lord-icon-primary: var(--main-dark-blue); /* Correct usage of the CSS variable */
+    --lord-icon-primary: var(--main-dark-blue); 
   }
 
 .toTopBtn {
     cursor: pointer;
-    right: 50%; /* Adjust as needed */
-    bottom: -50px; /* Start from below the viewport */
-    transition: bottom 0.5s ease-in-out; /* Smooth transition for moving up */
+    right: 50%; 
+    bottom: -50px;
+    transition: bottom 0.5s ease-in-out; 
 }
 
 .toTopBtnVisible {
-    bottom: 30px; /* End position */
+    bottom: 30px; 
 }
 
 .toTopBtnHidden {
-    bottom: -50px; /* Position when hidden */
+    bottom: -50px;
 }
 

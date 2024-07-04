@@ -1,0 +1,16 @@
+:host {
+    flex: 1;
+    display: flex;
+  } @media(max-width:600px){
+    :host{
+        flex-direction: column;
+        gap:0.5em;
+    }
+  
+    .sticky-menu {
+      position: -webkit-sticky; 
+      position: sticky;
+      top: 60px; 
+      z-index: 100; 
+    }
+  }

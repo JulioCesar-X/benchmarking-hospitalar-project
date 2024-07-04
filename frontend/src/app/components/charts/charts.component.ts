@@ -107,6 +107,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         }]
       },
       chartOptions: {
+        maintainAspectRatio: false, // Allow the chart to adapt to the container's aspect ratio
         scales: {
           y: {
             beginAtZero: true

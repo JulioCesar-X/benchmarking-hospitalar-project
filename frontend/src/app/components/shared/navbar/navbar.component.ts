@@ -92,6 +92,7 @@ export class NavbarComponent implements OnInit {
     this.isNotificationsOpen = !this.isNotificationsOpen;
   }
 
+  
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
   }

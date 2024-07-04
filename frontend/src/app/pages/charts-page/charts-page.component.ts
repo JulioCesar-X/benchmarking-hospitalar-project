@@ -79,4 +79,18 @@ export class ChartsPageComponent  {
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  numberToMonth(monthNumber: number | undefined): string {
+    monthNumber = 1;
+    const months = [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
+    if (monthNumber < 1 || monthNumber > 12) {
+        throw new Error("Número do mês deve estar entre 1 e 12.");
+    }
+
+    return months[monthNumber - 1];
+}
 }

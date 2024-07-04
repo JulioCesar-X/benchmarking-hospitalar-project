@@ -25,7 +25,9 @@ import { ActivitiesUpdatePageComponent } from './pages/activites/activities-upda
 import { ServicesPageComponent } from './pages/services/services-page/services-page.component'
 import { ServicesCreatePageComponent } from './pages/services/services-create-page/services-create-page.component'
 import { ServicesUpdatePageComponent } from './pages/services/services-update-page/services-update-page.component'
-
+//notifications
+import { NotificationsComponent } from './pages/notifications/notifications-page/notifications.component';
+import { NotificationsCreatePageComponent } from './pages/notifications/notifications-create-page/notifications-create-page.component';
 
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
@@ -80,7 +82,18 @@ export const routes: Routes = [
   { path: 'charts', component: ChartsPageComponent, canActivate: [AuthGuard] },
    { path: 'RecordGoalsUpdate', component: RecordsGoalsUpdatePageComponent },
 
-  { path: '', redirectTo: 'home', pathMatch: 'full' }
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+
+
+  //Rotas notificações
+  {
+    path: 'notifications',
+    children: [
+      { path: '', component: NotificationsComponent },
+      { path: 'create', component: NotificationsCreatePageComponent },
+    ]
+  },
+
 ];
 
 

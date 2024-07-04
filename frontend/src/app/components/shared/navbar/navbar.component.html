@@ -1,88 +1,176 @@
-<div class="placeholder"></div> <!-- this element is used to ocupy some space in the DOM at the top for the Navbar -->
-
+<div class="placeholder"></div>
+<!-- this element is used to ocupy some space in the DOM at the top for the Navbar -->
 
 <div class="w-full fixed top-0 z-[1000] whiteBG whiteBorder">
   <header class="flex justify-between relative mb-auto max-w-full max-h-99">
     <div class="flex items-center gap-2 logoSection">
       <div class="">
-        <img class="h-[50px] w-[50px] m-1"
-        src="../../../../assets/images/novoLogo.png" alt="SNS logo image">
+        <img
+          class="h-[50px] w-[50px] m-1"
+          src="../../../../assets/images/novoLogo.png"
+          alt="SNS logo image"
+        />
       </div>
       <div class="">
-        <h3 class="logoTxt darkBlueTxt">Unidade local de Saúde</h3>
-        <h1 class="logoTxt darkBlueTxt">Tâmega e Sousa</h1>
+        <h3 class="m-0 text-sm sm:text-lg darkBlueTxt">Unidade local de Saúde</h3>
+        <h1 class="m-0 text-sm sm:text-lg darkBlueTxt">Tâmega e Sousa</h1>
       </div>
     </div>
 
     <div class="relative w-[35%] sm:w-[70%] z-[1] whiteTxt">
       <svg
-      class="background-svg"
-      xmlns="http://www.w3.org/2000/svg"
-      version="1.1"
-      width="100%"
-      height="100%"
-      viewBox="0 0 100 100"
-      preserveAspectRatio="none"
-    >
-      <polygon points="0,100 10,0 100,0 100,100"></polygon>
-    </svg>
+        class="background-svg"
+        xmlns="http://www.w3.org/2000/svg"
+        version="1.1"
+        width="100%"
+        height="100%"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        <polygon points="0,100 10,0 100,0 100,100"></polygon>
+      </svg>
+     
+      <div id="links" class="relative z-[300] flex gap-6 items-center h-full pr-1 pl-[10em] linksMobile" [ngClass]="{ 'is-open': isNavbarOpen }">
+        <a
+          routerLink="/home"
+          class="flex no-underline uppercase text-lg whiteTxt underlineHover"
+          >Home</a
+        >
+
+        <a
+          *ngIf="isLoggedIn() && getRole() === 'admin'"
+          routerLinkActive="active-page"
+          ariaCurrentWhenActive="page"
+          routerLink="/users"
+          class="flex no-underline uppercase text-lg whiteTxt underlineHover"
+          >Menu</a
+        >
+
+        <a
+          *ngIf="isLoggedIn() && getRole() === 'coordenador'"
+          routerLinkActive="active-page"
+          ariaCurrentWhenActive="page"
+          routerLink="/RecordGoalsUpdate"
+          class="flex no-underline uppercase text-lg whiteTxt underlineHover"
+          >Menu</a
+        >
+
+        <div id="loginSection" class="flex ml-auto">
+          <svg
+          class="background-svg_adjusted"
+          xmlns="http://www.w3.org/2000/svg"
+          version="1.1"
+          width="100%"
+          height="100%"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+        >
+          <polygon points="0,100 10,0 100,0 100,100"></polygon>
+        </svg>
 
 
-    <div class="links" [ngClass]="{ 'is-open': isNavbarOpen }">
-      <a routerLink="/home" class="flex no-underline uppercase text-lg whiteTxt underlineHover">Home</a>
+          <div class="flex items-center ml-auto gap-4 mr-0 sm:mr-8">
+            <a
+              *ngIf="!isLoggedIn()"
+              routerLink="/login"
+              routerLinkActive="active-page"
+              ariaCurrentWhenActive="page"
+              class="flex no-underline uppercase text-lg whiteTxt underlineHover"
+              >Login</a
+            >
+  
+            <div
+              *ngIf="isLoggedIn()"
+              class="relative"
+              (mouseleave)="isDropdownOpen = false"
+            >
+              <button
+                class="flex items-center gap-x-1"
+                mat-button
+                [matMenuTriggerFor]="menu"
+                (click)="toggleDropdown()"
+              >
+                <!--             <mat-icon class="icon-login">account_circle</mat-icon>
+   -->
+                <div class="flex flex-col items-start">
+                  <!--             <span class="text-xl mr-0 sm:mr-10">Bem vindo,</span> -->
+                  <span class="text-xl mr-0 sm:mr-10"
+                    >Bem vindo, {{ getUserName() }}</span
+                  >
+                </div>
+              </button>
+            </div>
+        </div>
 
-      <a *ngIf="isLoggedIn() && getRole() === 'admin'" routerLinkActive="active-page" ariaCurrentWhenActive="page"
-        routerLink="/users" class="flex no-underline uppercase text-lg whiteTxt underlineHover">Menu</a>
+       
 
-      <a *ngIf="isLoggedIn() && getRole() === 'coordenador'" routerLinkActive="active-page" ariaCurrentWhenActive="page"
-        routerLink="/RecordGoalsUpdate" class="flex no-underline uppercase text-lg whiteTxt underlineHover">Menu</a>
-
-        <div class="flex items-center ml-auto gap-4 mr-0 sm:mr-8">
-          <a *ngIf="!isLoggedIn()" routerLink="/login" routerLinkActive="active-page" ariaCurrentWhenActive="page"
-          class="flex no-underline uppercase text-lg whiteTxt underlineHover">Login</a>
-
-
-
-          <div
-            *ngIf="isLoggedIn()"
-            class="relative"
-            (mouseleave)="isDropdownOpen = false"
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="notificationsMenu"
+            matBadge="{{ unreadNotifications }}"
+            matBadgeColor="warn"
+            class="bellIcon_mobile"
           >
-          <button 
-          class="flex items-center gap-x-1"
-          mat-button
-          [matMenuTriggerFor]="menu"
-          (click)="toggleDropdown()">
-          <mat-icon class="icon-login">account_circle</mat-icon>
-          <div class="flex flex-col items-start ">
-<!--             <span class="text-xl mr-0 sm:mr-10">Bem vindo,</span> -->
-            <span class="text-xl mr-0 sm:mr-10 ">Bem vindo, {{ getUserName() }}</span>
+            <mat-icon>notifications</mat-icon>
+          </button>
+          <div>
+            <!-- Botão de Notificações com o MatMenu -->
 
+            <!-- MatMenu para Notificações -->
+            <mat-menu
+              #notificationsMenu="matMenu"
+              class="px-2 w-[270px] menu-custom"
+            >
+              <div class="max-h-[50vh]">
+                <h2>Notificações</h2>
+                <div
+                  *ngIf="allNotifications.length === 0"
+                  class="empty-notifications"
+                >
+                  Nenhuma notificação.
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <div
+                    *ngFor="let notification of allNotifications"
+                    (click)="markNotificationAsRead(notification)"
+                    class="p-2 flex justify-between max-h-[60vh]"
+                    [class.unread]="!notification.isRead"
+                  >
+                    <p>{{ notification.title }}</p>
+                    <small>{{
+                      notification.created_at | date : "short"
+                    }}</small>
+                  </div>
+                  <div
+                    *ngFor="let notification of allNotifications"
+                    (click)="markNotificationAsRead(notification)"
+                    class="p-2 flex justify-between max-h-[60vh]"
+                    [class.unread]="!notification.isRead"
+                  >
+                    <p>{{ notification.title }}</p>
+                    <small>{{
+                      notification.created_at | date : "short"
+                    }}</small>
+                  </div>
+                </div>
+              </div>
+            </mat-menu>
           </div>
-        </button>
-      </div>
 
-      <mat-menu
-      #menu="matMenu"
-      class="menu-custom"
-      [overlapTrigger]="false"
-    >
-      <button mat-menu-item (click)="logout()">
-        <mat-icon class="blue-custom">exit_to_app</mat-icon>
-        <span class="blue-custom">Logout</span>
-      </button>
-    </mat-menu>
-  </div>
+          <mat-menu
+            #menu="matMenu"
+            class="menu-custom"
+            [overlapTrigger]="false"
+          >
+            <button mat-menu-item (click)="logout()">
+              <mat-icon class="blue-custom">exit_to_app</mat-icon>
+              <span class="blue-custom">Logout</span>
+            </button>
+          </mat-menu>
+        </div>
 
-
-</div>
-
-
-
-
-
-
-          
+        <!-- </div>
         <button class="bellIcon_mobile w-[30px] h-[30px]" *ngIf="isLoggedIn()" (click)="toggleNotifications()" matBadgePosition="above after" mat-raised-button
           color="primary" [matBadge]="unreadNotifications" matBadgeColor="warn">
           <img src="../../../../assets/images/notificationIcon.png" class="icon" alt="Notifications icon">
@@ -97,13 +185,11 @@
           ></div>
         </div>
       </div>
-    </header>
-
-
-
+  </header>
+  
  <div
     *ngIf="isNotificationsOpen"
-    class="absolute top-10 right-5 text-left z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+    class="notifications-container absolute top-10 right-5 text-left z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
     role="menu"
     aria-orientation="vertical"
     aria-labelledby="menu-button"
@@ -120,30 +206,28 @@
         [class.unread]="!notification.isRead"
       >
         <div class="flex items-center mb-1">
-          <!-- <mat-icon class="mr-2">person</mat-icon> -->
+
           <p class="text-sm blue-custom">{{ notification.sender }}</p>
         </div>
         <div class="flex items-center mb-1">
-          <!-- <mat-icon class="mr-2">title</mat-icon> -->
           <p class="text-sm blue-custom">{{ notification.title }}</p>
         </div>
         <div class="flex items-center">
-          <!-- <mat-icon class="mr-2">event</mat-icon> -->
           <p class="text-sm blue-custom">{{ notification.created_at }}</p>
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
-
-</div>
-
-
-<div class="modal" [ngClass]="{ show: isLoginOut }" >
-  <div class=" w-1/2 rounded-xl m-auto mt-20 forms-container">
-    <div class="loading-circle_forBlueBG">
-      <div class="spinner_forBlueBG"></div>
-      <p>A fazer logout...</p>
+        <div class="modal" [ngClass]="{ show: isLoginOut }">
+          <div class="w-1/2 rounded-xl m-auto mt-20 forms-container">
+            <div class="loading-circle_forBlueBG">
+              <div class="spinner_forBlueBG"></div>
+              <p>A fazer logout...</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </header>
 </div>

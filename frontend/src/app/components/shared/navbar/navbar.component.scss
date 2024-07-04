@@ -25,9 +25,7 @@
   background-color: transparent;
   color: $main-blue;
 }
-.logoTxt{ /* Issue! class created to override angular material styles on headings  */
-  @apply m-0 text-sm sm:text-lg darkBlueTxt;
-}
+
 
 .background-svg {
   fill: $main-blue;
@@ -38,19 +36,17 @@
   height: 100%;
   z-index: -1; 
 }
-
-.links{
-  display: flex;
-  align-items: center;
-  gap: 1em;
-  position: relative;
-  padding-right: 1em;
-  padding-left: 8em;
+.background-svg_adjusted{
+  fill: $darker-main-blue;
+  position: absolute;
+  top: 0;
+  left: 60%;
   height: 100%;
-  z-index: 300; 
+  z-index: 0; 
 }
+
 @media (max-width:600px){
-  .links {
+  .linksMobile {
     flex-direction: column;
     align-items: end;
     gap: 1em;
@@ -73,20 +69,24 @@
 }
 
 .bellIcon_mobile{
+  transform: scale(1.3);
   z-index: 350;
   position: absolute;
-  top: 17px;
-  right: 20px;
+  top: 24px;
+  right: 40px;
+
+  @media(max-width:840px){
+    top: 30px;
+  }
 }
 
 /* styles for the notifications */
 .unread{
   background-color: $secondary-blue;
-  border-radius: 1em;
+
 }
 .unread:hover{
   background-color: $main-blue;
-  border-radius: 1em;
 }
 
 /* Estilos para customizar componente de angular material */
@@ -95,6 +95,9 @@
     background-color: $fill-white !important;
     border: 1px solid $fill-white !important;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1) !important;
+    .mat-menu-item {
+      color: $main-dark-blue !important;
+    }
   }
 
   .blue-custom{
@@ -138,11 +141,11 @@
   .hamburger.is-open::before {
     opacity: 0; }
 
-
+/* 
     .icon-login{
       transform: scale(2);
       margin-right: 0.7em;
-    }
+    } */
 
     // Load
 .random-demo {
