@@ -39,7 +39,6 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader \
 RUN chmod -R 777 storage bootstrap/cache
 
 # Generate application key, clear cache, and discover packages
-RUN php artisan key:generate
 RUN php artisan clear:all
 
 # Copy the entrypoint script into the container and ensure it is executable
