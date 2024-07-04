@@ -17,4 +17,4 @@ fi
 php artisan db:adjust-sequences
 
 # Start the Laravel application
-php-fpm
+php artisan serve
