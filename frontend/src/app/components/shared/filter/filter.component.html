@@ -3,9 +3,9 @@
 
     <div class="flex flex-col sm:flex-row justify-between gap-2">
 
-      <div class="selectContainer">
+      <div class="selectContainer w-full sm:w-[20%]">
 <!--         <label for="serviceId">Serviços:</label>-->
-           <select class="px-1 w-[200px]" [(ngModel)]="selectedServiceId" (change)="onServiceSelect($event)"
+           <select class="px-1 w-full" [(ngModel)]="selectedServiceId" (change)="onServiceSelect($event)"
            title="Selecione um serviço para continuar">
            >
 <!--            <option value="" disabled selected>Selecione um serviço</option>
@@ -14,9 +14,9 @@
         </select>
       </div>
 
-      <div class="selectContainer" *ngIf="activitiesList.length > 1">
+      <div class="selectContainer w-full sm:w-[20%]" *ngIf="activitiesList.length > 1">
 <!--         <label for="activityId">Atividade:</label> -->
-        <select class="w-[200px]" [(ngModel)]="selectedActivityId"
+        <select class="w-full" [(ngModel)]="selectedActivityId"
         title="Selecione uma atividade para continuar">
         (change)="onActivitySelect($event)" [disabled]="!selectedServiceId">
 <!--           <option disabled selected>Selecione uma atividade</option>
@@ -24,9 +24,9 @@
           <option *ngFor="let activity of activitiesList" [value]="activity.id">{{ activity.name }}</option>
         </select>
       </div>
-      <div class="relative selectContainer" *ngIf="indicatorsInput">
+      <div class="relative selectContainer w-full sm:w-[20%]" *ngIf="indicatorsInput">
 <!--         <label for="indicatorId">Indicadores:</label> -->
-        <select class="w-[200px]" [(ngModel)]="selectedIndicatorId"
+        <select class="w-full" [(ngModel)]="selectedIndicatorId"
         title="Selecione um indicador para continuar">
           [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId !== null)">
 <!--           <option value="" disabled selected>Selecione um indicador</option>
@@ -35,17 +35,17 @@
         </select>
       </div>
 
-      <div class="flex items-center gap-1" *ngIf="showMonthInput">
+      <div class="flex items-center gap-1 w-full sm:w-[10%]" *ngIf="showMonthInput">
         <label for="month">Mês:</label>
         <input type="number" id="month" name="month" min="1" max="12" step="1" class="w-full py-1 px-2 inputContainer--input"
           [(ngModel)]="filter.month" [disabled]="!selectedServiceId || (!selectedIndicatorId && indicatorsInput)">
       </div>
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1 w-full sm:w-[15%]">
         <label for="year">Ano:</label>
         <input type="number" id="year" name="year" min="1900" max="2200" step="1" class="w-full inputContainer--input"
           [(ngModel)]="filter.year" [disabled]="!selectedServiceId || (!selectedIndicatorId && indicatorsInput)">
       </div>
-      <button (click)="sendFilter()" class="mt-4 w-[25%] sm:w-[15%] bg-transparent py-1.5 cursor-pointer forms-Button">
+      <button (click)="sendFilter()" class="mt-4 mx-auto w-[40%] sm:w-[15%] bg-transparent py-1.5 cursor-pointer forms-Button">
         Procurar
       </button>
     </div>

@@ -1,7 +1,8 @@
 <div class="placeholder w-full"></div>
 <!-- this element is used to ocupy some space in the DOM at the top for the Navbar -->
-
-<div class=" w-full max-w-[2500px] fixed top-0 z-[1000] whiteBG whiteBorder overflow-hidden">
+<!-- overflow-hidden -->
+<div
+  class="w-full max-w-[2500px] fixed top-0 z-[1000] whiteBG whiteBorder sm:overflow-hidden">
   <header class="flex justify-between relative mb-auto max-h-99">
     <div class="flex items-center gap-2 logoSection">
       <div class="">
@@ -12,12 +13,16 @@
         />
       </div>
       <div class="">
-        <h3 class="m-0 text-sm sm:text-lg darkBlueTxt">Unidade local de Saúde</h3>
+        <h3 class="m-0 text-sm sm:text-lg darkBlueTxt">
+          Unidade local de Saúde
+        </h3>
         <h1 class="m-0 text-sm sm:text-lg darkBlueTxt">Tâmega e Sousa</h1>
       </div>
     </div>
 
     <div class="relative w-[35%] sm:w-[70%] z-[1] whiteTxt">
+      
+
       <svg
         class="background-svg"
         xmlns="http://www.w3.org/2000/svg"
@@ -29,8 +34,12 @@
       >
         <polygon points="0,100 10,0 100,0 100,100"></polygon>
       </svg>
-     
-      <div id="links" class="relative z-[300] flex gap-6 items-center h-full pr-1 pl-[10em] linksMobile" [ngClass]="{ 'is-open': isNavbarOpen }">
+
+      <div
+        id="links"
+        class="links"
+        [ngClass]="{ 'is-open': isNavbarOpen }"
+      >
         <a
           routerLink="/home"
           class="flex no-underline uppercase text-lg whiteTxt underlineHover"
@@ -57,19 +66,19 @@
 
         <div id="loginSection" class="flex ml-auto">
           <svg
-          class="background-svg_adjusted"
-          xmlns="http://www.w3.org/2000/svg"
-          version="1.1"
-          width="100%"
-          height="100%"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-        >
-          <polygon points="0,100 10,0 100,0 100,100"></polygon>
-        </svg>
+            [ngClass]="{ 'is-open': isNavbarOpen }"
+            class="background-svg_adjusted"
+            xmlns="http://www.w3.org/2000/svg"
+            version="1.1"
+            width="100%"
+            height="100%"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            <polygon points="0,100 10,0 100,0 100,100"></polygon>
+          </svg>
 
-
-          <div class="flex items-center ml-auto gap-4 mr-0 sm:mr-8">
+          <div class="flex items-center ml-auto gap-4 mr-0 sm:mr-10">
             <a
               *ngIf="!isLoggedIn()"
               routerLink="/login"
@@ -78,7 +87,7 @@
               class="flex no-underline uppercase text-lg whiteTxt underlineHover"
               >Login</a
             >
-  
+
             <div
               *ngIf="isLoggedIn()"
               class="relative"
@@ -100,62 +109,6 @@
                 </div>
               </button>
             </div>
-        </div>
-
-       
-
-          <button
-            mat-icon-button
-            [matMenuTriggerFor]="notificationsMenu"
-            matBadge="{{ unreadNotifications }}"
-            matBadgeColor="warn"
-            class="bellIcon_mobile"
-          >
-            <mat-icon>notifications</mat-icon>
-          </button>
-          <div>
-            <!-- Botão de Notificações com o MatMenu -->
-
-            <!-- MatMenu para Notificações -->
-            <mat-menu
-              #notificationsMenu="matMenu"
-              class="px-2 w-[270px] menu-custom"
-            >
-              <div class="max-h-[50vh]">
-                <h2>Notificações</h2>
-                <div
-                  *ngIf="allNotifications.length === 0"
-                  class="empty-notifications"
-                >
-                  Nenhuma notificação.
-                </div>
-
-                <div class="flex flex-col gap-1">
-                  <div
-                    *ngFor="let notification of allNotifications"
-                    (click)="markNotificationAsRead(notification)"
-                    class="p-2 flex justify-between max-h-[60vh]"
-                    [class.unread]="!notification.isRead"
-                  >
-                    <p>{{ notification.title }}</p>
-                    <small>{{
-                      notification.created_at | date : "short"
-                    }}</small>
-                  </div>
-                  <div
-                    *ngFor="let notification of allNotifications"
-                    (click)="markNotificationAsRead(notification)"
-                    class="p-2 flex justify-between max-h-[60vh]"
-                    [class.unread]="!notification.isRead"
-                  >
-                    <p>{{ notification.title }}</p>
-                    <small>{{
-                      notification.created_at | date : "short"
-                    }}</small>
-                  </div>
-                </div>
-              </div>
-            </mat-menu>
           </div>
 
           <mat-menu
@@ -168,66 +121,86 @@
               <span class="blue-custom">Logout</span>
             </button>
           </mat-menu>
-        </div>
-
-        <!-- </div>
-        <button class="bellIcon_mobile w-[30px] h-[30px]" *ngIf="isLoggedIn()" (click)="toggleNotifications()" matBadgePosition="above after" mat-raised-button
-          color="primary" [matBadge]="unreadNotifications" matBadgeColor="warn">
-          <img src="../../../../assets/images/notificationIcon.png" class="icon" alt="Notifications icon">
-        </button>
 
 
-        <div class="nav-toggle" id="nav-toggle" (click)="openNavBar()">
-          <div
-            class="hamburger"
-            id="hamburger"
-            [ngClass]="{ 'is-open': isNavbarOpen }"
-          ></div>
         </div>
       </div>
+
+
+      <!--  -->
+      <button
+      mat-icon-button
+      [matMenuTriggerFor]="notificationsMenu"
+      matBadge="{{ unreadNotifications }}"
+      matBadgeColor="warn"
+      class="bellIcon_mobile"
+    >
+      <mat-icon>notifications</mat-icon>
+    </button>
+
+      <!-- Hamburguer icon - mobile -->
+      <div class="nav-toggle" id="nav-toggle" (click)="openNavBar()">
+        <div
+          class="hamburger"
+          id="hamburger"
+          [ngClass]="{ 'is-open': isNavbarOpen }"
+        ></div>
+      </div>
+    </div>
+
   </header>
-  
- <div
-    *ngIf="isNotificationsOpen"
-    class="notifications-container absolute top-10 right-5 text-left z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-    role="menu"
-    aria-orientation="vertical"
-    aria-labelledby="menu-button"
-    tabindex="-1"
+</div>
+
+
+
+  <!-- MatMenu para Notificações -->
+<div>
+  <mat-menu
+    #notificationsMenu="matMenu"
+    class="px-2 w-[270px] menu-custom"
   >
-    <div class="py-1" role="none">
-      <h2 class="block mb-0 px-4 py-2 text-sm text-gray-700 blue-custom">
-        Notifications
-      </h2>
+    <div class="max-h-[50vh]">
+      <h2>Notificações</h2>
       <div
-        *ngFor="let notification of allNotifications"
-        (click)="markNotificationAsRead(notification)"
-        class="px-4 mx-2 py-2 border-b border-gray-200 cursor-pointer"
-        [class.unread]="!notification.isRead"
+        *ngIf="allNotifications.length === 0"
+        class="empty-notifications"
       >
-        <div class="flex items-center mb-1">
+        Nenhuma notificação.
+      </div>
 
-          <p class="text-sm blue-custom">{{ notification.sender }}</p>
+      <div class="flex flex-col gap-1">
+        <div
+          *ngFor="let notification of allNotifications"
+          (click)="markNotificationAsRead(notification)"
+          class="p-2 flex justify-between max-h-[60vh]"
+          [class.unread]="!notification.isRead"
+        >
+          <p>{{ notification.title }}</p>
+          <small>{{
+            notification.created_at | date : "short"
+          }}</small>
         </div>
-        <div class="flex items-center mb-1">
-          <p class="text-sm blue-custom">{{ notification.title }}</p>
-        </div>
-        <div class="flex items-center">
-          <p class="text-sm blue-custom">{{ notification.created_at }}</p>
+        <div
+          *ngFor="let notification of allNotifications"
+          (click)="markNotificationAsRead(notification)"
+          class="p-2 flex justify-between max-h-[60vh]"
+          [class.unread]="!notification.isRead"
+        >
+          <p>{{ notification.title }}</p>
+          <small>{{
+            notification.created_at | date : "short"
+          }}</small>
         </div>
       </div>
     </div>
-  </div> -->
+  </mat-menu>
+</div>
 
-        <div class="modal" [ngClass]="{ show: isLoginOut }">
-          <div class="w-1/2 rounded-xl m-auto mt-20 forms-container">
-            <div class="loading-circle_forBlueBG">
-              <div class="spinner_forBlueBG"></div>
-              <p>A fazer logout...</p>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="modal" [ngClass]="{ show: isLoginOut }">
+  <div class="w-1/2 rounded-xl m-auto mt-20 forms-container">
+    <div class="loading-circle_forBlueBG">
+      <div class="spinner_forBlueBG"></div>
+      <p>A fazer logout...</p>
     </div>
-  </header>
+  </div>
 </div>

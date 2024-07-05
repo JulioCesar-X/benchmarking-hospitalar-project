@@ -1,6 +1,9 @@
 @import '../../../../styles/_variables.scss';
 @import 'tailwindcss/base';
 
+.test{
+  border: solid 2px red
+}
 .placeholder{
   height: 65px;
 }
@@ -42,11 +45,24 @@
   top: 0;
   left: 60%;
   height: 100%;
-  z-index: 0; 
+  z-index: -1; 
+}
+.background-svg_adjusted.is-open{
+  display: none;
 }
 
-@media (max-width:600px){
-  .linksMobile {
+.links{
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  position: relative;
+  padding-right: 1em;
+  padding-left: 6em;
+  height: 100%;
+  z-index: 1; 
+}
+@media (max-width:640px){
+  .links {
     flex-direction: column;
     align-items: end;
     gap: 1em;
@@ -73,10 +89,14 @@
   z-index: 350;
   position: absolute;
   top: 24px;
-  right: 40px;
+  right: 60px;
 
-  @media(max-width:840px){
+  @media(max-width:780px){
     top: 30px;
+  }
+  @media(max-width:640px){
+    top: 24px;
+    right: 27px;
   }
 }
 
@@ -115,7 +135,7 @@
   right: 50px;
   top: 15px;
   cursor: pointer; }
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     .nav-toggle {
       display: none; } }
 
@@ -157,7 +177,7 @@
   width: 30%;
   margin: 0 auto;
 }
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .random-demo{
     margin:0;
     margin-right: 2em;
@@ -209,7 +229,7 @@
     &.forms-container__error{
       border: $error-color 7px solid;
     }
-    @media (max-width: 600px){
+    @media (max-width: 640px){
       margin-block: 2em;
       width: 90%;
     }

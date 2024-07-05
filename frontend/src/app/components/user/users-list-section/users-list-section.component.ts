@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
+import { TooltipButtonComponent } from '../../shared/tooltip-button/tooltip-button.component';
 
 @Component({
   selector: 'app-users-list-section',
@@ -19,7 +20,8 @@ import { DialogContentComponent } from '../../shared/dialog-content/dialog-conte
     FormsModule,
     LoadingSpinnerComponent,
     PaginatorComponent,
-    DialogContentComponent
+    DialogContentComponent,
+    TooltipButtonComponent
   ],
 })
 export class UsersListSectionComponent implements OnInit, OnChanges {

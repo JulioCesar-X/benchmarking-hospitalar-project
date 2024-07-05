@@ -1,0 +1,8 @@
+<div class="tooltip-content" [ngClass]="{
+    'left-full': position === 'left',
+    'right-full': position === 'right',
+    'top-full': position === 'top',
+    'bottom-full': position === 'bottom'
+  }" [style.transform]="getTransform(position)" [style.opacity]="visible ? '1' : '0'">
+ {{ text }}
+</div>

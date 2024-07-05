@@ -5,13 +5,33 @@ import { CreateFieldModalComponent } from '../../shared/create-field-modal/creat
 import { UserService } from '../../../core/services/user/user.service';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { AuthService } from '../../../core/services/auth/auth.service';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+
+
 @Component({
   selector: 'app-users-upsert-form',
   standalone: true,
   imports: [ CommonModule,
     FormsModule,
     CreateFieldModalComponent,
-    FeedbackComponent],
+    FeedbackComponent,
+    MatSidenavModule,
+    MatIconModule,
+    MatListModule,
+    MatInputModule,
+    MatButtonModule,
+    MatTableModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatSelectModule],
   templateUrl: './users-upsert-form.component.html',
   styleUrl: './users-upsert-form.component.scss'
 })

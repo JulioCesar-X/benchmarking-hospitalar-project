@@ -11,14 +11,24 @@
   color: $fill-white;
 }
 .createBtn{
-  cursor: pointer;
+  // cursor: pointer;
   border-radius: 50%;
   transition: transform 0.5ms ease-in-out;
+  // z-index: 100;
+  // background-color: $secondary-blue;
+  // transform: scale(1.1);
 
-}
-.createBtn:hover{
-  background-color: $secondary-blue;
-  transform: scale(1.1);
+  &.small-btn {
+    width: 30px;  // Ajuste para o tamanho desejado
+    height: 30px;  // Ajuste para o tamanho desejado
+    padding: 5px;
+
+    img {
+      width: 20px;  // Ajuste para o tamanho desejado do ícone
+      height: 20px;  // Ajuste para o tamanho desejado do ícone
+    }
+  }
+
 }
 
 .optionBtns{
@@ -259,3 +269,5 @@ mat-paginator {
   .mat-mdc-text-field-wrapper {
   cursor: default !important;
 }
+
+

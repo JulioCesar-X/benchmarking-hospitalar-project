@@ -10,6 +10,7 @@
     color:$fill-white;
 }
 
+ /* estilos para dar override do componente do angular material  */
  input{
     color: $main-blue !important;
     caret-color: $main-blue !important; }
@@ -24,6 +25,12 @@
 ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--filled{
     background-color: $fill-white !important;
 }
+
+
+::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-line-ripple::after {
+    border-color: $main-dark-blue !important;
+  }
+  
 
 .custom-button{
     background-color: $darker-main-blue !important;
