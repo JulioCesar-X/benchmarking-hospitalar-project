@@ -120,4 +120,6 @@ export class ChartsComponent implements OnInit, OnChanges {
   getChartType(): ChartType {
     return this.graphType === 'lineChart' ? 'line' : 'bar';
   }
+
 }
+

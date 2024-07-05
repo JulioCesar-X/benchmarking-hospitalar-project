@@ -18,7 +18,12 @@ main {
     flex: 1;
     display: flex;
     position: relative;
+    @media (min-width: 2500px)
+    {
+        flex: 0;
+    }
 }
+
 
 #toTopIcon {
     --lord-icon-primary: var(--main-dark-blue); /* Correct usage of the CSS variable */

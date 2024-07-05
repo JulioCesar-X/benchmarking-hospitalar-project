@@ -7,6 +7,10 @@ import { Filter } from '../../core/models/filter.model';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IndicatorService } from '../../core/services/indicator/indicator.service';
+import { MatMenuModule } from '@angular/material/menu';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-charts-page',
@@ -15,7 +19,8 @@ import { IndicatorService } from '../../core/services/indicator/indicator.servic
     CommonModule,
     FilterComponent,
     HttpClientModule,
-    ChartsComponent
+    ChartsComponent,
+    MatMenuModule
   ],
   templateUrl: './charts-page.component.html',
   styleUrls: ['./charts-page.component.scss']
@@ -92,5 +97,50 @@ export class ChartsPageComponent  {
     }
 
     return months[monthNumber - 1];
-}
+  }
+
+  exportToPdf(): void {
+    const element = document.querySelector('.graphicsContainer') as HTMLElement;
+    if (element) {
+      console.log('Elemento encontrado:', element);
+      html2canvas(element).then(canvas => {
+        console.log('Canvas gerado:', canvas);
+        const imgData = canvas.toDataURL('image/png');
+        console.log('Imagem convertida:', imgData);
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        console.log('Dimensões do PDF:', pdfWidth, pdfHeight);
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('graficos.pdf');
+        console.log('PDF salvo');
+      }).catch(error => {
+        console.error('Erro ao gerar canvas:', error);
+      });
+    } else {
+      console.error('Elemento não encontrado');
+    }
+  }
+
+  exportToExcel(): void {
+    const data = this.prepareChartData();
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'DadosGraficos');
+    XLSX.writeFile(wb, 'dados_graficos.xlsx');
+  }
+  
+  prepareChartData(): any[] {
+    // Esta função deve retornar os dados dos gráficos
+    // Aqui você deve preparar os dados dos gráficos, convertendo-os para um formato de array de objetos
+    // Exemplo:
+    return [
+      { Mes: 'Janeiro', Valor: 100 },
+      { Mes: 'Fevereiro', Valor: 200 },
+      // Adicione mais dados conforme necessário
+    ];
+  }
+  
+
 }

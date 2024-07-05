@@ -29,8 +29,9 @@
 }
 .tab-headers {
     display: flex;
+    align-items: center;
     width: 30%;
-    overflow: hidden;
+
 
 } @media(max-width:600px){
     .tab-headers{

@@ -1,23 +1,95 @@
 <div class="m-2 w-full">
-  <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false"
-    (filterEvent)="handleFilterData($event)"></app-filter>
- 
+  <app-filter
+    [indicatorsInput]="true"
+    [dataInsertedCheckbox]="false"
+    (filterEvent)="handleFilterData($event)"
+  ></app-filter>
 
- 
-  <div class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer">
+  <div
+    class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer">
     <div class="tab-headers-wrapper">
-      <div class="tab-headers">
-        <button class="tab-link" [class.active]="selectedTab === 'Producao'"
-          (click)="selectTab('Producao')">Produção</button>
-        <button class="tab-link" [class.active]="selectedTab === 'Metas'" (click)="selectTab('Metas')">Metas</button>
+      <div id="tabHead" class="flex items-center justify-between pr-2">
+        <div id="tabHeaders" class="flex w-[30%]">
+          <button
+            class="tab-link"
+            [class.active]="selectedTab === 'Producao'"
+            (click)="selectTab('Producao')">
+            Produção
+          </button>
+          <button
+            class="tab-link"
+            [class.active]="selectedTab === 'Metas'"
+            (click)="selectTab('Metas')">
+            Metas
+          </button>
+        </div>
+
+        <div id="exportMenu" class="relative" [matMenuTriggerFor]="exportMenu">
+          <button
+            id="exportDropDown"
+            type="button"
+            class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
+            aria-haspopup="true"
+            aria-expanded="true">
+            <strong>Exportar</strong>
+            <svg
+              class="-mr-1 ml-2 h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 3a1 1 0 011 1v10.586l2.707-2.707a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L9 14.586V4a1 1 0 011-1z"
+                clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <mat-menu
+            #exportMenu="matMenu"
+            class="menu-custom"
+            [overlapTrigger]="false"
+          >
+            <div class="py-1" role="none">
+              <button
+                id="exportExcel"
+                href="#"
+                class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
+                role="menuitem"
+                (click)="exportToExcel()">
+                <img
+                  src="../../../assets/icons/csv.png"
+                  height="16"
+                  class="inline mr-2"/>
+                Exportar para Excel
+              </button>
+              <button
+                id="exportPdf"
+                href="#"
+                class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
+                role="menuitem"
+                (click)="exportToPdf()">
+                <img
+                  src="../../../assets/icons/pdf.png"
+                  height="16"
+                  class="inline mr-2"
+                />
+                Exportar para PDF
+              </button>
+            </div>
+          </mat-menu>
+        </div>
       </div>
     </div>
-   
 
-    <div class="px-4" *ngIf="selectedTab === 'Producao'">
+    <div class="px-4 z-5" *ngIf="selectedTab === 'Producao'">
       <div class="flex w-full justify-around flex-wrap">
-        <div class="w-full sm:w-[100%] p-2 ratio">
-          <app-charts graphType="month" graphLabel="Produção" [filter]="filter"></app-charts>
+        <div class="w-full sm:w-[100%] py-2 ratio">
+          <app-charts
+            graphType="month"
+            graphLabel="Produção"
+            [filter]="filter"
+          ></app-charts>
         </div>
       </div>
 
@@ -27,65 +99,107 @@
             <h1 class="_blueTxt">Variação de produção do periodo homologo</h1>
           </div>
         </div>
-   
+
         <div class="flex w-full justify-around flex-wrap">
-          <div class="w-full lg:w-1/2 ">
-            <app-charts graphType="lineChart" graphLabel="Ano atual" [filter]="filter"></app-charts>
+          <div class="w-full lg:w-1/2">
+            <app-charts
+              graphType="lineChart"
+              graphLabel="Ano atual"
+              [filter]="filter"
+            ></app-charts>
           </div>
           <div class="w-full lg:w-1/2">
-            <app-charts graphType="lineChart" graphLabel="Ano anterior" [filter]="filter"></app-charts>
+            <app-charts
+              graphType="lineChart"
+              graphLabel="Ano anterior"
+              [filter]="filter"
+            ></app-charts>
           </div>
         </div>
       </div>
 
       <div class="flex flex-col items-center w-full pt-2 pb-2 mt-2 _whiteBG">
-        <h2 class="_blueTxt">{{numberToMonth(filter.month)}}, {{filter.year}}</h2>
+        <h2 class="_blueTxt">
+          {{ numberToMonth(filter.month) }}, {{ filter.year }}
+        </h2>
         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG">
-          <h2 class="_blueTxt">Diferença absoluta: {{ graphData?.variation_rate_homologous_abs }}</h2>
-          <h2 class="_blueTxt">Diferença percentual(%): {{ graphData?.variation_rate_homologous }}</h2>
-
+          <h2 class="_blueTxt">
+            Diferença absoluta: {{ graphData?.variation_rate_homologous_abs }}
+          </h2>
+          <h2 class="_blueTxt">
+            Diferença percentual(%): {{ graphData?.variation_rate_homologous }}
+          </h2>
         </div>
-<!--         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG border-l-2 borderColorBlue">
+        <!--         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG border-l-2 borderColorBlue">
         </div> -->
       </div>
- 
+
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts graphType="homologYear" graphLabel="Comparação anual" [filter]="filter"></app-charts>
+          <app-charts
+            graphType="homologYear"
+            graphLabel="Comparação anual"
+            [filter]="filter"
+          ></app-charts>
         </div>
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts graphType="fiveYear" graphLabel="5 anos anteriores" [filter]="filter"></app-charts>
+          <app-charts
+            graphType="fiveYear"
+            graphLabel="5 anos anteriores"
+            [filter]="filter"
+          ></app-charts>
         </div>
       </div>
     </div>
- 
+
     <div class="px-4" *ngIf="selectedTab === 'Metas'">
       <div class="flex w-full justify-center flex-wrap">
         <div class="flex justify-center w-full pt-2 pb-2 _whiteBG">
-          <h1 class="_blueTxt">Variação conctratualizada do periodo homologo</h1>
+          <h1 class="_blueTxt">
+            Variação conctratualizada do periodo homologo
+          </h1>
         </div>
       </div>
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts graphType="month" graphLabel="Produção" [filter]="filter"></app-charts>
+          <app-charts
+            graphType="month"
+            graphLabel="Produção"
+            [filter]="filter"
+          ></app-charts>
         </div>
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts graphType="month-metas" graphLabel="Metas" [filter]="filter"></app-charts>
+          <app-charts
+            graphType="month-metas"
+            graphLabel="Metas"
+            [filter]="filter"
+          ></app-charts>
         </div>
       </div>
- 
-      <div class="flex justify-center w-full pt-2 pb-2 _whiteBG">
-        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG border-r-2 borderColorBlue">
-          <h2 class="_blueTxt">Diferença absoluta: {{ graphData?.variation_rate_contractual_abs }}</h2>
+
+      <div class="flex flex-col items-center w-full pt-2 pb-2 mt-2 _whiteBG">
+        <h2 class="_blueTxt">
+          {{ numberToMonth(filter.month) }}, {{ filter.year }}
+        </h2>
+        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG">
+          <h2 class="_blueTxt">
+            Diferença absoluta: {{ graphData?.variation_rate_contractual_abs }}
+          </h2>
+          <h2 class="_blueTxt">
+            Diferença percentual(%): {{ graphData?.variation_rate_contractual }}
+          </h2>
         </div>
-        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG border-l-2 borderColorBlue">
-          <h2 class="_blueTxt ">Diferença percentual(%): {{ graphData?.variation_rate_contractual }}</h2>
-        </div>
+        <!--         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG border-l-2 borderColorBlue">
+        </div> -->
       </div>
- 
+
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts graphType="year-metas" graphLabel="Comparação Anual" [filter]="filter"></app-charts>
+          <app-charts
+            graphType="year-metas"
+            graphLabel="Comparação Anual"
+            [filter]="filter"
+          ></app-charts>
         </div>
       </div>
     </div>

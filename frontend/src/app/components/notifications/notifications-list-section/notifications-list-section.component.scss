@@ -31,7 +31,7 @@
 }
 
 ::ng-deep .mat-mdc-table tbody.mat-mdc-table tfoot.mat-mdc-table thead.mat-mdc-cell.mat-mdc-footer-cell.mat-mdc-header-row.mat-mdc-row.mat-mdc-footer-row.mat-mdc-table.mat-mdc-header-cell{
-  background-color: red !important;
+  background-color: $main-blue !important;
 }
 
 .custom-button{
@@ -99,7 +99,8 @@ body {
   bottom: 0;
   width: 400px;
   padding: 15px;
-  background: #f45b69;
+  background: $main-blue;
+  color: $fill-white;
 }
 
 .timeline ul li div::before {
@@ -118,7 +119,7 @@ body {
 .timeline ul li:nth-child(odd) div::before {
   left: -15px;
   border-width: 8px 16px 8px 0;
-  border-color: transparent #f45b69 transparent transparent;
+  border-color: transparent $main-blue transparent transparent;
 }
 
 .timeline ul li:nth-child(even) div {
@@ -128,7 +129,7 @@ body {
 .timeline ul li:nth-child(even) div::before {
   right: -15px;
   border-width: 8px 0 8px 16px;
-  border-color: transparent transparent transparent #f45b69;
+  border-color: transparent transparent transparent $main-blue;
 }
 
 time {
@@ -147,7 +148,7 @@ time {
 }
 
 .timeline ul li.in-view::after {
-  background: #f45b69;
+  background: $main-blue;
 }
 
 .timeline ul li div {
@@ -197,7 +198,7 @@ time {
   .timeline ul li:nth-child(even) div::before {
     left: -15px;
     border-width: 8px 16px 8px 0;
-    border-color: transparent #f45b69 transparent transparent;
+    border-color: transparent $main-blue transparent transparent;
   }
 }
 

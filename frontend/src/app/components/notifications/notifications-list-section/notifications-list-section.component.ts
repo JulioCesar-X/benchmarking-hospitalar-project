@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener,  ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, HostListener,  ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -70,7 +70,7 @@ interface TimelineItem {
   templateUrl: './notifications-list-section.component.html',
   styleUrls: ['./notifications-list-section.component.scss']
 })
-export class NotificationsListSectionComponent implements OnInit {
+export class NotificationsListSectionComponent implements OnInit, AfterViewInit {
   @ViewChild('timeline', { static: false }) timeline: ElementRef | undefined;
 
   timelineItems: TimelineItem[] = [
@@ -88,10 +88,16 @@ export class NotificationsListSectionComponent implements OnInit {
     { title: '2005', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' }
   ];
 
-  constructor() { }
+  constructor(private cdr: ChangeDetectorRef) { }
+
+  ngAfterViewInit() {
+    this.checkElementsInView(); // Chama a verificação após a inicialização da view
+    this.cdr.detectChanges(); // Detecta mudanças explicitamente
+  }
+  
 
   ngOnInit() {
-    this.checkElementsInView(); // Chama a verificação após a inicialização da view
+    //this.checkElementsInView(); // Chama a verificação após a inicialização da view
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -117,14 +123,21 @@ export class NotificationsListSectionComponent implements OnInit {
   }
 
   isElementInView(item: TimelineItem): boolean {
-    const element = document.querySelector(`.timeline ul li div:contains("${item.title}")`);
-    if (element) {
-      const bounding = element.getBoundingClientRect();
-      return (
-        bounding.top >= 0 &&
-        bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-      );
-    }
-    return false;
+    const elements = document.querySelectorAll('.timeline ul li div');
+    let elementInView = false;
+
+    elements.forEach((element) => {
+      if (element.textContent?.includes(item.title)) {
+        const bounding = element.getBoundingClientRect();
+        if (
+          bounding.top >= 0 &&
+          bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+        ) {
+          elementInView = true;
+        }
+      }
+    });
+
+    return elementInView;
   }
 }
