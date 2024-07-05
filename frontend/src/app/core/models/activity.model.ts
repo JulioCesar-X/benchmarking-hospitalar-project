@@ -11,7 +11,7 @@ export interface Activity {
   service_ids?: number[];
   indicator_ids?: number[];
 
-  service_activity_indicators?: {
+  sais?: {
     service: {
       id: number;
       service_name: string;

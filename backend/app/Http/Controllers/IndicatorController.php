@@ -10,6 +10,8 @@ use App\Record;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+
 
 
 
@@ -23,35 +25,47 @@ class IndicatorController extends Controller
     public function index()
     {
         try {
-            // Carregar todos os indicadores com os relacionamentos de serviços e atividades
             $indicators = Indicator::with(['sais.service', 'sais.activity'])
             ->get()
                 ->map(function ($indicator) {
-                    // Organizar os dados para incluir serviços e atividades associadas
+                    // Adicionando logs para depuração
+                    Log::info('Processing indicator:', ['indicator' => $indicator]);
+
                     $services = $indicator->sais->map(function ($sai) {
-                        return [
-                            'id' => $sai->service->id,
-                            'name' => $sai->service->service_name
-                        ];
-                    })->unique('id')->values();
+                        if ($sai->service) {
+                            Log::info('Processing service:', ['service' => $sai->service]);
+                            return [
+                                'id' => $sai->service->id,
+                                'name' => $sai->service->service_name
+                            ];
+                        }
+                        return null;
+                    })->filter()->unique('id')->values();
 
                     $activities = $indicator->sais->map(function ($sai) {
-                        return [
-                            'id' => $sai->activity->id,
-                            'name' => $sai->activity->activity_name
-                        ];
-                    })->unique('id')->values();
+                        if ($sai->activity) {
+                            Log::info('Processing activity:', ['activity' => $sai->activity]);
+                            return [
+                                'id' => $sai->activity->id,
+                                'name' => $sai->activity->activity_name
+                            ];
+                        }
+                        return null;
+                    })->filter()->unique('id')->values();
 
                     return [
                         'id' => $indicator->id,
-                        'name' => $indicator->indicator_name,
+                        'indicator_name' => $indicator->indicator_name,
                         'services' => $services,
                         'activities' => $activities
                     ];
                 });
 
-            return response()->json(['data' => $indicators], 200);
+            Log::info('Final indicators data:', ['indicators' => $indicators]);
+
+            return response()->json($indicators, 200);
         } catch (Exception $exception) {
+            Log::error('Error fetching indicators:', ['exception' => $exception]);
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }

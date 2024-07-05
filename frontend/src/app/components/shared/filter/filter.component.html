@@ -4,11 +4,11 @@
       <div class="selectContainer">
         <label for="serviceId">Serviços:</label>
         <select [(ngModel)]="selectedServiceId" (change)="onServiceSelect($event)">
-          <option *ngFor="let service of servicesList" [value]="service.id">{{ service.name }}</option>
+          <option *ngFor="let service of servicesList" [value]="service.id">{{ service.service_name }}</option>
         </select>
       </div>
-      <div class="selectContainer" *ngIf="activitiesList.length > 1">
-        <label for="activityId">Atividade:</label>
+      <div class="selectContainer" *ngIf="activitiesList.length > 0">
+        <label for="activityId">Atividades:</label>
         <select [(ngModel)]="selectedActivityId" (change)="onActivitySelect($event)" [disabled]="!selectedServiceId">
           <option *ngFor="let activity of activitiesList" [value]="activity.id">{{ activity.name }}</option>
         </select>
@@ -17,7 +17,7 @@
     <div class="selectContainer" *ngIf="indicatorsInput">
       <label for="indicatorId">Indicadores:</label>
       <select [(ngModel)]="selectedIndicatorId"
-        [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId !== null)">
+        [disabled]="!selectedServiceId || !indicatorsList">
         <option *ngFor="let indicator of indicatorsList" [value]="indicator.id">{{ indicator.name }}</option>
       </select>
     </div>

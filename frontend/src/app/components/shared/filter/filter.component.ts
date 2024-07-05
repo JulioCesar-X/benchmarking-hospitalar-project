@@ -1,8 +1,21 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { ServiceService } from '../../../core/services/service/service.service';
+import { ActivityService } from '../../../core/services/activity/activity.service';
 import { Filter } from '../../../core/models/filter.model';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Service } from '../../../core/models/service.model';
+import { Activity } from '../../../core/models/activity.model';
+
+interface ActivityForFilter {
+  id: number | null;
+  name: string;
+}
+
+interface IndicatorForFilter {
+  id: number;
+  name: string;
+}
 
 @Component({
   selector: 'app-filter',
@@ -12,17 +25,9 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, FormsModule]
 })
 export class FilterComponent implements OnInit {
-  servicesList: {
-    id: number;
-    imageUrl: string;
-    name: string;
-    description?: string | null;
-    activities?: { id: number, name: string }[];
-    indicators?: { id: number, name: string }[];
-  }[] = [];
-
-  activitiesList: { id: number | null, name: string }[] = [];
-  indicatorsList: { id: number, name: string }[] = [];
+  servicesList: Service[] = [];
+  activitiesList: ActivityForFilter[] = [];
+  indicatorsList: IndicatorForFilter[] = [];
 
   selectedServiceId?: number;
   selectedActivityId?: number | undefined;
@@ -35,17 +40,25 @@ export class FilterComponent implements OnInit {
   @Input() dataInsertedCheckbox: boolean = false;
   @Output() filterEvent = new EventEmitter<Filter>();
 
-  constructor(private serviceService: ServiceService) { }
+  constructor(private serviceService: ServiceService, private activityService: ActivityService) { }
 
   ngOnInit() {
     this.loadInitialData();
   }
 
   loadInitialData() {
-    this.serviceService.indexServices().subscribe(response => {
-      this.servicesList = response.data;
-      this.activitiesList = response.data.flatMap(service => service.activities || []);
-      this.indicatorsList = response.data.flatMap(service => service.indicators || []);
+    this.serviceService.indexServices().subscribe(services => {
+      this.servicesList = services;
+      this.resetSelections();
+      console.log('Services loaded:', this.servicesList);
+    });
+
+    this.activityService.indexActivities().subscribe(activities => {
+      this.activitiesList = activities.map(activity => ({
+        id: activity.id,
+        name: activity.activity_name
+      }));
+      console.log('Activities loaded:', this.activitiesList);
     });
   }
 
@@ -54,42 +67,77 @@ export class FilterComponent implements OnInit {
     const serviceId = Number(target.value);
     if (!isNaN(serviceId)) {
       this.selectedServiceId = serviceId;
-      this.updateSelections(serviceId);
+      this.updateActivityAndIndicatorSelections(serviceId);
     }
   }
 
-  updateSelections(serviceId: number) {
+  updateActivityAndIndicatorSelections(serviceId: number) {
     const selectedService = this.servicesList.find(service => service.id === serviceId);
-    this.activitiesList = selectedService?.activities || [];
-    this.indicatorsList = selectedService?.indicators || [];
-    if (this.activitiesList.length === 0) {
-      this.activitiesList = [{ id: null, name: 'N/A' }];
-    } else {
-      this.activitiesList.unshift({ id: null, name: 'N/A' });
+    if (selectedService) {
+      this.activitiesList = selectedService.activities?.map(activity => ({
+        id: activity.id,
+        name: activity.name
+      })) || [];
+
+      if (this.activitiesList.length === 0) {
+        this.indicatorsList = selectedService.indicators?.map(indicator => ({
+          id: indicator.id,
+          name: indicator.name
+        })) || [];
+      } else {
+        this.indicatorsList = [];
+      }
+
+      this.selectedActivityId = undefined;
+      this.selectedIndicatorId = undefined;
+      console.log('Selected service:', selectedService);
+      console.log('Activities and Indicators updated on service select:', this.activitiesList, this.indicatorsList);
     }
-    this.selectedActivityId = undefined;
   }
 
   onActivitySelect(event: Event) {
     const target = event.target as HTMLSelectElement;
     const activityId = target.value === 'null' ? undefined : Number(target.value);
     this.selectedActivityId = activityId !== undefined && !isNaN(activityId) ? activityId : undefined;
-    this.updateIndicatorSelection(activityId);
-  }
-
-  updateIndicatorSelection(activityId: number | undefined) {
-    if (activityId !== undefined) {
-      const selectedActivity = this.activitiesList.find(activity => activity.id === activityId);
-      if (selectedActivity) {
-        const service = this.servicesList.find(service => service.activities?.some(activity => activity.id === activityId));
-        if (service) {
-          this.indicatorsList = service.indicators || [];
-        }
-      }
+    console.log('Activity ID selected:', activityId);
+    if (activityId) {
+      this.activityService.showActivity(activityId).subscribe(activity => {
+        this.updateIndicatorSelection(activity);
+      });
     } else {
-      this.indicatorsList = [];
+      this.updateIndicatorSelection(undefined);
     }
   }
+
+  updateIndicatorSelection(activity: Activity | undefined) {
+    if (activity) {
+      this.indicatorsList = activity.sais?.map(sai => ({
+        id: sai.indicator.id,
+        name: sai.indicator.indicator_name
+      }))
+        .filter((value, index, self) => self.findIndex(v => v.id === value.id) === index) || [];
+      console.log('Indicators filtered by activity:', this.indicatorsList);
+    } else {
+      // Se nenhuma atividade for selecionada, mostrar todos os indicadores relacionados ao serviço selecionado
+      const selectedService = this.servicesList.find(service => service.id === this.selectedServiceId);
+      this.indicatorsList = selectedService?.indicators?.map(indicator => ({
+        id: indicator.id,
+        name: indicator.name
+      })) || [];
+    }
+    this.selectedIndicatorId = undefined;  // Resetar a seleção de indicador quando uma nova atividade é selecionada
+
+    console.log('Indicators updated on activity select:', this.indicatorsList);
+  }
+
+  resetSelections() {
+    this.selectedServiceId = undefined;
+    this.selectedActivityId = undefined;
+    this.selectedIndicatorId = undefined;
+    this.activitiesList = [];
+    this.indicatorsList = [];
+  }
+
   sendFilter() {
     this.filterEvent.emit({
       serviceId: this.selectedServiceId,

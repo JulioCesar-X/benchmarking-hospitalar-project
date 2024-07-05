@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import anime from 'animejs/lib/anime.es.js';
 import { MatIconModule } from '@angular/material/icon';
 import { ServiceService } from '../../core/services/service/service.service';
+import { Service } from '../../core/models/service.model';
 
 @Component({
   selector: 'app-homepage',
@@ -18,7 +19,7 @@ import { ServiceService } from '../../core/services/service/service.service';
   styleUrls: ['./homepage.component.scss']
 })
 export class HomepageComponent implements OnInit, OnDestroy {
-  services: any[] = [];
+  services: Service[] = [];
   displayedServices: any[] = [];
   isLoading: boolean = false;
   page: number = 1;

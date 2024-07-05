@@ -20,15 +20,38 @@ class ActivityController extends Controller
     public function index()
     {
         try {
-            // Carregando todas as atividades e pré-carregando os relacionamentos de SAI com serviços e indicadores
-            $activities = Activity::with(['sais.service', 'sais.indicator'])->get();
+            // Carregar todas as atividades com os relacionamentos de SAI, serviços e indicadores
+            $activities = Activity::with(['sais.service', 'sais.indicator'])->get()
+                ->map(function ($activity) {
+                    $services = $activity->sais->map(function ($sai) {
+                        if ($sai->service) {
+                            return [
+                                'id' => $sai->service->id,
+                                'name' => $sai->service->service_name
+                            ];
+                        }
+                        return null;
+                    })->filter()->unique('id')->values();
 
-            // Verifica se há atividades para evitar enviar uma resposta vazia
-            if ($activities->isEmpty()) {
-                return response()->json(['message' => 'No activities found'], 404);
-            }
+                    $indicators = $activity->sais->map(function ($sai) {
+                        if ($sai->indicator) {
+                            return [
+                                'id' => $sai->indicator->id,
+                                'name' => $sai->indicator->indicator_name
+                            ];
+                        }
+                        return null;
+                    })->filter()->unique('id')->values();
 
-            return response()->json(['data' => $activities], 200);
+                    return [
+                        'id' => $activity->id,
+                        'activity_name' => $activity->activity_name,
+                        'services' => $services,
+                        'indicators' => $indicators
+                    ];
+                });
+
+            return response()->json($activities, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

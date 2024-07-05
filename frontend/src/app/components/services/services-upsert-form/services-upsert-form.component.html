@@ -21,8 +21,8 @@
       <label class="custom-file-upload" for="image">carregar imagem:</label>
       <input  type="file" class="inputContainer--input" (change)="onFileSelected($event)" id="image" name="image"
         accept="image/*">
-      <div *ngIf="selectedService.imageUrl" class="image-preview">
-        <img [src]="selectedService.imageUrl" alt="Image Preview" class="image-preview-img">
+      <div *ngIf="selectedService.image_url" class="image-preview">
+        <img [src]="selectedService.image_url" alt="Image Preview" class="image-preview-img">
         <p id="file-chosen">Imagem carregada com sucesso</p>
       </div>
     </div>

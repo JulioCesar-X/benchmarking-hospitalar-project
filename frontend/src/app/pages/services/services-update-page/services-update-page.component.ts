@@ -20,7 +20,7 @@ import { LoadingSpinnerComponent } from '../../../components/shared/loading-spin
   styleUrls: ['./services-update-page.component.scss']
 })
 export class ServicesUpdatePageComponent implements OnInit {
-  selectedService: Service = { id: -1, service_name: '', description: '', imageUrl: '' };
+  selectedService: Service = { id: -1, service_name: '', description: '', image_url: '' };
   isLoading = true;
 
   constructor(

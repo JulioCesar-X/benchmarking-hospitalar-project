@@ -9,6 +9,8 @@ import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { SelectableListComponent } from '../../shared/selectable-list/selectable-list.component';
 import { Activity } from '../../../core/models/activity.model';
+import { Service } from '../../../core/models/service.model';
+import { Indicator } from '../../../core/models/indicator.model';
 
 @Component({
   selector: 'app-activities-upsert-form',
@@ -35,8 +37,8 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
   isLoading: boolean = false;
   isError: boolean = false;
 
-  servicesList: any = [];
-  indicatorsList: any = [];
+  servicesList: Service[] = [];
+  indicatorsList: Indicator[] = [];
   selectedIndicatorsIDs: any[] = [];
   selectedServicesIDs: any[] = [];
 
@@ -77,8 +79,8 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
     this.activityService.showActivity(activityId).subscribe({
       next: (data: Activity) => {
         this.selectedActivity = data;
-        this.selectedServicesIDs = data.service_activity_indicators?.map(sai => sai.service.id) || [];
-        this.selectedIndicatorsIDs = data.service_activity_indicators?.map(sai => sai.indicator.id) || [];
+        this.selectedServicesIDs = data.sais?.map(sai => sai.service.id) || [];
+        this.selectedIndicatorsIDs = data.sais?.map(sai => sai.indicator.id) || [];
         this.cdRef.detectChanges();
       },
       error: (error) => {
@@ -94,11 +96,12 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
   getServices(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.serviceService.indexServices().subscribe({
-        next: (data) => {
+        next: (data: Service[]) => {
           if (data && Array.isArray(data)) {
             this.servicesList = data.map(service => ({
               id: service.id,
-              service_name: service.service_name
+              service_name: service.service_name,
+              image_url: service.image_url,
             }));
           } else {
             console.warn('Data is not an array:', data);
@@ -106,7 +109,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
           resolve();
         },
         error: (error) => {
-          console.error('Erro ao obter services', error);
+          console.error('Erro ao obter serviços', error);
           reject(error);
         },
         complete: () => {

@@ -10,7 +10,7 @@
 
   <div *ngIf="!isLoading">
     <div class="cardsContainer" *ngIf="services.length; else noResults">
-      <app-card *ngFor="let service of services" [imageUrl]="service.imageUrl" [title]="service.service_name">
+      <app-card *ngFor="let service of services" [imageUrl]="service.image_url" [title]="service.service_name">
         <div class="card-actions">
           <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="openDialog(service, 'edit')">
           <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete"

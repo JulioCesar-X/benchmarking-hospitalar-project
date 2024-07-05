@@ -13,6 +13,9 @@ Route::group(['middleware' => 'throttle:10000,1'], function () {
     Route::get('services/paginated', 'ServiceController@getServicesPaginated');
     Route::get('services/search', 'ServiceController@search');
     Route::get('services/{id}', 'ServiceController@show');
+
+    
+    Route::get('indicators', 'IndicatorController@index');
 });
 
 Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
@@ -23,7 +26,6 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::get('indicators/sai/charts', 'IndicatorController@getAllInDataGraphs');
     Route::get('indicators/search', 'IndicatorController@search');
     Route::get('indicators/sai/paginated', 'IndicatorController@getSAIPaginated');
-    Route::get('indicators', 'IndicatorController@index');
     Route::get('indicators/{id}', 'IndicatorController@show');
 
     
