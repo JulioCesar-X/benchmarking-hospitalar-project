@@ -6,6 +6,8 @@
   
   .blueTxt {
     color: $main-blue;
+    font-size: 3em;
+    text-align: center;
   }
 
   
@@ -43,13 +45,13 @@
     }
 }
 
-*,
+/* *,
 *::before,
 *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
+} */
 
 a {
   color: inherit;

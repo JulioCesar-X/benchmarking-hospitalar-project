@@ -65,6 +65,7 @@
 
 
 <section class="timeline" #timeline>
+  <h2 class="my-5 ml-5 blueTxt">Lista de Notificações</h2>
   <ul>
     <li *ngFor="let item of timelineItems" [ngClass]="{'in-view': isElementInView(item)}">
       <div>
