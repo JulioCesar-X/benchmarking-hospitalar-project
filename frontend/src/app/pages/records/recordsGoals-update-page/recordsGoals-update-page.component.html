@@ -17,14 +17,12 @@ class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer
   </div>
 </div>
 
-
-  <div *ngIf="selectedTab === 'Records'">
-    <app-records-list-section [indicators]="currentIndicators" [isLoading]="isLoading"
-      [filter]="filter"></app-records-list-section>
-  </div>
-  <div *ngIf="selectedTab === 'Metas'">
-    <app-goals-list-section [indicators]="currentIndicators" [isLoading]="isLoading"
-      [filter]="filter"></app-goals-list-section>
-  </div>
+<div *ngIf="selectedTab === 'Records'">
+  <app-records-list-section [indicators]="currentIndicators" [isLoading]="isLoading"
+    [filter]="filter"></app-records-list-section>
+</div>
+<div *ngIf="selectedTab === 'Metas'">
+  <app-goals-list-section [indicators]="currentIndicators" [isLoading]="isLoading"
+    [filter]="filter"></app-goals-list-section>
 </div>
 </div>
