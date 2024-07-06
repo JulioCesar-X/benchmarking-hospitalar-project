@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { ServiceService } from '../../../core/services/service/service.service';
 import { ActivityService } from '../../../core/services/activity/activity.service';
 import { Filter } from '../../../core/models/filter.model';
@@ -24,37 +24,43 @@ interface IndicatorForFilter {
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class FilterComponent implements OnInit {
+export class FilterComponent implements OnInit, OnChanges {
   servicesList: Service[] = [];
   activitiesList: ActivityForFilter[] = [];
   indicatorsList: IndicatorForFilter[] = [];
 
-  @Input() selectedServiceId?: number;
-  selectedActivityId?: number | undefined;
-  selectedIndicatorId?: number;
-
-  filter: Filter = { month: new Date().getMonth() + 1, year: new Date().getFullYear() };
-
+  @Input() selectedServiceId?: number | string;
+  @Input() selectedActivityId?: number | undefined;
+  @Input() selectedIndicatorId?: number;
   @Input() showMonthInput: boolean = true;
   @Input() indicatorsInput: boolean = false;
   @Input() dataInsertedCheckbox: boolean = false;
-  @Input() showServiceInput: boolean = true;  // New input property to show or hide service input
+  @Input() showServiceInput: boolean = true;
+  @Input() showActivityInput: boolean = false;  // Certifique-se de que está declarado como Input
+
   @Output() filterEvent = new EventEmitter<Filter>();
+  @Output() activityInputChange = new EventEmitter<boolean>();  // Evento separado para mudanças nas atividades
+
+  filter: Filter = { month: new Date().getMonth() + 1, year: new Date().getFullYear() };
 
   constructor(private serviceService: ServiceService, private activityService: ActivityService) { }
 
   ngOnInit() {
-    if (this.showServiceInput) {
-      this.loadInitialData();
-    } else {
-      this.loadActivitiesAndIndicators();
+    this.loadInitialData();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedServiceId'] && changes['selectedServiceId'].currentValue) {
+      this.updateActivityAndIndicatorSelections(Number(changes['selectedServiceId'].currentValue));
     }
   }
 
   loadInitialData() {
     this.serviceService.indexServices().subscribe(services => {
       this.servicesList = services;
-      this.resetSelections();
+      if (this.selectedServiceId) {
+        this.updateActivityAndIndicatorSelections(Number(this.selectedServiceId));
+      }
       console.log('Services loaded:', this.servicesList);
     });
 
@@ -89,6 +95,9 @@ export class FilterComponent implements OnInit {
   updateActivityAndIndicatorSelections(serviceId: number) {
     const selectedService = this.servicesList.find(service => service.id === serviceId);
     if (selectedService) {
+      const hasActivities = selectedService.activities && selectedService.activities.length > 0;
+      this.activityInputChange.emit(hasActivities);  // Emita o evento separado
+      console.log('Has activities:', hasActivities);
       this.activitiesList = selectedService.activities?.map(activity => ({
         id: activity.id,
         name: activity.name
@@ -133,14 +142,13 @@ export class FilterComponent implements OnInit {
         .filter((value, index, self) => self.findIndex(v => v.id === value.id) === index) || [];
       console.log('Indicators filtered by activity:', this.indicatorsList);
     } else {
-      // Se nenhuma atividade for selecionada, mostrar todos os indicadores relacionados ao serviço selecionado
       const selectedService = this.servicesList.find(service => service.id === this.selectedServiceId);
       this.indicatorsList = selectedService?.indicators?.map(indicator => ({
         id: indicator.id,
         name: indicator.name
       })) || [];
     }
-    this.selectedIndicatorId = undefined;  // Resetar a seleção de indicador quando uma nova atividade é selecionada
+    this.selectedIndicatorId = undefined;
 
     console.log('Indicators updated on activity select:', this.indicatorsList);
   }
@@ -156,7 +164,7 @@ export class FilterComponent implements OnInit {
   sendFilter() {
     this.filterEvent.emit({
       serviceId: this.selectedServiceId,
-      activityId: this.selectedActivityId !== undefined ? this.selectedActivityId : null,
+      activityId: this.selectedActivityId !== undefined ? this.selectedActivityId : undefined,
       indicatorId: this.selectedIndicatorId,
       month: this.showMonthInput ? this.filter.month : undefined,
       year: this.filter.year

@@ -47,30 +47,33 @@ export class ChartsComponent implements OnInit, OnChanges {
     switch (this.graphType) {
       case 'month':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        datasetData = data.recordsMensal;
+        datasetData = data?.recordsMensal || [];
         break;
       case 'month-metas':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        datasetData = data.goalsMensal;
+        datasetData = data?.goalsMensal || [];
         break;
       case 'year-metas':
-        labels = data.years;
-        datasetData = data.goalAnual;
+        labels = data?.years || [];
+        datasetData = data?.goalAnual || [];
         break;
       case 'homologYear':
         labels = ['Ano anterior', 'Ano atual'];
-        datasetData = [data.previousYearTotal, data.currentYearTotal];
+        datasetData = [
+          data?.previousYearTotal ?? 0,
+          data?.currentYearTotal ?? 0
+        ];
         break;
       case 'fiveYear':
-        labels = data.lastFiveYears.map((yr: any) => yr.year);
-        datasetData = data.lastFiveYears.map((yr: any) => yr.total);
+        labels = data?.lastFiveYears?.map((yr: any) => yr.year) || [];
+        datasetData = data?.lastFiveYears?.map((yr: any) => yr.total) || [];
         break;
       case 'lineChart':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         if (this.graphLabel === 'Ano atual') {
-          datasetData = data.recordsAnual;
+          datasetData = data?.recordsAnual || [];
         } else if (this.graphLabel === 'Ano anterior') {
-          datasetData = data.recordsAnualLastYear;
+          datasetData = data?.recordsAnualLastYear || [];
         }
         break;
       default:

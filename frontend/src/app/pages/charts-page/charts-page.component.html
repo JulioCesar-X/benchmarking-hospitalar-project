@@ -1,6 +1,7 @@
 <div class="m-2 w-full">
   <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false" [showServiceInput]="isAdminOrCoordinator"
-    [selectedServiceId]="filter.serviceId" (filterEvent)="handleFilterData($event)">
+    [showActivityInput]="showActivityInput" [selectedServiceId]="filter.serviceId"
+    (filterEvent)="handleFilterData($event)" (activityInputChange)="handleActivityInputChange($event)">
   </app-filter>
 
   <div class="tab-headers">

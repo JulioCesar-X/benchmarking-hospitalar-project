@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -20,4 +19,12 @@ export class RecordService {
     );
   }
 
+  storeRecord(record: any): Observable<any> {
+    return this.http.post('/records', record).pipe(
+      catchError(error => {
+        console.error('Error storing record:', error);
+        return throwError(() => new Error('Failed to store record'));
+      })
+    );
+  }
 }

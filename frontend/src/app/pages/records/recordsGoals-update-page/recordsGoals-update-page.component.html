@@ -3,7 +3,9 @@
 </div>
 <div class="sm:mx-0 md:mx-1 lg:mx-2 w-full">
   <app-filter [showMonthInput]="selectedTab === 'Records'" [indicatorsInput]="false" [dataInsertedCheckbox]="true"
-    (filterEvent)="handleFilterData($event)"></app-filter>
+    [showServiceInput]="true" [showActivityInput]="true" (filterEvent)="handleFilterData($event)"
+    (activityInputChange)="handleActivityInputChange($event)">
+  </app-filter>
 
   <div class="tab-headers">
     <button class="tab-link" [class.active]="selectedTab === 'Records'" (click)="selectTab('Records')">Records</button>

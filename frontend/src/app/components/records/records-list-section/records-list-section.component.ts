@@ -8,6 +8,18 @@ import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
+import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+
+interface Record {
+  record_id: number | null;
+  indicator_name: string;
+  saiId: number;
+  value: string;
+  date: string;
+  isInserted: boolean;
+  isUpdating: boolean;
+  isEditing: boolean;
+}
 
 @Component({
   selector: 'app-records-list-section',
@@ -17,7 +29,8 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
     ReactiveFormsModule,
     FormsModule,
     PaginatorComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    FeedbackComponent
   ],
   templateUrl: './records-list-section.component.html',
   styleUrls: ['./records-list-section.component.scss']
@@ -31,7 +44,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
   totalRecords = 0;
   pageSize = 10;
   currentPage = 0;
-  records: any[] = [];
+  records: Record[] = [];
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
 
@@ -62,44 +75,95 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
         .pipe(
           catchError(error => {
             console.error('Error fetching records', error);
-            return of([]);
+            return of({ total: 0, data: [] });
           }),
           finalize(() => this.isLoadingRecords = false)
         )
         .subscribe(response => {
-          console.log('records +++>>', response);
           this.totalRecords = response.total;
-          //vou precisar alterar para poder mostrar os indicator_name sem o registro
-          this.records = response.data.flatMap((item: any) => item.records.map((record: any) => ({
-            record_id: record.record_id,
-            indicator_name: item.indicator_name,
-            saiId: item.sai_id,
-            value: record.value,
-            date: record.date,
-            isInserted: record.value !== '0',
-            isUpdating: false
-          })));
+          this.records = response.data.map((item: any) => {
+            if (item.records.length === 0) {
+              return {
+                record_id: null,
+                indicator_name: item.indicator_name,
+                saiId: item.sai_id,
+                value: '',
+                date: `${year}-${String(month).padStart(2, '0')}-01`,
+                isInserted: false,
+                isUpdating: false,
+                isEditing: false
+              };
+            } else {
+              return item.records.map((record: any) => ({
+                record_id: record.record_id,
+                indicator_name: item.indicator_name,
+                saiId: item.sai_id,
+                value: record.value,
+                date: record.date,
+                isInserted: record.value !== '0',
+                isUpdating: false,
+                isEditing: false
+              }));
+            }
+          }).flat();
         });
       console.log('Records loaded:', this.records);
     }
   }
 
-  editRecord(record: any): void {
-    if (record.isInserted) {
-      record.isInserted = false;
-    } else {
+  editRecord(record: Record): void {
+    if (record.isInserted && !record.isEditing) {
+      record.isEditing = true;
+      return;
+    }
+
+    if (String(record.value).trim() === '') {
+      this.setNotification('O valor não pode estar vazio', 'error');
+      return;
+    }
+
+    const valueAsNumber = Number(record.value);
+    if (isNaN(valueAsNumber) || !Number.isInteger(valueAsNumber) || valueAsNumber <= 0) {
+      this.setNotification('O valor deve ser um número inteiro maior que 0', 'error');
+      return;
+    }
+
+    if (record.record_id) {
       record.isUpdating = true;
       this.recordService.updateRecord(record.record_id, record)
-        .pipe(finalize(() => record.isUpdating = false))
+        .pipe(finalize(() => {
+          record.isUpdating = false;
+          record.isEditing = false;
+        }))
         .subscribe(
           () => this.setNotification('Registro atualizado com sucesso', 'success'),
           error => this.setNotification(this.getErrorMessage(error), 'error')
         );
+    } else {
+      const newRecord = {
+        sai_id: record.saiId,
+        value: record.value,
+        date: record.date
+      };
+      record.isUpdating = true;
+      this.storeRecord(newRecord);
     }
   }
 
-  onValueChange(record: any): void {
-    const index = this.records.findIndex(r => r.id === record.id);
+  storeRecord(newRecord: any): void {
+    this.recordService.storeRecord(newRecord)
+      .pipe(finalize(() => newRecord.isUpdating = false))
+      .subscribe(
+        () => {
+          this.setNotification('Registro criado com sucesso', 'success');
+          this.loadRecords();
+        },
+        error => this.setNotification(this.getErrorMessage(error), 'error')
+      );
+  }
+
+  onValueChange(record: Record): void {
+    const index = this.records.findIndex(r => r.record_id === record.record_id);
     if (index !== -1) {
       this.records[index].value = record.value;
     }
@@ -128,6 +192,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
   }
 
   trackByIndex(index: number, item: any): number {
-    return item.id;
+    return item.record_id;
   }
 }

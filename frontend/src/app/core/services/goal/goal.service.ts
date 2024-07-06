@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -19,6 +18,14 @@ export class GoalService {
     );
   }
 
+  storeGoal(goal: any): Observable<any> {
+    return this.http.post('/goals', goal).pipe(
+      catchError(error => {
+        console.error('Error creating goal:', error);
+        return throwError(() => new Error('Failed to create goal'));
+      })
+    );
+  }
 }
 
 

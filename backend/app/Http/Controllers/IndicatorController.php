@@ -101,10 +101,10 @@ class IndicatorController extends Controller
 
             $cacheKey = "graph_data_{$serviceId}_{$activityId}_{$indicatorId}_{$year}_{$month}";
 
-            // // Check cache first
-            // if (Cache::has($cacheKey)) {
-            //     return response()->json(Cache::get($cacheKey), 200);
-            // }
+            // Check cache first
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
 
             $sai = Sai::where('service_id', $serviceId)
                 ->where('activity_id', $activityId)

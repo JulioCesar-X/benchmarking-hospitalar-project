@@ -37,7 +37,7 @@ export class IndicatorService {
   getAllInDataGraphs(filter: Filter): Observable<any> {
     const params = new HttpParams()
       .set('serviceId', filter.serviceId?.toString() || '0')
-      .set('activityId', filter.activityId?.toString() || '0')
+      .set('activityId', filter.activityId?.toString() || '')
       .set('indicatorId', filter.indicatorId?.toString() || '0')
       .set('year', filter.year?.toString() || '0')
       .set('month', filter.month?.toString() || '0');

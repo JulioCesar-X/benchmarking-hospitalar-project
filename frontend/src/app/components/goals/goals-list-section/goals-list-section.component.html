@@ -19,14 +19,14 @@
               <tr *ngFor="let goal of goals; trackBy: trackByIndex">
                 <td class="p-2">{{ goal.indicator_name }}</td>
                 <td class="p-2">
-                  <input [disabled]="goal.isInserted"
+                  <input [disabled]="goal.isInserted && !goal.isEditing"
                     class="inputContainer--input w-full p-2 border border-gray-300 rounded"
-                    [(ngModel)]="goal.target_value" (ngModelChange)="onValueChange(goal)" />
+                    [(ngModel)]="goal.target_value" (ngModelChange)="onValueChange(goal)" type="number" min="1" />
                 </td>
                 <td class="p-2 text-center">
                   <button *ngIf="!goal.isUpdating" (click)="editGoal(goal)"
                     class="forms-Button bg-main-blue text-white px-4 py-2 rounded">
-                    {{ !goal.isInserted ? 'Atualizar' : 'Editar' }}
+                    {{ goal.isInserted && !goal.isEditing ? 'Editar' : 'Atualizar' }}
                   </button>
                   <div *ngIf="goal.isUpdating" class="loading-circle">
                     <div class="spinner spinner_updateRecord-special"></div>
@@ -42,6 +42,7 @@
       <ng-template #noResults>
         <div class="p-4">Nenhum registro encontrado.</div>
       </ng-template>
+      <app-feedback [message]="notificationMessage" [type]="notificationType"></app-feedback>
     </div>
   </div>
 </section>

@@ -7,7 +7,7 @@
           <option *ngFor="let service of servicesList" [value]="service.id">{{ service.service_name }}</option>
         </select>
       </div>
-      <div class="selectContainer" *ngIf="activitiesList.length > 0">
+      <div class="selectContainer" *ngIf="showActivityInput && activitiesList.length > 0">
         <label for="activityId">Atividades:</label>
         <select [(ngModel)]="selectedActivityId" (change)="onActivitySelect($event)" [disabled]="!selectedServiceId">
           <option *ngFor="let activity of activitiesList" [value]="activity.id">{{ activity.name }}</option>

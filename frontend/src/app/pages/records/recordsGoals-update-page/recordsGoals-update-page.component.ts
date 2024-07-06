@@ -24,21 +24,12 @@ export class RecordsGoalsUpdatePageComponent {
   isLoading = false;
 
   filter: Filter = {
-    indicatorId: undefined,
-    activityId: undefined,
-    serviceId: undefined,
+    indicatorId: 1,
+    activityId: 1,
+    serviceId: 1,
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear()
   };
-
-  onIndicatorsUpdated(indicators: any[]): void {
-    this.currentIndicators = indicators;
-    this.isLoading = false;
-  }
-
-  setLoadingState(isLoading: boolean): void {
-    this.isLoading = isLoading;
-  }
 
   selectedTab: string = 'Records';
 
@@ -52,5 +43,9 @@ export class RecordsGoalsUpdatePageComponent {
       ...this.filter,
       ...event
     };
+  }
+
+  handleActivityInputChange(show: boolean): void {
+    // Placeholder function to handle activity input changes
   }
 }

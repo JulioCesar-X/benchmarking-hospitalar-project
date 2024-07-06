@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { ChartsComponent } from '../../components/charts/charts.component';
-import { FilterComponent } from '../../components/shared/filter/filter.component';
-import { Filter } from '../../core/models/filter.model';
+import { HttpClientModule } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IndicatorService } from '../../core/services/indicator/indicator.service';
-import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
 import { AuthService } from '../../core/services/auth/auth.service';
-import { ActivatedRoute } from '@angular/router';
+import { FilterComponent } from '../../components/shared/filter/filter.component';
+import { ChartsComponent } from '../../components/charts/charts.component';
+import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
+import { Filter } from '../../core/models/filter.model';
 
 @Component({
   selector: 'app-charts-page',
@@ -30,12 +30,14 @@ export class ChartsPageComponent implements OnInit {
     indicatorId: 1,
     activityId: 1,
     serviceId: 1,
-    month: new Date().getMonth() + 1,  // Current month (1-12)
-    year: new Date().getFullYear()    // Current year
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear()
   };
   graphData: any;
   isLoading = false;
   isAdminOrCoordinator: boolean = false;
+  showActivityInput: boolean = false;
+
   private filterSubject = new Subject<Partial<Filter>>();
 
   constructor(
@@ -48,14 +50,10 @@ export class ChartsPageComponent implements OnInit {
     const role = this.authService.getRole();
     this.isAdminOrCoordinator = role === 'admin' || role === 'coordenador';
 
-    if (!this.isAdminOrCoordinator) {
-      this.route.params.subscribe(params => {
-        this.filter.serviceId = +params['serviceId'];
-        this.loadGraphData();
-      });
-    } else {
+    this.route.params.subscribe(params => {
+      this.filter.serviceId = +params['serviceId'] || this.filter.serviceId;
       this.loadGraphData();
-    }
+    });
 
     this.filterSubject.pipe(
       debounceTime(300),
@@ -69,7 +67,6 @@ export class ChartsPageComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading graph data:', error);
         this.isLoading = false;
       }
     });
@@ -81,10 +78,14 @@ export class ChartsPageComponent implements OnInit {
 
   handleFilterData(event: Partial<Filter>): void {
     this.filter = {
-      ...this.filter,  // Preserve existing values
-      ...event         // Overwrite with new values from event
+      ...this.filter,
+      ...event
     };
     this.loadGraphData();
+  }
+
+  handleActivityInputChange(show: boolean): void {
+    this.showActivityInput = show;
   }
 
   selectTab(tab: string): void {

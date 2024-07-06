@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import anime from 'animejs/lib/anime.es.js';
 import { MatIconModule } from '@angular/material/icon';
 import { ServiceService } from '../../core/services/service/service.service';
@@ -48,11 +47,9 @@ export class HomepageComponent implements OnInit, OnDestroy {
       next: (data: any) => {
         this.services = data.data;
         this.totalServices = data.total;
-        console.log('Services:', this.services);
         this.updateDisplayedServices();
       },
       error: (err) => {
-        console.error('Error loading services:', err);
         this.isLoading = false;
       },
       complete: () => {
