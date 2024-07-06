@@ -1,5 +1,5 @@
   <section class=" w-full p-0 gap-4 mx-auto h-[100%] forms-container">
-<!--     <div class=" flex headingSection">
+    <div class=" flex headingSection">
       <h2>Lista de Utilizadores</h2>
       <app-tooltip-button [tooltipText]="'Clique para registrar um novo utilizador'" [tooltipPosition]="'right'"
         [icon]="'../../../assets/images/icons8-plus-30.png'" [altText]="'createIcon'" (click)="openDialog(null, 'create')">
@@ -55,6 +55,7 @@
 
     </div>
   </section>
-  <app-paginator [length]="totalLength"
-  (page)="handlePageEvent($event)"></app-paginator> <!-- *ngIf="!isLoading" -->
+<app-paginator [length]="totalLength" [pageSize]="pageSize" [pageIndex]="currentPage"
+  [pageSizeOptions]="pageSizeOptions" (page)="onPageChanged($event)">
+</app-paginator>
 

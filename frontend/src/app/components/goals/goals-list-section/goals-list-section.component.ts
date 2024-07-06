@@ -9,6 +9,7 @@ import { of } from 'rxjs';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+import { PageEvent } from '@angular/material/paginator';
 
 interface Goal {
   id: number | null;
@@ -47,6 +48,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
   goals: Goal[] = [];
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
+  pageOptions = [5, 10, 20, 50, 100]; // Define the pageOptions array here
 
   constructor(
     private goalService: GoalService,
@@ -177,7 +179,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
     }
   }
 
-  handlePageEvent(event: any): void {
+  onPageChanged(event: PageEvent): void {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
     this.loadGoals();

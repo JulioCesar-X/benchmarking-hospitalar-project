@@ -66,7 +66,11 @@ export const routes: Routes = [
   { path: 'description/:serviceId', component: ServicesDescriptionPageComponent },
   { path: 'charts', component: ChartsPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin', 'coordenador'] } },
   { path: 'user-charts', component: ChartsPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['user'] } },
-  { path: 'RecordGoalsUpdate', component: RecordsGoalsUpdatePageComponent },
-
+  {
+    path: 'RecordGoalsUpdate',
+    component: RecordsGoalsUpdatePageComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: ['admin', 'coordenador'] }
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];

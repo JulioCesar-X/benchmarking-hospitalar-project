@@ -33,7 +33,7 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges {
   @Input() activities: Activity[] = [];
   @Input() isLoading = true;
   pageSize = 10;
-  pageSizeOptions: number[] = [5, 10, 20];
+  pageSizeOptions: number[] = [5, 10, 20, 50, 100];
   currentPage = 0;
   totalLength = 0;
 
@@ -61,14 +61,14 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges {
     }
   }
 
-  loadActivities(pageIndex = 0, pageSize = 10): void {
+  loadActivities(): void {
     this.isLoading = true;
-    this.activityService.getActivitiesPaginated(pageIndex, pageSize).subscribe({
+    this.activityService.getActivitiesPaginated(this.currentPage, this.pageSize).subscribe({
       next: (data) => {
         console.log("Activities Data Received:", data);
         this.activities = data.data;
         this.totalLength = data.total;
-        this.currentPage = pageIndex;
+        this.currentPage = data.current_page;
         this.isLoading = false;
         console.log("Total length:", this.totalLength);
         console.log("Activities list:", this.activities);
@@ -108,7 +108,7 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges {
     this.activityService.destroyActivity(activityId).subscribe({
       next: (data) => {
         console.log("Activity deleted:", data);
-        this.loadActivities(this.currentPage, this.pageSize);
+        this.loadActivities();
       },
       error: (error) => {
         console.error("Error deleting activity:", error);
@@ -119,9 +119,9 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges {
     });
   }
 
-  handlePageEvent(event: PageEvent): void {
+  onPageChanged(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
-    this.loadActivities(this.currentPage, this.pageSize);
+    this.loadActivities();
   }
 }

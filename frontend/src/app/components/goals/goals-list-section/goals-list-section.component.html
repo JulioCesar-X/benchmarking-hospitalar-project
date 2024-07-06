@@ -35,8 +35,9 @@
               </tr>
             </tbody>
           </table>
-          <app-paginator [length]="totalGoals" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]"
-            (page)="handlePageEvent($event)"></app-paginator>
+          <app-paginator [length]="totalGoals" [pageSize]="pageSize" [pageIndex]="currentPage" [pageSizeOptions]="pageOptions"
+            (page)="onPageChanged($event)">
+          </app-paginator>
         </div>
       </div>
       <ng-template #noResults>

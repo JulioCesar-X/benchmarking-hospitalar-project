@@ -56,13 +56,13 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
     }
   }
 
-  loadUsers(pageIndex = 0, pageSize = 10): void {
+  loadUsers(): void {
     this.isLoading = true;
-    this.userService.getUsersPaginated(pageIndex, pageSize).subscribe({
+    this.userService.getUsersPaginated(this.currentPage,this.pageSize).subscribe({
       next: (data) => {
         this.users = data.data;
         this.totalLength = data.total;
-        this.currentPage = data.pageIndex;
+        this.currentPage = data.current_page;
         console.log("Paginated users loaded:", this.users);
         this.isLoading = false;
       },
@@ -97,7 +97,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
   deleteUser(userId: number): void {
     this.userService.destroyUser(userId).subscribe({
       next: (data) => {
-        this.loadUsers(this.currentPage, this.pageSize);
+        this.loadUsers();
       },
       error: (error) => {
         console.error("Error deleting user:", error);
@@ -105,9 +105,9 @@ export class UsersListSectionComponent implements OnInit, OnChanges {
     });
   }
 
-  handlePageEvent(event: PageEvent): void {
+  onPageChanged(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
-    this.loadUsers(this.currentPage, this.pageSize);
+    this.loadUsers();
   }
 }
