@@ -67,8 +67,9 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
           finalize(() => this.isLoadingRecords = false)
         )
         .subscribe(response => {
-          console.log('records >>', response);
+          console.log('records +++>>', response);
           this.totalRecords = response.total;
+          //vou precisar alterar para poder mostrar os indicator_name sem o registro
           this.records = response.data.flatMap((item: any) => item.records.map((record: any) => ({
             record_id: record.record_id,
             indicator_name: item.indicator_name,
@@ -79,6 +80,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
             isUpdating: false
           })));
         });
+      console.log('Records loaded:', this.records);
     }
   }
 

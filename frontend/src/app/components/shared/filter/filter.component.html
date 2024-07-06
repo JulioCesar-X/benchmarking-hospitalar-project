@@ -1,7 +1,7 @@
 <section class="forms-container">
   <div class="forms-container--inputContainer">
     <div class="special">
-      <div class="selectContainer">
+      <div class="selectContainer" *ngIf="showServiceInput">
         <label for="serviceId">Serviços:</label>
         <select [(ngModel)]="selectedServiceId" (change)="onServiceSelect($event)">
           <option *ngFor="let service of servicesList" [value]="service.id">{{ service.service_name }}</option>
@@ -16,8 +16,7 @@
     </div>
     <div class="selectContainer" *ngIf="indicatorsInput">
       <label for="indicatorId">Indicadores:</label>
-      <select [(ngModel)]="selectedIndicatorId"
-        [disabled]="!selectedServiceId || !indicatorsList">
+      <select [(ngModel)]="selectedIndicatorId" [disabled]="!selectedServiceId || !indicatorsList">
         <option *ngFor="let indicator of indicatorsList" [value]="indicator.id">{{ indicator.name }}</option>
       </select>
     </div>

@@ -29,7 +29,7 @@ export class FilterComponent implements OnInit {
   activitiesList: ActivityForFilter[] = [];
   indicatorsList: IndicatorForFilter[] = [];
 
-  selectedServiceId?: number;
+  @Input() selectedServiceId?: number;
   selectedActivityId?: number | undefined;
   selectedIndicatorId?: number;
 
@@ -38,12 +38,17 @@ export class FilterComponent implements OnInit {
   @Input() showMonthInput: boolean = true;
   @Input() indicatorsInput: boolean = false;
   @Input() dataInsertedCheckbox: boolean = false;
+  @Input() showServiceInput: boolean = true;  // New input property to show or hide service input
   @Output() filterEvent = new EventEmitter<Filter>();
 
   constructor(private serviceService: ServiceService, private activityService: ActivityService) { }
 
   ngOnInit() {
-    this.loadInitialData();
+    if (this.showServiceInput) {
+      this.loadInitialData();
+    } else {
+      this.loadActivitiesAndIndicators();
+    }
   }
 
   loadInitialData() {
@@ -53,6 +58,16 @@ export class FilterComponent implements OnInit {
       console.log('Services loaded:', this.servicesList);
     });
 
+    this.activityService.indexActivities().subscribe(activities => {
+      this.activitiesList = activities.map(activity => ({
+        id: activity.id,
+        name: activity.activity_name
+      }));
+      console.log('Activities loaded:', this.activitiesList);
+    });
+  }
+
+  loadActivitiesAndIndicators() {
     this.activityService.indexActivities().subscribe(activities => {
       this.activitiesList = activities.map(activity => ({
         id: activity.id,
