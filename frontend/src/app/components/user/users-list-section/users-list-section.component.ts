@@ -8,7 +8,9 @@ import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
-import { TooltipButtonComponent } from '../../shared/tooltip-button/tooltip-button.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 @Component({
   selector: 'app-users-list-section',
@@ -21,7 +23,8 @@ import { TooltipButtonComponent } from '../../shared/tooltip-button/tooltip-butt
     LoadingSpinnerComponent,
     PaginatorComponent,
     DialogContentComponent,
-    TooltipButtonComponent
+    MatButtonModule,
+    MatTooltipModule,
   ],
 })
 export class UsersListSectionComponent implements OnInit, OnChanges {

@@ -5,10 +5,19 @@
   <app-filter [showMonthInput]="selectedTab === 'Records'" [indicatorsInput]="false" [dataInsertedCheckbox]="true"
     (filterEvent)="handleFilterData($event)"></app-filter>
 
-  <div class="tab-headers">
-    <button class="tab-link" [class.active]="selectedTab === 'Records'" (click)="selectTab('Records')">Records</button>
-    <button class="tab-link" [class.active]="selectedTab === 'Metas'" (click)="selectTab('Metas')">Metas</button>
+
+<div
+class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer">
+<div class="tab-headers-wrapper">
+  <div id="tabHead" class="flex items-center justify-between pr-2">
+    <div id="tabHeaders" class="flex w-[30%]">
+      <button class="tab-link" [class.active]="selectedTab === 'Records'" (click)="selectTab('Records')">Records</button>
+      <button class="tab-link" [class.active]="selectedTab === 'Metas'" (click)="selectTab('Metas')">Metas</button>
+    </div>
   </div>
+</div>
+
+
   <div *ngIf="selectedTab === 'Records'">
     <app-records-list-section [indicators]="currentIndicators" [isLoading]="isLoading"
       [filter]="filter"></app-records-list-section>
@@ -17,4 +26,5 @@
     <app-goals-list-section [indicators]="currentIndicators" [isLoading]="isLoading"
       [filter]="filter"></app-goals-list-section>
   </div>
+</div>
 </div>

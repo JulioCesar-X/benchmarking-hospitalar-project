@@ -15,11 +15,11 @@
 
 .forms-container {
   @include forms-container();
-  text-align: center;
   padding: 0;
   margin-block: 0em;
   border: 10px solid $main-blue;
   background-color: $fill-white;
+  border-radius: 0;
   width: 100%;
 }
 

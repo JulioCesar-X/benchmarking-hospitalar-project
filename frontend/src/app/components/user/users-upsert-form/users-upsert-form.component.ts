@@ -31,7 +31,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatTableModule,
     MatCheckboxModule,
     MatFormFieldModule,
-    MatSelectModule],
+  MatSelectModule],
   templateUrl: './users-upsert-form.component.html',
   styleUrl: './users-upsert-form.component.scss'
 })

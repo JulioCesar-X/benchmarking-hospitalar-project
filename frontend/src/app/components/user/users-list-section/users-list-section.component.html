@@ -1,33 +1,23 @@
   <section class="w-full mt-2 p-0 gap-4 mx-auto  forms-container">
-    <div class="flex justify-center items-center text-xl pb-5 gap-10 blueBG ">
-      <h2 class="whiteTxt mt-2 my-0">Lista de Utilizadores</h2>
-  
-      <!-- <div class="p-1 mt-2 whiteBG createBtn">      
-        <img src="../../../assets/images/icons8-plus-30.png" class="w-[20px] h-[20px]" alt="createIcon"
-        (click)="openDialog(null, 'create')">
-      </div> -->
 
-      <div class="p-1 mt-1 whiteBG createBtn small-btn">      
-        <app-tooltip-button 
-          [tooltipText]="'Clique para registrar um novo utilizador'" 
-          [tooltipPosition]="'right'"
-          [icon]="'../../../assets/images/icons8-plus-30.png'" 
-          [altText]="'createIcon'" 
-          class="small-tooltip-btn"
-          (click)="openDialog(null, 'create')" >
-          
-        </app-tooltip-button>
-      </div>
+    <div class="flex justify-start items-center text-xl pb-5 gap-10 blueBG">
+      
+      <button mat-icon-button
+      matTooltip="Clique para registrar um novo utilizador"
+      [matTooltipPosition]="'right'"
+      matTooltipClass="custom"
+      class="small-btn whiteBG createBtn ml-5"
+      (click)="openDialog(null, 'create')">
+<img src="../../../assets/images/icons8-plus-30.png" alt="createIcon" class="icon-large">
+</button>
+      <h2 class="whiteTxt mx-auto my-0">Lista de Utilizadores</h2>
       
     </div>
 
     <app-loading-spinner class="my-auto" *ngIf="isLoading" message="A carregar Utilizadores..."></app-loading-spinner>
-
     <div *ngIf="!isLoading" class="">
       <div *ngIf="users.length; else noResults" class="">
-
         <table class="w-[90%] h-[100%] mx-auto user-table rounded-xl">
-          
           <thead class="sticky top-[-2px] z-10">
             <tr class="">
               <th class="p-2">Nome</th>
@@ -58,7 +48,6 @@
                     (click)="openDialog(user, 'delete')"
                   />
                   </div>
-
                 </td>
               </tr>
             </tbody>
@@ -69,7 +58,6 @@
           Nenhum utilizador encontrado.
         </div>
       </ng-template>
-
     </div>
   </section>
   <app-paginator [length]="totalLength"

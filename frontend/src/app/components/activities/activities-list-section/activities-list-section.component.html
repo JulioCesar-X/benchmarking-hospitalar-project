@@ -1,10 +1,21 @@
-<div class="activities-list-container">
-  <div class="table-container">
+<section class="w-full mt-2 p-0 gap-4 mx-auto forms-container">
     
-    <div class="headingSection">
+<!--     <div class="headingSection">
       <h2>Lista de atividades</h2>
       <img src="../../../assets/images/icons8-plus-30.png" class="icon" alt="createIcon"
         (click)="openDialog(null, 'create')">
+    </div> -->
+    <div class="flex justify-start items-center text-xl pb-5 pt-2 gap-10 blueBG">
+      
+      <button mat-icon-button
+      matTooltip="Clique para registrar uma nova atividade"
+      [matTooltipPosition]="'right'"
+      matTooltipClass="custom"
+      class="small-btn whiteBG createBtn ml-5 w-[50px] h-[50px]"
+      (click)="openDialog(null, 'create')">
+  <img src="../../../assets/images/icons8-plus-30.png" alt="createIcon" class="icon-large">
+  </button>
+      <h2 class="whiteTxt my-0">Lista de atividades</h2>
     </div>
 
     <app-loading-spinner *ngIf="isLoading" message="Procurando atividades..."></app-loading-spinner>
@@ -32,8 +43,7 @@
               </tr>
             </tbody>
           </table>
-          <app-paginator [length]="totalLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
-            (page)="handlePageEvent($event)" *ngIf="!isLoading"></app-paginator>
+
         </div>
       </div>
       <ng-template #noResults>
@@ -42,5 +52,6 @@
         </div>
       </ng-template>
     </div>
-  </div>
-</div>
+</section>
+<app-paginator [length]="totalLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+(page)="handlePageEvent($event)"></app-paginator>

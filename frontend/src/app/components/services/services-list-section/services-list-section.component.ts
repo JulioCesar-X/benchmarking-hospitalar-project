@@ -12,6 +12,8 @@ import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CardComponent } from '../../shared/card/card.component';
 import { Service } from '../../../core/models/service.model';
 import { ServiceService } from '../../../core/services/service/service.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 
 @Component({
@@ -27,7 +29,8 @@ import { ServiceService } from '../../../core/services/service/service.service';
     PaginatorComponent,
     SelectableListComponent,
     DialogContentComponent,
-    CardComponent
+    CardComponent,
+    MatTooltipModule
   ]
 })
 export class ServicesListSectionComponent implements OnInit, OnChanges {

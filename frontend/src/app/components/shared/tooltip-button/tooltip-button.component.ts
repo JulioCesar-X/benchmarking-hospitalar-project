@@ -1,11 +1,10 @@
 import { Component, Input, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TooltipComponent } from '../tooltip/tooltip.component'; 
 
 @Component({
   selector: 'app-tooltip-button',
   standalone: true,
-  imports: [TooltipComponent, CommonModule],
+  imports: [CommonModule],
   templateUrl: './tooltip-button.component.html',
   styleUrls: ['./tooltip-button.component.scss']
 })

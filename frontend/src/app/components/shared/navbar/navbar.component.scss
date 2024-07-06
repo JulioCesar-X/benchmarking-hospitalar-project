@@ -57,11 +57,17 @@
   gap: 1em;
   position: relative;
   padding-right: 1em;
-  padding-left: 6em;
+  padding-left: 8em;
   height: 100%;
   z-index: 1; 
 }
-@media (max-width:640px){
+
+  @media (min-width:2500px){
+    .links{
+      padding-left: 12em;
+    }
+  }
+  @media (max-width:640px){
   .links {
     flex-direction: column;
     align-items: end;

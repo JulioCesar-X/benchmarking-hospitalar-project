@@ -10,6 +10,8 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { Indicator } from '../../../core/models/indicator.model';
 import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
+import { ActivityService } from '../../../core/services/activity/activity.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-indicators-list-section',
@@ -22,7 +24,8 @@ import { DialogContentComponent } from '../../shared/dialog-content/dialog-conte
     FormsModule,
     LoadingSpinnerComponent,
     PaginatorComponent,
-    DialogContentComponent
+    DialogContentComponent,
+    MatTooltipModule
   ]
 })
 export class IndicatorsListSectionComponent implements OnInit, OnChanges {

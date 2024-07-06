@@ -3,10 +3,7 @@
 
 <!-- <form (ngSubmit)="createUser()">
   <div class="forms-container">
-    <div *ngIf="isLoading" class="loading-circle_forBlueBG">
-      <div class="spinner_forBlueBG"></div>
-      <p>A criar user...</p>
-    </div>
+
 
     <h2 class="title" *ngIf="formsAction === 'create'">Criar User</h2>
     <h2 class="title" *ngIf="formsAction === 'edit'">Editar User</h2>
@@ -38,32 +35,42 @@
 
 
 
-<div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG">
-  <h2 class="text-xl mb-4 whiteTxt">Criar Notificação</h2>
-  <form>
-    <mat-form-field class="w-full mb-4 blueBG">
-      <mat-label class="blueTxt">Nome:</mat-label>
-      <input matInput id="nome">
-    </mat-form-field>
-    <mat-form-field class="w-full mb-4">
-      <mat-label class="blueTxt">Email:</mat-label>
-      <input matInput id="email">
-    </mat-form-field>
-    <mat-form-field class="w-full mb-4">
-      <mat-label class="blueTxt">Password:</mat-label>
-      <input matInput id="password">
-    </mat-form-field>
-    <mat-form-field class="w-full mb-4">
-      <mat-label class="blueTxt">Role do utilizador:</mat-label>
-      <mat-select  id="rolePanel">
-        <mat-option [value]="3">Utilizador</mat-option>
-        <mat-option [value]="2" *ngIf="getRole() === 'admin'">Coordenador</mat-option>
-        <mat-option [value]="1" *ngIf="getRole() === 'admin'">Admin</mat-option>
-      </mat-select>
-    </mat-form-field>
+  <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG">
 
-    <button mat-raised-button type="submit" class="custom-button">Adicionar</button>
-  </form>
-</div>
+
+    <h2 class="text-xl mb-4 whiteTxt" *ngIf="formsAction === 'create'">Criar User</h2>
+    <h2 class="text-xl mb-4 whiteTxt" *ngIf="formsAction === 'edit'">Editar User</h2>
+
+    <div *ngIf="isLoading" class="loading-circle_forBlueBG">
+      <div class="spinner_forBlueBG"></div>
+      <p>A criar user...</p>
+    </div>
+
+    <form (ngSubmit)="createUser()">
+      <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
+        <mat-label class="blueTxt">Nome:</mat-label>
+        <input matInput id="nome" [(ngModel)]="name" name="name">
+      </mat-form-field>
+      <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
+        <mat-label class="blueTxt">Email:</mat-label>
+        <input matInput id="email" [(ngModel)]="email" name="email">
+      </mat-form-field>
+      <mat-form-field class="w-full mb-4"  *ngIf="!isLoading">
+        <mat-label class="blueTxt">NIF:</mat-label>
+        <input matInput id="password" [(ngModel)]="password" name="password">
+      </mat-form-field>
+      <mat-form-field class="w-full mb-4"  *ngIf="!isLoading">
+        <mat-label class="blueTxt">Role do utilizador:</mat-label>
+        <mat-select  id="rolePanel" [(ngModel)]="role_id" name="role_id">
+          <mat-option [value]="3">Utilizador</mat-option>
+          <mat-option [value]="2" *ngIf="getRole() === 'admin'">Coordenador</mat-option>
+          <mat-option [value]="1" *ngIf="getRole() === 'admin'">Admin</mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+      <button *ngIf="!isLoading" mat-raised-button type="submit" class="custom-button">Adicionar</button>
+    </form>
+  </div>
+  
 
 

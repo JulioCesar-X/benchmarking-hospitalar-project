@@ -1,6 +1,18 @@
 @import "../../../../styles/_variables.scss";
 @import "../../../../styles/_mixins.scss";
 
+// Custom tooltip styles
+ ::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
+  font-size: 1em !important;
+}
+::ng-deep .custom div{
+  padding: 1em;
+  background-color: $main-dark-blue !important; // Custom background color
+}
+::ng-deep .custom div div{
+  font-size: 2em;// Custom background color
+} 
+
 .blueBG{
   background-color: $main-blue;
 }
@@ -19,16 +31,16 @@
   // transform: scale(1.1);
 
   &.small-btn {
-    width: 30px;  // Ajuste para o tamanho desejado
-    height: 30px;  // Ajuste para o tamanho desejado
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 500px;
     padding: 5px;
-
-    img {
-      width: 20px;  // Ajuste para o tamanho desejado do ícone
-      height: 20px;  // Ajuste para o tamanho desejado do ícone
-    }
   }
 
+}
+.icon-large{
+ transform: scale(1.8);
 }
 
 .optionBtns{
@@ -38,9 +50,6 @@
 .optionBtns:hover{
   transform: scale(1.1);
 }
-
-
-
 
 .forms-container{
   box-sizing: border-box;
@@ -60,7 +69,6 @@
     height: auto;
   }
 }
-
 
 .forms-Button {
   /*   @include forms-Button(); */
@@ -228,6 +236,8 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+
 
 //styles for the paginators
 mat-paginator {

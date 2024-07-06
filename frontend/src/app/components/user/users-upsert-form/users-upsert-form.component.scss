@@ -142,3 +142,32 @@
   color: $main-blue !important; /* Example style */
 }
 
+
+::ng-deep .mat-mdc-select-panel {
+  background-color: $darker-main-blue !important; 
+ 
+}
+
+.mat-mdc-option {
+  background-color: $darker-main-blue !important; 
+}
+
+.mat-mdc-option-active{
+  color: $fill-white !important;
+}
+
+.mat-mdc-option:hover {
+  background-color: $main-blue !important; 
+}
+::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text{
+  color: $main-dark-blue !important;
+}
+
+::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after{
+  color: $main-dark-blue !important;
+}
+
+::ng-deep svg{
+  color: $main-blue !important;
+}
+

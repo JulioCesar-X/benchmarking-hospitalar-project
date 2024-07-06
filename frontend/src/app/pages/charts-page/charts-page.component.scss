@@ -43,8 +43,8 @@
 .tab-link {
     color: $fill-white;
     width: 100%;
-    background-color: darken($main-blue, 10);
-    border: none;
+    border: 2px solid $main-blue;
+    background-color: $darker-main-blue;
     outline: none;
     cursor: pointer;
     padding: 1em;
@@ -57,7 +57,7 @@
 }
 
 .tab-link.active {
-    background-color: darken($darker-main-blue, 40);
+    background-color: $main-blue;
 }
 
 /* To top button styles */

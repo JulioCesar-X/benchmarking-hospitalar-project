@@ -1,6 +1,82 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
+// Custom tooltip styles
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
+  font-size: 1em !important;
+}
+::ng-deep .custom div{
+  padding: 1em;
+  background-color: $main-dark-blue !important; // Custom background color
+}
+::ng-deep .custom div div{
+  font-size: 2em;// Custom background color
+}
+
+.blueBG{
+  background-color: $main-blue;
+}
+.whiteTxt{
+  color: $fill-white;
+  font-size: 1.5em;
+}
+.whiteBG{
+  background-color: $fill-white;
+}
+
+.headingSection {
+  display: flex;
+  color: $main-blue;
+
+  img {
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    margin-left: auto;
+  }
+}
+
+.icon-large{
+  transform: scale(1);
+ }
+.createBtn{
+  // cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.5ms ease-in-out;
+  // z-index: 100;
+  // background-color: $secondary-blue;
+  // transform: scale(1.1);
+
+  &.small-btn {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 500px;
+    padding: 5px;
+  }
+}
+
+.forms-container{
+  box-sizing: border-box;
+  background-color: $fill-white;
+  border: $main-blue 10px solid;
+/*   height: 100%;
+ *//*   border-top-left-radius: 1em;
+  border-top-right-radius: 1em; */
+  max-height: 62vh;
+  overflow-y: scroll;
+
+  &.forms-container__error {
+    border: $error-color 10px solid;
+  }
+  @media (max-width: 600px) {
+    overflow-y: visible;
+    height: auto;
+  }
+}
+
 .headingSection {
   display: flex;
   color: $main-blue;
