@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import anime from 'animejs/lib/anime.es.js';
 import { MatIconModule } from '@angular/material/icon';
 import { ServiceService } from '../../core/services/service/service.service';
+import { Service } from '../../core/models/service.model';
+import { AuthService } from '../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-homepage',
@@ -18,14 +19,18 @@ import { ServiceService } from '../../core/services/service/service.service';
   styleUrls: ['./homepage.component.scss']
 })
 export class HomepageComponent implements OnInit, OnDestroy {
-  services: any[] = [];
+  services: Service[] = [];
   displayedServices: any[] = [];
   isLoading: boolean = false;
   page: number = 1;
   pageSize: number = 8;
   totalServices: number = 0;
 
-  constructor(private serviceService: ServiceService, private router: Router) { }
+  constructor(
+    private serviceService: ServiceService,
+    private router: Router,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
     this.loadServices();
@@ -38,15 +43,13 @@ export class HomepageComponent implements OnInit, OnDestroy {
 
   loadServices(): void {
     this.isLoading = true;
-    this.serviceService.indexServices().subscribe({
+    this.serviceService.getServicesPaginated(this.page, this.pageSize).subscribe({
       next: (data: any) => {
-        this.services = data.data; // Assumindo que os serviços estão na propriedade 'data'
-        this.totalServices = data.total; // Assumindo que o total está na propriedade 'total'
-        console.log('Services:', this.services);
+        this.services = data.data;
+        this.totalServices = data.total;
         this.updateDisplayedServices();
       },
       error: (err) => {
-        console.error('Error loading services:', err);
         this.isLoading = false;
       },
       complete: () => {
@@ -56,22 +59,20 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   updateDisplayedServices(): void {
-    const startIndex = (this.page - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.displayedServices = this.services.slice(startIndex, endIndex);
+    this.displayedServices = this.services;
   }
 
   loadNextServices(): void {
     if (this.page * this.pageSize < this.totalServices) {
       this.page++;
-      this.updateDisplayedServices();
+      this.loadServices();
     }
   }
 
   loadPreviousServices(): void {
     if (this.page > 1) {
       this.page--;
-      this.updateDisplayedServices();
+      this.loadServices();
     }
   }
 
@@ -90,7 +91,14 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   goToDescription(serviceId: number) {
-    this.router.navigate(['/description', serviceId]);
+    const role = this.authService.getRole();
+    if (role === 'admin' || role === 'coordenador') {
+      this.router.navigate(['/charts', { serviceId }]);
+    } else if (role === 'user') {
+      this.router.navigate(['/user-charts', { serviceId }]);
+    } else {
+      this.router.navigate([`/description/${serviceId}`]);
+    }
   }
 
   scrollToTop(): void {

@@ -25,7 +25,7 @@ export class IndicatorsUpdatePageComponent implements OnInit {
     indicator_name: '',
     service_ids: [],
     activity_ids: [],
-    service_activity_indicators: []
+    sais: []
   };
   isLoading = true;
 

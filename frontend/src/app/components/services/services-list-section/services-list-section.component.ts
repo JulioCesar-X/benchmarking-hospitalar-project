@@ -65,13 +65,13 @@ export class ServicesListSectionComponent implements OnInit, OnChanges {
     }
   }
 
-  loadServices(pageIndex = 1, pageSize = 10): void {
+  loadServices(): void {
     this.isLoading = true;
-    this.serviceService.getServicesPaginated(pageIndex, pageSize).subscribe({
+    this.serviceService.getServicesPaginated(this.currentPage,this.pageSize).subscribe({
       next: (data) => {
         this.services = data.data;
         this.totalLength = data.total;
-        this.currentPage = pageIndex;
+        this.currentPage = data.current_page;
         this.isLoading = false;
       },
       error: (error) => {
@@ -105,7 +105,7 @@ export class ServicesListSectionComponent implements OnInit, OnChanges {
   deleteService(serviceId: number): void {
     this.serviceService.destroyService(serviceId).subscribe({
       next: (data) => {
-        this.loadServices(this.currentPage, this.pageSize);
+        this.loadServices();
       },
       error: (error) => {
         console.error("Error deleting service:", error);
@@ -113,9 +113,9 @@ export class ServicesListSectionComponent implements OnInit, OnChanges {
     });
   }
 
-  handlePageEvent(event: PageEvent): void {
+  onPageChanged(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
-    this.loadServices(this.currentPage, this.pageSize);
+    this.loadServices();
   }
 }

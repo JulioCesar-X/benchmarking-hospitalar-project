@@ -1,4 +1,4 @@
-import { ServiceActivityIndicator } from './sai.model';
+import { Sai } from './sai.model';
 
 export interface Indicator {
   id?: number;
@@ -8,5 +8,5 @@ export interface Indicator {
   isInserted?: boolean;
   activity_ids?: number[];
   service_ids?: number[];
-  service_activity_indicators?: ServiceActivityIndicator[];
+  sais?: Sai[];
 }

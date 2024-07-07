@@ -9,6 +9,9 @@ import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { SelectableListComponent } from '../../shared/selectable-list/selectable-list.component';
 import { Service } from '../../../core/models/service.model';
+import { Activity } from '../../../core/models/activity.model';
+import { Indicator } from '../../../core/models/indicator.model';
+
 
 @Component({
   selector: 'app-services-upsert-form',
@@ -25,7 +28,7 @@ import { Service } from '../../../core/models/service.model';
 })
 export class ServicesUpsertFormComponent implements OnInit, OnChanges {
   @Input() formsAction: string = '';
-  @Input() selectedService: Service = { id: -1, service_name: '', description: '', imageUrl: '' };
+  @Input() selectedService: Service = { id: -1, service_name: '', description: '', image_url: '' };
 
   notificationMessage: string = '';
   Type: 'success' | 'error' = 'success';
@@ -35,8 +38,8 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
   isLoading: boolean = false;
   isError: boolean = false;
 
-  activitiesList: any = [];
-  indicatorsList: any = [];
+  activitiesList: Activity[] = [];
+  indicatorsList: Indicator[] = [];
   selectedActivityIDs: any[] = [];
   selectedIndicatorIDs: any[] = [];
 
@@ -77,8 +80,8 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
     this.serviceService.showService(serviceId).subscribe({
       next: (data: Service) => {
         this.selectedService = data;
-        this.selectedActivityIDs = data.service_activity_indicators?.map(sai => sai.activity.id) || [];
-        this.selectedIndicatorIDs = data.service_activity_indicators?.map(sai => sai.indicator.id) || [];
+        this.selectedActivityIDs = data.sais?.map(sai => sai.activity.id) || [];
+        this.selectedIndicatorIDs = data.sais?.map(sai => sai.indicator.id) || [];
         this.cdRef.detectChanges();
       },
       error: (error) => {
@@ -94,11 +97,13 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
   getActivities(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.activityService.indexActivities().subscribe({
-        next: (data) => {
+        next: (data: Activity[]) => {
           if (data && Array.isArray(data)) {
             this.activitiesList = data.map(activity => ({
               id: activity.id,
-              activity_name: activity.activity_name
+              activity_name: activity.activity_name,
+              services: activity.services || [],
+              indicators: activity.indicators || []
             }));
           } else {
             console.warn('Data is not an array:', data);
@@ -120,7 +125,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
   getIndicators(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.indicatorService.indexIndicators().subscribe({
-        next: (data) => {
+        next: (data: Indicator[]) => {
           if (data && Array.isArray(data)) {
             this.indicatorsList = data.map(indicator => ({
               id: indicator.id,
@@ -161,7 +166,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
       }
       const reader = new FileReader();
       reader.onload = () => {
-        this.selectedService.imageUrl = reader.result as string;
+        this.selectedService.image_url = reader.result as string;
       };
       reader.onerror = () => {
         this.setNotification('Erro ao carregar a imagem.', 'error');
@@ -190,7 +195,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
       id: this.selectedService.id,
       service_name: this.selectedService.service_name,
       description: this.selectedService.description,
-      imageUrl: this.selectedService.imageUrl,
+      image_url: this.selectedService.image_url,
       activity_ids: this.selectedActivityIDs,
       indicator_ids: this.selectedIndicatorIDs
     };
@@ -212,7 +217,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
       id: -1,
       service_name: this.selectedService.service_name,
       description: this.selectedService.description,
-      imageUrl: this.selectedService.imageUrl,
+      image_url: this.selectedService.image_url,
       activity_ids: this.selectedActivityIDs,
       indicator_ids: this.selectedIndicatorIDs
     };

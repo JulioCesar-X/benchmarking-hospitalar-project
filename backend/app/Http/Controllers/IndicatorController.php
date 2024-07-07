@@ -9,6 +9,10 @@ use App\Goal;
 use App\Record;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+
+
 
 
 class IndicatorController extends Controller
@@ -21,35 +25,47 @@ class IndicatorController extends Controller
     public function index()
     {
         try {
-            // Carregar todos os indicadores com os relacionamentos de serviços e atividades
             $indicators = Indicator::with(['sais.service', 'sais.activity'])
             ->get()
                 ->map(function ($indicator) {
-                    // Organizar os dados para incluir serviços e atividades associadas
+                    // Adicionando logs para depuração
+                    Log::info('Processing indicator:', ['indicator' => $indicator]);
+
                     $services = $indicator->sais->map(function ($sai) {
-                        return [
-                            'id' => $sai->service->id,
-                            'name' => $sai->service->service_name
-                        ];
-                    })->unique('id')->values();
+                        if ($sai->service) {
+                            Log::info('Processing service:', ['service' => $sai->service]);
+                            return [
+                                'id' => $sai->service->id,
+                                'name' => $sai->service->service_name
+                            ];
+                        }
+                        return null;
+                    })->filter()->unique('id')->values();
 
                     $activities = $indicator->sais->map(function ($sai) {
-                        return [
-                            'id' => $sai->activity->id,
-                            'name' => $sai->activity->activity_name
-                        ];
-                    })->unique('id')->values();
+                        if ($sai->activity) {
+                            Log::info('Processing activity:', ['activity' => $sai->activity]);
+                            return [
+                                'id' => $sai->activity->id,
+                                'name' => $sai->activity->activity_name
+                            ];
+                        }
+                        return null;
+                    })->filter()->unique('id')->values();
 
                     return [
                         'id' => $indicator->id,
-                        'name' => $indicator->indicator_name,
+                        'indicator_name' => $indicator->indicator_name,
                         'services' => $services,
                         'activities' => $activities
                     ];
                 });
 
-            return response()->json(['data' => $indicators], 200);
+            Log::info('Final indicators data:', ['indicators' => $indicators]);
+
+            return response()->json($indicators, 200);
         } catch (Exception $exception) {
+            Log::error('Error fetching indicators:', ['exception' => $exception]);
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
@@ -83,6 +99,13 @@ class IndicatorController extends Controller
             $year = $request->input('year');
             $month = $request->input('month');
 
+            $cacheKey = "graph_data_{$serviceId}_{$activityId}_{$indicatorId}_{$year}_{$month}";
+
+            // Check cache first
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
             $sai = Sai::where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
@@ -94,40 +117,36 @@ class IndicatorController extends Controller
 
             $saiId = $sai->id;
 
-            // Dados mensais do ano atual
-            $recordsMensal = DB::table('vw_indicator_accumulated')
+            // Use async queries to fetch data in parallel
+            $recordsMensalQuery = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->whereYear('data', $year)
                 ->pluck('valor_mensal');
 
-            // Dados anuais acumulados do ano atual
-            $recordsAnual = DB::table('vw_indicator_accumulated')
+            $recordsAnualQuery = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->where('year', $year)
                 ->pluck('valor_acumulado_agregado');
 
-            // Dados anuais acumulados do ano anterior
-            $recordsAnualLastYear = DB::table('vw_indicator_accumulated')
+            $recordsAnualLastYearQuery = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->where('year', $year - 1)
                 ->pluck('valor_acumulado_agregado');
 
-            // Metas mensais acumuladas até o mês atual
-            $goalsMensal = DB::table('vw_goals_monthly')
+            $goalsMensalQuery = DB::table('vw_goals_monthly')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->where('year', $year)
                 ->pluck('valor_acumulado_mensal');
 
-            // Meta anual total
-            $goalAnual = Sai::with(['goals' => function ($query) use ($year) {
+            $goalAnualQuery = Sai::with(['goals' => function ($query) use ($year) {
                 $query->where('year', $year);
             }])
                 ->find($saiId)
@@ -135,46 +154,77 @@ class IndicatorController extends Controller
                 ->first()
                 ->target_value;
 
-            // Dados dos últimos cinco anos
-            $lastFiveYears = DB::table('vw_indicator_accumulated')
+            $lastFiveYearsQuery = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->groupBy('year')
                 ->orderBy('year', 'desc')
                 ->limit(5)
-                ->select('year', DB::raw('SUM(valor_acumulado_agregado) as total'))
+                ->select('year', DB::raw('SUM(valor_mensal) as total'))
                 ->get();
 
-            // Totais acumulados do ano anterior
-            $previousYearTotal = DB::table('vw_indicator_accumulated')
+            $previousYearTotalQuery = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->whereYear('data', $year - 1)
-                ->sum('valor_acumulado_agregado');
+                ->sum('valor_mensal');
 
-            // Totais acumulados do ano atual
-            $currentYearTotal = DB::table('vw_indicator_accumulated')
+            $currentYearTotalQuery = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->whereYear('data', $year)
-                ->sum('valor_acumulado_agregado');
+                ->sum('valor_mensal');
 
-            // Formatando a resposta JSON
+            $variationsQuery = DB::table('vw_variation_rate')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->where('year1', $year - 1)
+                ->where('year2', $year)
+                ->where('month', $month)
+                ->first([
+                    'variation_rate_homologous_abs',
+                    'variation_rate_homologous',
+                    'variation_rate_contractual_abs',
+                    'variation_rate_contractual'
+                ]);
+
+            // Execute all queries in parallel
+            $results = [
+                'recordsMensal' => $recordsMensalQuery,
+                'recordsAnual' => $recordsAnualQuery,
+                'recordsAnualLastYear' => $recordsAnualLastYearQuery,
+                'goalsMensal' => $goalsMensalQuery,
+                'goalAnual' => $goalAnualQuery,
+                'lastFiveYears' => $lastFiveYearsQuery,
+                'previousYearTotal' => $previousYearTotalQuery,
+                'currentYearTotal' => $currentYearTotalQuery,
+                'variations' => $variationsQuery,
+            ];
+
+            // Construct the response
             $response = [
                 'saiID' => $saiId,
-                'years' => $lastFiveYears->pluck('year')->toArray(),
-                'recordsMensal' => $recordsMensal->toArray(),
-                'recordsAnual' => $recordsAnual->toArray(),
-                'recordsAnualLastYear' => $recordsAnualLastYear->toArray(),
-                'goalsMensal' => $goalsMensal->toArray(),
-                'goalAnual' => $goalAnual,
-                'lastFiveYears' => $lastFiveYears->toArray(),
-                'previousYearTotal' => $previousYearTotal,
-                'currentYearTotal' => $currentYearTotal,
+                'years' => collect($results['lastFiveYears'])->pluck('year')->toArray(),
+                'recordsMensal' => $results['recordsMensal']->toArray(),
+                'recordsAnual' => $results['recordsAnual']->toArray(),
+                'recordsAnualLastYear' => $results['recordsAnualLastYear']->toArray(),
+                'goalsMensal' => $results['goalsMensal']->toArray(),
+                'goalAnual' => $results['goalAnual'],
+                'lastFiveYears' => collect($results['lastFiveYears'])->toArray(),
+                'previousYearTotal' => $results['previousYearTotal'],
+                'currentYearTotal' => $results['currentYearTotal'],
+                'variation_rate_homologous_abs' => $results['variations']->variation_rate_homologous_abs,
+                'variation_rate_homologous' => $results['variations']->variation_rate_homologous,
+                'variation_rate_contractual_abs' => $results['variations']->variation_rate_contractual_abs,
+                'variation_rate_contractual' => $results['variations']->variation_rate_contractual
             ];
+
+            // Cache the response for future use
+            Cache::put($cacheKey, $response, now()->addMinutes(30));
 
             return response()->json($response, 200);
         } catch (Exception $exception) {
@@ -306,7 +356,7 @@ class IndicatorController extends Controller
             $indicator = Indicator::create(['indicator_name' => $request->indicator_name]);
 
             // Iterate through the service IDs and activity IDs to create SAIs
-            foreach ($request->service_activity_indicators as $saiRequest) {
+            foreach ($request->sais as $saiRequest) {
                 foreach ($request->service_ids as $serviceId) {
                     foreach ($request->activity_ids as $activityId) {
                         // Create the ServiceActivityIndicator
@@ -323,6 +373,18 @@ class IndicatorController extends Controller
                                 'sai_id' => $sai->id,
                                 'target_value' => $goalRequest['target_value'],
                                 'year' => $goalRequest['year']
+                            ]);
+                        }
+
+                        // Get the current year
+                        $year = date('Y');
+
+                        // Create the associated records with value 0 for each month of the current year
+                        for ($i = 1; $i <= 12; $i++) {
+                            Record::create([
+                                'sai_id' => $sai->id,
+                                'value' => 0,
+                                'date' => "$year-$i-01"
                             ]);
                         }
                     }
@@ -362,40 +424,44 @@ class IndicatorController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Update the indicator
+            // Update the indicator name
             $indicator->update(['indicator_name' => $request->indicator_name]);
 
-            // Iterate through the service IDs and activity IDs to create or update SAIs
-            foreach ($request->service_activity_indicators as $saiRequest) {
-                foreach ($request->service_ids as $serviceId) {
-                    foreach ($request->activity_ids as $activityId) {
-                        // Update or create the ServiceActivityIndicator
-                        $sai = Sai::updateOrCreate(
-                            [
-                                'service_id' => $serviceId,
-                                'activity_id' => $activityId,
-                                'indicator_id' => $indicator->id,
-                            ],
-                            [
-                                'type' => $saiRequest['type']
-                            ]
-                        );
+            // Find the ServiceActivityIndicator (SAI) by its ID
+            $sai = Sai::findOrFail($request->sai_id);
 
-                        // Update or create the associated goals
-                        foreach ($saiRequest['goals'] as $goalRequest) {
-                            Goal::updateOrCreate(
-                                [
-                                    'sai_id' => $sai->id,
-                                    'year' => $goalRequest['year']
-                                ],
-                                [
-                                    'target_value' => $goalRequest['target_value']
-                                ]
-                            );
-                        }
-                    }
-                }
+            // Update the SAI type if provided
+            if (isset($request->type)) {
+                $sai->update(['type' => $request->type]);
             }
+
+            // Update or create the associated goal for the provided year
+            $goal = Goal::updateOrCreate(
+                [
+                    'sai_id' => $sai->id,
+                    'year' => $request->year
+                ],
+                [
+                    'target_value' => $request->goal
+                ]
+            );
+
+            // Update the records for each month of the current year
+            foreach ($request->records as $record) {
+                Record::updateOrCreate(
+                    [
+                        'sai_id' => $sai->id,
+                        'date' => $record['date']  // e.g., '2024-01-01'
+                    ],
+                    [
+                        'value' => $record['value']
+                    ]
+                );
+            }
+
+            // Clear the cache for the updated data
+            $cacheKey = "graph_data_{$sai->service_id}_{$sai->activity_id}_{$sai->indicator_id}_{$request->year}_{$request->month}";
+            Cache::forget($cacheKey);
 
             DB::commit();
             return response()->json($indicator->load('sais'), 200);
@@ -417,14 +483,14 @@ class IndicatorController extends Controller
             // Encontrar o indicador pelo ID
             $indicator = Indicator::findOrFail($id);
 
-            // Deletar os registros relacionados em service_activity_indicators e suas metas
+            // Deletar os registros relacionados em sais e suas metas
             $sais = $indicator->sais;
             foreach ($sais as $serviceActivityIndicator) {
                 // Deletar as metas relacionadas
                 Goal::where('sai_id', $serviceActivityIndicator->id)->delete();
                 // Deletar os registros relacionados
                 Record::where('sai_id', $serviceActivityIndicator->id)->delete();
-                // Deletar o service_activity_indicator
+                // Deletar o sai
                 $serviceActivityIndicator->delete();
             }
 

@@ -9,7 +9,8 @@ import { FeedbackComponent } from '../../../components/shared/feedback/feedback.
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
 import { SelectableListComponent } from '../../../components/shared/selectable-list/selectable-list.component';
 import { Indicator } from '../../../core/models/indicator.model';
-import { ServiceActivityIndicator } from '../../../core/models/sai.model';
+import { Sai } from '../../../core/models/sai.model';
+
 
 @Component({
   selector: 'app-indicators-upsert-form',
@@ -26,12 +27,12 @@ import { ServiceActivityIndicator } from '../../../core/models/sai.model';
 })
 export class IndicatorsUpsertFormComponent implements OnInit {
   @Input() formsAction: string = '';
-  @Input() selectedIndicator: Indicator = {
+  @Input() selectedIndicator: any = {
     id: undefined,
     indicator_name: '',
     service_ids: [],
     activity_ids: [],
-    service_activity_indicators: []
+    sais: []
   };
 
   notificationMessage: string = '';
@@ -84,11 +85,11 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     this.indicatorService.showIndicator(indicatorId).subscribe({
       next: (data: Indicator) => {
         this.selectedIndicator = data;
-        this.selectedServicesIDs = (data.service_activity_indicators?.map((sai: ServiceActivityIndicator) => sai.service?.id).filter((id): id is number => id !== undefined)) || [];
-        this.selectedActivitiesIDs = (data.service_activity_indicators?.map((sai: ServiceActivityIndicator) => sai.activity?.id).filter((id): id is number => id !== undefined)) || [];
+        this.selectedServicesIDs = (data.sais?.map((sai: Sai) => sai.service?.id).filter((id): id is number => id !== undefined)) || [];
+        this.selectedActivitiesIDs = (data.sais?.map((sai: Sai) => sai.activity?.id).filter((id): id is number => id !== undefined)) || [];
 
         // Find the first SAI with goals and extract the first goal's target_value and type
-        const firstSAIWithGoals = data.service_activity_indicators?.find((sai: ServiceActivityIndicator) => sai.goals && sai.goals.length > 0);
+        const firstSAIWithGoals = data.sais?.find((sai: Sai) => sai.goals && sai.goals.length > 0);
         if (firstSAIWithGoals && firstSAIWithGoals.goals && firstSAIWithGoals.goals.length > 0) {
           this.goalTargetValue = firstSAIWithGoals.goals[0].target_value;
           this.selectedType = firstSAIWithGoals.type || '';
@@ -180,7 +181,7 @@ export class IndicatorsUpsertFormComponent implements OnInit {
       indicator_name: this.selectedIndicator.indicator_name,
       service_ids: this.selectedServicesIDs,
       activity_ids: this.selectedActivitiesIDs,
-      service_activity_indicators: [{
+      sais: [{
         type: this.selectedType,
         goals: [{
           target_value: this.goalTargetValue,
@@ -207,7 +208,7 @@ export class IndicatorsUpsertFormComponent implements OnInit {
       indicator_name: this.selectedIndicator.indicator_name,
       service_ids: this.selectedServicesIDs,
       activity_ids: this.selectedActivitiesIDs,
-      service_activity_indicators: [{
+      sais: [{
         type: this.selectedType,
         goals: [{
           target_value: this.goalTargetValue,

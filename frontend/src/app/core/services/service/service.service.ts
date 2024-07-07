@@ -10,8 +10,8 @@ import { Service } from '../../models/service.model';
 export class ServiceService {
   constructor(private http: HttpClient) { }
 
-  indexServices(): Observable<{ data: any[] }> {
-    return this.http.get<{ data: any[] }>('/services').pipe(
+  indexServices(): Observable<Service[]> {
+    return this.http.get<Service[]>('/services').pipe(
       catchError(error => throwError(() => new Error('Failed to fetch services')))
     );
   }

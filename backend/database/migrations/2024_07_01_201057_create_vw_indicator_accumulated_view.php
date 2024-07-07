@@ -38,7 +38,6 @@ class CreateVwIndicatorAccumulatedView extends Migration
         JOIN indicators i ON sai.indicator_id = i.id
         JOIN services s ON sai.service_id = s.id
         LEFT JOIN activities a ON sai.activity_id = a.id;
-   
 ");
 
     }

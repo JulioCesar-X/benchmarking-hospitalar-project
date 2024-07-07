@@ -6,14 +6,10 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { LoginResponse } from '../../models/login-response.model';
 
-
-
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthService {
-
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) { }
 
   getToken(): string | null {
@@ -58,12 +54,14 @@ export class AuthService {
         reject('No token found');
         return;
       }
-  
+
       this.http.post('/logout', {}, { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }), withCredentials: true })
         .subscribe(
           () => {
             this.cookieService.delete('access_token', '/');
             this.cookieService.delete('role', '/');
+            this.cookieService.delete('name', '/');
+            this.cookieService.delete('email', '/');
             console.log('Logout successful');
             this.router.navigate(['/login']);
             resolve(true);
@@ -87,5 +85,4 @@ export class AuthService {
   resetPassword(email: string, code: string, password: string, password_confirmation: string): Observable<any> {
     return this.http.post('/reset-password', { email, code, password, password_confirmation });
   }
-
 }

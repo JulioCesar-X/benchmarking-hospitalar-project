@@ -2,7 +2,7 @@ import { Goal } from "./goal.model";
 import { Record } from "./record.model";
 
 
-export interface ServiceActivityIndicator {
+export interface Sai {
   id?: number;
   type?: string;
   service?: {id: number, service_name: string};

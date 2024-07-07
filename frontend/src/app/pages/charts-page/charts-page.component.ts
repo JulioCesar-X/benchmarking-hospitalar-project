@@ -1,9 +1,7 @@
-import { Component, HostListener} from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChartsComponent } from '../../components/charts/charts.component';
-import { FilterComponent } from '../../components/shared/filter/filter.component';
-import { Filter } from '../../core/models/filter.model';
+import { HttpClientModule } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IndicatorService } from '../../core/services/indicator/indicator.service';
@@ -11,6 +9,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
+import { AuthService } from '../../core/services/auth/auth.service';
+import { FilterComponent } from '../../components/shared/filter/filter.component';
+import { ChartsComponent } from '../../components/charts/charts.component';
+import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
+import { Filter } from '../../core/models/filter.model';
 
 @Component({
   selector: 'app-charts-page',
@@ -20,40 +23,58 @@ import * as XLSX from 'xlsx';
     FilterComponent,
     HttpClientModule,
     ChartsComponent,
-    MatMenuModule
+    MatMenuModule,
+    LoadingSpinnerComponent
   ],
   templateUrl: './charts-page.component.html',
   styleUrls: ['./charts-page.component.scss']
 })
-export class ChartsPageComponent  {
+export class ChartsPageComponent implements OnInit {
   selectedTab: string = 'Producao';
-
   filter: Filter = {
     indicatorId: 1,
     activityId: 1,
     serviceId: 1,
-    month: new Date().getMonth() + 1,  // Current month (1-12)
-    year: new Date().getFullYear()    // Current year
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear()
   };
   graphData: any;
+  isLoading = false;
+  isAdminOrCoordinator: boolean = false;
+  showActivityInput: boolean = false;
 
   private filterSubject = new Subject<Partial<Filter>>();
 
-  constructor(private indicatorService: IndicatorService) { }
+  constructor(
+    private indicatorService: IndicatorService,
+    private authService: AuthService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
-    this.filterSubject.pipe(
-      debounceTime(300),
-      switchMap(filter => this.indicatorService.getAllInDataGraphs({ ...this.filter, ...filter }))
-    ).subscribe({
-      next: (data) => {
-        console.log('Graph data loaded:', data);
-        this.graphData = data; // Store data for children to use
-      },
-      error: (error) => console.error('Error loading graph data:', error)
+    const role = this.authService.getRole();
+    this.isAdminOrCoordinator = role === 'admin' || role === 'coordenador';
+
+    this.route.params.subscribe(params => {
+      this.filter.serviceId = +params['serviceId'] || this.filter.serviceId;
+      this.loadGraphData();
     });
 
-    this.loadGraphData();
+    this.filterSubject.pipe(
+      debounceTime(300),
+      switchMap(filter => {
+        this.isLoading = true;
+        return this.indicatorService.getAllInDataGraphs({ ...this.filter, ...filter });
+      })
+    ).subscribe({
+      next: (data) => {
+        this.graphData = data;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.isLoading = false;
+      }
+    });
   }
 
   loadGraphData(): void {
@@ -62,11 +83,14 @@ export class ChartsPageComponent  {
 
   handleFilterData(event: Partial<Filter>): void {
     this.filter = {
-      ...this.filter,  // Preserve existing values
-      ...event         // Overwrite with new values from event
+      ...this.filter,
+      ...event
     };
-    console.log("Filter received in parent:", this.filter);
     this.loadGraphData();
+  }
+
+  handleActivityInputChange(show: boolean): void {
+    this.showActivityInput = show;
   }
 
   selectTab(tab: string): void {
@@ -75,7 +99,7 @@ export class ChartsPageComponent  {
 
   toTopBtnVisible = false;
 
-  @HostListener('window:scroll', [])
+/*   @HostListener('window:scroll', [])
   onWindowScroll() {
     const threshold = 200; // Change this to set a different scroll threshold
     this.toTopBtnVisible = window.scrollY > threshold;
@@ -83,7 +107,7 @@ export class ChartsPageComponent  {
 
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  } */
 
   numberToMonth(monthNumber: number | undefined): string {
     monthNumber = 1;

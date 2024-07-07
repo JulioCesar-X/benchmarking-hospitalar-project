@@ -22,7 +22,7 @@ class ServiceController extends Controller
             $services = Service::with(['sais.activity', 'sais.indicator'])->get();
 
             if ($services->isEmpty()) {
-                return response()->json(['message' => 'No services found'], 200);
+                return response()->json([], 200);
             }
 
             $services = $services->map(function ($service) {
@@ -49,19 +49,21 @@ class ServiceController extends Controller
 
                 return [
                     'id' => $service->id,
-                    'name' => $service->service_name,
+                    'service_name' => $service->service_name,
                     'image_url' => $service->image_url,
                     'activities' => $activities,
                     'indicators' => $indicators
                 ];
             });
 
-            return response()->json(['data' => $services], 200);
+            return response()->json($services, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
+
+    
     public function getServicesPaginated(Request $request)
     {
         try {

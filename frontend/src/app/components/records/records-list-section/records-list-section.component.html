@@ -19,14 +19,14 @@
               <tr *ngFor="let record of records; trackBy: trackByIndex">
                 <td class="p-2">{{ record.indicator_name }}</td>
                 <td class="p-2">
-                  <input [disabled]="record.isInserted"
+                  <input [disabled]="record.isInserted && !record.isEditing"
                     class="inputContainer--input w-full p-2 border border-gray-300 rounded" [(ngModel)]="record.value"
-                    (ngModelChange)="onValueChange(record)" />
+                    (ngModelChange)="onValueChange(record)" type="number" min="1" />
                 </td>
                 <td class="p-2 text-center">
                   <button *ngIf="!record.isUpdating" (click)="editRecord(record)"
                     class="forms-Button bg-main-blue text-white px-4 py-2 rounded">
-                    {{ !record.isInserted ? 'Atualizar' : 'Editar' }}
+                    {{ record.isInserted && !record.isEditing ? 'Editar' : 'Atualizar' }}
                   </button>
                   <div *ngIf="record.isUpdating" class="loading-circle">
                     <div class="spinner spinner_updateRecord-special"></div>
@@ -35,13 +35,15 @@
               </tr>
             </tbody>
           </table>
-          <app-paginator [length]="totalRecords" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 100]"
-            (page)="handlePageEvent($event)"></app-paginator>
+          <app-paginator [length]="totalRecords" [pageSize]="pageSize" [pageIndex]="currentPage" [pageSizeOptions]="pageOptions"
+            (page)="onPageChanged($event)">
+          </app-paginator>
         </div>
       </div>
       <ng-template #noResults>
         <div class="p-4">Nenhum registro encontrado.</div>
       </ng-template>
+      <app-feedback [message]="notificationMessage" [type]="notificationType"></app-feedback>
     </div>
   </div>
 </section>

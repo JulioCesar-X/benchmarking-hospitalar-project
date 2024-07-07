@@ -1,47 +1,31 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import Chart, { ChartType, ChartData, ChartOptions } from 'chart.js/auto';
-import { IndicatorService } from '../../core/services/indicator/indicator.service';
-import { Filter } from '../../core/models/filter.model';
-import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-charts',
   standalone: true,
-  imports: [],
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss']
 })
 export class ChartsComponent implements OnInit, OnChanges {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
-  @Input({ required: true }) filter: Filter = { serviceId: 0, activityId: 0, indicatorId: 0, month: 0, year: 0 };
-  @Input({ required: true }) graphType: string = "";
-  @Input({ required: true }) graphLabel: string = "";
+  @Input() graphType: string = "";
+  @Input() graphLabel: string = "";
+  @Input() graphData: any;
 
   private chart: Chart | null = null;
 
-  constructor(private indicatorService: IndicatorService) { }
+  constructor() { }
 
   ngOnInit() {
-    this.loadData();
+    this.initializeChart(this.graphData);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
-      console.log('Filter changed:', this.filter);
-      this.loadData();
+    if (changes['graphData'] && changes['graphData'].currentValue !== changes['graphData'].previousValue) {
+      console.log('Graph data changed:', this.graphData);
+      this.initializeChart(this.graphData);
     }
-  }
-
-  loadData() {
-    forkJoin({
-      data: this.indicatorService.getAllInDataGraphs(this.filter)
-    }).subscribe({
-      next: ({ data }) => {
-        console.log('Chart data loaded:', data);
-        this.initializeChart(data);
-      },
-      error: (error) => console.error('Error loading chart data:', error)
-    });
   }
 
   initializeChart(data: any) {
@@ -63,32 +47,33 @@ export class ChartsComponent implements OnInit, OnChanges {
     switch (this.graphType) {
       case 'month':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        datasetData = data.recordsMensal;
+        datasetData = data?.recordsMensal || [];
         break;
       case 'month-metas':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        datasetData = data.goalsMensal;
+        datasetData = data?.goalsMensal || [];
         break;
       case 'year-metas':
-        labels = data.years;
-        datasetData = data.goalAnual;
+        labels = data?.years || [];
+        datasetData = data?.goalAnual || [];
         break;
       case 'homologYear':
         labels = ['Ano anterior', 'Ano atual'];
-        //currentYearTotal deve ser o total produzido até o momento e previousYearTotal deve ser o total produzido no ano anterior
-        datasetData = [data.previousYearTotal, data.currentYearTotal];
+        datasetData = [
+          data?.previousYearTotal ?? 0,
+          data?.currentYearTotal ?? 0
+        ];
         break;
       case 'fiveYear':
-        //mesma coisa so que para os ultimos 5 anos
-        labels = data.lastFiveYears.map((yr: any) => yr.year);
-        datasetData = data.lastFiveYears.map((yr: any) => yr.total);
+        labels = data?.lastFiveYears?.map((yr: any) => yr.year) || [];
+        datasetData = data?.lastFiveYears?.map((yr: any) => yr.total) || [];
         break;
       case 'lineChart':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         if (this.graphLabel === 'Ano atual') {
-          datasetData = data.recordsAnual;
+          datasetData = data?.recordsAnual || [];
         } else if (this.graphLabel === 'Ano anterior') {
-          datasetData = data.recordsAnualLastYear; // Ajustar conforme necessário para os dados do ano anterior
+          datasetData = data?.recordsAnualLastYear || [];
         }
         break;
       default:
@@ -122,4 +107,3 @@ export class ChartsComponent implements OnInit, OnChanges {
   }
 
 }
-

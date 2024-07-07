@@ -1,9 +1,8 @@
 <div class="m-2 w-full">
-  <app-filter
-    [indicatorsInput]="true"
-    [dataInsertedCheckbox]="false"
-    (filterEvent)="handleFilterData($event)"
-  ></app-filter>
+  <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false" [showServiceInput]="isAdminOrCoordinator"
+    [showActivityInput]="showActivityInput" [selectedServiceId]="filter.serviceId"
+    (filterEvent)="handleFilterData($event)" (activityInputChange)="handleActivityInputChange($event)">
+  </app-filter>
 
   <div
     class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer">
@@ -51,7 +50,7 @@
             [overlapTrigger]="false"
           >
             <div class="py-1" role="none">
-              <button
+              <a
                 id="exportExcel"
                 href="#"
                 class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
@@ -60,10 +59,11 @@
                 <img
                   src="../../../assets/icons/csv.png"
                   height="16"
-                  class="inline mr-2"/>
+                  class="inline mr-2"
+         />
                 Exportar para Excel
-              </button>
-              <button
+              </a>
+              <a
                 id="exportPdf"
                 href="#"
                 class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
@@ -75,7 +75,7 @@
                   class="inline mr-2"
                 />
                 Exportar para PDF
-              </button>
+              </a>
             </div>
           </mat-menu>
         </div>
@@ -88,7 +88,7 @@
           <app-charts
             graphType="month"
             graphLabel="Produção"
-            [filter]="filter"
+            [graphData]="graphData"
           ></app-charts>
         </div>
       </div>
@@ -105,14 +105,14 @@
             <app-charts
               graphType="lineChart"
               graphLabel="Ano atual"
-              [filter]="filter"
+              [graphData]="graphData"
             ></app-charts>
           </div>
           <div class="w-full lg:w-1/2">
             <app-charts
               graphType="lineChart"
               graphLabel="Ano anterior"
-              [filter]="filter"
+              [graphData]="graphData"
             ></app-charts>
           </div>
         </div>
@@ -139,14 +139,14 @@
           <app-charts
             graphType="homologYear"
             graphLabel="Comparação anual"
-            [filter]="filter"
+            [graphData]="graphData"
           ></app-charts>
         </div>
         <div class="w-full lg:w-1/2 py-2">
           <app-charts
             graphType="fiveYear"
             graphLabel="5 anos anteriores"
-            [filter]="filter"
+            [graphData]="graphData"
           ></app-charts>
         </div>
       </div>
@@ -165,14 +165,14 @@
           <app-charts
             graphType="month"
             graphLabel="Produção"
-            [filter]="filter"
+            [graphData]="graphData"
           ></app-charts>
         </div>
         <div class="w-full lg:w-1/2 py-2">
           <app-charts
             graphType="month-metas"
             graphLabel="Metas"
-            [filter]="filter"
+            [graphData]="graphData"
           ></app-charts>
         </div>
       </div>
@@ -198,7 +198,7 @@
           <app-charts
             graphType="year-metas"
             graphLabel="Comparação Anual"
-            [filter]="filter"
+            [graphData]="graphData"
           ></app-charts>
         </div>
       </div>

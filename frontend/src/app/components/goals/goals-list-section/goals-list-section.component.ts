@@ -8,6 +8,19 @@ import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
+import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+import { PageEvent } from '@angular/material/paginator';
+
+interface Goal {
+  id: number | null;
+  indicator_name: string;
+  target_value: string;
+  year: number;
+  sai_id: number | null;
+  isInserted: boolean;
+  isUpdating: boolean;
+  isEditing: boolean;
+}
 
 @Component({
   selector: 'app-goals-list-section',
@@ -17,7 +30,8 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
     ReactiveFormsModule,
     FormsModule,
     PaginatorComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    FeedbackComponent
   ],
   templateUrl: './goals-list-section.component.html',
   styleUrls: ['./goals-list-section.component.scss']
@@ -31,9 +45,10 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
   totalGoals = 0;
   pageSize = 10;
   currentPage = 0;
-  goals: any[] = [];
+  goals: Goal[] = [];
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
+  pageOptions = [5, 10, 20, 50, 100]; // Define the pageOptions array here
 
   constructor(
     private goalService: GoalService,
@@ -56,50 +71,93 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
       const serviceId = Number(this.filter.serviceId);
       const activityId = this.filter.activityId !== null && this.filter.activityId !== undefined ? Number(this.filter.activityId) : null;
       const year = this.filter.year;
-      console.log('serviceId >>', serviceId);
-      console.log('activityId >>', activityId);
-      console.log('year >>', year);
-      console.log('currentPage >>', this.currentPage);
-      console.log('pageSize >>', this.pageSize);
+
       this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, this.currentPage, this.pageSize)
         .pipe(
           catchError(error => {
             console.error('Error fetching goals', error);
-            return of([]);
+            return of({ total: 0, data: [] });
           }),
           finalize(() => this.isLoadingGoals = false)
         )
         .subscribe(response => {
-          console.log('goals >>', response);
           this.totalGoals = response.total;
-          this.goals = response.data.map((item: any) => ({
-            id: item.goal.goal_id,
-            indicator_name: item.indicator_name,
-            target_value: item.goal.target_value,
-            year: item.goal.year,
-            isInserted: item.goal.target_value !== '0',
-            isUpdating: false
-          }));
+          this.goals = response.data.map((item: any) => {
+            const goal = item.goal || {
+              goal_id: null,
+              target_value: '',
+              year: year
+            };
+
+            return {
+              id: goal.goal_id,
+              indicator_name: item.indicator_name,
+              target_value: goal.target_value,
+              year: goal.year,
+              sai_id: item.sai_id,
+              isInserted: goal.target_value !== '',
+              isUpdating: false,
+              isEditing: false
+            };
+          });
+          console.log('Goals loaded:', this.goals);
         });
     }
   }
 
-  editGoal(goal: any): void {
-    if (goal.isInserted) {
-      goal.isInserted = false;
-    } else {
+  editGoal(goal: Goal): void {
+    if (goal.isInserted && !goal.isEditing) {
+      goal.isEditing = true;
+      return;
+    }
+
+    if (String(goal.target_value).trim() === '') {
+      this.setNotification('O valor não pode estar vazio', 'error');
+      return;
+    }
+
+    const valueAsNumber = Number(goal.target_value);
+    if (isNaN(valueAsNumber) || !Number.isInteger(valueAsNumber) || valueAsNumber <= 0) {
+      this.setNotification('O valor deve ser um número inteiro maior que 0', 'error');
+      return;
+    }
+
+    if (goal.id) {
       goal.isUpdating = true;
       this.goalService.updateGoal(goal.id, goal)
-        .pipe(finalize(() => goal.isUpdating = false))
+        .pipe(finalize(() => {
+          goal.isUpdating = false;
+          goal.isEditing = false;
+        }))
         .subscribe(
           () => this.setNotification('Meta atualizada com sucesso', 'success'),
           error => this.setNotification(this.getErrorMessage(error), 'error')
         );
+    } else {
+      const newGoal = {
+        sai_id: goal.sai_id,
+        target_value: goal.target_value,
+        year: goal.year
+      };
+      goal.isUpdating = true;
+      this.storeGoal(newGoal);
     }
   }
 
-  onValueChange(goal: any): void {
-    const index = this.goals.findIndex(r => r.id === goal.id);
+  storeGoal(newGoal: any): void {
+    this.goalService.storeGoal(newGoal)
+      .pipe(finalize(() => newGoal.isUpdating = false))
+      .subscribe(
+        () => {
+          this.setNotification('Meta criada com sucesso', 'success');
+          this.loadGoals();
+        },
+        error => this.setNotification(this.getErrorMessage(error), 'error')
+      );
+  }
+
+  onValueChange(goal: Goal): void {
+    const index = this.goals.findIndex(g => g.id === goal.id);
     if (index !== -1) {
       this.goals[index].target_value = goal.target_value;
     }
@@ -113,15 +171,15 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
   getErrorMessage(error: any): string {
     switch (error.status) {
       case 409:
-        return 'User already exists';
+        return 'Goal already exists';
       case 400:
-        return 'Invalid email';
+        return 'Invalid data';
       default:
         return 'An error occurred. Please try again later.';
     }
   }
 
-  handlePageEvent(event: any): void {
+  onPageChanged(event: PageEvent): void {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
     this.loadGoals();

@@ -13,11 +13,6 @@ export class AuthGuard implements CanActivate {
       console.warn('AuthGuard: User not logged in, redirecting to login page.');
       return this.router.createUrlTree(['/login']);
     }
-    const role = this.authService.getRole();
-    if (role !== 'admin') {
-      console.warn(`AuthGuard: User role (${role}) not authorized, redirecting to home page.`);
-      return this.router.createUrlTree(['/home']);
-    }
     return true;
   }
 }
