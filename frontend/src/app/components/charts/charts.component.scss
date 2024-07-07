@@ -8,6 +8,16 @@
 
 .chart{
     background-color: $fill-white;
+    color: $fill-white;
     padding: 0.5em;
     min-height: 400px;
+    height: 100%;
+}
+.no-data-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 1.2em;
+    color: #666;
 }

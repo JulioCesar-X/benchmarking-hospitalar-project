@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Indicator } from '../../models/indicator.model';
 import { Filter } from '../../models/filter.model';
+import { forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -33,22 +34,68 @@ export class IndicatorService {
         })
       );
   }
+  getRecordsMensal(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/records-mensal', { params });
+  }
 
-  getAllInDataGraphs(filter: Filter): Observable<any> {
-    const params = new HttpParams()
+  getRecordsAnual(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/records-anual', { params });
+  }
+
+  getGoalsMensal(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/goals-mensal', { params });
+  }
+
+  getGoalAnual(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/goal-anual', { params });
+  }
+
+  getLastFiveYears(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/last-five-years', { params });
+  }
+
+  getPreviousYearTotal(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/previous-year-total', { params });
+  }
+
+  getCurrentYearTotal(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/current-year-total', { params });
+  }
+
+  getVariations(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/variations', { params });
+  }
+
+  getAllData(filter: Filter): Observable<any> {
+    return forkJoin({
+      recordsMensal: this.getRecordsMensal(filter),
+      recordsAnual: this.getRecordsAnual(filter),
+      goalsMensal: this.getGoalsMensal(filter),
+      goalAnual: this.getGoalAnual(filter),
+      lastFiveYears: this.getLastFiveYears(filter),
+      previousYearTotal: this.getPreviousYearTotal(filter),
+      currentYearTotal: this.getCurrentYearTotal(filter),
+      variations: this.getVariations(filter),
+    });
+  }
+
+  private getHttpParams(filter: Filter): HttpParams {
+    return new HttpParams()
       .set('serviceId', filter.serviceId?.toString() || '0')
       .set('activityId', filter.activityId?.toString() || '')
       .set('indicatorId', filter.indicatorId?.toString() || '0')
       .set('year', filter.year?.toString() || '0')
       .set('month', filter.month?.toString() || '0');
-    console.log('params >>', params.toString());
-    return this.http.get<any>('/indicators/sai/charts', { params }).pipe(
-      catchError(error => {
-        console.error('Error fetching data:', error);
-        return throwError(() => new Error('Failed to fetch data'));
-      })
-    );
   }
+
 
   getIndicatorsRecords(serviceId: number, activityId: number | null, year: number, month: number, pageIndex: number, pageSize: number): Observable<any> {
     const params = new HttpParams()

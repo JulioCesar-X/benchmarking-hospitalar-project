@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Notification;
 use App\User;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 use Exception;
 
 
@@ -19,7 +20,16 @@ class NotificationController extends Controller
     public function index()
     {
         try {
-            $notifications = Notification::with(['sender', 'receiver'])->get();
+            $cacheKey = 'notifications_index';
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $notifications = Notification::with(['sender:id,name', 'receiver:id,name'])->get();
+
+            Cache::put($cacheKey, $notifications, now()->addMinutes(30));
+
             return response()->json($notifications, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -36,7 +46,11 @@ class NotificationController extends Controller
     {
         try {
             $notification = Notification::create($request->all());
-            return response()->json($notification->load(['sender', 'receiver']), 201);
+
+            // Clear the cache
+            Cache::forget('notifications_index');
+
+            return response()->json($notification->load(['sender:id,name', 'receiver:id,name']), 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -51,8 +65,8 @@ class NotificationController extends Controller
     public function show($id)
     {
         try {
-            $notification = Notification::findOrFail($id);
-            return response()->json($notification->load(['sender', 'receiver']), 200);
+            $notification = Notification::with(['sender:id,name', 'receiver:id,name'])->findOrFail($id);
+            return response()->json($notification, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -68,7 +82,11 @@ class NotificationController extends Controller
     {
         try {
             $notification->update($request->all());
-            return response()->json($notification, 200);
+
+            // Clear the cache
+            Cache::forget('notifications_index');
+
+            return response()->json($notification->load(['sender:id,name', 'receiver:id,name']), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -85,6 +103,10 @@ class NotificationController extends Controller
         try {
             $notification = Notification::findOrFail($id);
             $notification->delete();
+
+            // Clear the cache
+            Cache::forget('notifications_index');
+
             return response()->json(['message' => 'Deleted'], 205);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -93,7 +115,6 @@ class NotificationController extends Controller
 
     public function getAllNotificationReceived(Request $request)
     {
-        // Validação de entrada
         $validator = Validator::make($request->all(), [
             'email' => 'required|email'
         ]);
@@ -103,25 +124,15 @@ class NotificationController extends Controller
         }
 
         try {
-            // Obter o email fornecido na requisição
             $email = $request->input('email');
-
-            // Verificar se o usuário existe
             $user = User::where('email', $email)->first();
 
             if (!$user) {
                 return response()->json(['error' => 'Usuário não encontrado'], 404);
             }
 
-            // Adicione esta linha para garantir que o ID do usuário é um número válido
-            if (!is_numeric($user->id)) {
-                throw new \Exception('User ID is not a valid number');
-            }
+            $notifications = $user->receivedNotifications()->with(['sender:id,name', 'receiver:id,name'])->get();
 
-            // Buscar todas as notificações recebidas pelo usuário com base no relacionamento
-            $notifications = $user->receivedNotifications()->with(['sender', 'receiver'])->get();
-
-            // Formatar as notificações para incluir os nomes dos remetentes e destinatários
             $formattedNotifications = $notifications->map(function ($notification) {
                 return [
                     'id' => $notification->id,
@@ -134,7 +145,7 @@ class NotificationController extends Controller
             });
 
             return response()->json($formattedNotifications);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
         }
     }

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 use App\Activity;
 use App\Sai;
 use Exception;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Cache;
 
 class ActivityController extends Controller
 {
@@ -20,27 +19,28 @@ class ActivityController extends Controller
     public function index()
     {
         try {
-            // Carregar todas as atividades com os relacionamentos de SAI, serviços e indicadores
-            $activities = Activity::with(['sais.service', 'sais.indicator'])->get()
+            $cacheKey = 'activities_index';
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $activities = Activity::with(['sais.service:id,service_name', 'sais.indicator:id,indicator_name'])
+                ->select('id', 'activity_name')
+                ->get()
                 ->map(function ($activity) {
                     $services = $activity->sais->map(function ($sai) {
-                        if ($sai->service) {
-                            return [
-                                'id' => $sai->service->id,
-                                'name' => $sai->service->service_name
-                            ];
-                        }
-                        return null;
+                        return $sai->service ? [
+                            'id' => $sai->service->id,
+                            'name' => $sai->service->service_name
+                        ] : null;
                     })->filter()->unique('id')->values();
 
                     $indicators = $activity->sais->map(function ($sai) {
-                        if ($sai->indicator) {
-                            return [
-                                'id' => $sai->indicator->id,
-                                'name' => $sai->indicator->indicator_name
-                            ];
-                        }
-                        return null;
+                        return $sai->indicator ? [
+                            'id' => $sai->indicator->id,
+                            'name' => $sai->indicator->indicator_name
+                        ] : null;
                     })->filter()->unique('id')->values();
 
                     return [
@@ -50,6 +50,8 @@ class ActivityController extends Controller
                         'indicators' => $indicators
                     ];
                 });
+
+            Cache::put($cacheKey, $activities, now()->addMinutes(30));
 
             return response()->json($activities, 200);
         } catch (Exception $exception) {
@@ -65,8 +67,8 @@ class ActivityController extends Controller
     public function getActivitiesPaginated(Request $request)
     {
         try {
-            $pageSize = $request->input('size');
-            $pageIndex = $request->input('page');
+            $pageSize = $request->input('size', 15);
+            $pageIndex = $request->input('page', 1);
             $activities = Activity::query()
                 ->orderBy('created_at', 'desc')
                 ->paginate($pageSize, ['*'], 'page', $pageIndex);
@@ -76,7 +78,6 @@ class ActivityController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -90,18 +91,25 @@ class ActivityController extends Controller
         try {
             $activity = Activity::create(['activity_name' => $request->activity_name]);
 
+            $saiData = [];
             foreach ($request->service_ids as $serviceId) {
                 foreach ($request->indicator_ids as $indicatorId) {
-                    Sai::create([
+                    $saiData[] = [
                         'service_id' => $serviceId,
                         'activity_id' => $activity->id,
                         'indicator_id' => $indicatorId,
                         'type' => 'default'
-                    ]);
+                    ];
                 }
             }
 
+            Sai::insert($saiData);
+
             DB::commit();
+
+            // Clear the cache
+            Cache::forget('activities_index');
+
             return response()->json($activity->load('sais'), 201);
         } catch (Exception $exception) {
             DB::rollBack();
@@ -118,8 +126,10 @@ class ActivityController extends Controller
     public function show($id)
     {
         try {
-            $activity = Activity::findOrFail($id);
-            return response()->json($activity->load('sais.indicator', 'sais.service'), 200);
+            $activity = Activity::with(['sais.service:id,service_name', 'sais.indicator:id,indicator_name'])
+                ->select('id', 'activity_name')
+                ->findOrFail($id);
+            return response()->json($activity, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -137,19 +147,25 @@ class ActivityController extends Controller
         try {
             $activity->update(['activity_name' => $request->activity_name]);
 
-            // Create new SAIs
+            $saiData = [];
             foreach ($request->service_ids as $serviceId) {
                 foreach ($request->indicator_ids as $indicatorId) {
-                    Sai::create([
+                    $saiData[] = [
                         'service_id' => $serviceId,
                         'activity_id' => $activity->id,
                         'indicator_id' => $indicatorId,
                         'type' => 'default'
-                    ]);
+                    ];
                 }
             }
 
+            Sai::insert($saiData);
+
             DB::commit();
+
+            // Clear the cache
+            Cache::forget('activities_index');
+
             return response()->json($activity->load('sais'), 200);
         } catch (Exception $exception) {
             DB::rollBack();
@@ -165,14 +181,23 @@ class ActivityController extends Controller
      */
     public function destroy($id)
     {
+        DB::beginTransaction();
         try {
             $activity = Activity::findOrFail($id);
             $activity->delete();
+
+            DB::commit();
+
+            // Clear the cache
+            Cache::forget('activities_index');
+
             return response()->json(['message' => 'Deleted'], 205);
         } catch (Exception $exception) {
+            DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
     /**
      * Search for activities based on a keyword.
      *

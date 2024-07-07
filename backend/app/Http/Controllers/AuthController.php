@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
 use App\Role;
 use Illuminate\Support\Facades\Log;
-
-
-
+use Illuminate\Support\Facades\Cache;
 
 class AuthController extends Controller
 {
@@ -48,7 +46,6 @@ class AuthController extends Controller
         ]);
     }
 
-
     public function register(Request $request)
     {
         $request->validate([
@@ -60,7 +57,6 @@ class AuthController extends Controller
         $hashedPassword = Hash::make($request->password);
         Log::info('Senha criptografada:', [$hashedPassword]);
 
-        // Verificação adicional
         if (!Hash::check($request->password, $hashedPassword)) {
             Log::info('Falha na verificação do hash após criptografia.');
             return response()->json(['message' => 'Erro na criptografia da senha.'], 500);
@@ -76,17 +72,17 @@ class AuthController extends Controller
         $role = Role::where('role_name', 'User')->first();
         $user->roles()->attach($role);
 
+        // Clear the cache
+        Cache::forget('users_index');
+
         return response()->json(['message' => 'Registration successful'], 200);
     }
-
-
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out'], 200);
     }
-
 
     public function forgotPassword(Request $request)
     {
@@ -119,7 +115,7 @@ class AuthController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'token'),
             function ($user, $password) {
-                $user->password = Hash::make($password);;
+                $user->password = Hash::make($password);
                 $user->save();
             }
         );

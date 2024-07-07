@@ -7,6 +7,8 @@ use App\Service;
 use Exception;
 use App\Sai;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+
 
 class ServiceController extends Controller
 {
@@ -18,33 +20,35 @@ class ServiceController extends Controller
     public function index()
     {
         try {
-            // Carregar todos os serviços com os relacionamentos sais
-            $services = Service::with(['sais.activity', 'sais.indicator'])->get();
+            $cacheKey = 'services_index';
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $services = Service::with(['sais' => function ($query) {
+                $query->select('id', 'activity_id', 'indicator_id', 'service_id');
+            }, 'sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'])
+            ->select('id', 'service_name', 'image_url')
+            ->get();
 
             if ($services->isEmpty()) {
                 return response()->json([], 200);
             }
 
             $services = $services->map(function ($service) {
-                // Transformar os dados para incluir atividades e indicadores associados
                 $activities = $service->sais->map(function ($sai) {
-                    if (isset($sai->activity) && !is_null($sai->activity)) {
-                        return [
-                            'id' => $sai->activity->id,
-                            'name' => $sai->activity->activity_name
-                        ];
-                    }
-                    return null;
+                    return $sai->activity ? [
+                        'id' => $sai->activity->id,
+                        'name' => $sai->activity->activity_name
+                    ] : null;
                 })->filter()->unique('id')->values();
 
                 $indicators = $service->sais->map(function ($sai) {
-                    if (isset($sai->indicator) && !is_null($sai->indicator)) {
-                        return [
-                            'id' => $sai->indicator->id,
-                            'name' => $sai->indicator->indicator_name
-                        ];
-                    }
-                    return null;
+                    return $sai->indicator ? [
+                        'id' => $sai->indicator->id,
+                        'name' => $sai->indicator->indicator_name
+                    ] : null;
                 })->filter()->unique('id')->values();
 
                 return [
@@ -56,6 +60,8 @@ class ServiceController extends Controller
                 ];
             });
 
+            Cache::put($cacheKey, $services, now()->addMinutes(30));
+
             return response()->json($services, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -63,16 +69,15 @@ class ServiceController extends Controller
     }
 
 
-    
+
     public function getServicesPaginated(Request $request)
     {
         try {
-            $pageSize = $request->input('size');
-            $pageIndex = $request->input('page');
+            $pageSize = $request->input('size', 15);
+            $pageIndex = $request->input('page', 1);
 
-            $services = Service::query()
-                ->orderBy('created_at', 'desc')
-                ->paginate($pageSize, ['*'], 'page', $pageIndex);
+            $services = Service::orderBy('created_at', 'desc')
+            ->paginate($pageSize, ['*'], 'page', $pageIndex);
 
             return response()->json($services, 200);
         } catch (Exception $exception) {
@@ -96,18 +101,25 @@ class ServiceController extends Controller
                 'image_url' => $request->image_url
             ]);
 
+            $saiData = [];
             foreach ($request->activity_ids as $activityId) {
                 foreach ($request->indicator_ids as $indicatorId) {
-                    Sai::create([
+                    $saiData[] = [
                         'activity_id' => $activityId,
                         'service_id' => $service->id,
                         'indicator_id' => $indicatorId,
                         'type' => 'default'
-                    ]);
+                    ];
                 }
             }
 
+            Sai::insert($saiData);
+
             DB::commit();
+
+            // Clear the cache
+            Cache::forget('services_index');
+
             return response()->json($service->load('sais'), 201);
         } catch (Exception $exception) {
             DB::rollBack();
@@ -125,8 +137,12 @@ class ServiceController extends Controller
     public function show($id)
     {
         try {
-            $service = Service::with(['sais.activity', 'sais.indicator'])
+            $service = Service::with(['sais' => function ($query) {
+                $query->select('id', 'activity_id', 'indicator_id', 'service_id');
+            }, 'sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'])
+            ->select('id', 'service_name', 'image_url')
             ->findOrFail($id);
+
             return response()->json($service, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -149,19 +165,25 @@ class ServiceController extends Controller
                 'image_url' => $request->image_url
             ]);
 
-            // Create new SAIs
+            $saiData = [];
             foreach ($request->activity_ids as $activityId) {
                 foreach ($request->indicator_ids as $indicatorId) {
-                    Sai::create([
+                    $saiData[] = [
                         'activity_id' => $activityId,
                         'service_id' => $service->id,
                         'indicator_id' => $indicatorId,
                         'type' => 'default'
-                    ]);
+                    ];
                 }
             }
 
+            Sai::insert($saiData);
+
             DB::commit();
+
+            // Clear the cache
+            Cache::forget('services_index');
+
             return response()->json($service->load('sais'), 200);
         } catch (Exception $exception) {
             DB::rollBack();
@@ -177,11 +199,19 @@ class ServiceController extends Controller
      */
     public function destroy($id)
     {
+        DB::beginTransaction();
         try {
             $service = Service::findOrFail($id);
             $service->delete();
+
+            DB::commit();
+
+            // Clear the cache
+            Cache::forget('services_index');
+
             return response()->json(['message' => 'Deleted'], 205);
         } catch (Exception $exception) {
+            DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
