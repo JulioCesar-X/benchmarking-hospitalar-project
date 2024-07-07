@@ -23,7 +23,15 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
 
     Route::get('activities/search', 'ActivityController@search');
 
-    Route::get('indicators/sai/charts', 'IndicatorController@getAllInDataGraphs');
+    Route::get('indicators/sai/records-mensal', 'IndicatorController@getRecordsMensal');
+    Route::get('indicators/sai/records-anual', 'IndicatorController@getRecordsAnual');
+    Route::get('indicators/sai/goals-mensal', 'IndicatorController@getGoalsMensal');
+    Route::get('indicators/sai/goal-anual', 'IndicatorController@getGoalAnual');
+    Route::get('indicators/sai/last-five-years', 'IndicatorController@getLastFiveYears');
+    Route::get('indicators/sai/previous-year-total', 'IndicatorController@getPreviousYearTotal');
+    Route::get('indicators/sai/current-year-total', 'IndicatorController@getCurrentYearTotal');
+    Route::get('indicators/sai/variations', 'IndicatorController@getVariations');
+
     Route::get('indicators/search', 'IndicatorController@search');
     Route::get('indicators/sai/paginated', 'IndicatorController@getSAIPaginated');
     Route::get('indicators/{id}', 'IndicatorController@show');

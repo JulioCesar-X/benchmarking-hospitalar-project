@@ -7,6 +7,7 @@ use App\User;
 use App\Role;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 
 
 class UserController extends Controller
@@ -19,8 +20,17 @@ class UserController extends Controller
     public function index()
     {
         try {
-            $users = User::all();
-            return response()->json($users->load(['roles', 'sentNotifications', 'receivedNotifications']), 200);
+            $cacheKey = 'users_index';
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $users = User::with(['roles:id,name', 'sentNotifications', 'receivedNotifications'])->get();
+
+            Cache::put($cacheKey, $users, now()->addMinutes(30));
+
+            return response()->json($users, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -29,11 +39,10 @@ class UserController extends Controller
     public function getUsersPaginated(Request $request)
     {
         try {
+            $pageSize = $request->input('size', 15);
+            $pageIndex = $request->input('page', 1);
 
-            $pageSize = $request->input('size');
-            $pageIndex = $request->input('page');
-
-            $users = User::with(['roles', 'sentNotifications', 'receivedNotifications'])
+            $users = User::with(['roles:id,name', 'sentNotifications', 'receivedNotifications'])
             ->paginate($pageSize, ['*'], 'page', $pageIndex);
 
             return response()->json($users, 200);
@@ -52,9 +61,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         try {
-
             $request->validate([
-
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|max:10',
@@ -64,12 +71,15 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => $request->password,
+                'password' => Hash::make($request->password),
                 'email_verified_at' => now(),
             ]);
 
-            $role = Role::find('role_id')->first();
+            $role = Role::find($request->role_id);
             $user->roles()->attach($role);
+
+            // Clear the cache
+            Cache::forget('users_index');
 
             return response()->json(['message' => 'Registration successful'], 200);
         } catch (Exception $exception) {
@@ -86,9 +96,8 @@ class UserController extends Controller
     public function show($id)
     {
         try {
-
-            $user = User::findOrFail($id);
-            return response()->json($user->load(['roles', 'sentNotifications', 'receivedNotifications']), 200);
+            $user = User::with(['roles:id,name', 'sentNotifications', 'receivedNotifications'])->findOrFail($id);
+            return response()->json($user, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -103,7 +112,6 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         try {
-
             $validatedData = $request->validate([
                 'name' => 'string|max:255|nullable',
                 'email' => 'string|email|max:255|unique:users,email,' . $user->id . '|nullable',
@@ -127,7 +135,10 @@ class UserController extends Controller
                 $user->roles()->sync($request->input('role_id'));
             }
 
-            return response()->json($user->load(['roles', 'sentNotifications', 'receivedNotifications']), 200);
+            // Clear the cache
+            Cache::forget('users_index');
+
+            return response()->json($user->load(['roles:id,name', 'sentNotifications', 'receivedNotifications']), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -144,6 +155,10 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
             $user->delete();
+
+            // Clear the cache
+            Cache::forget('users_index');
+
             return response()->json(['message' => 'Deleted'], 205);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -162,7 +177,8 @@ class UserController extends Controller
             $users = User::where('name', 'LIKE', '%' . $term . '%')
                 ->orderBy('updated_at', 'desc')
                 ->get();
-            return response()->json($users->load(['roles']), 200);
+
+            return response()->json($users->load(['roles:id,name']), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

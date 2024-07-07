@@ -25,43 +25,50 @@ class IndicatorController extends Controller
     public function index()
     {
         try {
-            $indicators = Indicator::with(['sais.service', 'sais.activity'])
-            ->get()
-                ->map(function ($indicator) {
-                    // Adicionando logs para depuração
-                    Log::info('Processing indicator:', ['indicator' => $indicator]);
+            $cacheKey = 'indicators_index';
 
-                    $services = $indicator->sais->map(function ($sai) {
-                        if ($sai->service) {
-                            Log::info('Processing service:', ['service' => $sai->service]);
-                            return [
-                                'id' => $sai->service->id,
-                                'name' => $sai->service->service_name
-                            ];
-                        }
-                        return null;
-                    })->filter()->unique('id')->values();
+            // Verifica se o cache já possui os dados
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
 
-                    $activities = $indicator->sais->map(function ($sai) {
-                        if ($sai->activity) {
-                            Log::info('Processing activity:', ['activity' => $sai->activity]);
-                            return [
-                                'id' => $sai->activity->id,
-                                'name' => $sai->activity->activity_name
-                            ];
-                        }
-                        return null;
-                    })->filter()->unique('id')->values();
+            // Carrega indicadores com os relacionamentos sais, service, e activity
+            $indicators = Indicator::with(['sais' => function ($query) {
+                $query->select('id', 'service_id', 'activity_id', 'indicator_id');
+            }, 'sais.service:id,service_name', 'sais.activity:id,activity_name'])
+            ->select('id', 'indicator_name')
+            ->get();
 
-                    return [
-                        'id' => $indicator->id,
-                        'indicator_name' => $indicator->indicator_name,
-                        'services' => $services,
-                        'activities' => $activities
-                    ];
-                });
+            if ($indicators->isEmpty()) {
+                return response()->json([], 200);
+            }
 
-            Log::info('Final indicators data:', ['indicators' => $indicators]);
+            // Transforma os indicadores carregados
+            $indicators = $indicators->map(function ($indicator) {
+                $services = $indicator->sais->map(function ($sai) {
+                    return $sai->service ? [
+                        'id' => $sai->service->id,
+                        'name' => $sai->service->service_name
+                    ] : null;
+                })->filter()->unique('id')->values();
+
+                $activities = $indicator->sais->map(function ($sai) {
+                    return $sai->activity ? [
+                        'id' => $sai->activity->id,
+                        'name' => $sai->activity->activity_name
+                    ] : null;
+                })->filter()->unique('id')->values();
+
+                return [
+                    'id' => $indicator->id,
+                    'indicator_name' => $indicator->indicator_name,
+                    'services' => $services,
+                    'activities' => $activities
+                ];
+            });
+
+            // Armazena os dados no cache por 30 minutos
+            Cache::put($cacheKey, $indicators, now()->addMinutes(30));
 
             return response()->json($indicators, 200);
         } catch (Exception $exception) {
@@ -70,38 +77,107 @@ class IndicatorController extends Controller
         }
     }
 
-    public function getIndicatorsPaginated(Request $request)
-    {
-        try {
-            $pageSize = $request->input('size');
-            $pageIndex = $request->input('page');
-
-            $indicators = Indicator::query()
-                ->orderBy('created_at', 'desc')
-                ->paginate($pageSize, ['*'], 'page', $pageIndex);
-
-            return response()->json($indicators, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    }
-
     public function getSAIPaginated(Request $request)
     {
     }
 
-    public function getAllinDataGraphs(Request $request)
+    public function getRecordsMensal(Request $request)
     {
         try {
             $serviceId = $request->input('serviceId');
             $activityId = $request->input('activityId');
             $indicatorId = $request->input('indicatorId');
             $year = $request->input('year');
-            $month = $request->input('month');
+            $cacheKey = "records_mensal_{$serviceId}_{$activityId}_{$indicatorId}_{$year}";
 
-            $cacheKey = "graph_data_{$serviceId}_{$activityId}_{$indicatorId}_{$year}_{$month}";
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
 
-            // Check cache first
+            $recordsMensal = DB::table('vw_indicator_accumulated')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->whereYear('data', $year)
+                ->pluck('valor_mensal')
+                ->toArray();
+
+            Cache::put($cacheKey, $recordsMensal, now()->addMinutes(30));
+
+            return response()->json($recordsMensal, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getRecordsAnual(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $year = $request->input('year');
+            $cacheKey = "records_anual_{$serviceId}_{$activityId}_{$indicatorId}_{$year}";
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $recordsAnual = DB::table('vw_indicator_accumulated')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->where('year', $year)
+                ->pluck('valor_acumulado_agregado')
+                ->toArray();
+
+            Cache::put($cacheKey, $recordsAnual, now()->addMinutes(30));
+
+            return response()->json($recordsAnual, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getGoalsMensal(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $year = $request->input('year');
+            $cacheKey = "goals_mensal_{$serviceId}_{$activityId}_{$indicatorId}_{$year}";
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $goalsMensal = DB::table('vw_goals_monthly')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->where('year', $year)
+                ->pluck('valor_acumulado_mensal')
+                ->toArray();
+
+            Cache::put($cacheKey, $goalsMensal, now()->addMinutes(30));
+
+            return response()->json($goalsMensal, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getGoalAnual(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $year = $request->input('year');
+
+            $cacheKey = "goal_anual_{$serviceId}_{$activityId}_{$indicatorId}_{$year}";
+
             if (Cache::has($cacheKey)) {
                 return response()->json(Cache::get($cacheKey), 200);
             }
@@ -115,46 +191,29 @@ class IndicatorController extends Controller
                 return response()->json(['error' => 'Service Activity Indicator not found'], 404);
             }
 
-            $saiId = $sai->id;
+            $goalAnual = $sai->goals()->where('year', $year)->first()->target_value;
 
-            // Use async queries to fetch data in parallel
-            $recordsMensalQuery = DB::table('vw_indicator_accumulated')
-            ->where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->whereYear('data', $year)
-                ->pluck('valor_mensal');
+            Cache::put($cacheKey, $goalAnual, now()->addMinutes(30));
 
-            $recordsAnualQuery = DB::table('vw_indicator_accumulated')
-            ->where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->where('year', $year)
-                ->pluck('valor_acumulado_agregado');
+            return response()->json($goalAnual, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
 
-            $recordsAnualLastYearQuery = DB::table('vw_indicator_accumulated')
-            ->where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->where('year', $year - 1)
-                ->pluck('valor_acumulado_agregado');
+    public function getLastFiveYears(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $cacheKey = "last_five_years_{$serviceId}_{$activityId}_{$indicatorId}";
 
-            $goalsMensalQuery = DB::table('vw_goals_monthly')
-            ->where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->where('year', $year)
-                ->pluck('valor_acumulado_mensal');
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
 
-            $goalAnualQuery = Sai::with(['goals' => function ($query) use ($year) {
-                $query->where('year', $year);
-            }])
-                ->find($saiId)
-                ->goals
-                ->first()
-                ->target_value;
-
-            $lastFiveYearsQuery = DB::table('vw_indicator_accumulated')
+            $lastFiveYears = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
@@ -162,23 +221,89 @@ class IndicatorController extends Controller
                 ->orderBy('year', 'desc')
                 ->limit(5)
                 ->select('year', DB::raw('SUM(valor_mensal) as total'))
-                ->get();
+                ->get()
+                ->toArray();
 
-            $previousYearTotalQuery = DB::table('vw_indicator_accumulated')
+            Cache::put($cacheKey, $lastFiveYears, now()->addMinutes(30));
+
+            return response()->json($lastFiveYears, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getPreviousYearTotal(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $year = $request->input('year');
+            $cacheKey = "previous_year_total_{$serviceId}_{$activityId}_{$indicatorId}_{$year}";
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $previousYearTotal = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->whereYear('data', $year - 1)
                 ->sum('valor_mensal');
 
-            $currentYearTotalQuery = DB::table('vw_indicator_accumulated')
+            Cache::put($cacheKey, $previousYearTotal, now()->addMinutes(30));
+
+            return response()->json($previousYearTotal, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getCurrentYearTotal(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $year = $request->input('year');
+            $cacheKey = "current_year_total_{$serviceId}_{$activityId}_{$indicatorId}_{$year}";
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $currentYearTotal = DB::table('vw_indicator_accumulated')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
                 ->whereYear('data', $year)
                 ->sum('valor_mensal');
 
-            $variationsQuery = DB::table('vw_variation_rate')
+            Cache::put($cacheKey, $currentYearTotal, now()->addMinutes(30));
+
+            return response()->json($currentYearTotal, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getVariations(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $year = $request->input('year');
+            $month = $request->input('month');
+
+            $cacheKey = "variations_{$serviceId}_{$activityId}_{$indicatorId}_{$year}_{$month}";
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $variations = DB::table('vw_variation_rate')
             ->where('service_id', $serviceId)
                 ->where('activity_id', $activityId)
                 ->where('indicator_id', $indicatorId)
@@ -192,41 +317,9 @@ class IndicatorController extends Controller
                     'variation_rate_contractual'
                 ]);
 
-            // Execute all queries in parallel
-            $results = [
-                'recordsMensal' => $recordsMensalQuery,
-                'recordsAnual' => $recordsAnualQuery,
-                'recordsAnualLastYear' => $recordsAnualLastYearQuery,
-                'goalsMensal' => $goalsMensalQuery,
-                'goalAnual' => $goalAnualQuery,
-                'lastFiveYears' => $lastFiveYearsQuery,
-                'previousYearTotal' => $previousYearTotalQuery,
-                'currentYearTotal' => $currentYearTotalQuery,
-                'variations' => $variationsQuery,
-            ];
+            Cache::put($cacheKey, $variations, now()->addMinutes(30));
 
-            // Construct the response
-            $response = [
-                'saiID' => $saiId,
-                'years' => collect($results['lastFiveYears'])->pluck('year')->toArray(),
-                'recordsMensal' => $results['recordsMensal']->toArray(),
-                'recordsAnual' => $results['recordsAnual']->toArray(),
-                'recordsAnualLastYear' => $results['recordsAnualLastYear']->toArray(),
-                'goalsMensal' => $results['goalsMensal']->toArray(),
-                'goalAnual' => $results['goalAnual'],
-                'lastFiveYears' => collect($results['lastFiveYears'])->toArray(),
-                'previousYearTotal' => $results['previousYearTotal'],
-                'currentYearTotal' => $results['currentYearTotal'],
-                'variation_rate_homologous_abs' => $results['variations']->variation_rate_homologous_abs,
-                'variation_rate_homologous' => $results['variations']->variation_rate_homologous,
-                'variation_rate_contractual_abs' => $results['variations']->variation_rate_contractual_abs,
-                'variation_rate_contractual' => $results['variations']->variation_rate_contractual
-            ];
-
-            // Cache the response for future use
-            Cache::put($cacheKey, $response, now()->addMinutes(30));
-
-            return response()->json($response, 200);
+            return response()->json($variations, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -248,19 +341,18 @@ class IndicatorController extends Controller
         $size = $request->input('size', 10);
 
         try {
-            // Consulta principal para buscar registros
-            $query = Sai::with(['indicator', 'records' => function ($query) use ($year, $month) {
-                $query->whereYear('date', $year)
+            $query = Sai::with(['indicator:id,indicator_name', 'records' => function ($query) use ($year, $month) {
+                $query->select('id', 'sai_id', 'value', 'date')
+                ->whereYear('date', $year)
                     ->whereMonth('date', $month);
-            }])
-                ->where('service_id', $serviceId);
+            }])->where('service_id', $serviceId);
 
             if (!is_null($activityId) && $activityId !== '') {
                 $query->where('activity_id', $activityId);
             }
 
             $total = $query->count();
-            $records = $query->skip(($page - 1) * $size)->take($size)->get();
+            $records = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id']);
 
             $response = [
                 'total' => $total,
@@ -274,9 +366,9 @@ class IndicatorController extends Controller
                                 'value' => $record->value,
                                 'date' => $record->date
                             ];
-                        })->toArray()
+                        })
                     ];
-                })->toArray()
+                })
             ];
 
             return response()->json($response);
@@ -284,7 +376,6 @@ class IndicatorController extends Controller
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -299,39 +390,28 @@ class IndicatorController extends Controller
         $size = $request->input('size', 10);
 
         try {
-            // Paginação dos resultados
             $query = Sai::with([
-                'indicator',
+                'indicator:id,indicator_name',
                 'goals' => function ($query) use ($year) {
-                    $query->where('year', '=', $year);
+                    $query->select('id', 'sai_id', 'target_value', 'year')
+                    ->where('year', $year);
                 },
-                'service',
-                'activity'
+                'service:id,service_name',
+                'activity:id,activity_name'
             ])->where('service_id', $serviceId);
 
-            // Verifica se o activityId é nulo ou vazio
             if ($activityId !== null && $activityId !== '') {
                 $query->where('activity_id', $activityId);
             }
 
             $total = $query->count();
+            $sais = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id']);
 
-            $sais = $query->skip(($page - 1) * $size)
-                ->take($size)
-                ->get();
-
-            // Formatação da resposta para enviar dados já estruturados
             $response = $sais->map(function ($sai) {
                 return [
                     'sai_id' => $sai->id,
                     'indicator_name' => $sai->indicator->indicator_name,
-                    'goal' => $sai->goals->map(function ($goal) {
-                        return [
-                            'goal_id' => $goal->id,
-                            'target_value' => $goal->target_value,
-                            'year' => $goal->year
-                        ];
-                    })->first()
+                    'goal' => $sai->goals->first()
                 ];
             });
 
@@ -346,8 +426,6 @@ class IndicatorController extends Controller
         }
     }
 
-
-
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -355,43 +433,73 @@ class IndicatorController extends Controller
             // Create the indicator
             $indicator = Indicator::create(['indicator_name' => $request->indicator_name]);
 
-            // Iterate through the service IDs and activity IDs to create SAIs
+            $saiData = [];
+            $goalData = [];
+            $recordData = [];
+            $currentYear = date('Y');
+
             foreach ($request->sais as $saiRequest) {
                 foreach ($request->service_ids as $serviceId) {
                     foreach ($request->activity_ids as $activityId) {
-                        // Create the ServiceActivityIndicator
-                        $sai = Sai::create([
+                        // Collect Sai data
+                        $sai = [
                             'service_id' => $serviceId,
                             'activity_id' => $activityId,
                             'indicator_id' => $indicator->id,
                             'type' => $saiRequest['type']
-                        ]);
+                        ];
+                        $saiData[] = $sai;
 
-                        // Create the associated goals
+                        // Temporarily store goals and records for later insertion
                         foreach ($saiRequest['goals'] as $goalRequest) {
-                            Goal::create([
-                                'sai_id' => $sai->id,
+                            $goalData[] = [
+                                'sai_id' => null, // Placeholder, will be replaced later
                                 'target_value' => $goalRequest['target_value'],
                                 'year' => $goalRequest['year']
-                            ]);
+                            ];
                         }
 
-                        // Get the current year
-                        $year = date('Y');
-
-                        // Create the associated records with value 0 for each month of the current year
                         for ($i = 1; $i <= 12; $i++) {
-                            Record::create([
-                                'sai_id' => $sai->id,
+                            $recordData[] = [
+                                'sai_id' => null, // Placeholder, will be replaced later
                                 'value' => 0,
-                                'date' => "$year-$i-01"
-                            ]);
+                                'date' => "$currentYear-$i-01"
+                            ];
                         }
                     }
                 }
             }
 
+            // Insert SAIs in bulk and get their IDs
+            Sai::insert($saiData);
+            $saiIds = Sai::where('indicator_id', $indicator->id)->pluck('id')->toArray();
+
+            // Update goals and records with correct sai_id
+            foreach ($saiIds as $index => $saiId) {
+                foreach ($goalData as &$goal) {
+                    if ($goal['sai_id'] === null) {
+                        $goal['sai_id'] = $saiId;
+                        break;
+                    }
+                }
+
+                foreach ($recordData as &$record) {
+                    if ($record['sai_id'] === null) {
+                        $record['sai_id'] = $saiId;
+                        break;
+                    }
+                }
+            }
+
+            // Insert goals and records in bulk
+            Goal::insert($goalData);
+            Record::insert($recordData);
+
             DB::commit();
+
+            // Clear the cache
+            Cache::forget('indicators_index');
+
             return response()->json($indicator->load('sais'), 201);
         } catch (Exception $exception) {
             DB::rollBack();
@@ -446,22 +554,9 @@ class IndicatorController extends Controller
                 ]
             );
 
-            // Update the records for each month of the current year
-            foreach ($request->records as $record) {
-                Record::updateOrCreate(
-                    [
-                        'sai_id' => $sai->id,
-                        'date' => $record['date']  // e.g., '2024-01-01'
-                    ],
-                    [
-                        'value' => $record['value']
-                    ]
-                );
-            }
-
             // Clear the cache for the updated data
-            $cacheKey = "graph_data_{$sai->service_id}_{$sai->activity_id}_{$sai->indicator_id}_{$request->year}_{$request->month}";
-            Cache::forget($cacheKey);
+            Cache::forget("graph_data_{$sai->service_id}_{$sai->activity_id}_{$sai->indicator_id}_{$request->year}_{$request->month}");
+            Cache::forget('indicators_index');
 
             DB::commit();
             return response()->json($indicator->load('sais'), 200);
@@ -498,6 +593,10 @@ class IndicatorController extends Controller
             $indicator->delete();
 
             DB::commit();
+
+            // Clear the cache
+            Cache::forget('indicators_index');
+
             return response()->json(['message' => 'Indicator and related records deleted successfully'], 200);
         } catch (Exception $exception) {
             DB::rollBack();

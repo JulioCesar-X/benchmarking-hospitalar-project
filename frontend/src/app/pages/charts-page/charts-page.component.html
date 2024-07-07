@@ -4,76 +4,40 @@
     (filterEvent)="handleFilterData($event)" (activityInputChange)="handleActivityInputChange($event)">
   </app-filter>
 
-  <div
-    class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer">
+  <div class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer">
     <div class="tab-headers-wrapper">
       <div id="tabHead" class="flex items-center justify-between pr-2">
         <div id="tabHeaders" class="flex w-[30%]">
-          <button
-            class="tab-link"
-            [class.active]="selectedTab === 'Producao'"
-            (click)="selectTab('Producao')">
+          <button class="tab-link" [class.active]="selectedTab === 'Producao'" (click)="selectTab('Producao')">
             Produção
           </button>
-          <button
-            class="tab-link"
-            [class.active]="selectedTab === 'Metas'"
-            (click)="selectTab('Metas')">
+          <button class="tab-link" [class.active]="selectedTab === 'Metas'" (click)="selectTab('Metas')">
             Metas
           </button>
         </div>
 
         <div id="exportMenu" class="relative" [matMenuTriggerFor]="exportMenu">
-          <button
-            id="exportDropDown"
-            type="button"
+          <button id="exportDropDown" type="button"
             class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
-            aria-haspopup="true"
-            aria-expanded="true">
+            aria-haspopup="true" aria-expanded="true">
             <strong>Exportar</strong>
-            <svg
-              class="-mr-1 ml-2 h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fill-rule="evenodd"
+            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+              aria-hidden="true">
+              <path fill-rule="evenodd"
                 d="M10 3a1 1 0 011 1v10.586l2.707-2.707a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L9 14.586V4a1 1 0 011-1z"
-                clip-rule="evenodd"/>
+                clip-rule="evenodd" />
             </svg>
           </button>
-          <mat-menu
-            #exportMenu="matMenu"
-            class="menu-custom"
-            [overlapTrigger]="false"
-          >
+          <mat-menu #exportMenu="matMenu" class="menu-custom" [overlapTrigger]="false">
             <div class="py-1" role="none">
-              <a
-                id="exportExcel"
-                href="#"
-                class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
-                role="menuitem"
-                (click)="exportToExcel()">
-                <img
-                  src="../../../assets/icons/csv.png"
-                  height="16"
-                  class="inline mr-2"
-         />
+              <a id="exportExcel" href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
+                role="menuitem" (click)="exportToExcel()">
+                <img src="../../../assets/icons/csv.png" height="16" class="inline mr-2" />
                 Exportar para Excel
               </a>
-              <a
-                id="exportPdf"
-                href="#"
-                class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
-                role="menuitem"
+              <a id="exportPdf" href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem"
                 (click)="exportToPdf()">
-                <img
-                  src="../../../assets/icons/pdf.png"
-                  height="16"
-                  class="inline mr-2"
-                />
+                <img src="../../../assets/icons/pdf.png" height="16" class="inline mr-2" />
                 Exportar para PDF
               </a>
             </div>
@@ -85,11 +49,12 @@
     <div class="px-4 z-5" *ngIf="selectedTab === 'Producao'">
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full sm:w-[100%] py-2 ratio">
-          <app-charts
-            graphType="month"
-            graphLabel="Produção"
-            [graphData]="graphData"
-          ></app-charts>
+          <app-charts *ngIf="!isLoading.recordsMensal; else loading" graphType="month" graphLabel="Produção"
+            [graphData]="graphData.recordsMensal">
+          </app-charts>
+          <ng-template #loading>
+            <app-loading-spinner></app-loading-spinner>
+          </ng-template>
         </div>
       </div>
 
@@ -102,18 +67,13 @@
 
         <div class="flex w-full justify-around flex-wrap">
           <div class="w-full lg:w-1/2">
-            <app-charts
-              graphType="lineChart"
-              graphLabel="Ano atual"
-              [graphData]="graphData"
-            ></app-charts>
-          </div>
-          <div class="w-full lg:w-1/2">
-            <app-charts
-              graphType="lineChart"
-              graphLabel="Ano anterior"
-              [graphData]="graphData"
-            ></app-charts>
+            <app-charts *ngIf="!isLoading.recordsAnual; else loading" graphType="lineChart"
+              graphLabel="Ano Atual e Ano Anterior"
+              [graphData]="{ recordsAnual: graphData.recordsAnual, recordsAnualLastYear: graphData.recordsAnualLastYear }">
+            </app-charts>
+            <ng-template #loading>
+              <app-loading-spinner></app-loading-spinner>
+            </ng-template>
           </div>
         </div>
       </div>
@@ -124,30 +84,22 @@
         </h2>
         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG">
           <h2 class="_blueTxt">
-            Diferença absoluta: {{ graphData?.variation_rate_homologous_abs }}
+            Diferença absoluta: {{ graphData.variations?.variation_rate_homologous_abs || 'Sem dados atualmente' }}
           </h2>
           <h2 class="_blueTxt">
-            Diferença percentual(%): {{ graphData?.variation_rate_homologous }}
+            Diferença percentual(%): {{ graphData.variations?.variation_rate_homologous || 'Sem dados atualmente' }}
           </h2>
         </div>
-        <!--         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG border-l-2 borderColorBlue">
-        </div> -->
       </div>
 
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts
-            graphType="homologYear"
-            graphLabel="Comparação anual"
-            [graphData]="graphData"
-          ></app-charts>
-        </div>
-        <div class="w-full lg:w-1/2 py-2">
-          <app-charts
-            graphType="fiveYear"
-            graphLabel="5 anos anteriores"
-            [graphData]="graphData"
-          ></app-charts>
+          <app-charts *ngIf="!isLoading.lastFiveYears; else loading" graphType="fiveYear" graphLabel="5 anos anteriores"
+            [graphData]="graphData.lastFiveYears">
+          </app-charts>
+          <ng-template #loading>
+            <app-loading-spinner></app-loading-spinner>
+          </ng-template>
         </div>
       </div>
     </div>
@@ -162,18 +114,20 @@
       </div>
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts
-            graphType="month"
-            graphLabel="Produção"
-            [graphData]="graphData"
-          ></app-charts>
+          <app-charts *ngIf="!isLoading.goalsMensal; else loading" graphType="stackedBar" graphLabel="Produção e Metas"
+            [graphData]="{ recordsAnual: graphData.recordsAnual, goalsMensal: graphData.goalsMensal }">
+          </app-charts>
+          <ng-template #loading>
+            <app-loading-spinner></app-loading-spinner>
+          </ng-template>
         </div>
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts
-            graphType="month-metas"
-            graphLabel="Metas"
-            [graphData]="graphData"
-          ></app-charts>
+          <app-charts *ngIf="!isLoading.goalsMensal; else loading" graphType="barComparison" graphLabel="Metas"
+            [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }">
+          </app-charts>
+          <ng-template #loading>
+            <app-loading-spinner></app-loading-spinner>
+          </ng-template>
         </div>
       </div>
 
@@ -183,23 +137,22 @@
         </h2>
         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG">
           <h2 class="_blueTxt">
-            Diferença absoluta: {{ graphData?.variation_rate_contractual_abs }}
+            Diferença absoluta: {{ graphData.variations?.variation_rate_contractual_abs || 'Sem dados atualmente' }}
           </h2>
           <h2 class="_blueTxt">
-            Diferença percentual(%): {{ graphData?.variation_rate_contractual }}
+            Diferença percentual(%): {{ graphData.variations?.variation_rate_contractual || 'Sem dados atualmente' }}
           </h2>
         </div>
-        <!--         <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG border-l-2 borderColorBlue">
-        </div> -->
       </div>
 
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 p-2">
-          <app-charts
-            graphType="year-metas"
-            graphLabel="Comparação Anual"
-            [graphData]="graphData"
-          ></app-charts>
+          <app-charts *ngIf="!isLoading.goalAnual; else loading" graphType="barComparison" graphLabel="Comparação Anual"
+            [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }">
+          </app-charts>
+          <ng-template #loading>
+            <app-loading-spinner></app-loading-spinner>
+          </ng-template>
         </div>
       </div>
     </div>

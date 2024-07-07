@@ -8,12 +8,12 @@ import { IndicatorService } from '../../core/services/indicator/indicator.servic
 import { MatMenuModule } from '@angular/material/menu';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { FilterComponent } from '../../components/shared/filter/filter.component';
-import { ChartsComponent } from '../../components/charts/charts.component';
 import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
 import { Filter } from '../../core/models/filter.model';
+import { ChartsComponent } from '../../components/charts/charts.component';
 
 @Component({
   selector: 'app-charts-page',
@@ -38,8 +38,8 @@ export class ChartsPageComponent implements OnInit {
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear()
   };
-  graphData: any;
-  isLoading = false;
+  graphData: any = {};
+  isLoading: any = {};
   isAdminOrCoordinator: boolean = false;
   showActivityInput: boolean = false;
 
@@ -63,16 +63,16 @@ export class ChartsPageComponent implements OnInit {
     this.filterSubject.pipe(
       debounceTime(300),
       switchMap(filter => {
-        this.isLoading = true;
-        return this.indicatorService.getAllInDataGraphs({ ...this.filter, ...filter });
+        this.setLoadingStates(true);
+        return this.indicatorService.getAllData({ ...this.filter, ...filter });
       })
     ).subscribe({
       next: (data) => {
         this.graphData = data;
-        this.isLoading = false;
+        this.setLoadingStates(false);
       },
       error: (error) => {
-        this.isLoading = false;
+        this.setLoadingStates(false);
       }
     });
   }
@@ -99,46 +99,30 @@ export class ChartsPageComponent implements OnInit {
 
   toTopBtnVisible = false;
 
-/*   @HostListener('window:scroll', [])
-  onWindowScroll() {
-    const threshold = 200; // Change this to set a different scroll threshold
-    this.toTopBtnVisible = window.scrollY > threshold;
-  }
-
-  scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } */
-
   numberToMonth(monthNumber: number | undefined): string {
-    monthNumber = 1;
     const months = [
-        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
-        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
     ];
 
-    if (monthNumber < 1 || monthNumber > 12) {
-        throw new Error("Número do mês deve estar entre 1 e 12.");
+    if (monthNumber! < 1 || monthNumber! > 12) {
+      throw new Error("Número do mês deve estar entre 1 e 12.");
     }
 
-    return months[monthNumber - 1];
+    return months[monthNumber! - 1];
   }
 
   exportToPdf(): void {
     const element = document.querySelector('.graphicsContainer') as HTMLElement;
     if (element) {
-      console.log('Elemento encontrado:', element);
       html2canvas(element).then(canvas => {
-        console.log('Canvas gerado:', canvas);
         const imgData = canvas.toDataURL('image/png');
-        console.log('Imagem convertida:', imgData);
         const pdf = new jsPDF('p', 'mm', 'a4');
         const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        console.log('Dimensões do PDF:', pdfWidth, pdfHeight);
         pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
         pdf.save('graficos.pdf');
-        console.log('PDF salvo');
       }).catch(error => {
         console.error('Erro ao gerar canvas:', error);
       });
@@ -149,22 +133,49 @@ export class ChartsPageComponent implements OnInit {
 
   exportToExcel(): void {
     const data = this.prepareChartData();
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'DadosGraficos');
-    XLSX.writeFile(wb, 'dados_graficos.xlsx');
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('DadosGraficos');
+
+    worksheet.columns = [
+      { header: 'Mes', key: 'Mes', width: 20 },
+      { header: 'Valor', key: 'Valor', width: 20 }
+    ];
+
+    data.forEach((item) => {
+      worksheet.addRow(item);
+    });
+
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dados_graficos.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }).catch((error) => {
+      console.error('Erro ao gerar o arquivo Excel:', error);
+    });
   }
-  
+
   prepareChartData(): any[] {
-    // Esta função deve retornar os dados dos gráficos
-    // Aqui você deve preparar os dados dos gráficos, convertendo-os para um formato de array de objetos
-    // Exemplo:
     return [
       { Mes: 'Janeiro', Valor: 100 },
       { Mes: 'Fevereiro', Valor: 200 },
-      // Adicione mais dados conforme necessário
     ];
   }
-  
 
+  setLoadingStates(isLoading: boolean) {
+    this.isLoading = {
+      recordsMensal: isLoading,
+      recordsAnual: isLoading,
+      recordsAnualLastYear: isLoading,
+      goalsMensal: isLoading,
+      goalAnual: isLoading,
+      lastFiveYears: isLoading,
+      previousYearTotal: isLoading,
+      currentYearTotal: isLoading,
+      variations: isLoading
+    };
+  }
 }

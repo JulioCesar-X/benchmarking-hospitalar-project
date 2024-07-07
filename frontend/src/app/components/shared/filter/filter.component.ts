@@ -36,10 +36,10 @@ export class FilterComponent implements OnInit, OnChanges {
   @Input() indicatorsInput: boolean = false;
   @Input() dataInsertedCheckbox: boolean = false;
   @Input() showServiceInput: boolean = true;
-  @Input() showActivityInput: boolean = false;  // Certifique-se de que está declarado como Input
+  @Input() showActivityInput: boolean = false;
 
   @Output() filterEvent = new EventEmitter<Filter>();
-  @Output() activityInputChange = new EventEmitter<boolean>();  // Evento separado para mudanças nas atividades
+  @Output() activityInputChange = new EventEmitter<boolean>();
 
   filter: Filter = { month: new Date().getMonth() + 1, year: new Date().getFullYear() };
 
@@ -73,16 +73,6 @@ export class FilterComponent implements OnInit, OnChanges {
     });
   }
 
-  loadActivitiesAndIndicators() {
-    this.activityService.indexActivities().subscribe(activities => {
-      this.activitiesList = activities.map(activity => ({
-        id: activity.id,
-        name: activity.activity_name
-      }));
-      console.log('Activities loaded:', this.activitiesList);
-    });
-  }
-
   onServiceSelect(event: Event) {
     const target = event.target as HTMLSelectElement;
     const serviceId = Number(target.value);
@@ -96,7 +86,7 @@ export class FilterComponent implements OnInit, OnChanges {
     const selectedService = this.servicesList.find(service => service.id === serviceId);
     if (selectedService) {
       const hasActivities = selectedService.activities && selectedService.activities.length > 0;
-      this.activityInputChange.emit(hasActivities);  // Emita o evento separado
+      this.activityInputChange.emit(hasActivities);
       console.log('Has activities:', hasActivities);
       this.activitiesList = selectedService.activities?.map(activity => ({
         id: activity.id,
