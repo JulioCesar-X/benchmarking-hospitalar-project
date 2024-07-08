@@ -72,6 +72,7 @@ export class ChartsPageComponent implements OnInit {
     ).subscribe({
       next: (data) => {
         this.graphData = data;
+        console.log('Dados do gráfico:', this.graphData);
         this.setLoadingStates(false);
         this.loadIndicatorName();
       },

@@ -1,10 +1,10 @@
-<div class="m-2 w-full">
+<div class="m-2 w-full graphicsContainer">
   <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false" [showServiceInput]="isAdminOrCoordinator"
     [showActivityInput]="showActivityInput" [selectedServiceId]="filter.serviceId"
     (filterEvent)="handleFilterData($event)" (activityInputChange)="handleActivityInputChange($event)">
   </app-filter>
 
-  <div class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer2 graphicsContainer">
+  <div class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer2">
     <div class="tab-headers-wrapper">
       <div id="tabHead" class="flex items-center justify-between pr-2">
         <div id="tabHeaders" class="flex w-[30%]">
@@ -49,7 +49,7 @@
     <div class="px-4 z-5" *ngIf="selectedTab === 'Producao'">
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full sm:w-[100%] py-2 ratio">
-          <app-charts *ngIf="!isLoading.recordsMensal; else loading" graphType="month" graphLabel="Produção"
+          <app-charts *ngIf="!isLoading.recordsMensal; else loading" graphType="month" graphLabel="Produção Mês"
             [graphData]="graphData.recordsMensal">
           </app-charts>
           <ng-template #loading>
@@ -60,16 +60,42 @@
 
       <div>
         <div class="flex w-full justify-center flex-wrap">
-          <div class="flex justify-center w-full pt-2 pb-2 _whiteBG">
-            <h1 class="_blueTxt">Variação de produção do periodo homologo</h1>
+          <div class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md">
+            <h1 class="text-xl font-semibold text-blue-600">Variação de produção do período homólogo</h1>
+          </div>
+          <div class="flex flex-col items-center w-full pt-4 pb-4 mt-2 bg-white rounded-lg shadow-md">
+            <h2 class="text-lg font-medium text-blue-600">
+              {{ numberToMonth(filter.month) }}, {{ filter.year }}/{{ filter.year ? filter.year - 1 : '' }}
+            </h2>
+            <div class="flex flex-col sm:flex-row justify-around w-full lg:w-3/4 pt-4 pb-4">
+              <div class="flex flex-col items-center text-center p-4">
+                <h3 class="text-md font-medium text-blue-600">Diferença absoluta:</h3>
+                <p class="text-sm text-gray-700">{{ graphData.variations?.variation_rate_homologous_abs || 'Sem dados
+                  atualmente' }}</p>
+              </div>
+              <div class="flex flex-col items-center text-center p-4">
+                <h3 class="text-md font-medium text-blue-600">Diferença percentual(%):</h3>
+                <p class="text-sm text-gray-700">{{ graphData.variations?.variation_rate_homologous || 'Sem dados
+                  atualmente' }}%</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="flex w-full justify-around p-8 flex-wrap">
+        <div class="flex w-full justify-around p-4 flex-wrap">
           <div class="w-full lg:w-1/2">
             <app-charts *ngIf="!isLoading.recordsAnual; else loading" graphType="lineChart"
-              graphLabel="Ano Atual e Ano Anterior"
+              graphLabel="Comparação produção acumulada"
               [graphData]="{ recordsAnual: graphData.recordsAnual, recordsAnualLastYear: graphData.recordsAnualLastYear }">
+            </app-charts>
+            <ng-template #loading>
+              <app-loading-spinner></app-loading-spinner>
+            </ng-template>
+          </div>
+          <div class="w-full lg:w-1/2">
+            <app-charts *ngIf="!isLoading.recordsAnual; else loading" graphType="barComparison"
+              graphLabel="Comparação produção Total"
+              [graphData]="{ previousYearTotal: graphData.previousYearTotal, currentYearTotal: graphData.currentYearTotal }">
             </app-charts>
             <ng-template #loading>
               <app-loading-spinner></app-loading-spinner>
@@ -77,67 +103,41 @@
           </div>
         </div>
       </div>
-
-      <div class="flex flex-col items-center w-full pt-2 pb-2 mt-2 _whiteBG">
-        <h2 class="_blueTxt">
-          {{ numberToMonth(filter.month) }}, {{ filter.year }}
-        </h2>
-        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG">
-          <h2 class="_blueTxt">
-            Diferença absoluta: {{ graphData.variations?.variation_rate_homologous_abs || 'Sem dados atualmente' }}
-          </h2>
-          <h2 class="_blueTxt">
-            Diferença percentual(%): {{ graphData.variations?.variation_rate_homologous || 'Sem dados atualmente' }}
-          </h2>
-        </div>
-      </div>
-
-      <div class="flex w-full justify-around flex-wrap">
-        <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.lastFiveYears; else loading" graphType="fiveYear" graphLabel="5 anos anteriores"
-            [graphData]="graphData.lastFiveYears">
-          </app-charts>
-          <ng-template #loading>
-            <app-loading-spinner></app-loading-spinner>
-          </ng-template>
-        </div>
-      </div>
     </div>
-
     <div class="px-4" *ngIf="selectedTab === 'Metas'">
       <div class="flex w-full justify-center flex-wrap">
-        <div class="flex justify-center w-full pt-2 pb-2 _whiteBG">
-          <h1 class="_blueTxt">
-            Variação conctratualizada do periodo homologo
+        <div class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md">
+          <h1 class="text-xl font-semibold text-blue-600">
+            Variação conctratualizada do período homólogo
           </h1>
         </div>
       </div>
+      <div class="flex flex-col items-center w-full pt-2 pb-2 mt-2 bg-white rounded-lg shadow-md">
+        <h2 class="text-lg font-medium text-blue-600">
+          {{ numberToMonth(filter.month) }}, {{ filter.year }}/{{ filter.year ? filter.year - 1 : '' }}
+        </h2>
+        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2">
+          <div class="flex flex-col items-center text-center p-4">
+            <h3 class="text-md font-medium text-blue-600">Diferença absoluta:</h3>
+            <p class="text-sm text-gray-700">{{ graphData.variations?.variation_rate_contractual_abs }}</p>
+          </div>
+          <div class="flex flex-col items-center text-center p-4">
+            <h3 class="text-md font-medium text-blue-600">Diferença percentual(%):</h3>
+            <p class="text-sm text-gray-700">{{ graphData.variations?.variation_rate_contractual }}%</p>
+          </div>
+        </div>
+      </div>
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.goalsMensal; else loading" graphType="stackedBar" graphLabel="Metas Mensais"
+          <app-charts *ngIf="!isLoading.goalsMensal; else loading" graphType="stackedBar" graphLabel="produção acumulada vs meta mensal"
             [graphData]="{ recordsAnual: graphData.recordsAnual, goalsMensal: graphData.goalsMensal }">
           </app-charts>
           <ng-template #loading>
             <app-loading-spinner></app-loading-spinner>
           </ng-template>
         </div>
-
-        <div class="flex flex-col items-center w-full pt-2 pb-2 mt-2 _whiteBG">
-          <h2 class="_blueTxt">
-            {{ numberToMonth(filter.month) }}, {{ filter.year }}
-          </h2>
-          <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG">
-            <h2 class="_blueTxt">
-              Diferença absoluta: {{ graphData.variations?.variation_rate_contractual_abs }}
-            </h2>
-            <h2 class="_blueTxt">
-              Diferença percentual(%): {{ graphData.variations?.variation_rate_contractual }}
-            </h2>
-          </div>
-        </div>
-
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.goalAnual; else loading" graphType="barComparison" graphLabel="Metas Anuais"
+          <app-charts *ngIf="!isLoading.goalAnual; else loading" graphType="pieChart" graphLabel="Produção Anual vs Meta Anual"
             [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }">
           </app-charts>
           <ng-template #loading>

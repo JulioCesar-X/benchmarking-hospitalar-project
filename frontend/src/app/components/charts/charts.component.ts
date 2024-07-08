@@ -71,16 +71,24 @@ export class ChartsComponent implements OnInit, OnChanges {
         labels = ['Ano anterior', 'Ano atual'];
         datasets = [
           {
-            label: 'Metas Anuais',
+            label: 'Produção Total',
+            data: [data?.previousYearTotal || 0, data?.currentYearTotal || 0],
+            backgroundColor: ['#59c4e6','#516b91']
+          }
+        ];
+        break;
+      case 'pieChart':
+        labels = ['Meta ano', 'Produção ano'];
+        datasets = [
+          {
+            label: ['Meta ano', 'Produção ano'],
             data: [data?.goalAnual || 0, data?.currentYearTotal || 0],
-            backgroundColor: ['#516b91', '#59c4e6']
+            backgroundColor: ['#59c4e6', '#516b91']
           }
         ];
         break;
       case 'lineChart':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        console.log('Current Year Data:', data?.recordsAnual);
-        console.log('Previous Year Data:', data?.recordsAnualLastYear);
         datasets = [
           {
             label: 'Ano Atual',
@@ -97,14 +105,6 @@ export class ChartsComponent implements OnInit, OnChanges {
             fill: false
           }
         ];
-        break;
-      case 'fiveYear':
-        labels = data?.map((yr: any) => yr.year) || [];
-        datasets = [{
-          label: this.graphLabel,
-          data: data?.map((yr: any) => yr.total) || [],
-          backgroundColor: '#516b91'
-        }];
         break;
       default:
         break;
@@ -141,6 +141,8 @@ export class ChartsComponent implements OnInit, OnChanges {
       return 'line';
     } else if (this.graphType === 'stackedBar' || this.graphType === 'month' || this.graphType === 'barComparison') {
       return 'bar';
+    } else if (this.graphType === 'pieChart') {
+      return 'pie';
     }
     return 'bar';
   }
