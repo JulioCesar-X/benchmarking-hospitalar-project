@@ -97,7 +97,7 @@ class UserController extends Controller
     public function show($id)
     {
         try {
-            $user = User::with(['roles:id,name', 'sentNotifications', 'receivedNotifications'])->findOrFail($id);
+            $user = User::findOrFail($id);
             return response()->json($user, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
