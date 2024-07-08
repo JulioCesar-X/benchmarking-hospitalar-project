@@ -4,7 +4,7 @@
     (filterEvent)="handleFilterData($event)" (activityInputChange)="handleActivityInputChange($event)">
   </app-filter>
 
-  <div class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer">
+  <div class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer2 graphicsContainer">
     <div class="tab-headers-wrapper">
       <div id="tabHead" class="flex items-center justify-between pr-2">
         <div id="tabHeaders" class="flex w-[30%]">
@@ -36,7 +36,7 @@
                 Exportar para Excel
               </a>
               <a id="exportPdf" href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem"
-                (click)="exportToPdf()">
+                (click)="exportToPdf(); false;">
                 <img src="../../../assets/icons/pdf.png" height="16" class="inline mr-2" />
                 Exportar para PDF
               </a>
@@ -65,7 +65,7 @@
           </div>
         </div>
 
-        <div class="flex w-full justify-around flex-wrap">
+        <div class="flex w-full justify-around p-8 flex-wrap">
           <div class="w-full lg:w-1/2">
             <app-charts *ngIf="!isLoading.recordsAnual; else loading" graphType="lineChart"
               graphLabel="Ano Atual e Ano Anterior"
@@ -114,40 +114,30 @@
       </div>
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.goalsMensal; else loading" graphType="stackedBar" graphLabel="Produção e Metas"
+          <app-charts *ngIf="!isLoading.goalsMensal; else loading" graphType="stackedBar" graphLabel="Metas Mensais"
             [graphData]="{ recordsAnual: graphData.recordsAnual, goalsMensal: graphData.goalsMensal }">
           </app-charts>
           <ng-template #loading>
             <app-loading-spinner></app-loading-spinner>
           </ng-template>
         </div>
+
+        <div class="flex flex-col items-center w-full pt-2 pb-2 mt-2 _whiteBG">
+          <h2 class="_blueTxt">
+            {{ numberToMonth(filter.month) }}, {{ filter.year }}
+          </h2>
+          <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG">
+            <h2 class="_blueTxt">
+              Diferença absoluta: {{ graphData.variations?.variation_rate_contractual_abs }}
+            </h2>
+            <h2 class="_blueTxt">
+              Diferença percentual(%): {{ graphData.variations?.variation_rate_contractual }}
+            </h2>
+          </div>
+        </div>
+
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.goalsMensal; else loading" graphType="barComparison" graphLabel="Metas"
-            [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }">
-          </app-charts>
-          <ng-template #loading>
-            <app-loading-spinner></app-loading-spinner>
-          </ng-template>
-        </div>
-      </div>
-
-      <div class="flex flex-col items-center w-full pt-2 pb-2 mt-2 _whiteBG">
-        <h2 class="_blueTxt">
-          {{ numberToMonth(filter.month) }}, {{ filter.year }}
-        </h2>
-        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2 _whiteBG">
-          <h2 class="_blueTxt">
-            Diferença absoluta: {{ graphData.variations?.variation_rate_contractual_abs || 'Sem dados atualmente' }}
-          </h2>
-          <h2 class="_blueTxt">
-            Diferença percentual(%): {{ graphData.variations?.variation_rate_contractual || 'Sem dados atualmente' }}
-          </h2>
-        </div>
-      </div>
-
-      <div class="flex w-full justify-around flex-wrap">
-        <div class="w-full lg:w-1/2 p-2">
-          <app-charts *ngIf="!isLoading.goalAnual; else loading" graphType="barComparison" graphLabel="Comparação Anual"
+          <app-charts *ngIf="!isLoading.goalAnual; else loading" graphType="barComparison" graphLabel="Metas Anuais"
             [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }">
           </app-charts>
           <ng-template #loading>

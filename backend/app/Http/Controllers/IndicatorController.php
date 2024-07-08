@@ -139,6 +139,36 @@ class IndicatorController extends Controller
         }
     }
 
+    public function getRecordsLastYear(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $year = $request->input('year') - 1; // Adjust the year here to ensure it fetches the previous year
+            $cacheKey = "records_anual_last_year_{$serviceId}_{$activityId}_{$indicatorId}_{$year}";
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $recordsAnualLastYear = DB::table('vw_indicator_accumulated')
+            ->where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->where('year', $year)
+                ->pluck('valor_acumulado_agregado')
+                ->toArray();
+
+            Cache::put($cacheKey, $recordsAnualLastYear, now()->addMinutes(30));
+
+            return response()->json($recordsAnualLastYear, 200);
+        } catch (Exception $exception) {
+            Log::error('Error fetching recordsAnualLastYear: ' . $exception->getMessage());
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
     public function getGoalsMensal(Request $request)
     {
         try {

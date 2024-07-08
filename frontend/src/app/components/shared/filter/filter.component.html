@@ -16,9 +16,9 @@
       </div>
 
       <div class="relative selectContainer w-full sm:w-[20%]" *ngIf="indicatorsInput">
-        <select class="w-full" [(ngModel)]="selectedIndicatorId" (change)="sendFilter()"
+        <select class="w-full" [(ngModel)]="selectedIndicatorId"
           title="Selecione um indicador para continuar"
-          [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId !== null)">
+          [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId === null)">
           <option *ngFor="let indicator of indicatorsList" [value]="indicator.id">{{ indicator.name }}</option>
         </select>
       </div>
