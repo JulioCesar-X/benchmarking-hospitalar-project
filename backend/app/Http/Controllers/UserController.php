@@ -17,7 +17,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+/*     public function index()
     {
         try {
             $cacheKey = 'users_index';
@@ -34,15 +34,16 @@ class UserController extends Controller
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
-    }
+    } */
 
     public function getUsersPaginated(Request $request)
     {
         try {
-            $pageSize = $request->input('size', 15);
-            $pageIndex = $request->input('page', 1);
 
-            $users = User::with(['roles:id,name', 'sentNotifications', 'receivedNotifications'])
+            $pageSize = $request->input('size');
+            $pageIndex = $request->input('page');
+
+            $users = User::with(['roles', 'sentNotifications', 'receivedNotifications'])
             ->paginate($pageSize, ['*'], 'page', $pageIndex);
 
             return response()->json($users, 200);
