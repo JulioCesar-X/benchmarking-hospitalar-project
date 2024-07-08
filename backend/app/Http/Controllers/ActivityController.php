@@ -147,6 +147,8 @@ class ActivityController extends Controller
         try {
             $activity->update(['activity_name' => $request->activity_name]);
 
+            //Sai::where('activity_id', $activity->id)->delete();
+
             $saiData = [];
             foreach ($request->service_ids as $serviceId) {
                 foreach ($request->indicator_ids as $indicatorId) {

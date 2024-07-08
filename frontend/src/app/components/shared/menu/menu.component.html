@@ -59,7 +59,10 @@
       <a routerLink="/indicators/create" routerLinkActive="Ativo">Criar Indicador</a>
     </div>
     <div class="subMenuItem" *ngIf="getRole() === 'admin'">
-      <a routerLink="/indicators" routerLinkActive="Ativo">Consultar Registros</a>
+      <a routerLink="/indicators" routerLinkActive="Ativo">Consultar Indicador</a>
+    </div>
+    <div class="subMenuItem" *ngIf="getRole() === 'admin'">
+      <a routerLink="/RecordGoalsUpdate" routerLinkActive="Ativo">Consultar Registros</a>
     </div>
     <div class="subMenuItem" *ngIf="getRole() === 'admin' || getRole() === 'coordenador'">
       <a routerLink="/RecordGoalsUpdate" routerLinkActive="Ativo">Consultar Metas</a>

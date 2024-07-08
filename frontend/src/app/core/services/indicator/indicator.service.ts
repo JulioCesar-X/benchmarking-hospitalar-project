@@ -1,4 +1,4 @@
-import { Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -26,14 +26,15 @@ export class IndicatorService {
   }
 
 
-  getSAIPaginated(pageIndex: number, pageSize: number): Observable<any[]>{
+  getSAIPaginated(pageIndex: number, pageSize: number): Observable<any[]> {
     return this.http.get<any>(`/indicators/sai/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
-        catchError(error => {
-          console.error('Error fetching service activity indicators:', error);
-          return throwError(() => new Error('Failed to fetch service activity indicators'));
-        })
-      );
+      catchError(error => {
+        console.error('Error fetching service activity indicators:', error);
+        return throwError(() => new Error('Failed to fetch service activity indicators'));
+      })
+    );
   }
+
   getRecordsMensal(filter: Filter): Observable<any> {
     const params = this.getHttpParams(filter);
     return this.http.get<any>('/indicators/sai/records-mensal', { params });
@@ -150,8 +151,8 @@ export class IndicatorService {
     );
   }
 
-  updateIndicator(id: number, indicator: any): Observable<any> {
-    return this.http.put<any>(`/indicators/${id}`, indicator).pipe(
+  updateIndicator(id: number, indicator: Indicator): Observable<Indicator> {
+    return this.http.put<Indicator>(`/indicators/${id}`, indicator).pipe(
       catchError(error => throwError(() => new Error('Failed to update indicator')))
     );
   }

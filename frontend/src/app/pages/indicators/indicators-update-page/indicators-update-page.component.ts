@@ -21,11 +21,8 @@ import { LoadingSpinnerComponent } from '../../../components/shared/loading-spin
 })
 export class IndicatorsUpdatePageComponent implements OnInit {
   selectedIndicator: Indicator = {
-    id: undefined,
+    id: -1,
     indicator_name: '',
-    service_ids: [],
-    activity_ids: [],
-    sais: []
   };
   isLoading = true;
 

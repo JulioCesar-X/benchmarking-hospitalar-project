@@ -7,10 +7,10 @@
         matTooltip="Clique para registrar uma nova atividade"
         [matTooltipPosition]="'right'"
         matTooltipClass="custom"
-        class="small-btn whiteBG createBtn ml-5 w-[50px] h-[50px]"
-        (click)="openDialog(null, 'create')">
+        class="small-btn whiteBG createBtn ml-5 w-[50px] h-[50px]">
+        <!-- (click)="openDialog(null, 'create')" -->
         <img src="../../../assets/images/icons8-plus-30.png" alt="createIcon" class="icon-large">
-    </button>
+      </button>
         <h2 class="whiteTxt my-0">Lista de Indicadores</h2>
       </div>
     </div>
@@ -29,7 +29,8 @@
               <tr *ngFor="let indicator of indicators">
                 <td class="p-2">{{ indicator.indicator_name }}</td>
                 <td class="p-2 text-center">
-                  <button (click)="openDialog(indicator, 'edit')" class="edit-button">
+                  <!--no botao abaixo (click)="openDialog(indicator, 'edit')" -->
+                  <button class="edit-button">
                     <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit">
                   </button>
                   <button (click)="openDialog(indicator, 'delete')" class="delete-button">
@@ -39,8 +40,9 @@
               </tr>
             </tbody>
           </table>
-          <app-paginator [length]="totalLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
-            (page)="handlePageEvent($event)" *ngIf="!isLoading"></app-paginator>
+          <app-paginator [length]="totalLength" [pageSize]="pageSize" [pageIndex]="currentPage"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageChanged($event)">
+          </app-paginator>
         </div>
       </div>
       <ng-template #noResults>

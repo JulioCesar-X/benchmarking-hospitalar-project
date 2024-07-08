@@ -11,7 +11,6 @@ import { SelectableListComponent } from '../../../components/shared/selectable-l
 import { Indicator } from '../../../core/models/indicator.model';
 import { Sai } from '../../../core/models/sai.model';
 
-
 @Component({
   selector: 'app-indicators-upsert-form',
   standalone: true,
@@ -27,12 +26,9 @@ import { Sai } from '../../../core/models/sai.model';
 })
 export class IndicatorsUpsertFormComponent implements OnInit {
   @Input() formsAction: string = '';
-  @Input() selectedIndicator: any = {
-    id: undefined,
+  @Input() selectedIndicator: Indicator = {
+    id: -1,
     indicator_name: '',
-    service_ids: [],
-    activity_ids: [],
-    sais: []
   };
 
   notificationMessage: string = '';
@@ -49,8 +45,6 @@ export class IndicatorsUpsertFormComponent implements OnInit {
   selectedActivitiesIDs: number[] = [];
 
   activeTab: 'services' | 'activities' = 'services';
-  goalTargetValue: number = 0;
-  selectedType: string = '';
 
   constructor(
     private router: Router,
@@ -68,15 +62,16 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     this.isLoading = true;
     try {
       await Promise.all([this.getServices(), this.getActivities()]);
-      if (this.formsAction === 'edit' && this.selectedIndicator.id !== undefined) {
-        this.loadIndicator(this.selectedIndicator.id);
-      }
       this.isLoading = false;
-      this.cdr.detectChanges(); // Detect changes to resolve ExpressionChangedAfterItHasBeenCheckedError
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error loading initial data', error);
       this.isLoading = false;
-      this.cdr.detectChanges(); // Detect changes to resolve ExpressionChangedAfterItHasBeenCheckedError
+      this.cdr.detectChanges();
+    }
+
+    if (this.formsAction === 'edit' && this.selectedIndicator.id !== -1) {
+      this.loadIndicator(this.selectedIndicator.id);
     }
   }
 
@@ -85,22 +80,15 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     this.indicatorService.showIndicator(indicatorId).subscribe({
       next: (data: Indicator) => {
         this.selectedIndicator = data;
-        this.selectedServicesIDs = (data.sais?.map((sai: Sai) => sai.service?.id).filter((id): id is number => id !== undefined)) || [];
-        this.selectedActivitiesIDs = (data.sais?.map((sai: Sai) => sai.activity?.id).filter((id): id is number => id !== undefined)) || [];
-
-        // Find the first SAI with goals and extract the first goal's target_value and type
-        const firstSAIWithGoals = data.sais?.find((sai: Sai) => sai.goals && sai.goals.length > 0);
-        if (firstSAIWithGoals && firstSAIWithGoals.goals && firstSAIWithGoals.goals.length > 0) {
-          this.goalTargetValue = firstSAIWithGoals.goals[0].target_value;
-          this.selectedType = firstSAIWithGoals.type || '';
-        }
-
-        console.log('Indicator goal<<<', this.goalTargetValue);
+        this.selectedServicesIDs = data.sais?.map(sai => sai.service?.id).filter((id): id is number => id !== undefined) || [];
+        this.selectedActivitiesIDs = data.sais?.map(sai => sai.activity?.id).filter((id): id is number => id !== undefined) || [];
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading indicator', error);
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -109,22 +97,19 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.serviceService.indexServices().subscribe({
         next: (data) => {
-          if (data && Array.isArray(data)) {
-            this.servicesList = data.map(service => ({
-              id: service.id,
-              service_name: service.service_name
-            }));
-          } else {
-            console.warn('Data is not an array:', data);
-          }
+          this.servicesList = data.map(service => ({
+            id: service.id,
+            service_name: service.service_name
+          }));
           resolve();
         },
         error: (error) => {
-          console.error('Erro ao obter services', error);
+          console.error('Error obtaining services', error);
           reject(error);
         },
         complete: () => {
           this.isLoadingServices = false;
+          this.cdr.detectChanges();
         }
       });
     });
@@ -134,38 +119,41 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.activityService.indexActivities().subscribe({
         next: (data) => {
-          if (data && Array.isArray(data)) {
-            this.activitiesList = data.map(activity => ({
-              id: activity.id,
-              activity_name: activity.activity_name
-            }));
-          } else {
-            console.warn('Data is not an array:', data);
-          }
+          this.activitiesList = data.map(activity => ({
+            id: activity.id,
+            activity_name: activity.activity_name
+          }));
           resolve();
         },
         error: (error) => {
-          console.error('Erro ao obter atividades', error);
+          console.error('Error obtaining activities', error);
           reject(error);
         },
         complete: () => {
           this.isLoadingActivities = false;
+          this.cdr.detectChanges();
         }
       });
     });
   }
 
-  onServicesSelectionChange(selectedServices: any[]) {
+  onServicesSelectionChange(selectedServices: any[]): void {
     this.selectedServicesIDs = selectedServices.map(service => service.id);
   }
 
-  onActivitiesSelectionChange(selectedActivities: any[]) {
+  onActivitiesSelectionChange(selectedActivities: any[]): void {
     this.selectedActivitiesIDs = selectedActivities.map(activity => activity.id);
   }
 
-  formSubmited() {
+  formValid(): boolean {
+    return this.selectedIndicator.indicator_name.trim() !== '' &&
+           this.selectedServicesIDs.length > 0 &&
+           this.selectedActivitiesIDs.length > 0;
+  }
+
+  formSubmited(): void {
     if (!this.formValid()) {
-      this.setNotification('Por favor, preencha todos os campos necessários e selecione pelo menos um serviço e uma atividade.', 'error');
+      this.setNotification('Please fill all required fields and select at least one service and one activity.', 'error');
       return;
     }
 
@@ -176,79 +164,62 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     }
   }
 
-  createIndicator() {
-    const createdIndicator: Indicator = {
-      indicator_name: this.selectedIndicator.indicator_name,
-      service_ids: this.selectedServicesIDs,
-      activity_ids: this.selectedActivitiesIDs,
-      sais: [{
-        type: this.selectedType,
-        goals: [{
-          target_value: this.goalTargetValue,
-          year: new Date().getFullYear()
-        }]
-      }]
-    };
-
-    this.indicatorService.storeIndicator(createdIndicator).subscribe(
-      (response: any) => {
-        this.setNotification('Indicador criado com sucesso', 'success');
-        setTimeout(() => this.router.navigate(['/indicators']), 2000); // Redirect after success message
-      },
-      (error: any) => {
-        const errorMessage = this.getErrorMessage(error);
-        this.setNotification(errorMessage, 'error');
-      }
-    );
-  }
-
-  editIndicator() {
-    const updatedIndicator: Indicator = {
-      id: this.selectedIndicator.id,
-      indicator_name: this.selectedIndicator.indicator_name,
-      service_ids: this.selectedServicesIDs,
-      activity_ids: this.selectedActivitiesIDs,
-      sais: [{
-        type: this.selectedType,
-        goals: [{
-          target_value: this.goalTargetValue,
-          year: new Date().getFullYear()
-        }]
-      }]
-    };
-
-    this.indicatorService.updateIndicator(this.selectedIndicator.id!, updatedIndicator).subscribe(
-      (response: any) => {
-        this.setNotification('Indicador editado com sucesso', 'success');
-        setTimeout(() => this.router.navigate(['/indicators']), 2000); // Redirect after success message
-      },
-      (error: any) => {
-        const errorMessage = this.getErrorMessage(error);
-        this.setNotification(errorMessage, 'error');
-      }
-    );
-  }
-
-  setNotification(message: string, type: 'success' | 'error') {
+  setNotification(message: string, type: 'success' | 'error'): void {
     this.notificationMessage = message;
     this.Type = type;
   }
 
+  createIndicator(): void {
+    const createdIndicator: Indicator = {
+      id: -1,
+      indicator_name: this.selectedIndicator.indicator_name,
+      service_ids: this.selectedServicesIDs,
+      activity_ids: this.selectedActivitiesIDs
+    };
+
+    this.indicatorService.storeIndicator(createdIndicator).subscribe(
+      (response: any) => {
+        this.setNotification('Indicator created successfully', 'success');
+        setTimeout(() => this.router.navigate(['/indicators']), 2000);
+      },
+      (error: any) => {
+        const errorMessage = this.getErrorMessage(error);
+        this.setNotification(errorMessage, 'error');
+      }
+    );
+  }
+
+  editIndicator(): void {
+    const updatedIndicator: Indicator = {
+      id: this.selectedIndicator.id,
+      indicator_name: this.selectedIndicator.indicator_name,
+      service_ids: this.selectedServicesIDs,
+      activity_ids: this.selectedActivitiesIDs
+    };
+
+    this.indicatorService.updateIndicator(this.selectedIndicator.id, updatedIndicator).subscribe(
+      (response: any) => {
+        this.setNotification('Indicator updated successfully', 'success');
+        setTimeout(() => this.router.navigate(['/indicators']), 2000);
+      },
+      (error: any) => {
+        const errorMessage = this.getErrorMessage(error);
+        this.setNotification(errorMessage, 'error');
+      }
+    );
+  }
+
   getErrorMessage(error: any): string {
     if (error.status === 409) {
-      return 'Indicador já existe';
+      return 'Indicator already exists';
     }
     if (error.status === 400) {
-      return 'Entrada inválida';
+      return 'Invalid entry';
     }
-    return 'Ocorreu um erro. Por favor, tente novamente mais tarde.';
+    return 'An error occurred. Please try again later.';
   }
 
-  formValid(): boolean {
-    return !!(this.selectedIndicator.indicator_name && this.selectedServicesIDs.length > 0 && this.selectedActivitiesIDs.length > 0 && this.goalTargetValue);
-  }
-
-  selectTab(tab: 'services' | 'activities') {
+  selectTab(tab: 'services' | 'activities'): void {
     this.activeTab = tab;
   }
 }

@@ -1,7 +1,7 @@
 import { Sai } from './sai.model';
 
 export interface Indicator {
-  id?: number;
+  id: number;
   indicator_name: string;
   services?: { id: number, name: string }[];
   activities?: { id: number, name: string }[];

@@ -35,7 +35,7 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::get('indicators/sai/variations', 'IndicatorController@getVariations');
 
     Route::get('indicators/search', 'IndicatorController@search');
-    Route::get('indicators/sai/paginated', 'IndicatorController@getSAIPaginated');
+    Route::get('indicators/paginated', 'IndicatorController@getIndicatorsPaginated');
     Route::get('indicators/{id}', 'IndicatorController@show');
 
     
