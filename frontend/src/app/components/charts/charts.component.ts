@@ -1,19 +1,33 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
-import Chart, { ChartType, ChartData, ChartOptions } from 'chart.js/auto';
+import { Chart, ChartType, ChartData, ChartOptions, registerables } from 'chart.js';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-charts',
   standalone: true,
   templateUrl: './charts.component.html',
-  styleUrls: ['./charts.component.scss']
+  styleUrls: ['./charts.component.scss'],
+  imports: [MatMenuModule, MatIconModule, MatButtonModule]
 })
 export class ChartsComponent implements OnInit, OnChanges {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
-  @Input() graphType: string = "";
+  @Input() graphType: string = 'bar';
   @Input() graphLabel: string = "";
   @Input() graphData: any;
 
   private chart: Chart | null = null;
+
+  private chartTypeMap: { [key: string]: ChartType } = {
+    bar: 'bar',
+    line: 'line',
+    pie: 'pie',
+    doughnut: 'doughnut',
+    groupedBar: 'bar',
+    scatter: 'scatter'
+  };
 
   constructor() { }
 
@@ -33,18 +47,41 @@ export class ChartsComponent implements OnInit, OnChanges {
       this.chart.destroy(); // Destroy existing chart instance if exists
     }
     this.chart = new Chart(this.canvasRef.nativeElement, {
-      type: this.getChartType(),
+      type: this.chartTypeMap[this.graphType] || 'bar',
       data: chartData,
       options: chartOptions
     });
   }
 
+  changeChartType(type: string) {
+    this.graphType = this.chartTypeMap[type] || 'bar';
+    this.initializeChart(this.graphData);
+  }
+
   getChartDataAndOptions(data: any): { chartData: ChartData, chartOptions: ChartOptions } {
     let labels: string[] = [];
     let datasets: any[] = [];
+    let chartOptions: ChartOptions = {
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top'
+        },
+        title: {
+          display: true,
+          text: this.graphLabel
+        }
+      }
+    };
 
     switch (this.graphType) {
-      case 'month':
+      case 'bar':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         datasets = [{
           label: this.graphLabel,
@@ -52,42 +89,7 @@ export class ChartsComponent implements OnInit, OnChanges {
           backgroundColor: '#516b91'
         }];
         break;
-      case 'stackedBar':
-        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        datasets = [
-          {
-            label: 'Produção',
-            data: data?.recordsAnual || [],
-            backgroundColor: '#516b91'
-          },
-          {
-            label: 'Metas',
-            data: data?.goalsMensal || [],
-            backgroundColor: '#59c4e6'
-          }
-        ];
-        break;
-      case 'barComparison':
-        labels = ['Ano anterior', 'Ano atual'];
-        datasets = [
-          {
-            label: 'Produção Total',
-            data: [data?.previousYearTotal || 0, data?.currentYearTotal || 0],
-            backgroundColor: ['#59c4e6','#516b91']
-          }
-        ];
-        break;
-      case 'pieChart':
-        labels = ['Meta ano', 'Produção ano'];
-        datasets = [
-          {
-            label: ['Meta ano', 'Produção ano'],
-            data: [data?.goalAnual || 0, data?.currentYearTotal || 0],
-            backgroundColor: ['#59c4e6', '#516b91']
-          }
-        ];
-        break;
-      case 'lineChart':
+      case 'line':
         labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         datasets = [
           {
@@ -106,6 +108,53 @@ export class ChartsComponent implements OnInit, OnChanges {
           }
         ];
         break;
+      case 'pie':
+      case 'doughnut':
+        labels = ['Meta ano', 'Produção ano'];
+        datasets = [
+          {
+            label: ['Meta ano', 'Produção ano'],
+            data: [data?.goalAnual || 0, data?.currentYearTotal || 0],
+            backgroundColor: ['#59c4e6', '#516b91']
+          }
+        ];
+        break;
+      case 'groupedBar':
+        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        datasets = [
+          {
+            label: 'Produção',
+            data: data?.recordsAnual || [],
+            backgroundColor: '#516b91'
+          },
+          {
+            label: 'Metas',
+            data: data?.goalsMensal || [],
+            backgroundColor: '#59c4e6'
+          }
+        ];
+        break;
+      case 'scatter':
+        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        datasets = [
+          {
+            type: 'line',
+            label: 'Ano Atual',
+            data: data?.recordsAnual || [],
+            borderColor: '#516b91',
+            backgroundColor: 'rgba(81,107,145,0.2)',
+            fill: false
+          },
+          {
+            type: 'bar',
+            label: 'Ano Anterior',
+            data: data?.recordsAnualLastYear || [],
+            borderColor: '#59c4e6',
+            backgroundColor: 'rgba(89,196,230,0.2)',
+            fill: false
+          }
+        ];
+        break;
       default:
         break;
     }
@@ -115,35 +164,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         labels: labels,
         datasets: datasets
       },
-      chartOptions: {
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        },
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top'
-          },
-          title: {
-            display: true,
-            text: this.graphLabel
-          }
-        }
-      }
+      chartOptions: chartOptions
     };
-  }
-
-  getChartType(): ChartType {
-    if (this.graphType === 'lineChart') {
-      return 'line';
-    } else if (this.graphType === 'stackedBar' || this.graphType === 'month' || this.graphType === 'barComparison') {
-      return 'bar';
-    } else if (this.graphType === 'pieChart') {
-      return 'pie';
-    }
-    return 'bar';
   }
 }

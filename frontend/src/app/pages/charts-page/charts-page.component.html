@@ -49,7 +49,7 @@
     <div class="px-4 z-5" *ngIf="selectedTab === 'Producao'">
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full sm:w-[100%] py-2 ratio">
-          <app-charts *ngIf="!isLoading.recordsMensal; else loading" graphType="month" graphLabel="Produção Mês"
+          <app-charts *ngIf="!isLoading.recordsMensal; else loading" graphType="bar" graphLabel="Produção Mês"
             [graphData]="graphData.recordsMensal">
           </app-charts>
           <ng-template #loading>
@@ -84,7 +84,7 @@
 
         <div class="flex w-full justify-around p-4 flex-wrap">
           <div class="w-full lg:w-1/2">
-            <app-charts *ngIf="!isLoading.recordsAnual; else loading" graphType="lineChart"
+            <app-charts *ngIf="!isLoading.recordsAnual; else loading" graphType="line"
               graphLabel="Comparação produção acumulada"
               [graphData]="{ recordsAnual: graphData.recordsAnual, recordsAnualLastYear: graphData.recordsAnualLastYear }">
             </app-charts>
@@ -93,7 +93,7 @@
             </ng-template>
           </div>
           <div class="w-full lg:w-1/2">
-            <app-charts *ngIf="!isLoading.recordsAnual; else loading" graphType="barComparison"
+            <app-charts *ngIf="!isLoading.recordsAnual; else loading" graphType="bar"
               graphLabel="Comparação produção Total"
               [graphData]="{ previousYearTotal: graphData.previousYearTotal, currentYearTotal: graphData.currentYearTotal }">
             </app-charts>
@@ -129,7 +129,8 @@
       </div>
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.goalsMensal; else loading" graphType="stackedBar" graphLabel="produção acumulada vs meta mensal"
+          <app-charts *ngIf="!isLoading.goalsMensal; else loading" graphType="groupedBar"
+            graphLabel="produção acumulada vs meta mensal"
             [graphData]="{ recordsAnual: graphData.recordsAnual, goalsMensal: graphData.goalsMensal }">
           </app-charts>
           <ng-template #loading>
@@ -137,7 +138,8 @@
           </ng-template>
         </div>
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.goalAnual; else loading" graphType="pieChart" graphLabel="Produção Anual vs Meta Anual"
+          <app-charts *ngIf="!isLoading.goalAnual; else loading" graphType="pie"
+            graphLabel="Produção Anual vs Meta Anual"
             [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }">
           </app-charts>
           <ng-template #loading>

@@ -14,6 +14,8 @@ import { FilterComponent } from '../../components/shared/filter/filter.component
 import { ChartsComponent } from '../../components/charts/charts.component';
 import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
 import { Filter } from '../../core/models/filter.model';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-charts-page',
@@ -24,7 +26,10 @@ import { Filter } from '../../core/models/filter.model';
     HttpClientModule,
     ChartsComponent,
     MatMenuModule,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    MatMenuModule,
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './charts-page.component.html',
   styleUrls: ['./charts-page.component.scss']
@@ -167,7 +172,7 @@ export class ChartsPageComponent implements OnInit {
         const pdfRemainingHeight = pdfHeight - currentPdfHeight;
         const srcHeight = Math.min(remainingHeight, (pdfRemainingHeight * canvasWidth) / pdfWidth);
         pdf.addImage(imgData, 'PNG', 0, currentPdfHeight, pdfWidth, (srcHeight * pdfWidth) / canvasWidth, undefined, 'FAST', 0);
-  
+
 
         console.log('Imagem adicionada ao PDF.');
         pdf.save('graficos.pdf');
@@ -302,17 +307,17 @@ export class ChartsPageComponent implements OnInit {
     });
   }
 
-  setLoadingStates(isLoading: boolean) {
+  setLoadingStates(value: boolean): void {
     this.isLoading = {
-      recordsMensal: isLoading,
-      recordsAnual: isLoading,
-      recordsAnualLastYear: isLoading,
-      goalsMensal: isLoading,
-      goalAnual: isLoading,
-      lastFiveYears: isLoading,
-      previousYearTotal: isLoading,
-      currentYearTotal: isLoading,
-      variations: isLoading
+      recordsMensal: value,
+      recordsAnual: value,
+      recordsAnualLastYear: value,
+      goalsMensal: value,
+      goalAnual: value,
+      lastFiveYears: value,
+      previousYearTotal: value,
+      currentYearTotal: value,
+      variations: value
     };
   }
 }
