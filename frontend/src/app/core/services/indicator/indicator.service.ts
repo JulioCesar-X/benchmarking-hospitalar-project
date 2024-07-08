@@ -43,6 +43,10 @@ export class IndicatorService {
     const params = this.getHttpParams(filter);
     return this.http.get<any>('/indicators/sai/records-anual', { params });
   }
+  getRecordsLastYear(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/records-last-year', { params });
+  }
 
   getGoalsMensal(filter: Filter): Observable<any> {
     const params = this.getHttpParams(filter);
@@ -78,6 +82,7 @@ export class IndicatorService {
     return forkJoin({
       recordsMensal: this.getRecordsMensal(filter),
       recordsAnual: this.getRecordsAnual(filter),
+      recordsAnualLastYear: this.getRecordsLastYear(filter),
       goalsMensal: this.getGoalsMensal(filter),
       goalAnual: this.getGoalAnual(filter),
       lastFiveYears: this.getLastFiveYears(filter),

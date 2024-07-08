@@ -60,6 +60,7 @@ class GoalController extends Controller
             foreach ($months as $month) {
                 Cache::forget("records_mensal_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
                 Cache::forget("records_anual_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
+                Cache::forget("records_last_year_{$serviceId}_{$activityId}_{$indicatorId}");
                 Cache::forget("goals_mensal_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
                 Cache::forget("goal_anual_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
                 Cache::forget("variations_{$serviceId}_{$activityId}_{$indicatorId}_{$year}_{$month}");

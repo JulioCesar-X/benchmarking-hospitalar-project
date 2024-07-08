@@ -18,7 +18,7 @@
     border-color: $main-blue;
 }
 
-.graphicsContainer{
+.graphicsContainer2{
     background-color: $main-blue;
     box-sizing: border-box;
     border: none;
@@ -78,17 +78,4 @@
 
 .toTopBtnHidden {
     bottom: -50px;
-}
-
-.no-data-message {
-    text-align: center;
-    padding: 20px;
-    font-size: 1.2em;
-    color: #888;
-}
-
-.chart {
-    position: relative;
-    height: 400px;
-    /* Ajuste conforme necessário */
 }

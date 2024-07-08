@@ -38,7 +38,8 @@
             "scripts": [
               "node_modules/animejs/lib/anime.min.js",
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/paginationjs/dist/pagination.min.js"          ]
+              "node_modules/paginationjs/dist/pagination.min.js"
+            ]
           },
           "configurations": {
             "production": {
