@@ -16,6 +16,8 @@ import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner
 import { Filter } from '../../core/models/filter.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MenuComponent } from '../../components/shared/menu/menu.component';
+
 
 @Component({
   selector: 'app-charts-page',
@@ -29,7 +31,8 @@ import { MatButtonModule } from '@angular/material/button';
     LoadingSpinnerComponent,
     MatMenuModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MenuComponent
   ],
   templateUrl: './charts-page.component.html',
   styleUrls: ['./charts-page.component.scss']
@@ -107,6 +110,10 @@ export class ChartsPageComponent implements OnInit {
     this.selectedTab = tab;
   }
 
+  getRole() {
+    return this.authService.getRole();
+  }
+  
   numberToMonth(monthNumber: number | undefined): string {
     const months = [
       "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",

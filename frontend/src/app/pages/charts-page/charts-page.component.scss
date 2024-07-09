@@ -5,7 +5,9 @@
     display: flex;
   }
 
-
+.whiteTxt{
+    color:$fill-white;
+}
 ._whiteBG{
     background-color: $fill-white;
 }
@@ -53,7 +55,7 @@
 }
 
 .tab-link:hover, .tab-link.active:hover {
-    background-color: darken($main-blue, 40);
+    background-color: darken($main-blue, 10);
 }
 
 .tab-link.active {

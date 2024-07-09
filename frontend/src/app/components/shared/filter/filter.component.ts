@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Service } from '../../../core/models/service.model';
 import { Activity } from '../../../core/models/activity.model';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 interface ActivityForFilter {
   id: number | null;
@@ -22,7 +24,7 @@ interface IndicatorForFilter {
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, MatTooltipModule]
 })
 export class FilterComponent implements OnInit, OnChanges {
   servicesList: Service[] = [];

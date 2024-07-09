@@ -10,6 +10,7 @@ import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { PageEvent } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface Record {
   record_id: number | null;
@@ -31,13 +32,23 @@ interface Record {
     FormsModule,
     PaginatorComponent,
     LoadingSpinnerComponent,
-    FeedbackComponent
+    FeedbackComponent,
+    MatTooltipModule
   ],
   templateUrl: './records-list-section.component.html',
   styleUrls: ['./records-list-section.component.scss']
 })
 export class RecordsListSectionComponent implements OnInit, OnChanges {
-  @Input() filter: Filter | undefined;
+  @Input() filter: Filter = {
+    indicatorId: 1,
+    activityId: 1,
+    serviceId: 1,
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear()
+  };
+
+
+
   @Input() indicators: any[] = [];
   @Input() isLoading: boolean = false;
 
@@ -195,5 +206,18 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
 
   trackByIndex(index: number, item: any): number {
     return item.record_id;
+  }
+
+  numberToMonth(monthNumber: number | undefined): string {
+    const months = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
+    if (monthNumber === undefined || monthNumber < 1 || monthNumber > 12) {
+      throw new Error("Número do mês deve estar entre 1 e 12.");
+    }
+
+    return months[monthNumber - 1];
   }
 }

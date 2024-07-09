@@ -1,10 +1,16 @@
-<div class="m-2 w-full graphicsContainer">
+<div *ngIf="getRole() === 'admin' || getRole() === 'coordenador'">
+  <app-menu></app-menu>
+</div>
+<div class="mx-0 sm:ml-1 w-full h-full">
+  
+
+<div class="w-full graphicsContainer">
   <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false" [showServiceInput]="isAdminOrCoordinator"
     [showActivityInput]="showActivityInput" [selectedServiceId]="filter.serviceId"
     (filterEvent)="handleFilterData($event)" (activityInputChange)="handleActivityInputChange($event)">
   </app-filter>
 
-  <div class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer2">
+  <div class="flex flex-col gap-4 mt-2 mx-auto pb-4 shadow-md graphicsContainer2">
     <div class="tab-headers-wrapper">
       <div id="tabHead" class="flex items-center justify-between pr-2">
         <div id="tabHeaders" class="flex w-[30%]">
@@ -47,6 +53,7 @@
     </div>
 
     <div class="px-4 z-5" *ngIf="selectedTab === 'Producao'">
+      <h1 class="whiteTxt text-lg">{{ numberToMonth(filter.month) }}, {{ filter.year }}</h1>
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full sm:w-[100%] py-2 ratio">
           <app-charts *ngIf="!isLoading.recordsMensal; else loading" graphType="bar" graphLabel="Produção Mês"
@@ -105,6 +112,8 @@
       </div>
     </div>
     <div class="px-4" *ngIf="selectedTab === 'Metas'">
+      <h1 class="whiteTxt text-lg">{{ filter.year }}</h1>
+
       <div class="flex w-full justify-center flex-wrap">
         <div class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md">
           <h1 class="text-xl font-semibold text-blue-600">
@@ -150,3 +159,7 @@
     </div>
   </div>
 </div>
+</div>
+
+
+

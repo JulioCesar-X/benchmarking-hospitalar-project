@@ -1,16 +1,14 @@
 @import '../../../../styles/_variables.scss';
 
-.blueBG {
-    background-color: $main-blue;
-  }
-  
   .blueTxt {
     color: $main-blue;
     font-size: 3em;
     text-align: center;
   }
 
-  
+  .blueBG {
+    background-color: $main-blue;
+  }
 .whiteTxt{
     color:$fill-white;
     font-size: 3em;
@@ -63,9 +61,6 @@ a {
 
 body {
   font: normal 16px/1.5 "Helvetica Neue", sans-serif;
-  background: #456990;
-  color: #fff;
-  overflow-x: hidden;
   padding-bottom: 50px;
 }
 
@@ -74,8 +69,9 @@ body {
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 .timeline ul {
-  background-color: $darker-main-blue;
+  background-color: $fill-white;
   padding: 50px 0;
+  overflow: hidden;
 }
 
 .timeline ul li {
@@ -104,8 +100,8 @@ body {
   position: relative;
   bottom: 0;
   width: 400px;
-  background: $fill-white;
-  color: $main-dark-blue;
+  background: $main-dark-blue;
+  color: $fill-white;
   padding: 3em;
   border-radius: 0.5em;
 }
@@ -126,7 +122,7 @@ body {
 .timeline ul li:nth-child(odd) div::before {
   left: -15px;
   border-width: 8px 16px 8px 0;
-  border-color: transparent $fill-white transparent transparent;
+  border-color: transparent $main-dark-blue transparent transparent;
 }
 
 .timeline ul li:nth-child(even) div {
@@ -136,7 +132,7 @@ body {
 .timeline ul li:nth-child(even) div::before {
   right: -15px;
   border-width: 8px 0 8px 16px;
-  border-color: transparent transparent transparent $fill-white;
+  border-color: transparent transparent transparent $main-dark-blue;
 }
 
 time {
@@ -156,6 +152,7 @@ time {
 
 .timeline ul li.in-view::after {
   background: $main-blue;
+  
 }
 
 .timeline ul li div {

@@ -18,7 +18,7 @@ $darker-main-red:#b02529;
 for example to customize colors in lordIcons icons */
 :root{
     --main-blue: #{$main-blue};
-    --main-dark-blue: #($main-dark-blue);
+    --main-dark-blue: #{$main-dark-blue};
     --fill-white: #($fill-white);
 }
 

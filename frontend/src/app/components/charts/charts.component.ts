@@ -3,6 +3,8 @@ import { Chart, ChartType, ChartData, ChartOptions, registerables } from 'chart.
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 Chart.register(...registerables);
 
 @Component({
@@ -10,7 +12,7 @@ Chart.register(...registerables);
   standalone: true,
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss'],
-  imports: [MatMenuModule, MatIconModule, MatButtonModule]
+  imports: [MatMenuModule, MatIconModule, MatButtonModule, MatTooltipModule]
 })
 export class ChartsComponent implements OnInit, OnChanges {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
