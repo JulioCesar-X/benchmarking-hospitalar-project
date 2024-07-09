@@ -1,6 +1,4 @@
-<section
-  class="w-full p-0 gap-4  h-[100%] forms-container"
->
+<section class="flex flex-col min-h-full forms-container">
   <div class="flex justify-start items-center text-xl pb-5 gap-10 blueBG">
     <button
       mat-icon-button
@@ -19,17 +17,17 @@
     <h2 class="whiteTxt mx-auto my-0">Lista de Utilizadores</h2>
   </div>
 
-  <div class=" h-[100%] flex justify-center items-center" *ngIf="isLoading">
-  <app-loading-spinner class=""
-  message="A carregar Utilizadores..."
-></app-loading-spinner>
+  <div class="h-[100%] flex justify-center items-center" *ngIf="isLoading">
+    <app-loading-spinner
+      class=""
+      message="A carregar Utilizadores..."
+    ></app-loading-spinner>
   </div>
 
-
-  <div *ngIf="!isLoading" class="h-[100%]">
+  <div *ngIf="!isLoading" class="">
     <div *ngIf="users.length; else noResults" class="">
       <table class="w-[90%] mx-auto user-table rounded-xl">
-        <thead class="sticky top-[-2px] z-10">
+        <thead class="top-[-2px] z-10">
           <tr class="">
             <th class="p-2">Nome</th>
             <th class="p-2 sm:px-4 hidden md:table-cell">Email</th>
@@ -68,14 +66,14 @@
       <div class="no-results">Nenhum utilizador encontrado.</div>
     </ng-template>
   </div>
+  <app-paginator 
+  class="mt-auto"
+  [length]="totalLength"
+  [pageSize]="pageSize"
+  [pageIndex]="currentPage"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="onPageChanged($event)"
+>
+</app-paginator>
 
-  <app-paginator *ngIf="!isLoading"
-    class=""
-    [length]="totalLength"
-    [pageSize]="pageSize"
-    [pageIndex]="currentPage"
-    [pageSizeOptions]="pageSizeOptions"
-    (page)="onPageChanged($event)"
-  >
-  </app-paginator>
 </section>

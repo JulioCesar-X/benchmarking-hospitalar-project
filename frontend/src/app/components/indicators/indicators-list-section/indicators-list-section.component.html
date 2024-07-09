@@ -1,21 +1,25 @@
-<section class="w-full mt-2 p-0 gap-4 mx-auto forms-container">
-<div class="indicators-list-container">
-  <div class="">
-    <div class="headingSection">
-      <div class="flex justify-start items-center text-xl pb-5 pt-2 gap-10 blueBG">
-        <button mat-icon-button
-        matTooltip="Clique para registrar uma nova atividade"
-        [matTooltipPosition]="'right'"
-        matTooltipClass="custom"
-        class="small-btn whiteBG createBtn ml-5 w-[50px] h-[50px]"
-        (click)="openDialog(null, 'create')">
-        <img src="../../../assets/images/icons8-plus-30.png" alt="createIcon" class="icon-large">
-    </button>
-        <h2 class="whiteTxt my-0">Lista de Indicadores</h2>
-      </div>
+<section class="flex flex-col min-h-full forms-container">
+
+  <div class="flex justify-start items-center text-xl pb-5 pt-2 gap-10 blueBG">
+
+
+      <button mat-icon-button
+      matTooltip="Clique para registrar um novo indicador"
+      [matTooltipPosition]="'right'"
+      matTooltipClass="custom"
+      class="small-btn whiteBG createBtn ml-5 w-[50px] h-[50px]"
+      (click)="openDialog(null, 'create')">
+  <img src="../../../assets/images/icons8-plus-30.png" alt="createIcon" class="icon-large">
+  </button>
+      <h2 class="whiteTxt my-0">Lista de indicadores</h2>
+
     </div>
+
+
+
     <app-loading-spinner *ngIf="isLoading" message="A carregar indicadores..."></app-loading-spinner>
-    <div *ngIf="!isLoading">
+
+    <div *ngIf="!isLoading" class="">
       <div *ngIf="indicators.length; else noResults">
         <div class="overflow-x-auto relative">
           <table class="user-table min-w-full">
@@ -39,8 +43,7 @@
               </tr>
             </tbody>
           </table>
-          <app-paginator [length]="totalLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
-            (page)="handlePageEvent($event)" *ngIf="!isLoading"></app-paginator>
+         
         </div>
       </div>
       <ng-template #noResults>
@@ -49,5 +52,7 @@
         </div>
       </ng-template>
     </div>
-  </div>
-</div>
+
+  <app-paginator class="mt-auto" [length]="totalLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+  (page)="handlePageEvent($event)" *ngIf="!isLoading"></app-paginator>
+  </section>

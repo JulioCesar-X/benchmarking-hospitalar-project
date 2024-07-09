@@ -1,4 +1,4 @@
-<section class="w-full mt-2 p-0 gap-4 mx-auto forms-container">
+<section class="flex flex-col min-h-full forms-container">
 <!--   <div class="headingSection">
     <h2>Lista de serviços</h2>
     <img (click)="openDialog(null, 'create')" src="../../../assets/images/icons8-plus-30.png" class="icon"
@@ -36,8 +36,8 @@
     </ng-template>
   </div>
 
+  <app-paginator class="mt-auto" [length]="totalLength" [pageSize]="pageSize" [pageIndex]="currentPage"
+  [pageSizeOptions]="pageSizeOptions" (page)="onPageChanged($event)">
+  </app-paginator>
 
 </section>
-<app-paginator [length]="totalLength" [pageSize]="pageSize" [pageIndex]="currentPage"
-[pageSizeOptions]="pageSizeOptions" (page)="onPageChanged($event)">
-</app-paginator>

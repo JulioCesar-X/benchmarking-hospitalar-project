@@ -58,6 +58,7 @@
 /*   border-top-left-radius: 1em;
   border-top-right-radius: 1em; */
   overflow-y: scroll;
+  max-height: 70vh;
 
   &.forms-container__error {
     border: $error-color 10px solid;
