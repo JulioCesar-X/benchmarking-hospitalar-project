@@ -1,9 +1,9 @@
 <div>
   <app-menu></app-menu>
 </div>
-<div class="sm:mx-0 md:mx-1 lg:mx-2 w-full">
-  <app-search-filter (search)="onSearch($event)" (searchStarted)="onSearchStarted()" (reset)="onReset()"
+<div class="sm:mx-1 w-full flex flex-col gap-2 relative">
+  <app-search-filter class="absolute top-[15px] right-[20px]" (search)="onSearch($event)" (searchStarted)="onSearchStarted()" (reset)="onReset()"
     type="indicators"></app-search-filter>
-  <app-indicators-list-section [indicators]="filteredIndicators"
+  <app-indicators-list-section class="flex-1" [indicators]="filteredIndicators"
     [isLoading]="isLoadingSearch"></app-indicators-list-section>
 </div>

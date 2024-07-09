@@ -20,6 +20,8 @@ export class UserService {
 
   // Fetch paginated users
   getUsersPaginated(pageIndex: number, pageSize: number): Observable<any> {
+    console.log("pagination", pageIndex, pageSize);
+
     return this.http.get<any>(`/users/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
       catchError(error => throwError(() => new Error('Failed to fetch paginated users')))
     );
