@@ -80,9 +80,9 @@ class SaiSeeder extends Seeder
         ];
 
         // Adicionando novas relações para os serviços, atividades e indicadores adicionados
-        for ($service_id = 7; $service_id <= 26; $service_id++) {
-            for ($activity_id = 4; $activity_id <= 23; $activity_id++) {
-                for ($indicator_id = 39; $indicator_id <= 58; $indicator_id++) {
+        for ($service_id = 7; $service_id <= 11; $service_id++) {
+            for ($activity_id = 4; $activity_id <= 9; $activity_id++) {
+                for ($indicator_id = 39; $indicator_id <= 44; $indicator_id++) {
                     $sais[] = [
                         'service_id' => $service_id,
                         'activity_id' => $activity_id,

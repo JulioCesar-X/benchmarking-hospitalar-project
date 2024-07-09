@@ -57,7 +57,7 @@ class ServiceSeeder extends Seeder
             ]
         ];
         
-        for ($i = 6; $i <= 26; $i++) {
+        for ($i = 6; $i <= 11; $i++) {
             $services[] = [
                 'service_name' => 'service' . $i,
                 'description' => 'Descrição padrão para serviços adicionais',

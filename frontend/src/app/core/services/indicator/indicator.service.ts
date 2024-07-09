@@ -59,11 +59,6 @@ export class IndicatorService {
     return this.http.get<any>('/indicators/sai/goal-anual', { params });
   }
 
-  getLastFiveYears(filter: Filter): Observable<any> {
-    const params = this.getHttpParams(filter);
-    return this.http.get<any>('/indicators/sai/last-five-years', { params });
-  }
-
   getPreviousYearTotal(filter: Filter): Observable<any> {
     const params = this.getHttpParams(filter);
     return this.http.get<any>('/indicators/sai/previous-year-total', { params });
@@ -86,7 +81,6 @@ export class IndicatorService {
       recordsAnualLastYear: this.getRecordsLastYear(filter),
       goalsMensal: this.getGoalsMensal(filter),
       goalAnual: this.getGoalAnual(filter),
-      lastFiveYears: this.getLastFiveYears(filter),
       previousYearTotal: this.getPreviousYearTotal(filter),
       currentYearTotal: this.getCurrentYearTotal(filter),
       variations: this.getVariations(filter),

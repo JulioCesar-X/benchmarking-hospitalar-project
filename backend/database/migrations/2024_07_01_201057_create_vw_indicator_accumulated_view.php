@@ -16,18 +16,19 @@ class CreateVwIndicatorAccumulatedView extends Migration
         DB::statement("
         CREATE OR REPLACE VIEW vw_indicator_accumulated AS
         SELECT
+            sai.id AS sai_id,
             s.service_name AS nome_do_servico,
             a.activity_name AS nome_da_atividade,
             i.indicator_name AS nome_do_indicador,
             i.id AS indicator_id,
-            r.value AS valor_mensal,
+            ROUND(r.value, 2) AS valor_mensal,
             r.date AS data,
             sai.service_id,
             sai.activity_id,
             YEAR(r.date) AS year,
             MONTH(r.date) AS month,
             (
-                SELECT SUM(r2.value)
+                SELECT ROUND(SUM(r2.value), 2)
                 FROM records r2
                 WHERE r2.sai_id = r.sai_id AND
                     r2.date <= r.date AND

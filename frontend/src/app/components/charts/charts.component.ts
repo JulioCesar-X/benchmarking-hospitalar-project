@@ -3,6 +3,7 @@ import { Chart, ChartType, ChartData, ChartOptions, registerables } from 'chart.
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 Chart.register(...registerables);
 
 @Component({
@@ -10,19 +11,21 @@ Chart.register(...registerables);
   standalone: true,
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss'],
-  imports: [MatMenuModule, MatIconModule, MatButtonModule]
+  imports: [MatMenuModule, MatIconModule, MatButtonModule, CommonModule]
 })
 export class ChartsComponent implements OnInit, OnChanges {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
   @Input() graphType: string = 'bar';
   @Input() graphLabel: string = "";
   @Input() graphData: any;
+  @Input() allowedChartTypes: string[] = ['bar', 'line', 'area'];
 
   private chart: Chart | null = null;
 
   private chartTypeMap: { [key: string]: ChartType } = {
     bar: 'bar',
     line: 'line',
+    area: 'line',
     pie: 'pie',
     doughnut: 'doughnut',
     groupedBar: 'bar',
@@ -54,12 +57,14 @@ export class ChartsComponent implements OnInit, OnChanges {
   }
 
   changeChartType(type: string) {
-    this.graphType = this.chartTypeMap[type] || 'bar';
-    this.initializeChart(this.graphData);
+    if (this.allowedChartTypes.includes(type)) {
+      this.graphType = type;
+      this.initializeChart(this.graphData);
+    }
   }
 
   getChartDataAndOptions(data: any): { chartData: ChartData, chartOptions: ChartOptions } {
-    let labels: string[] = [];
+    let labels: string[] = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     let datasets: any[] = [];
     let chartOptions: ChartOptions = {
       maintainAspectRatio: false,
@@ -82,7 +87,6 @@ export class ChartsComponent implements OnInit, OnChanges {
 
     switch (this.graphType) {
       case 'bar':
-        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         datasets = [{
           label: this.graphLabel,
           data: data || [],
@@ -90,7 +94,6 @@ export class ChartsComponent implements OnInit, OnChanges {
         }];
         break;
       case 'line':
-        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         datasets = [
           {
             label: 'Ano Atual',
@@ -108,6 +111,24 @@ export class ChartsComponent implements OnInit, OnChanges {
           }
         ];
         break;
+      case 'area':
+        datasets = [
+          {
+            label: 'Ano Atual',
+            data: data?.recordsAnual || [],
+            borderColor: '#516b91',
+            backgroundColor: 'rgba(81,107,145,0.2)',
+            fill: true
+          },
+          {
+            label: 'Ano Anterior',
+            data: data?.recordsAnualLastYear || [],
+            borderColor: '#59c4e6',
+            backgroundColor: 'rgba(89,196,230,0.2)',
+            fill: true
+          }
+        ];
+        break;
       case 'pie':
       case 'doughnut':
         labels = ['Meta ano', 'Produção ano'];
@@ -120,7 +141,6 @@ export class ChartsComponent implements OnInit, OnChanges {
         ];
         break;
       case 'groupedBar':
-        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         datasets = [
           {
             label: 'Produção',
@@ -135,7 +155,6 @@ export class ChartsComponent implements OnInit, OnChanges {
         ];
         break;
       case 'scatter':
-        labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         datasets = [
           {
             type: 'line',
@@ -166,5 +185,18 @@ export class ChartsComponent implements OnInit, OnChanges {
       },
       chartOptions: chartOptions
     };
+  }
+
+  getChartTypeName(type: string): string {
+    const names: { [key: string]: string } = {
+      bar: 'Barra',
+      line: 'Linha',
+      area: 'Área',
+      pie: 'Pizza',
+      doughnut: 'Rosquinha',
+      groupedBar: 'Barra Agrupada',
+      scatter: 'Dispersão'
+    };
+    return names[type] || type;
   }
 }
