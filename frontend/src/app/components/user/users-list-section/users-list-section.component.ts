@@ -30,7 +30,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class UsersListSectionComponent implements OnInit, OnChanges {
   @Input() users: any[] = [];
   @Input() isLoading = true;
-  pageSize = 10;
+  @Input() pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 20, 50, 100];
   currentPage = 0;
   totalLength = 0;

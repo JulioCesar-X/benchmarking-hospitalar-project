@@ -18,7 +18,7 @@
 }
 .whiteTxt{
   color: $fill-white;
-  font-size: 1.5em;
+/*   font-size: 1.5em; */
 }
 .whiteBG{
   background-color: $fill-white;
@@ -65,8 +65,7 @@
 /*   height: 100%;
  *//*   border-top-left-radius: 1em;
   border-top-right-radius: 1em; */
-  max-height: 62vh;
-  overflow-y: scroll;
+  max-height: 80vh;
 
   &.forms-container__error {
     border: $error-color 10px solid;
@@ -97,9 +96,10 @@
   width: 100%;
   border-collapse: collapse;
   text-align: center;
+  font-size: 1.5em;
 
   th {
-    background-color: $main-blue;
+    background-color: $main-dark-blue;
     color: $fill-white;
     padding: 12px;
     font-weight: bold;
@@ -111,7 +111,7 @@
   }
   
   tr:hover {
-    background-color: $secondary-blue;
+    background-color:lighten($darker-main-blue, 25)
   }
 
  .edit-button,

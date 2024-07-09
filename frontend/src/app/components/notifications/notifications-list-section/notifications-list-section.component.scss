@@ -13,7 +13,11 @@
   
 .whiteTxt{
     color:$fill-white;
+    font-size: 3em;
+    text-align: center;
+    z-index: 50;
 }
+
 /* mat-form-field{
     
 } */
@@ -70,7 +74,7 @@ body {
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 .timeline ul {
-  background: #fff;
+  background-color: $darker-main-blue;
   padding: 50px 0;
 }
 
@@ -100,9 +104,10 @@ body {
   position: relative;
   bottom: 0;
   width: 400px;
-  padding: 15px;
-  background: $main-blue;
-  color: $fill-white;
+  background: $fill-white;
+  color: $main-dark-blue;
+  padding: 3em;
+  border-radius: 0.5em;
 }
 
 .timeline ul li div::before {
@@ -121,7 +126,7 @@ body {
 .timeline ul li:nth-child(odd) div::before {
   left: -15px;
   border-width: 8px 16px 8px 0;
-  border-color: transparent $main-blue transparent transparent;
+  border-color: transparent $fill-white transparent transparent;
 }
 
 .timeline ul li:nth-child(even) div {
@@ -131,12 +136,12 @@ body {
 .timeline ul li:nth-child(even) div::before {
   right: -15px;
   border-width: 8px 0 8px 16px;
-  border-color: transparent transparent transparent $main-blue;
+  border-color: transparent transparent transparent $fill-white;
 }
 
 time {
   display: block;
-  font-size: 1.2rem;
+  font-size: 2rem;
   font-weight: bold;
   margin-bottom: 8px;
 }

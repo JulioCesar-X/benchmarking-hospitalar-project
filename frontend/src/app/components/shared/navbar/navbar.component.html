@@ -78,7 +78,7 @@
             <polygon points="0,100 10,0 100,0 100,100"></polygon>
           </svg>
 
-          <div class="flex items-center ml-auto gap-4 mr-0 sm:mr-10">
+          <div class="flex items-center ml-auto gap-4 mr-0 sm:mr-20">
             <a
               *ngIf="!isLoggedIn()"
               routerLink="/login"
@@ -129,6 +129,7 @@
 
       <!--  -->
       <button
+      *ngIf="isLoggedIn()"
       mat-icon-button
       [matMenuTriggerFor]="notificationsMenu"
       matBadge="{{ unreadNotifications }}"

@@ -1,6 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+
 import { CreateFieldModalComponent } from '../../shared/create-field-modal/create-field-modal.component';
 import { UserService } from '../../../core/services/user/user.service';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
@@ -14,6 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { User } from '../../../core/models/user.model';
 
 
 @Component({
@@ -37,19 +41,28 @@ import { MatSelectModule } from '@angular/material/select';
 })
 export class UsersUpsertFormComponent {
   @Input() formsAction: string = '';
-  @Input() userId: string = '';
+
+  @Input() user: User = {
+    id: 0,
+    name: '',
+    email: '',
+    password: '',
+    role_id: 0
+  };
 
   isModalVisible = false;
-  name: string = '';
+/*   name: string = '';
   email: string = '';
   password: string = '';
-  role_id: number | null = null;
+  role_id: number | null = null; */
   notificationMessage: string = '';
   notificationType: 'success' | 'error' = 'success';
 
   isLoading = false;
 
-  constructor(private userService: UserService, private authService: AuthService) { }
+  constructor(private userService: UserService, private authService: AuthService,
+    private router:Router, private route: ActivatedRoute
+  ) { }
 
   openModal(event: Event) {
       event.preventDefault();
@@ -69,30 +82,40 @@ export class UsersUpsertFormComponent {
   }
 
   editUser() {
+    //esta parte so esta aqui para suprir uma lacuna temporaria para editar o user
+    //porque o show do user no componente da pagina nao esta a funcionar e a passar os dados do user com o ID
+    let userId = 0
+    this.route.params.subscribe(params => {
+       userId= params['id'];
+    });
+    this.user.id = userId;
+    //eliminar codigo acima assim que o show do user estiver a funcionar!
+
     this.isLoading = true; // Define isLoading como verdadeiro ao enviar o formulário
 
-    if (this.role_id === null) {
+    if (this.user.role_id === null) {
       this.setNotification('Role ID is required', 'error');
       this.isLoading = false; // Define isLoading como falso em caso de erro
       return;
     }
 
-    //passar isto para um modelo
-    const userData = {
+/*     const userData = {
       name: this.name,
       email: this.email,
       password: this.password,
       role_id: this.role_id,
-    };
-    console.log(`user editado`, userData);
+    }; */
+    console.log(`user editado`, this.user);
 
     //substituir com metodo de edit do service
 
-    this.userService.updateUser(parseInt(this.userId), userData).subscribe(
+    this.userService.updateUser(userId, this.user).subscribe(
       (response: any) => {
         this.setNotification('User updated successfully', 'success');
         this.clearForm();
         this.isLoading = false; // Define isLoading como falso após a conclusão do envio
+        setTimeout(() => this.router.navigate(['/users']), 2000); // Redirect after success message
+
       },
       (error: any) => {
         const errorMessage = this.getErrorMessage(error);
@@ -103,26 +126,30 @@ export class UsersUpsertFormComponent {
   }
 
   createUser() {
-      this.isLoading = true; // Define isLoading como verdadeiro ao enviar o formulário
+      this.isLoading = true; 
 
-      if (this.role_id === null) {
+      if (this.user.role_id === null) {
           this.setNotification('Role ID is required', 'error');
           this.isLoading = false; // Define isLoading como falso em caso de erro
           return;
       }
 
-      const userData = {
+/*       const userData = {
           name: this.name,
           email: this.email,
           password: this.password,
           role_id: this.role_id,
-      };
+      }; */
 
-      this.userService.storeUser(userData).subscribe(
+      this.userService.storeUser(this.user).subscribe(
           (response: any) => {
+            alert("user created")
+              console.log("user created:", response)
               this.setNotification('User created successfully', 'success');
               this.clearForm();
               this.isLoading = false; // Define isLoading como falso após a conclusão do envio
+              setTimeout(() => this.router.navigate(['/users']), 2000); // Redirect after success message
+
           },
           (error: any) => {
               const errorMessage = this.getErrorMessage(error);
@@ -148,10 +175,10 @@ export class UsersUpsertFormComponent {
   }
 
   clearForm() {
-      this.name = '';
-      this.email = '';
-      this.password = '';
-      this.role_id = null;
+      this.user.name = '';
+      this.user.email = '';
+      this.user.password = '';
+      this.user.role_id = null;
   }
 
   getRole() {

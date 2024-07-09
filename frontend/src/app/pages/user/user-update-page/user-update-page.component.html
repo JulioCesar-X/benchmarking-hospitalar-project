@@ -2,9 +2,10 @@
   <app-menu></app-menu>
   </div>
   <div class="sm:mx-0 md:mx-1 lg:mx-2 w-full max-h-full">
-    <app-users-upsert-form
+<!--     <app-loading-spinner *ngIf="isLoading" message="Carregando user..."></app-loading-spinner>
+ -->    <app-users-upsert-form *ngIf="!isLoading"
     formsAction="edit"
-    [userId]="userId"></app-users-upsert-form>
+    [user]="selectedUser"></app-users-upsert-form>
   </div>
 
 
