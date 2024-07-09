@@ -60,14 +60,14 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
     }
   }
 
-  loadIndicators(): void {
+  loadIndicators(pageIndex = 0, pageSize = 10): void {
     this.isLoading = true;
-    this.indicatorService.getIndicatorsPaginated(this.currentPage,this.pageSize).subscribe({
+    this.indicatorService.getIndicatorsPaginated(pageIndex + 1, pageSize).subscribe({
       next: (data) => {
         console.log("Indicators Data Received:", data);
         this.indicators = data.data;
         this.totalLength = data.total;
-        this.currentPage = data.current_page;
+        this.currentPage = pageIndex; // Adjust the current page index
         this.isLoading = false;
         console.log("Total length:", this.totalLength);
         console.log("Indicators list:", this.indicators);
@@ -108,7 +108,7 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
     this.indicatorService.destroyIndicator(indicatorId).subscribe({
       next: (data) => {
         console.log("Indicator deleted:", data);
-        this.loadIndicators();
+        this.loadIndicators(this.currentPage, this.pageSize);
       },
       error: (error) => {
         console.error("Error deleting indicator:", error);
@@ -119,10 +119,10 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
     });
   }
 
-  onPageChanged(event: PageEvent): void {
+  handlePageEvent(event: PageEvent): void {
     console.log("Page Event Triggered:", event);
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
-    this.loadIndicators();
+    this.loadIndicators(this.currentPage, this.pageSize);
   }
 }
