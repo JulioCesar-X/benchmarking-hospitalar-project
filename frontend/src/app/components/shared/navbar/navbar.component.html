@@ -129,6 +129,7 @@
 
       <!--  -->
       <button
+      *ngIf="isLoggedIn()"
       mat-icon-button
       [matMenuTriggerFor]="notificationsMenu"
       matBadge="{{ unreadNotifications }}"
