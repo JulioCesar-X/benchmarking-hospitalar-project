@@ -1,6 +1,5 @@
-<section class="flex flex-col min-h-full forms-container">
-
-  <div class="flex justify-start items-center text-xl pb-5 pt-2 gap-10 blueBG">
+<section class="flex flex-col min-h-full  forms-container">
+  <div class="flex justify-start items-center pb-2 text-xl gap-10 blueBG">
 
 
       <button mat-icon-button
@@ -11,15 +10,16 @@
       (click)="openDialog(null, 'create')">
   <img src="../../../assets/images/icons8-plus-30.png" alt="createIcon" class="icon-large">
   </button>
-      <h2 class="whiteTxt my-0">Lista de indicadores</h2>
+      <h2 class="whiteTxt my-0 ">Lista de indicadores</h2>
 
     </div>
 
 
+    <div class="my-auto">
+      <app-loading-spinner *ngIf="isLoading" message="A carregar indicadores..."></app-loading-spinner>
+  </div>
 
-    <app-loading-spinner *ngIf="isLoading" message="A carregar indicadores..."></app-loading-spinner>
-
-    <div *ngIf="!isLoading" class="">
+    <div *ngIf="!isLoading" class="min-h-full overflow-y-scroll">
       <div *ngIf="indicators.length; else noResults">
         <div class="overflow-x-auto relative">
           <table class="user-table min-w-full">
@@ -47,7 +47,7 @@
         </div>
       </div>
       <ng-template #noResults>
-        <div class="no-results">
+        <div class="text-center mx-auto min-h-full">
           Nenhum indicador encontrado.
         </div>
       </ng-template>

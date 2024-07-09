@@ -1,10 +1,10 @@
-<section class="flex flex-col min-h-full forms-container">
-<!--   <div class="headingSection">
+<section class="flex flex-col min-h-full  forms-container">
+  <!--   <div class="headingSection">
     <h2>Lista de serviços</h2>
     <img (click)="openDialog(null, 'create')" src="../../../assets/images/icons8-plus-30.png" class="icon"
       alt="createIcon">
   </div> -->
-  <div class="flex justify-start items-center pb-5 pt-2 mb-2 gap-10 blueBG">
+  <div class="flex justify-start items-center pb-2 text-xl gap-10 blueBG">
       
     <button mat-icon-button
     matTooltip="Clique para registrar um novo serviços"
@@ -17,9 +17,14 @@
     <h2 class="whiteTxt my-0">Lista de Serviços</h2>
   </div>
 
-  <app-loading-spinner *ngIf="isLoading" message="A carregar serviços..."></app-loading-spinner>
+  <div class="mt-auto">
+    <app-loading-spinner
+    *ngIf="isLoading"
+    message="Procurando atividades..."
+  ></app-loading-spinner>
+  </div>
 
-  <div *ngIf="!isLoading">
+  <div *ngIf="!isLoading" class="min-h-full overflow-y-scroll">
     <div class="cardsContainer" *ngIf="services.length; else noResults">
       <app-card *ngFor="let service of services" [imageUrl]="service.image_url" [title]="service.service_name">
         <div class="card-actions">
@@ -30,7 +35,7 @@
       </app-card>
     </div>
     <ng-template #noResults>
-      <div class="no-results">
+      <div class="text-center mx-auto min-h-full">
         Nenhum serviço encontrado.
       </div>
     </ng-template>
