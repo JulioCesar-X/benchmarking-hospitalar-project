@@ -15,7 +15,7 @@
       <h2>Utilizador</h2>
     </div>
     <!-- sub menuItem -->
-    <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen}">
+    <div class="subMenu" #subMenuGerirUsers [ngClass]="{'is-open': isManageUsersSubMenuOpen, 'is-closed': !isManageUsersSubMenuOpen}">
       <div class="subMenuItem">
         <a routerLink="/users/create" routerLinkActive="Ativo">Criar Utilizador</a>
       </div>
@@ -28,7 +28,7 @@
     <div class="plusIcon" [ngClass]="{'is-open': isManageServicesSubMenuOpen}"></div>
     <h2>Serviços</h2>
   </div>
-  <div class="subMenu" [ngClass]="{'is-open': isManageServicesSubMenuOpen}">
+  <div class="subMenu" [ngClass]="{'is-open': isManageServicesSubMenuOpen, 'is-closed': !isManageServicesSubMenuOpen}">
     <div class="subMenuItem" *ngIf="getRole() === 'admin'">
       <a routerLink="/services/create" routerLinkActive="Ativo">Criar Serviço</a>
     </div>
@@ -41,7 +41,7 @@
     <div class="plusIcon" [ngClass]="{'is-open': isManageActivitiesSubMenuOpen}"></div>
     <h2>Atividades</h2>
   </div>
-  <div class="subMenu" [ngClass]="{'is-open': isManageActivitiesSubMenuOpen}">
+  <div class="subMenu" [ngClass]="{'is-open': isManageActivitiesSubMenuOpen, 'is-closed': !isManageActivitiesSubMenuOpen}">
     <div class="subMenuItem" *ngIf="getRole() === 'admin'">
       <a routerLink="/activities/create" routerLinkActive="Ativo">Criar Atividade</a>
     </div>
@@ -54,7 +54,7 @@
     <div class="plusIcon" [ngClass]="{'is-open': isManageIndicatorsSubMenuOpen}"></div>
     <h2>Indicadores</h2>
   </div>
-  <div class="subMenu" [ngClass]="{'is-open': isManageIndicatorsSubMenuOpen}">
+  <div class="subMenu" [ngClass]="{'is-open': isManageIndicatorsSubMenuOpen, 'is-closed': !isManageIndicatorsSubMenuOpen}">
     <div class="subMenuItem" *ngIf="getRole() === 'admin'">
       <a routerLink="/indicators/create" routerLinkActive="Ativo">Criar Indicador</a>
     </div>
@@ -77,7 +77,7 @@
       <div class="plusIcon" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}"></div>
       <h2>Notificações</h2>
     </div>
-    <div class="subMenu" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen}">
+    <div class="subMenu" [ngClass]="{'is-open': isManageNotificationsSubMenuOpen, 'is-closed': !isManageNotificationsSubMenuOpen}">
       <div class="subMenuItem" *ngIf="getRole() === 'admin'">
         <a routerLink="/notifications/create" routerLinkActive="Ativo">Criar Mensagem</a>
       </div>

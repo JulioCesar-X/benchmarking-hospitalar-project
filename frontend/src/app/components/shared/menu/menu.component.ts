@@ -31,38 +31,7 @@ export class MenuComponent {
     return this.authService.getRole();
   }
 
-  // openManageUsers() {
-  //   this.isManageUsersSubMenuOpen = !this.isManageUsersSubMenuOpen;
 
-  //   this.isManageContentSubMenuOpen = this.isManageContentSubMenuOpen == true ? false : false;
-  //   this.isManageNotificationsSubMenuOpen = this.isManageNotificationsSubMenuOpen == true ? false : false;
-  // }
-  // openManageContent() {
-  //   this.isManageContentSubMenuOpen = !this.isManageContentSubMenuOpen;
-
-  //   this.isManageUsersSubMenuOpen = this.isManageUsersSubMenuOpen == true ? false : false;
-  //   this.isManageNotificationsSubMenuOpen = this.isManageNotificationsSubMenuOpen == true ? false : false;
-  // }
-
-  // openManageNotifications() {
-  //   this.isManageNotificationsSubMenuOpen = !this.isManageNotificationsSubMenuOpen;
-
-  //   this.isManageUsersSubMenuOpen = this.isManageUsersSubMenuOpen == true ? false : false;
-  //   this.isManageContentSubMenuOpen = this.isManageContentSubMenuOpen == true ? false : false;
-  // }
-
-  // openManageActivitiesSubMenuOpen() {
-  //   this.isManageActivitiesSubMenuOpen = !this.isManageActivitiesSubMenuOpen;
-
-  //   this.isManageActivitiesSubMenuOpen = this.isManageActivitiesSubMenuOpen == true ? false : false;
-  //   this.isManageNotificationsSubMenuOpen = this.isManageNotificationsSubMenuOpen == true ? false : false;
-  // }
-
-  // openMenu(){
-  //   this.isMenuOpen = !this.isMenuOpen;
-  // }
-
-  //fechar menus
   openManageUsers() {
     this.isManageUsersSubMenuOpen = !this.isManageUsersSubMenuOpen;
     this.closeOtherSubMenus('users');
