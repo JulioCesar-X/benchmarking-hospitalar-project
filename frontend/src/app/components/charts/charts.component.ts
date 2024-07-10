@@ -24,6 +24,7 @@ export class ChartsComponent implements OnInit, OnChanges {
 
   private chart: Chart | null = null;
   private tooltipFixed: boolean = false;
+  private fixedTooltipIndex: number | null = null;
 
   private chartTypeMap: { [key: string]: ChartType } = {
     bar: 'bar',
@@ -77,9 +78,15 @@ export class ChartsComponent implements OnInit, OnChanges {
       options: chartOptions
     });
 
-    this.canvasRef.nativeElement.addEventListener('click', () => {
-      if (this.tooltipFixed) {
-        this.removeTooltip();
+    this.canvasRef.nativeElement.addEventListener('click', (event) => {
+      const points = this.chart!.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true);
+      if (points.length) {
+        const point = points[0];
+        if (this.tooltipFixed && this.fixedTooltipIndex === point.index) {
+          this.removeTooltip();
+        } else {
+          this.showFixedTooltip(point.index);
+        }
       }
     });
   }
@@ -112,12 +119,13 @@ export class ChartsComponent implements OnInit, OnChanges {
         },
         tooltip: {
           enabled: true,
-          external: context => {
-            if (this.tooltipFixed) {
-              context.tooltip.opacity = 1;
-            }
-          }
+          mode: 'index',
+          intersect: false
         }
+      },
+      interaction: {
+        mode: 'nearest',
+        intersect: true
       }
     };
 
@@ -218,7 +226,6 @@ export class ChartsComponent implements OnInit, OnChanges {
           labels = [`Produção ${this.year}`, `Meta ${this.year}`];
           datasets = [
             {
-
               data: [data?.currentYearTotal || 0, data?.goalAnual || 0],
               backgroundColor: [this.chartColors.primary, this.chartColors.secondary]
             }
@@ -227,7 +234,6 @@ export class ChartsComponent implements OnInit, OnChanges {
           labels = [`Produção ${this.year}`, `Produção ${this.year - 1}`];
           datasets = [
             {
-
               data: [data?.currentYearTotal || 0, data?.previousYearTotal || 0],
               backgroundColor: [this.chartColors.primary, this.chartColors.secondary]
             }
@@ -260,7 +266,6 @@ export class ChartsComponent implements OnInit, OnChanges {
               label: `${this.year - 1}`,
               data: data?.recordsAnualLastYear || [],
               backgroundColor: this.chartColors.secondary,
-
             }
           ];
         }
@@ -335,20 +340,25 @@ export class ChartsComponent implements OnInit, OnChanges {
   }
 
   showFixedTooltip(monthIndex: number) {
-    if (this.chart) {
-      const datasetIndex = 0; 
+    if (this.chart && this.chart.tooltip) {
+      const datasetIndex = 0;
       const meta = this.chart.getDatasetMeta(datasetIndex);
       const point = meta.data[monthIndex];
 
-      if (this.chart.tooltip && point) {
+      if (point) {
         const eventPosition = {
           x: point.x,
           y: point.y
         };
-        // Cria um tooltip manualmente
+
+        // Set the active elements and the event position for the tooltip
         this.chart.tooltip.setActiveElements([{ datasetIndex, index: monthIndex }], eventPosition);
+
+        // Manually update the tooltip
         this.chart.update();
+
         this.tooltipFixed = true;
+        this.fixedTooltipIndex = monthIndex;
       }
     }
   }
@@ -358,6 +368,7 @@ export class ChartsComponent implements OnInit, OnChanges {
       this.chart.tooltip.setActiveElements([], { x: 0, y: 0 });
       this.chart.update();
       this.tooltipFixed = false;
+      this.fixedTooltipIndex = null;
     }
   }
 }
