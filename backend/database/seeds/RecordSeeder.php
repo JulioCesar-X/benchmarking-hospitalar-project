@@ -22,7 +22,7 @@ class RecordSeeder extends Seeder
         // Inserir dados para 2023 com valores aleatórios
         $this->insertYearlyRecords($sais, 2023, false);
 
-        $this->insertYearlyRecords($sais, 2024, true);
+        $this->insertYearlyRecords($sais, 2024, false);
     }
 
     private function insertYearlyRecords($sais, $year, $isZero)
