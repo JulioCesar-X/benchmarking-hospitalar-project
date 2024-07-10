@@ -2,7 +2,7 @@
   <div
     (click)="openMenu()"
     class="dashboardHeader"
-    [ngClass]="{ 'is-open': isMenuOpen }"
+    [ngClass]="{ 'is-open': isMenuOpen, 'is-closed': !isMenuOpen }"
   >
     <div class="flex flex-col gap-2 mt-4 items-center titleSection" [ngClass]="{ 'is-open': isMenuOpen, 'is-closed': !isMenuOpen }">
       <mat-icon class="icon-login">account_circle</mat-icon>

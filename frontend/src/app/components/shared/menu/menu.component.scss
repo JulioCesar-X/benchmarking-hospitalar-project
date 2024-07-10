@@ -106,12 +106,19 @@
   align-items: center;
   justify-content: space-around;
   margin-top: 1em;
+  cursor: pointer;
 }
 .dashboardHeader.is-open {
   .plusIcon.is-open::before,
   .plusIcon.is-open::after {
     background: $fill-white;
   }
+}
+.dashboardHeader.is-closed {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+height: 80%;
 }
 
 .dashboardOption {

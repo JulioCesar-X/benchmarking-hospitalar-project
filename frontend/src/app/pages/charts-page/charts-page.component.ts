@@ -42,7 +42,7 @@ export class ChartsPageComponent implements OnInit {
   filter: Filter = {
     indicatorId: 1,
     activityId: 1,
-    serviceId: 1,
+    serviceId: 0,
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear()
   };
