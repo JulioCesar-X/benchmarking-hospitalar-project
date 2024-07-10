@@ -14,18 +14,18 @@ class CreateVwGoalsMonthlyView extends Migration
     public function up()
     {
         DB::statement("
-        CREATE OR REPLACE VIEW vw_goals_monthly AS
+CREATE OR REPLACE VIEW vw_goals_monthly AS
     SELECT
         g.sai_id,
         sai.service_id,
         sai.activity_id,
         i.id AS indicator_id,
         g.year,
-        ROUND(g.target_value, 2) AS meta_anual,
+        ROUND(CAST(g.target_value AS numeric), 2) AS meta_anual,
         m.month,
-        ROUND(g.target_value / 12.0, 2) AS monthly_target,
+        ROUND(CAST(g.target_value AS numeric) / 12.0, 2) AS monthly_target,
         i.indicator_name AS nome_do_indicador,
-        ROUND(SUM(ROUND(g.target_value / 12.0, 2)) OVER (PARTITION BY g.sai_id, g.year ORDER BY m.month), 2) AS valor_acumulado_mensal
+        ROUND(SUM(ROUND(CAST(g.target_value AS numeric) / 12.0, 2)) OVER (PARTITION BY g.sai_id, g.year ORDER BY m.month), 2) AS valor_acumulado_mensal
     FROM
         goals g
     JOIN
