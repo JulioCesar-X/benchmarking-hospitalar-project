@@ -24,7 +24,8 @@
     <!-- Spinner visível apenas quando isLoading for verdadeiro -->
      <app-loading-spinner-blue-bg  *ngIf="isLoading"></app-loading-spinner-blue-bg>
 
-    <a *ngIf="!isLoading" routerLink="/resetPassword" class="cursor-pointer mt-16 no-underline whiteTxt"
+     <!-- routerLink="/resetPassword" -->
+    <a *ngIf="!isLoading"  class="cursor-pointer mt-16 no-underline whiteTxt"
     (click)="openModal($event)">Forgot Password?</a>
   </div>
 </form>

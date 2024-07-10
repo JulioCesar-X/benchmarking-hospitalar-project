@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Service } from '../../../core/models/service.model';
 import { Activity } from '../../../core/models/activity.model';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 interface ActivityForFilter {
   id: number | null;
@@ -22,16 +24,17 @@ interface IndicatorForFilter {
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, MatTooltipModule]
 })
 export class FilterComponent implements OnInit, OnChanges {
+  
   servicesList: Service[] = [];
   activitiesList: ActivityForFilter[] = [];
   indicatorsList: IndicatorForFilter[] = [];
 
-  @Input() selectedServiceId?: number | string;
-  @Input() selectedActivityId?: number | undefined;
-  @Input() selectedIndicatorId?: number;
+  @Input() selectedServiceId?: number | string = 0;
+  @Input() selectedActivityId?: number | undefined = undefined;
+  @Input() selectedIndicatorId?: number = undefined;
   @Input() showMonthInput: boolean = true;
   @Input() indicatorsInput: boolean = false;
   @Input() dataInsertedCheckbox: boolean = false;
@@ -56,6 +59,7 @@ export class FilterComponent implements OnInit, OnChanges {
   }
 
   loadInitialData() {
+    
     this.serviceService.indexServices().subscribe(services => {
       this.servicesList = services;
       if (this.selectedServiceId) {
@@ -159,5 +163,9 @@ export class FilterComponent implements OnInit, OnChanges {
       month: this.showMonthInput ? this.filter.month : undefined,
       year: this.filter.year
     });
+  }
+
+  trackByServiceId(index: number, service: any): number {
+    return service.id;
   }
 }

@@ -5,13 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 Chart.register(...registerables);
-
+import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-charts',
   standalone: true,
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss'],
-  imports: [MatMenuModule, MatIconModule, MatButtonModule, CommonModule]
+  imports: [MatMenuModule, MatIconModule, MatButtonModule, CommonModule, MatTooltipModule]
 })
 export class ChartsComponent implements OnInit, OnChanges {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;

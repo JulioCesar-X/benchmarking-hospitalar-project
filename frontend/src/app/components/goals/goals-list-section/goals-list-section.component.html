@@ -1,7 +1,7 @@
 <section class="forms-container">
   <div class="table-container">
     <div class="headingSection">
-      <h2>Lista de Metas</h2>
+      <h2>Lista de Metas - {{ filter.year }}</h2>
     </div>
     <app-loading-spinner *ngIf="isLoadingGoals" message="A carregar Metas..."></app-loading-spinner>
     <div *ngIf="!isLoadingGoals">
@@ -25,8 +25,8 @@
                 </td>
                 <td class="p-2 text-center">
                   <button *ngIf="!goal.isUpdating" (click)="editGoal(goal)"
-                    class="forms-Button bg-main-blue text-white px-4 py-2 rounded">
-                    {{ goal.isInserted && !goal.isEditing ? 'Editar' : 'Atualizar' }}
+                  class="forms-Button w-full min-w-[60px] bg-main-blue text-white py-2 rounded">
+                  {{ goal.isInserted && !goal.isEditing ? 'Editar' : 'Atualizar' }}
                   </button>
                   <div *ngIf="goal.isUpdating" class="loading-circle">
                     <div class="spinner spinner_updateRecord-special"></div>

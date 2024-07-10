@@ -22,15 +22,17 @@
   box-sizing: border-box;
   color: $main-blue;
   background-color: $fill-white;
-  border: solid 2px $main-blue;
+  border:none;
+  outline: none;
 
   &::placeholder{
     color: $main-blue;
   }
   &:focus{
     outline: none;
-    border: none;
+    border:none;
     caret-color: $main-blue;
+
   }
   &:disabled{
     background-color: $secondary-blue;
@@ -38,7 +40,6 @@
   }
   &.inputContainer--input__error, .inputContainer--input__error:focus{
     outline: none;
-    border: $error-red 2px solid;
     caret-color: $error-red;
     color: $error-red;
   }

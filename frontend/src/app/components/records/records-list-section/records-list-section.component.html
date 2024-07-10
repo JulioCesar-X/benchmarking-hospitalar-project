@@ -1,7 +1,7 @@
 <section class="forms-container">
   <div class="table-container">
     <div class="headingSection">
-      <h2>Lista de Registros</h2>
+      <h2>Lista de Registros - {{ numberToMonth(filter.month) }}, {{ filter.year }}</h2>
     </div>
     <app-loading-spinner *ngIf="isLoadingRecords" message="A carregar Registros..."></app-loading-spinner>
     <div *ngIf="!isLoadingRecords">
@@ -25,7 +25,10 @@
                 </td>
                 <td class="p-2 text-center">
                   <button *ngIf="!record.isUpdating" (click)="editRecord(record)"
-                    class="forms-Button bg-main-blue text-white px-4 py-2 rounded">
+                    class="forms-Button w-full min-w-[60px] bg-main-blue text-white py-2 rounded"
+                    matTooltip="Clique para inserir/atualizar dados"
+                    [matTooltipPosition]="'below'"
+                    matTooltipClass="custom">
                     {{ record.isInserted && !record.isEditing ? 'Editar' : 'Atualizar' }}
                   </button>
                   <div *ngIf="record.isUpdating" class="loading-circle">

@@ -23,7 +23,7 @@ export class MenuComponent {
   isManageActivitiesSubMenuOpen = false;
   isManageServicesSubMenuOpen = false;
   isManageIndicatorsSubMenuOpen = false;
-  isMenuOpen = false;
+  isMenuOpen = true;
 
   constructor(private authService: AuthService) { }
 
