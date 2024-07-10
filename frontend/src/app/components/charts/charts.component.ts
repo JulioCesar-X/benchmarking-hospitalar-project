@@ -20,8 +20,10 @@ export class ChartsComponent implements OnInit, OnChanges {
   @Input() graphData: any;
   @Input() allowedChartTypes: string[] = ['bar', 'line', 'area'];
   @Input() year!: number;
+  @Input() month?: number;
 
   private chart: Chart | null = null;
+  private tooltipFixed: boolean = false;
 
   private chartTypeMap: { [key: string]: ChartType } = {
     bar: 'bar',
@@ -50,11 +52,17 @@ export class ChartsComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.initializeChart(this.graphData);
+    if (this.month !== undefined) {
+      this.showFixedTooltip(this.month - 1);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['graphData'] && changes['graphData'].currentValue !== changes['graphData'].previousValue) {
       this.initializeChart(this.graphData);
+      if (this.month !== undefined) {
+        this.showFixedTooltip(this.month - 1);
+      }
     }
   }
 
@@ -67,6 +75,12 @@ export class ChartsComponent implements OnInit, OnChanges {
       type: this.chartTypeMap[this.graphType] || 'bar',
       data: chartData,
       options: chartOptions
+    });
+
+    this.canvasRef.nativeElement.addEventListener('click', () => {
+      if (this.tooltipFixed) {
+        this.removeTooltip();
+      }
     });
   }
 
@@ -95,6 +109,14 @@ export class ChartsComponent implements OnInit, OnChanges {
         title: {
           display: true,
           text: this.graphLabel
+        },
+        tooltip: {
+          enabled: true,
+          external: context => {
+            if (this.tooltipFixed) {
+              context.tooltip.opacity = 1;
+            }
+          }
         }
       }
     };
@@ -125,7 +147,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             backgroundColor: this.chartColors.primaryBg,
             fill: false
           }];
-        } else if (this.graphLabel === "Meta Mês"){ 
+        } else if (this.graphLabel === "Meta Mês") {
           datasets = [{
             label: 'Valor mês',
             data: data || [],
@@ -133,7 +155,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             backgroundColor: this.chartColors.primaryBg,
             fill: false
           }];
-        } else if (this.graphLabel === "Comparação produção acumulada") {  
+        } else if (this.graphLabel === "Comparação produção acumulada") {
           datasets = [
             {
               label: `${this.year}`,
@@ -196,8 +218,8 @@ export class ChartsComponent implements OnInit, OnChanges {
           labels = [`Produção ${this.year}`, `Meta ${this.year}`];
           datasets = [
             {
-              
-              data: [data?.currentYearTotal || 0,data?.goalAnual || 0],
+
+              data: [data?.currentYearTotal || 0, data?.goalAnual || 0],
               backgroundColor: [this.chartColors.primary, this.chartColors.secondary]
             }
           ];
@@ -205,7 +227,7 @@ export class ChartsComponent implements OnInit, OnChanges {
           labels = [`Produção ${this.year}`, `Produção ${this.year - 1}`];
           datasets = [
             {
-              
+
               data: [data?.currentYearTotal || 0, data?.previousYearTotal || 0],
               backgroundColor: [this.chartColors.primary, this.chartColors.secondary]
             }
@@ -238,7 +260,7 @@ export class ChartsComponent implements OnInit, OnChanges {
               label: `${this.year - 1}`,
               data: data?.recordsAnualLastYear || [],
               backgroundColor: this.chartColors.secondary,
-            
+
             }
           ];
         }
@@ -310,5 +332,32 @@ export class ChartsComponent implements OnInit, OnChanges {
       scatter: 'Dispersão'
     };
     return names[type] || type;
+  }
+
+  showFixedTooltip(monthIndex: number) {
+    if (this.chart) {
+      const datasetIndex = 0; 
+      const meta = this.chart.getDatasetMeta(datasetIndex);
+      const point = meta.data[monthIndex];
+
+      if (this.chart.tooltip && point) {
+        const eventPosition = {
+          x: point.x,
+          y: point.y
+        };
+        // Cria um tooltip manualmente
+        this.chart.tooltip.setActiveElements([{ datasetIndex, index: monthIndex }], eventPosition);
+        this.chart.update();
+        this.tooltipFixed = true;
+      }
+    }
+  }
+
+  removeTooltip() {
+    if (this.chart && this.chart.tooltip) {
+      this.chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+      this.chart.update();
+      this.tooltipFixed = false;
+    }
   }
 }

@@ -50,7 +50,8 @@
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full sm:w-[100%] py-2 ratio">
           <app-charts *ngIf="!isLoading.recordsMensal; else loading" [allowedChartTypes]="['bar', 'line', 'area']"
-            graphType="bar" graphLabel="Produção Mês" [graphData]="graphData.recordsMensal" [year]="filter.year ?? 0">
+            graphType="bar" graphLabel="Produção Mês" [graphData]="graphData.recordsMensal" [year]="filter.year ?? 0"
+            [month]="filter.month ?? 0">
           </app-charts>
           <ng-template #loading>
             <app-loading-spinner></app-loading-spinner>
@@ -88,7 +89,7 @@
               [allowedChartTypes]="['line', 'groupedBar', 'scatter']" graphType="line"
               graphLabel="Comparação produção acumulada"
               [graphData]="{ recordsAnual: graphData.recordsAnual, recordsAnualLastYear: graphData.recordsAnualLastYear }"
-              [year]="filter.year ?? 0">
+              [year]="filter.year ?? 0" [month]="filter.month ?? 0">
             </app-charts>
             <ng-template #loading>
               <app-loading-spinner></app-loading-spinner>
@@ -111,7 +112,8 @@
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full sm:w-[100%] py-2 ratio">
           <app-charts *ngIf="!isLoading.goalMes; else loading" [allowedChartTypes]="['bar', 'line', 'area']"
-            graphType="area" graphLabel="Meta Mês" [graphData]="graphData.goalMes" [year]="filter.year ?? 0">
+            graphType="area" graphLabel="Meta Mês" [graphData]="graphData.goalMes" [year]="filter.year ?? 0"
+            [month]="filter.month ?? 0">
           </app-charts>
           <ng-template #loading>
             <app-loading-spinner></app-loading-spinner>
@@ -146,7 +148,7 @@
             [allowedChartTypes]="['line', 'groupedBar', 'scatter']" graphType="groupedBar"
             graphLabel="produção acumulada vs meta mensal"
             [graphData]="{ recordsAnual: graphData.recordsAnual, goalsMensal: graphData.goalsMensal }"
-            [year]="filter.year ?? 0">
+            [year]="filter.year ?? 0" [month]="filter.month ?? 0">
           </app-charts>
           <ng-template #loading>
             <app-loading-spinner></app-loading-spinner>
