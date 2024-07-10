@@ -205,6 +205,48 @@ class IndicatorController extends Controller
         }
     }
 
+    public function getGoalMes(Request $request)
+    {
+        try {
+            $serviceId = $request->input('serviceId');
+            $activityId = $request->input('activityId');
+            $indicatorId = $request->input('indicatorId');
+            $year = $request->input('year');
+
+            // Buscar o sai_id baseado nos parâmetros fornecidos
+            $sai = Sai::where('service_id', $serviceId)
+                ->where('activity_id', $activityId)
+                ->where('indicator_id', $indicatorId)
+                ->first();
+
+            if (!$sai) {
+                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
+            }
+
+            $saiId = $sai->id;
+            $cacheKey = "goal_mes_{$saiId}_{$year}";
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $goalMes = DB::table('vw_goals_monthly')
+            ->where('sai_id', $saiId)
+                ->where('year', $year)
+                ->pluck('monthly_target')
+                ->map(function ($value) {
+                    return round($value);
+                })
+                ->toArray();
+
+            Cache::put($cacheKey, $goalMes, now()->addMinutes(30));
+
+            return response()->json($goalMes, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
     public function getGoalsMensal(Request $request)
     {
         try {
@@ -234,6 +276,9 @@ class IndicatorController extends Controller
             ->where('sai_id', $saiId)
                 ->where('year', $year)
                 ->pluck('valor_acumulado_mensal')
+                ->map(function ($value) {
+                    return round($value);
+                })
                 ->toArray();
 
             Cache::put($cacheKey, $goalsMensal, now()->addMinutes(30));
@@ -391,6 +436,12 @@ class IndicatorController extends Controller
                     'variation_rate_contractual'
                 ]);
 
+            if ($variations) {
+                $variations->variation_rate_homologous_abs = round($variations->variation_rate_homologous_abs);
+                $variations->variation_rate_homologous = round($variations->variation_rate_homologous);
+                $variations->variation_rate_contractual_abs = round($variations->variation_rate_contractual_abs);
+            }
+
             Cache::put($cacheKey, $variations, now()->addMinutes(30));
 
             return response()->json($variations, 200);
@@ -398,7 +449,6 @@ class IndicatorController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-
 
     /**
      * Display a listing of the resource.

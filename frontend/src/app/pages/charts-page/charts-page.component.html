@@ -1,16 +1,10 @@
-<div *ngIf="getRole() === 'admin' || getRole() === 'coordenador'">
-  <app-menu></app-menu>
-</div>
-<div class="mx-0 sm:ml-1 w-full h-full">
-  
-
-<div class="w-full graphicsContainer">
+<div class="m-2 w-full">
   <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false" [showServiceInput]="isAdminOrCoordinator"
     [showActivityInput]="showActivityInput" [selectedServiceId]="filter.serviceId"
     (filterEvent)="handleFilterData($event)" (activityInputChange)="handleActivityInputChange($event)">
   </app-filter>
 
-  <div class="flex flex-col gap-4 mt-2 mx-auto pb-4 shadow-md graphicsContainer2">
+  <div class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer2 graphicsContainer">
     <div class="tab-headers-wrapper">
       <div id="tabHead" class="flex items-center justify-between pr-2">
         <div id="tabHeaders" class="flex w-[30%]">
@@ -57,7 +51,8 @@
       <div class="flex w-full justify-around flex-wrap">
         <div class="w-full sm:w-[100%] py-2 ratio">
           <app-charts *ngIf="!isLoading.recordsMensal; else loading" [allowedChartTypes]="['bar', 'line', 'area']"
-            graphType="bar" graphLabel="Produção Mês" [graphData]="graphData.recordsMensal">
+            graphType="bar" graphLabel="Produção Mês" [graphData]="graphData.recordsMensal" [year]="filter.year ?? 0"
+            [month]="filter.month ?? 0">
           </app-charts>
           <ng-template #loading>
             <app-loading-spinner></app-loading-spinner>
@@ -94,16 +89,18 @@
             <app-charts *ngIf="!isLoading.recordsAnual; else loading"
               [allowedChartTypes]="['line', 'groupedBar', 'scatter']" graphType="line"
               graphLabel="Comparação produção acumulada"
-              [graphData]="{ recordsAnual: graphData.recordsAnual, recordsAnualLastYear: graphData.recordsAnualLastYear }">
+              [graphData]="{ recordsAnual: graphData.recordsAnual, recordsAnualLastYear: graphData.recordsAnualLastYear }"
+              [year]="filter.year ?? 0" [month]="filter.month ?? 0">
             </app-charts>
             <ng-template #loading>
               <app-loading-spinner></app-loading-spinner>
             </ng-template>
           </div>
           <div class="w-full lg:w-1/2">
-            <app-charts *ngIf="!isLoading.recordsAnual; else loading" [allowedChartTypes]="['bar', 'doughnut', 'pie']"
-              graphType="bar" graphLabel="Comparação produção Total"
-              [graphData]="{ previousYearTotal: graphData.previousYearTotal, currentYearTotal: graphData.currentYearTotal }">
+            <app-charts *ngIf="!isLoading.recordsAnual; else loading" [allowedChartTypes]="['doughnut', 'pie']"
+              graphType="pie" graphLabel="Comparação produção Total"
+              [graphData]="{ previousYearTotal: graphData.previousYearTotal, currentYearTotal: graphData.currentYearTotal }"
+              [year]="filter.year ?? 0">
             </app-charts>
             <ng-template #loading>
               <app-loading-spinner></app-loading-spinner>
@@ -113,8 +110,17 @@
       </div>
     </div>
     <div class="px-4" *ngIf="selectedTab === 'Metas'">
-      <h1 class="whiteTxt text-lg">{{ filter.year }}</h1>
-
+      <div class="flex w-full justify-around flex-wrap">
+        <div class="w-full sm:w-[100%] py-2 ratio">
+          <app-charts *ngIf="!isLoading.goalMes; else loading" [allowedChartTypes]="['bar', 'line', 'area']"
+            graphType="area" graphLabel="Meta Mês" [graphData]="graphData.goalMes" [year]="filter.year ?? 0"
+            [month]="filter.month ?? 0">
+          </app-charts>
+          <ng-template #loading>
+            <app-loading-spinner></app-loading-spinner>
+          </ng-template>
+        </div>
+      </div>
       <div class="flex w-full justify-center flex-wrap">
         <div class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md">
           <h1 class="text-xl font-semibold text-blue-600">
@@ -142,16 +148,18 @@
           <app-charts *ngIf="!isLoading.goalsMensal; else loading"
             [allowedChartTypes]="['line', 'groupedBar', 'scatter']" graphType="groupedBar"
             graphLabel="produção acumulada vs meta mensal"
-            [graphData]="{ recordsAnual: graphData.recordsAnual, goalsMensal: graphData.goalsMensal }">
+            [graphData]="{ recordsAnual: graphData.recordsAnual, goalsMensal: graphData.goalsMensal }"
+            [year]="filter.year ?? 0" [month]="filter.month ?? 0">
           </app-charts>
           <ng-template #loading>
             <app-loading-spinner></app-loading-spinner>
           </ng-template>
         </div>
         <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.goalAnual; else loading" [allowedChartTypes]="['bar', 'doughnut', 'pie']"
+          <app-charts *ngIf="!isLoading.goalAnual; else loading" [allowedChartTypes]="['doughnut', 'pie']"
             graphType="pie" graphLabel="Produção Anual vs Meta Anual"
-            [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }">
+            [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }"
+            [year]="filter.year ?? 0">
           </app-charts>
           <ng-template #loading>
             <app-loading-spinner></app-loading-spinner>

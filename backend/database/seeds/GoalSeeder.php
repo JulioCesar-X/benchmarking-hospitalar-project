@@ -18,17 +18,14 @@ class GoalSeeder extends Seeder
     private function insertGoals()
     {
         $sais = Sai::with(['service', 'activity', 'indicator'])->get();
+        $currentYears = [2019,2020,2021,2022,2023,2024];
 
-        // Definir os anos específicos para inserção de metas
-        $currentYear = 2023;   // Ano atual para metas aleatórias
-        $nextYear = 2024;      // Próximo ano para metas a zero
-
-        foreach ($sais as $sai) {
-            // Inserir meta para o ano atual com valores aleatórios
-            $this->createGoal($sai, $currentYear, $this->generateRandomTarget());
-
-            // Inserir meta para o próximo ano com valor zero
-            $this->createGoal($sai, $nextYear, $this->generateRandomTarget());
+        foreach ($currentYears as $year) {
+            foreach ($sais as $sai) {
+                if ($sai) {
+                    $this->createGoal($sai, $year, $this->generateRandomTarget());
+                }
+            }
         }
     }
 
@@ -45,6 +42,6 @@ class GoalSeeder extends Seeder
 
     private function generateRandomTarget()
     {
-        return rand(10000, 50000); // Gera metas entre 10.000 e 50.000
+        return rand(10000, 15000); // Gera metas entre 10.000 e 50.000
     }
 }
