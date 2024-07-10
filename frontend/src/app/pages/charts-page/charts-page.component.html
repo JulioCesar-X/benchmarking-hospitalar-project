@@ -1,3 +1,8 @@
+<div *ngIf="getRole() === 'admin' || getRole() === 'coordenador'">
+  <app-menu></app-menu>
+</div>
+<div class="mx-0 sm:ml-1 w-full h-full">
+
 <div class="m-2 w-full">
   <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false" [showServiceInput]="isAdminOrCoordinator"
     [showActivityInput]="showActivityInput" [selectedServiceId]="filter.serviceId"
@@ -169,7 +174,7 @@
     </div>
   </div>
 </div>
-</div>
+
 
 
 
