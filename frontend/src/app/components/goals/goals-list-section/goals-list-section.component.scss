@@ -4,7 +4,11 @@
 
 .headingSection {
   display: flex;
-  color: $main-blue;
+  background-color: $main-blue;
+  color: $fill-white;
+  justify-content: center;
+  text-align: center;
+  font-size: 2em;
 
   img {
     width: 25px;
@@ -13,14 +17,24 @@
   }
 }
 
-.forms-container {
-  @include forms-container();
-  padding: 0;
-  margin-block: 0em;
-  border: 10px solid $main-blue;
+
+
+.forms-container{
+  box-sizing: border-box;
   background-color: $fill-white;
-  border-radius: 0;
-  width: 100%;
+  border: $main-blue 10px solid;
+/*   height: 100%;
+ *//*   border-top-left-radius: 1em;
+  border-top-right-radius: 1em; */
+  max-height: 70vh;
+
+  &.forms-container__error {
+    border: $error-color 10px solid;
+  }
+  @media (max-width: 600px) {
+    overflow-y: visible;
+    height: auto;
+  }
 }
 
 .forms-container--inputContainer {

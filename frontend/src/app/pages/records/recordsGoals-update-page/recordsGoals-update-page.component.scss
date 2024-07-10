@@ -1,7 +1,6 @@
 @import '../../../../styles/_variables.scss';
 
- :host {
-    margin-block: 0.5em;
+:host {
     flex: 1;
     display: flex;
   } @media(max-width:600px){
@@ -45,7 +44,7 @@
 }
 
 .tab-link:hover, .tab-link.active:hover {
-    background-color: darken($main-blue, 40);
+    background-color: darken($main-blue, 10);
 }
 
 .tab-link.active {

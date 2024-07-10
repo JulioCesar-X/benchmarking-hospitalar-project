@@ -38,6 +38,9 @@
     }
     to {
       min-width: 270px;
+      animation: showOptions 200ms ease-in forwards;
+
+      
     }
   }
 
@@ -47,6 +50,8 @@
     }
     to {
       min-width: 50px;
+      animation: hideOptions 200ms ease-in forwards;
+
     }
   }
 }

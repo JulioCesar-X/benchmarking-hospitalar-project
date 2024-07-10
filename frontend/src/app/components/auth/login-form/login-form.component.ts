@@ -4,9 +4,8 @@ import { Router, RouterLink } from '@angular/router';
 import { NgForm, FormsModule, NgModel } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { EventEmitter, Output } from '@angular/core';
-import { LoadingSpinnerBlueBGComponent } from '../../shared/loading-spinner-blue-bg/loading-spinner-blue-bg.component';
 import { PasswordRecupModalComponent } from '../../../components/auth/password-recup-modal/password-recup-modal.component'
-
+import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 @Component({
   selector: 'app-login-form',
   standalone: true,
@@ -15,7 +14,7 @@ import { PasswordRecupModalComponent } from '../../../components/auth/password-r
     CommonModule,
     RouterLink,
     PasswordRecupModalComponent,
-    LoadingSpinnerBlueBGComponent
+    LoadingSpinnerComponent
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'

@@ -21,35 +21,72 @@
           </button>
         </div>
 
-        <div id="exportMenu" class="relative" [matMenuTriggerFor]="exportMenu">
-          <button id="exportDropDown" type="button"
-            class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
-            aria-haspopup="true" aria-expanded="true">
-            <strong>Exportar</strong>
-            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-              aria-hidden="true">
-              <path fill-rule="evenodd"
-                d="M10 3a1 1 0 011 1v10.586l2.707-2.707a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L9 14.586V4a1 1 0 011-1z"
-                clip-rule="evenodd" />
-            </svg>
-          </button>
-          <mat-menu #exportMenu="matMenu" class="menu-custom" [overlapTrigger]="false">
-            <div class="py-1" role="none">
-              <a id="exportExcel" href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
-                role="menuitem" (click)="exportToExcel()">
-                <img src="../../../assets/icons/csv.png" height="16" class="inline mr-2" />
-                Exportar para Excel
-              </a>
-              <a id="exportPdf" href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem"
-                (click)="exportToPdf(); false;">
-                <img src="../../../assets/icons/pdf.png" height="16" class="inline mr-2" />
-                Exportar para PDF
-              </a>
-            </div>
-          </mat-menu>
+          <div
+            id="exportMenu"
+            class="relative"
+            [matMenuTriggerFor]="exportMenu"
+          >
+            <button
+              id="exportDropDown"
+              type="button"
+              class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
+              aria-haspopup="true"
+              aria-expanded="true"
+            >
+              <strong>Exportar</strong>
+              <svg
+                class="-mr-1 ml-2 h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 3a1 1 0 011 1v10.586l2.707-2.707a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L9 14.586V4a1 1 0 011-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <mat-menu
+              #exportMenu="matMenu"
+              class="menu-custom"
+              [overlapTrigger]="false"
+            >
+              <div class="py-1" role="none">
+                <a
+                  id="exportExcel"
+                  href="#"
+                  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
+                  role="menuitem"
+                  (click)="exportToExcel()"
+                >
+                  <img
+                    src="../../../assets/icons/csv.png"
+                    height="16"
+                    class="inline mr-2"
+                  />
+                  Exportar para Excel
+                </a>
+                <a
+                  id="exportPdf"
+                  href="#"
+                  class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
+                  role="menuitem"
+                  (click)="exportToPdf(); (false)"
+                >
+                  <img
+                    src="../../../assets/icons/pdf.png"
+                    height="16"
+                    class="inline mr-2"
+                  />
+                  Exportar para PDF
+                </a>
+              </div>
+            </mat-menu>
+          </div>
         </div>
       </div>
-    </div>
 
     <div class="px-4 z-5" *ngIf="selectedTab === 'Producao'">
       <h1 class="whiteTxt text-lg">{{ numberToMonth(filter.month) }}, {{ filter.year }}</h1>
