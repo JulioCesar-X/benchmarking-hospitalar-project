@@ -11,16 +11,23 @@ import { CommonModule } from '@angular/common';
 export class FeedbackComponent implements OnInit {
   @Input() message: string = '';
   @Input() type: 'success' | 'error' = 'success';
+  leaving: boolean = false;
+
 
   ngOnInit() {
+    console.log("dasdadada", this.message)
     if (this.message) {
       setTimeout(() => {
         this.close();
-      }, 5000); // Auto close after 5 seconds
+      }, 2000); // Auto close after 5 seconds
     }
   }
 
   close() {
-    this.message = '';
+    this.leaving = true;
+    setTimeout(() => {
+      this.message = '';
+      this.leaving = false; 
+    }, 500); 
   }
 }

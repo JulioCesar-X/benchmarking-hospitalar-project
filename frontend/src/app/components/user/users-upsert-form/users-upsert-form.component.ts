@@ -18,6 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { User } from '../../../core/models/user.model';
+import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 
 
 @Component({
@@ -35,11 +36,13 @@ import { User } from '../../../core/models/user.model';
     MatTableModule,
     MatCheckboxModule,
     MatFormFieldModule,
-  MatSelectModule],
+  MatSelectModule,
+  LoadingSpinnerComponent],
   templateUrl: './users-upsert-form.component.html',
   styleUrl: './users-upsert-form.component.scss'
 })
 export class UsersUpsertFormComponent {
+  loadingCircleMessage: string = "A carregar";
   @Input() formsAction: string = '';
 
   @Input() user: User = {
@@ -70,10 +73,16 @@ export class UsersUpsertFormComponent {
   }
 
   formSubmited() {
+    this.notificationMessage = '';
+
+
     if (this.formsAction === 'create') {
       this.createUser();
+      this.loadingCircleMessage = "A criar utilizador..."
     } else if (this.formsAction === 'edit') {
       this.editUser();
+      this.loadingCircleMessage = "A editar utilizador..."
+
     }
   }
 
@@ -143,13 +152,12 @@ export class UsersUpsertFormComponent {
 
       this.userService.storeUser(this.user).subscribe(
           (response: any) => {
-            alert("user created")
               console.log("user created:", response)
               this.setNotification('User created successfully', 'success');
               this.clearForm();
               this.isLoading = false; // Define isLoading como falso após a conclusão do envio
-              setTimeout(() => this.router.navigate(['/users']), 2000); // Redirect after success message
 
+              setTimeout(() => this.router.navigate(['/users']), 2000); // Redirect after success message
           },
           (error: any) => {
               const errorMessage = this.getErrorMessage(error);

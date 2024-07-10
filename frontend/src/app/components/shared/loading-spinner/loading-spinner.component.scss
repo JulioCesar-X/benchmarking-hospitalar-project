@@ -9,7 +9,6 @@
   justify-content: center;
   z-index: 1000;
   color: $main-blue;
-
 }
 
 .spinner {
@@ -19,6 +18,13 @@
   width: 50px;
   height: 50px;
   animation: spin 2s linear infinite;
+}
+.loading-circle.forBlueBG{
+  color: $fill-white;
+}
+.spinner.forBlueBG {
+  border: 8px solid $secondary-blue;
+  border-top: 8px solid $main-dark-blue; 
 }
 
 @keyframes spin {
