@@ -28,6 +28,7 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::get('indicators/sai/records-last-year', 'IndicatorController@getRecordsLastYear');
 
     Route::get('indicators/sai/goals-mensal', 'IndicatorController@getGoalsMensal');
+    Route::get('indicators/sai/goal-mes', 'IndicatorController@getGoalMes');
     Route::get('indicators/sai/goal-anual', 'IndicatorController@getGoalAnual');
     Route::get('indicators/sai/previous-year-total', 'IndicatorController@getPreviousYearTotal');
     Route::get('indicators/sai/current-year-total', 'IndicatorController@getCurrentYearTotal');

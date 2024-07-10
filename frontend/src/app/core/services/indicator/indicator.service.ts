@@ -54,6 +54,11 @@ export class IndicatorService {
     return this.http.get<any>('/indicators/sai/goals-mensal', { params });
   }
 
+  getGoalMes(filter: Filter): Observable<any> {
+    const params = this.getHttpParams(filter);
+    return this.http.get<any>('/indicators/sai/goal-mes', { params });
+  }
+
   getGoalAnual(filter: Filter): Observable<any> {
     const params = this.getHttpParams(filter);
     return this.http.get<any>('/indicators/sai/goal-anual', { params });
@@ -80,6 +85,7 @@ export class IndicatorService {
       recordsAnual: this.getRecordsAnual(filter),
       recordsAnualLastYear: this.getRecordsLastYear(filter),
       goalsMensal: this.getGoalsMensal(filter),
+      goalMes: this.getGoalMes(filter),
       goalAnual: this.getGoalAnual(filter),
       previousYearTotal: this.getPreviousYearTotal(filter),
       currentYearTotal: this.getCurrentYearTotal(filter),

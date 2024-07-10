@@ -313,6 +313,7 @@ export class ChartsPageComponent implements OnInit {
       recordsAnual: value,
       recordsAnualLastYear: value,
       goalsMensal: value,
+      goalMes: value,
       goalAnual: value,
       lastFiveYears: value,
       previousYearTotal: value,
