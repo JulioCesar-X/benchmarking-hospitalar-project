@@ -23,7 +23,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   displayedServices: any[] = [];
   isLoading: boolean = false;
   page: number = 1;
-  pageSize: number = 8;
+  pageSize: number = 4;
   totalServices: number = 0;
 
   constructor(

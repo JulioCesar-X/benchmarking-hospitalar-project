@@ -7,19 +7,20 @@
   </div>
 </div> -->
 
-<div class="card">
-  <app-loading-spinner class="my-auto" *ngIf="isLoading" [message]="'Carregando...'"></app-loading-spinner>
-
-  <div *ngIf="!isLoading">
-    <div class="cardImg">
-      <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
-    </div>
-    <div class="cardText">
-      <p>{{ service.service_name }}</p>
-      <p>{{ service?.description }}</p>
+  <div class="card max-h-[70vh] ">
+    <app-loading-spinner class="my-auto" *ngIf="isLoading" [message]="'Carregando...'"></app-loading-spinner>
+  
+    <div *ngIf="!isLoading">
+      <div class="cardImg">
+        <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
+      </div>
+      <div class="cardText ">
+        <p class="text-lg underline">{{ service.service_name }}</p>
+        <p class="mt-2">{{ service?.description }}</p>
+      </div>
     </div>
   </div>
-</div>
+
 
 
 
