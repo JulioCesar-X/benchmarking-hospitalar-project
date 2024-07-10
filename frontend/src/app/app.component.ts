@@ -30,7 +30,7 @@ export class AppComponent {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    const threshold = 200; // Change this to set a different scroll threshold
+    const threshold = 300; // Change this to set a different scroll threshold
     this.toTopBtnVisible = window.scrollY > threshold;
     this.cdr.detectChanges(); // Manually trigger change detection
 

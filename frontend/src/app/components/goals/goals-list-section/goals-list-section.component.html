@@ -1,12 +1,16 @@
-<section class="forms-container">
-  <div class="table-container">
+<section class="flex flex-col min-h-full  forms-container">
     <div class="headingSection">
       <h2>Lista de Metas - {{ filter.year }}</h2>
     </div>
-    <app-loading-spinner *ngIf="isLoadingGoals" message="A carregar Metas..."></app-loading-spinner>
-    <div *ngIf="!isLoadingGoals">
+
+
+    <div class="my-auto" *ngIf="isLoadingGoals">
+      <app-loading-spinner  message="A carregar Metas..."></app-loading-spinner>
+    </div>
+
+    <div *ngIf="!isLoadingGoals" class="my-auto min-h-full overflow-y-scroll">
       <div *ngIf="goals.length; else noResults">
-        <div class="overflow-x-auto relative">
+        <div class="relative">
           <table class="user-table min-w-full">
             <thead class="bg-main-blue text-fill-white">
               <tr>
@@ -35,15 +39,16 @@
               </tr>
             </tbody>
           </table>
-          <app-paginator [length]="totalGoals" [pageSize]="pageSize" [pageIndex]="currentPage" [pageSizeOptions]="pageOptions"
-            (page)="onPageChanged($event)">
-          </app-paginator>
+
         </div>
       </div>
       <ng-template #noResults>
-        <div class="p-4">Nenhum registro encontrado.</div>
+        <div class="text-center mx-auto min-h-full">
+          Nenhum registro encontrado.</div>
       </ng-template>
       <app-feedback [message]="notificationMessage" [type]="notificationType"></app-feedback>
     </div>
-  </div>
+    <app-paginator [length]="totalGoals" [pageSize]="pageSize" [pageIndex]="currentPage" [pageSizeOptions]="pageOptions"
+    (page)="onPageChanged($event)">
+  </app-paginator>
 </section>

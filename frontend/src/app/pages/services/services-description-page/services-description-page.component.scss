@@ -5,7 +5,7 @@
     display: flex;
   }
 
-.descriptionBox {
+/*   .descriptionBox {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -20,18 +20,65 @@
     margin: 0 auto;
     margin-block: 12em;
     border-radius: 1em;
-}
+} */
 
-.container {
+  .card {
+    margin: 0 auto;
     display: flex;
+    background-color: $main-blue;
     flex-direction: column;
-    min-height: 100vh;
-}
+    justify-content: space-between;
+    padding-bottom: 2em;
+    height: auto;
+    width: 30%;
+    margin-block: 5em;
 
-main {
-    flex: 1;
-}
 
+    overflow: hidden;
+  
+  }
+  
+  .card:hover {
+    box-shadow: 5px 10px 63px -20px rgba(0, 0, 0, 0.75);
+  
+  }
+  
+  .cardImg {
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+  
+    img {
+      width: 100%;
+      aspect-ratio: 10/6;
+      transition: transform 0.6s ease-in-out;
+    }
+  }
+  
+  .card:hover .cardImg img {
+    transform: scale(1.05); // Aumenta a imagem em 5% ao passar o mouse
+  
+  }
+  
+  .card:hover {
+    background-color: $main-dark-blue;
+  
+  }
+  
+  
+  .cardText {
+    cursor: pointer;
+    background-color: transparent;
+    height: 100%;
+    padding: 1em;
+  
+    p {
+      color: $fill-white;
+      text-transform: uppercase;
+      text-align: center;
+      margin: 0;
+    }
+  }
 
 // Add para o load
 .loading-circle {

@@ -34,6 +34,7 @@ export class ServicesDescriptionPageComponent implements OnInit {
     this.isLoading = true;
     this.serviceService.showService(serviceId).subscribe({
       next: (data) => {
+        console.log(data)
         this.service = data;
       },
       error: (err) => {
