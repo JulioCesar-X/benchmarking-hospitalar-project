@@ -13,7 +13,7 @@
   </div>
 
   <div *ngIf="!isLoading" class="min-h-full overflow-y-scroll">
-    <div *ngIf="indicators.length; else noResults" class="">
+    <div *ngIf="dataSource.data.length; else noResults" class="">
       <table matSort (matSortChange)="sortData($event)" class="w-[90%] mx-auto user-table rounded-xl">
         <thead class="top-[-2px] z-10">
           <tr class="">
@@ -22,7 +22,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let indicator of sortedIndicators">
+          <tr *ngFor="let indicator of dataSource.data">
             <td class="border p-2">{{ indicator.indicator_name }}</td>
             <td class="border p-2 text-center">
               <div class="flex justify-center space-x-4">

@@ -34,11 +34,13 @@ import { MatTableDataSource } from '@angular/material/table';
 export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() users: any[] = [];
   @Input() isLoading = true;
-  @Input() pageSize = 10;
+  pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 20, 50, 100];
   currentPage = 0;
   totalLength = 0;
   dataSource = new MatTableDataSource<any>([]);
+  allUsers: any[] = []; // Armazena todos os dados carregados
+  loadedPages: Set<number> = new Set(); // Acompanhamento de páginas carregadas
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -50,11 +52,11 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
   ngOnInit(): void {
     if (!this.users.length) {
-      this.loadUsers();
+      this.loadUsers(0, 30); // Carregar mais dados inicialmente
     } else {
       this.isLoading = false;
-      this.dataSource = new MatTableDataSource(this.users);
-      this.dataSource.sort = this.sort;
+      this.allUsers = this.users.slice();
+      this.updateDataSource();
     }
   }
 
@@ -62,8 +64,8 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
     if (changes['users'] && !changes['users'].isFirstChange()) {
       this.isLoading = false;
       this.totalLength = this.users.length;
-      this.dataSource = new MatTableDataSource(this.users);
-      this.dataSource.sort = this.sort;
+      this.allUsers = this.users.slice();
+      this.updateDataSource();
     }
     if (changes['isLoading'] && !changes['isLoading'].isFirstChange()) {
       this.isLoading = changes['isLoading'].currentValue;
@@ -74,16 +76,18 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
     this.dataSource.sort = this.sort;
   }
 
-  loadUsers(pageIndex = 0, pageSize = 10): void {
+  loadUsers(pageIndex = 0, pageSize = 30): void {
     this.isLoading = true;
     this.userService.getUsersPaginated(pageIndex + 1, pageSize).subscribe({
       next: (data) => {
-        this.users = data.data;
-        this.dataSource = new MatTableDataSource(this.users);
-        this.dataSource.sort = this.sort;
+        if (pageIndex === 0) {
+          this.allUsers = data.data;
+        } else {
+          this.allUsers = [...this.allUsers, ...data.data];
+        }
         this.totalLength = data.total;
-        this.currentPage = pageIndex;
-        console.log("Paginated users loaded:", this.users);
+        this.updateDataSource();
+        this.loadedPages.add(pageIndex);
         this.isLoading = false;
       },
       error: (error) => {
@@ -116,8 +120,9 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
   deleteUser(userId: number): void {
     this.userService.destroyUser(userId).subscribe({
-      next: (data) => {
-        this.loadUsers();
+      next: () => {
+        this.allUsers = this.allUsers.filter(user => user.id !== userId);
+        this.updateDataSource();
       },
       error: (error) => {
         console.error("Error deleting user:", error);
@@ -128,13 +133,20 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
   handlePageEvent(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
-    this.loadUsers(this.currentPage, this.pageSize);
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    if (!this.loadedPages.has(this.currentPage)) {
+      this.loadUsers(this.currentPage, this.pageSize * 3); // Carregar mais dados quando necessário
+    } else {
+      this.dataSource.data = this.allUsers.slice(startIndex, endIndex);
+    }
   }
 
   sortData(sort: Sort) {
-    const data = this.users.slice();
+    const data = this.allUsers.slice();
     if (!sort.active || sort.direction === '') {
-      this.dataSource.data = data;
+      this.dataSource.data = data.slice(this.currentPage * this.pageSize, (this.currentPage + 1) * this.pageSize);
       return;
     }
 
@@ -150,10 +162,19 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
         default:
           return 0;
       }
-    });
+    }).slice(this.currentPage * this.pageSize, (this.currentPage + 1) * this.pageSize);
   }
 
   compare(a: string, b: string, isAsc: boolean): number {
     return a.localeCompare(b, undefined, { sensitivity: 'base' }) * (isAsc ? 1 : -1);
+  }
+
+  updateDataSource(): void {
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.dataSource = new MatTableDataSource(this.allUsers.slice(startIndex, endIndex));
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
   }
 }

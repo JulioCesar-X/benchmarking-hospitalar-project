@@ -7,13 +7,13 @@
     <h2 class="whiteTxt my-0">Lista de Utilizadores</h2>
   </div>
 
-  <div class=" mt-auto" *ngIf="isLoading">
+  <div class="mt-auto" *ngIf="isLoading">
     <app-loading-spinner class="" message="A carregar Utilizadores..."></app-loading-spinner>
   </div>
 
   <div *ngIf="!isLoading" class="min-h-full overflow-y-scroll">
-    <div *ngIf="users.length; else noResults" class="">
-      <table class="mat-sort-header-container" matSort (matSortChange)="sortData($event)" class="w-[90%] mx-auto user-table rounded-xl">
+    <div *ngIf="dataSource.data.length; else noResults" class="">
+      <table matSort (matSortChange)="sortData($event)" class="w-[90%] mx-auto user-table rounded-xl">
         <thead class="top-[-2px] z-10">
           <tr class="">
             <th mat-sort-header="name" class="p-2 cursor-pointer">
@@ -29,7 +29,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let user of dataSource.filteredData">
+          <tr *ngFor="let user of dataSource.data">
             <td class="border p-2">{{ user.name }}</td>
             <td class="border p-2 sm:px4 hidden md:table-cell">
               {{ user.email }}

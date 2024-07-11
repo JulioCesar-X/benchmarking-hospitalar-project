@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Filter } from '../../../core/models/filter.model';
@@ -36,7 +36,7 @@ interface Goal {
   templateUrl: './goals-list-section.component.html',
   styleUrls: ['./goals-list-section.component.scss']
 })
-export class GoalsListSectionComponent implements OnInit, OnChanges {
+export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() filter: Filter = {
     indicatorId: 1,
     activityId: 1,
@@ -52,9 +52,11 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
   pageSize = 10;
   currentPage = 0;
   goals: Goal[] = [];
+  allGoals: Goal[] = []; // Armazena todos os dados carregados
+  loadedPages: Set<number> = new Set();
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
-  pageOptions = [5, 10, 20, 50, 100]; // Define the pageOptions array here
+  pageOptions = [5, 10, 20, 50, 100]; // Define the pageOptions array aqui
 
   constructor(
     private goalService: GoalService,
@@ -62,23 +64,27 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.loadGoals();
+    this.loadGoals(0, 30); // Carrega um conjunto maior de dados inicialmente
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
-      this.loadGoals();
+      this.loadGoals(0, 30); // Recarrega dados com base no novo filtro
     }
   }
 
-  loadGoals(): void {
+  ngAfterViewInit() {
+    this.updateDataSource();
+  }
+
+  loadGoals(pageIndex = 0, pageSize = 30): void {
     if (this.filter?.year && this.filter?.serviceId) {
       this.isLoadingGoals = true;
       const serviceId = Number(this.filter.serviceId);
       const activityId = this.filter.activityId !== null && this.filter.activityId !== undefined ? Number(this.filter.activityId) : null;
       const year = this.filter.year;
 
-      this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, this.currentPage, this.pageSize)
+      this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, pageIndex, pageSize)
         .pipe(
           catchError(error => {
             console.error('Error fetching goals', error);
@@ -87,28 +93,37 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
           finalize(() => this.isLoadingGoals = false)
         )
         .subscribe(response => {
+          if (pageIndex === 0) {
+            this.allGoals = this.mapGoals(response.data);
+          } else {
+            this.allGoals = [...this.allGoals, ...this.mapGoals(response.data)];
+          }
           this.totalGoals = response.total;
-          this.goals = response.data.map((item: any) => {
-            const goal = item.goal || {
-              goal_id: null,
-              target_value: '',
-              year: year
-            };
-
-            return {
-              id: goal.goal_id,
-              indicator_name: item.indicator_name,
-              target_value: goal.target_value,
-              year: goal.year,
-              sai_id: item.sai_id,
-              isInserted: goal.target_value !== '',
-              isUpdating: false,
-              isEditing: false
-            };
-          });
-          console.log('Goals loaded:', this.goals);
+          this.updateDataSource();
+          this.loadedPages.add(pageIndex);
         });
     }
+  }
+
+  mapGoals(data: any[]): Goal[] {
+    return data.map(item => {
+      const goal = item.goal || {
+        goal_id: null,
+        target_value: '',
+        year: this.filter.year
+      };
+
+      return {
+        id: goal.goal_id,
+        indicator_name: item.indicator_name,
+        target_value: goal.target_value,
+        year: goal.year,
+        sai_id: item.sai_id,
+        isInserted: goal.target_value !== '',
+        isUpdating: false,
+        isEditing: false
+      };
+    });
   }
 
   editGoal(goal: Goal): void {
@@ -156,7 +171,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
       .subscribe(
         () => {
           this.setNotification('Meta criada com sucesso', 'success');
-          this.loadGoals();
+          this.loadGoals(0, this.pageSize * 3); // Recarrega os dados
         },
         error => this.setNotification(this.getErrorMessage(error), 'error')
       );
@@ -186,9 +201,22 @@ export class GoalsListSectionComponent implements OnInit, OnChanges {
   }
 
   onPageChanged(event: PageEvent): void {
-    this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadGoals();
+    this.currentPage = event.pageIndex;
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    if (!this.loadedPages.has(this.currentPage)) {
+      this.loadGoals(this.currentPage, this.pageSize * 3);
+    } else {
+      this.updateDataSource();
+    }
+  }
+
+  updateDataSource(): void {
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.goals = this.allGoals.slice(startIndex, endIndex);
   }
 
   trackByIndex(index: number, item: any): number {

@@ -40,7 +40,8 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges, AfterV
   currentPage = 0;
   totalLength = 0;
   dataSource: MatTableDataSource<Activity> = new MatTableDataSource<Activity>([]);
-  sortedActivities: Activity[] = [];
+  allActivities: Activity[] = [];
+  loadedPages: Set<number> = new Set();
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -52,11 +53,11 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges, AfterV
 
   ngOnInit(): void {
     if (!this.activities.length) {
-      this.loadActivities();
+      this.loadActivities(0, 30);
     } else {
       this.isLoading = false;
-      this.sortedActivities = this.activities.slice();
-      this.dataSource.data = this.sortedActivities;
+      this.allActivities = this.activities.slice();
+      this.updateDataSource();
     }
   }
 
@@ -68,24 +69,27 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges, AfterV
     if (changes['activities'] && !changes['activities'].isFirstChange()) {
       this.isLoading = false;
       this.totalLength = this.activities.length;
-      this.sortedActivities = this.activities.slice();
-      this.dataSource.data = this.sortedActivities;
+      this.allActivities = this.activities.slice();
+      this.updateDataSource();
     }
     if (changes['isLoading'] && !changes['isLoading'].isFirstChange()) {
       this.isLoading = changes['isLoading'].currentValue;
     }
   }
 
-  loadActivities(pageIndex = 0, pageSize = 10): void {
+  loadActivities(pageIndex = 0, pageSize = 30): void {
     this.isLoading = true;
     this.activityService.getActivitiesPaginated(pageIndex + 1, pageSize).subscribe({
       next: (data) => {
-        this.activities = data.data;
+        if (pageIndex === 0) {
+          this.allActivities = data.data;
+        } else {
+          this.allActivities = [...this.allActivities, ...data.data];
+        }
         this.totalLength = data.total;
-        this.currentPage = pageIndex;
+        this.updateDataSource();
+        this.loadedPages.add(pageIndex);
         this.isLoading = false;
-        this.sortedActivities = this.activities.slice();
-        this.dataSource.data = this.sortedActivities;
       },
       error: (error) => {
         console.error("Error loading paginated activities:", error);
@@ -117,8 +121,9 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges, AfterV
 
   deleteActivity(activityId: number): void {
     this.activityService.destroyActivity(activityId).subscribe({
-      next: (data) => {
-        this.loadActivities(this.currentPage, this.pageSize);
+      next: () => {
+        this.allActivities = this.allActivities.filter(activity => activity.id !== activityId);
+        this.updateDataSource();
       },
       error: (error) => {
         console.error("Error deleting activity:", error);
@@ -129,31 +134,44 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges, AfterV
   handlePageEvent(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
-    this.loadActivities(this.currentPage, this.pageSize);
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    if (!this.loadedPages.has(this.currentPage)) {
+      this.loadActivities(this.currentPage, this.pageSize * 3);
+    } else {
+      this.dataSource.data = this.allActivities.slice(startIndex, endIndex);
+    }
   }
 
   sortData(sort: Sort) {
-    const data = this.activities.slice();
+    const data = this.allActivities.slice();
     if (!sort.active || sort.direction === '') {
-      this.sortedActivities = data;
-      this.dataSource.data = this.sortedActivities;
+      this.dataSource.data = data.slice(this.currentPage * this.pageSize, (this.currentPage + 1) * this.pageSize);
       return;
     }
 
-    this.sortedActivities = data.sort((a, b) => {
+    this.dataSource.data = data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
         case 'activity_name':
-          return this.compare(a.activity_name.toLowerCase(), b.activity_name.toLowerCase(), isAsc);
+          return this.compare(a.activity_name, b.activity_name, isAsc);
         default:
           return 0;
       }
-    });
-
-    this.dataSource.data = this.sortedActivities;
+    }).slice(this.currentPage * this.pageSize, (this.currentPage + 1) * this.pageSize);
   }
 
   compare(a: string, b: string, isAsc: boolean): number {
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+    return a.localeCompare(b, undefined, { sensitivity: 'base' }) * (isAsc ? 1 : -1);
+  }
+
+  updateDataSource(): void {
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.dataSource = new MatTableDataSource(this.allActivities.slice(startIndex, endIndex));
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
   }
 }

@@ -1,32 +1,20 @@
 <section class="flex flex-col min-h-full  forms-container">
-  <!--   <div class="headingSection">
-    <h2>Lista de serviços</h2>
-    <img (click)="openDialog(null, 'create')" src="../../../assets/images/icons8-plus-30.png" class="icon"
-      alt="createIcon">
-  </div> -->
   <div class="flex justify-start items-center pb-2 text-xl gap-10 blueBG">
-      
-    <button mat-icon-button
-    matTooltip="Clique para registrar um novo serviços"
-    [matTooltipPosition]="'right'"
-    matTooltipClass="custom"
-    class="small-btn whiteBG createBtn ml-5"
-    (click)="openDialog(null, 'create')">
-    <img src="../../../assets/images/icons8-plus-30.png" alt="createIcon" class="icon-large">
+    <button mat-icon-button matTooltip="Clique para registrar um novo serviços" [matTooltipPosition]="'right'"
+      matTooltipClass="custom" class="small-btn whiteBG createBtn ml-5" (click)="openDialog(null, 'create')">
+      <img src="../../../assets/images/icons8-plus-30.png" alt="createIcon" class="icon-large">
     </button>
     <h2 class="whiteTxt my-0">Lista de Serviços</h2>
   </div>
 
   <div class="mt-auto">
-    <app-loading-spinner
-    *ngIf="isLoading"
-    message="Procurando atividades..."
-  ></app-loading-spinner>
+    <app-loading-spinner *ngIf="isLoading" message="Procurando atividades..."></app-loading-spinner>
   </div>
 
   <div *ngIf="!isLoading" class="min-h-full overflow-y-scroll">
     <div class="cardsContainer" *ngIf="services.length; else noResults">
-      <app-card class="min-h-full" *ngFor="let service of services" [imageUrl]="service.image_url" [title]="service.service_name">
+      <app-card class="min-h-full" *ngFor="let service of services" [imageUrl]="service.image_url"
+        [title]="service.service_name">
         <div class="card-actions">
           <img src="../../../assets/images/pencil-96.png" class="icon" alt="Edit" (click)="openDialog(service, 'edit')">
           <img src="../../../assets/images/trash-96.png" class="icon" alt="Delete"
@@ -44,5 +32,4 @@
   <app-paginator class="mt-auto" [length]="totalLength" [pageSize]="pageSize" [pageIndex]="currentPage"
     [pageSizeOptions]="pageSizeOptions" (page)="handlePageEvent($event)">
   </app-paginator>
-
 </section>
