@@ -31,7 +31,7 @@ run_migrations_and_seeds &
 ( while [ ! -f /tmp/seeding_completed ]; do
     echo "Waiting for seeding to complete..."
     sleep 60
-  done ) &
+done ) &
 
 # Start the Laravel application
 php artisan serve --host=0.0.0.0 --port=8000
