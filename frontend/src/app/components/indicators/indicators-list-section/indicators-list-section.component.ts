@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PageEvent } from '@angular/material/paginator';
@@ -10,8 +10,9 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { Indicator } from '../../../core/models/indicator.model';
 import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
-import { ActivityService } from '../../../core/services/activity/activity.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-indicators-list-section',
@@ -25,16 +26,21 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     LoadingSpinnerComponent,
     PaginatorComponent,
     DialogContentComponent,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSortModule
   ]
 })
-export class IndicatorsListSectionComponent implements OnInit, OnChanges {
+export class IndicatorsListSectionComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() indicators: Indicator[] = [];
   @Input() isLoading = true;
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 20, 50, 100];
   currentPage = 0;
   totalLength = 0;
+  dataSource: MatTableDataSource<Indicator> = new MatTableDataSource<Indicator>([]);
+  sortedIndicators: Indicator[] = [];
+
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private indicatorService: IndicatorService,
@@ -47,13 +53,21 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
       this.loadIndicators();
     } else {
       this.isLoading = false;
+      this.sortedIndicators = this.indicators.slice();
+      this.dataSource.data = this.sortedIndicators;
     }
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['indicators'] && !changes['indicators'].isFirstChange()) {
       this.isLoading = false;
       this.totalLength = this.indicators.length;
+      this.sortedIndicators = this.indicators.slice();
+      this.dataSource.data = this.sortedIndicators;
     }
     if (changes['isLoading'] && !changes['isLoading'].isFirstChange()) {
       this.isLoading = changes['isLoading'].currentValue;
@@ -64,21 +78,16 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
     this.isLoading = true;
     this.indicatorService.getIndicatorsPaginated(pageIndex + 1, pageSize).subscribe({
       next: (data) => {
-        console.log("Indicators Data Received:", data);
         this.indicators = data.data;
         this.totalLength = data.total;
-        this.currentPage = pageIndex; // Adjust the current page index
+        this.currentPage = pageIndex;
         this.isLoading = false;
-        console.log("Total length:", this.totalLength);
-        console.log("Indicators list:", this.indicators);
-        console.log("Current page:", this.currentPage);
+        this.sortedIndicators = this.indicators.slice();
+        this.dataSource.data = this.sortedIndicators;
       },
       error: (error) => {
         console.error("Error loading paginated indicators:", error);
         this.isLoading = false;
-      },
-      complete: () => {
-        console.log("Indicator loading complete.");
       }
     });
   }
@@ -94,7 +103,7 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          this.deleteIndicator(indicator.id? indicator.id : 0);
+          this.deleteIndicator(indicator.id ? indicator.id : 0);
         }
       });
     } else if (action === 'edit' && indicator) {
@@ -107,22 +116,42 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges {
   deleteIndicator(indicatorId: number): void {
     this.indicatorService.destroyIndicator(indicatorId).subscribe({
       next: (data) => {
-        console.log("Indicator deleted:", data);
         this.loadIndicators(this.currentPage, this.pageSize);
       },
       error: (error) => {
         console.error("Error deleting indicator:", error);
-      },
-      complete: () => {
-        console.log("Indicator deletion complete.");
       }
     });
   }
 
   handlePageEvent(event: PageEvent): void {
-    console.log("Page Event Triggered:", event);
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
     this.loadIndicators(this.currentPage, this.pageSize);
+  }
+
+  sortData(sort: Sort) {
+    const data = this.indicators.slice();
+    if (!sort.active || sort.direction === '') {
+      this.sortedIndicators = data;
+      this.dataSource.data = this.sortedIndicators;
+      return;
+    }
+
+    this.sortedIndicators = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'indicator_name':
+          return this.compare(a.indicator_name.toLowerCase(), b.indicator_name.toLowerCase(), isAsc);
+        default:
+          return 0;
+      }
+    });
+
+    this.dataSource.data = this.sortedIndicators;
+  }
+
+  compare(a: string, b: string, isAsc: boolean): number {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 }
