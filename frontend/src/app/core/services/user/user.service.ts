@@ -27,12 +27,7 @@ export class UserService {
     );
   }
 
-  // Create a new user
-  storeUser(data: any): Observable<any> {
-    return this.http.post('/users', data).pipe(
-      catchError(error => throwError(() => new Error('Failed to create user')))
-    );
-  }
+  
 
   // Fetch a single user by ID
   showUser(id: number): Observable<User> {

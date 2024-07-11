@@ -45,6 +45,14 @@ export class AuthService {
       );
   }
 
+  
+  // Create a new user
+  register(data: any): Observable<any> {
+    return this.http.post('/register', data).pipe(
+      catchError(error => throwError(() => new Error('Failed to create user')))
+    );
+  }
+
   logout(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const token = this.getToken();

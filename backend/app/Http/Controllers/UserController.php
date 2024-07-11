@@ -5,46 +5,37 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use Exception;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-/*     public function index()
-    {
-        try {
-            $cacheKey = 'users_index';
-
-            if (Cache::has($cacheKey)) {
-                return response()->json(Cache::get($cacheKey), 200);
-            }
-
-            $users = User::with(['roles:id,name', 'sentNotifications', 'receivedNotifications'])->get();
-
-            Cache::put($cacheKey, $users, now()->addMinutes(30));
-
-            return response()->json($users, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    } */
-
     public function getUsersPaginated(Request $request)
     {
         try {
-
             $pageSize = $request->input('size');
             $pageIndex = $request->input('page');
+            $currentUser = Auth::user();
+            $currentUserRole = $currentUser->roles->first()->role_name;
+            Log::info('Current user role: ' . $currentUserRole);
 
-            $users = User::with(['roles', 'sentNotifications', 'receivedNotifications'])
-            ->orderBy('updated_at', 'desc')
-            ->paginate($pageSize, ['*'], 'page', $pageIndex);
+            $usersQuery = User::with(['roles', 'sentNotifications', 'receivedNotifications']);
+
+            // Aplicar as restrições baseadas no papel do usuário logado
+            if ($currentUserRole === 'Admin') {
+                // O admin pode ver todos os coordenadores e utilizadores
+                $usersQuery->whereHas('roles', function ($query) {
+                    $query->where('role_name', '!=', 'Admin');
+                });
+            } elseif ($currentUserRole === 'Coordenador') {
+                // O coordenador só pode ver utilizadores
+                $usersQuery->whereHas('roles', function ($query) {
+                    $query->where('role_name', 'User');
+                });
+            }
+
+            $users = $usersQuery->orderBy('updated_at', 'desc')->paginate($pageSize, ['*'], 'page', $pageIndex);
 
             return response()->json($users, 200);
         } catch (Exception $exception) {
@@ -52,28 +43,16 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         try {
-            $user = User::findOrFail($id);
+            $user = User::with('roles')->findOrFail($id);
             return response()->json($user, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, User $user)
     {
         try {
@@ -90,8 +69,8 @@ class UserController extends Controller
             }, ARRAY_FILTER_USE_KEY));
 
             // Atualizar a senha se fornecida
-            if ($request->has('password')) {
-                $user->password = Hash::make($request->input('password'));
+            if ($request->has('password') && $request->input('password')) {
+                $user->password = password_hash($request->password, PASSWORD_BCRYPT);
                 $user->save();
             }
 
@@ -103,18 +82,12 @@ class UserController extends Controller
             // Clear the cache
             Cache::forget('users_index');
 
-            return response()->json($user->load(['roles:id,name', 'sentNotifications', 'receivedNotifications']), 200);
+            return response()->json($user->load(['roles:id,role_name', 'sentNotifications', 'receivedNotifications']), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         try {
@@ -129,19 +102,34 @@ class UserController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-    /**
-     * Search for users based on a given query.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function search(Request $request)
     {
         try {
             $term = $request->input('q');
-            $users = User::where('name', 'LIKE', '%' . $term . '%')
-                ->orderBy('updated_at', 'desc')
-                ->get();
+            $currentUser = Auth::user();
+            $currentUserRole = $currentUser->roles->first()->role_name;
+
+            $usersQuery = User::with('roles')
+                ->where(function ($query) use ($term) {
+                    $query->where('name', 'LIKE', '%' . $term . '%')
+                        ->orWhere('email', 'LIKE', '%' . $term . '%');
+                });
+
+            // Aplicar as restrições baseadas no papel do usuário logado
+            if ($currentUserRole === 'Admin') {
+                // O admin pode ver todos os coordenadores e utilizadores
+                $usersQuery->whereHas('roles', function ($query) {
+                    $query->where('role_name', '!=', 'Admin');
+                });
+            } elseif ($currentUserRole === 'Coordenador') {
+                // O coordenador só pode ver utilizadores
+                $usersQuery->whereHas('roles', function ($query) {
+                    $query->where('role_name', 'User');
+                });
+            }
+
+            $users = $usersQuery->get();
 
             return response()->json($users, 200);
         } catch (Exception $exception) {
