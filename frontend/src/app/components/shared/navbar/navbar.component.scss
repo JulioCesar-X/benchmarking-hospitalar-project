@@ -1,6 +1,6 @@
 @import '../../../../styles/_variables.scss';
-@import 'tailwindcss/base';
-
+/* @import 'tailwindcss/base';
+ */
 .test{
   border: solid 2px red
 }
@@ -21,6 +21,12 @@
 }
 .underlineHover:hover {
   text-decoration: underline;
+}
+.scale{
+  transition: transform rotate 0.3s ease-in-out;
+}
+.scale:hover {
+  transform: scale(1.2);
 }
 
 .logoSection {

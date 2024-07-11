@@ -1,4 +1,5 @@
-<div class="notification" [ngClass]="{ 'success': type === 'success', 'error': type === 'error' }" *ngIf="message">
+<div class="notification" [ngClass]="{ 'success': type === 'success', 'error': type === 'error',
+'enter': message, 'leave': leaving }" *ngIf="message">
   <span>{{ message }}</span>
   <button (click)="close()">Close</button>
 </div>

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit, AfterViewInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Filter } from '../../../core/models/filter.model';
@@ -38,7 +38,7 @@ interface Record {
   templateUrl: './records-list-section.component.html',
   styleUrls: ['./records-list-section.component.scss']
 })
-export class RecordsListSectionComponent implements OnInit, OnChanges {
+export class RecordsListSectionComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() filter: Filter = {
     indicatorId: 1,
     activityId: 1,
@@ -46,8 +46,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear()
   };
-
-
 
   @Input() indicators: any[] = [];
   @Input() isLoading: boolean = false;
@@ -57,6 +55,8 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
   pageSize = 10;
   currentPage = 0;
   records: Record[] = [];
+  allRecords: Record[] = []; // Armazena todos os dados carregados
+  loadedPages: Set<number> = new Set();
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
   pageOptions = [5, 10, 20, 50, 100]; // Define the pageOptions array here
@@ -67,16 +67,20 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    this.loadRecords();
+    this.loadRecords(0, 30); // Carrega um conjunto maior de dados inicialmente
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
-      this.loadRecords();
+      this.loadRecords(0, 30); // Recarrega dados com base no novo filtro
     }
   }
 
-  loadRecords(): void {
+  ngAfterViewInit() {
+    this.updateDataSource();
+  }
+
+  loadRecords(pageIndex = 0, pageSize = 30): void {
     if (this.filter?.year && this.filter?.month && this.filter?.serviceId) {
       this.isLoadingRecords = true;
       const year = this.filter.year;
@@ -84,7 +88,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
       const serviceId = Number(this.filter.serviceId);
       const activityId = this.filter.activityId !== null && this.filter.activityId !== undefined ? Number(this.filter.activityId) : null;
 
-      this.indicatorService.getIndicatorsRecords(serviceId, activityId, year, month, this.currentPage, this.pageSize)
+      this.indicatorService.getIndicatorsRecords(serviceId, activityId, year, month, pageIndex, pageSize)
         .pipe(
           catchError(error => {
             console.error('Error fetching records', error);
@@ -93,34 +97,42 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
           finalize(() => this.isLoadingRecords = false)
         )
         .subscribe(response => {
+          if (pageIndex === 0) {
+            this.allRecords = response.data.map((item: any) => this.mapRecord(item, year, month)).flat();
+          } else {
+            const newRecords = response.data.map((item: any) => this.mapRecord(item, year, month)).flat();
+            this.allRecords = [...this.allRecords, ...newRecords];
+          }
           this.totalRecords = response.total;
-          this.records = response.data.map((item: any) => {
-            if (item.records.length === 0) {
-              return {
-                record_id: null,
-                indicator_name: item.indicator_name,
-                saiId: item.sai_id,
-                value: '',
-                date: `${year}-${String(month).padStart(2, '0')}-01`,
-                isInserted: false,
-                isUpdating: false,
-                isEditing: false
-              };
-            } else {
-              return item.records.map((record: any) => ({
-                record_id: record.record_id,
-                indicator_name: item.indicator_name,
-                saiId: item.sai_id,
-                value: record.value,
-                date: record.date,
-                isInserted: record.value !== '0',
-                isUpdating: false,
-                isEditing: false
-              }));
-            }
-          }).flat();
+          this.updateDataSource();
+          this.loadedPages.add(pageIndex);
         });
-      console.log('Records loaded:', this.records);
+    }
+  }
+
+  mapRecord(item: any, year: number, month: number): Record[] {
+    if (item.records.length === 0) {
+      return [{
+        record_id: null,
+        indicator_name: item.indicator_name,
+        saiId: item.sai_id,
+        value: '',
+        date: `${year}-${String(month).padStart(2, '0')}-01`,
+        isInserted: false,
+        isUpdating: false,
+        isEditing: false
+      }];
+    } else {
+      return item.records.map((record: any) => ({
+        record_id: record.record_id,
+        indicator_name: item.indicator_name,
+        saiId: item.sai_id,
+        value: record.value,
+        date: record.date,
+        isInserted: record.value !== '0',
+        isUpdating: false,
+        isEditing: false
+      }));
     }
   }
 
@@ -169,7 +181,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
       .subscribe(
         () => {
           this.setNotification('Registro criado com sucesso', 'success');
-          this.loadRecords();
+          this.loadRecords(0, this.pageSize * 3); // Recarrega os dados
         },
         error => this.setNotification(this.getErrorMessage(error), 'error')
       );
@@ -199,9 +211,22 @@ export class RecordsListSectionComponent implements OnInit, OnChanges {
   }
 
   onPageChanged(event: PageEvent): void {
-    this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadRecords();
+    this.currentPage = event.pageIndex;
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    if (!this.loadedPages.has(this.currentPage)) {
+      this.loadRecords(this.currentPage, this.pageSize * 3);
+    } else {
+      this.updateDataSource();
+    }
+  }
+
+  updateDataSource(): void {
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.records = this.allRecords.slice(startIndex, endIndex);
   }
 
   trackByIndex(index: number, item: any): number {

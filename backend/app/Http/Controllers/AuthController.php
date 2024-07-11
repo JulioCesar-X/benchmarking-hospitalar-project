@@ -9,8 +9,8 @@ use App\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
 use App\Role;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Exception;
 
 class AuthController extends Controller
 {
@@ -27,11 +27,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found.'], 404);
         }
 
-        Log::info('Senha fornecida:', [$request->password]);
-        Log::info('Senha armazenada:', [$user->password]);
+        $providedPassword = $request->password;
+        $storedHash = $user->password;
 
-        if (!Hash::check($request->password, $user->password)) {
-            Log::info("A senha fornecida não corresponde ao hash armazenado.");
+        if (!password_verify($providedPassword, $storedHash)) {
             return response()->json(['message' => 'The provided credentials are incorrect.'], 401);
         }
 
@@ -46,36 +45,41 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Register a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:3',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|max:10',
+                'role_id' => 'required|exists:roles,id'
+            ]);
 
-        $hashedPassword = Hash::make($request->password);
-        Log::info('Senha criptografada:', [$hashedPassword]);
+            $hashedPassword = password_hash($request->password, PASSWORD_BCRYPT);
 
-        if (!Hash::check($request->password, $hashedPassword)) {
-            Log::info('Falha na verificação do hash após criptografia.');
-            return response()->json(['message' => 'Erro na criptografia da senha.'], 500);
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $hashedPassword,
+                'email_verified_at' => now(),
+            ]);
+
+            $role = Role::find($request->role_id);
+            $user->roles()->attach($role);
+
+            // Clear the cache
+            Cache::forget('users_index');
+
+            return response()->json(['message' => 'Registration successful'], 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
         }
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $hashedPassword,
-            'email_verified_at' => now(),
-        ]);
-
-        $role = Role::where('role_name', 'User')->first();
-        $user->roles()->attach($role);
-
-        // Clear the cache
-        Cache::forget('users_index');
-
-        return response()->json(['message' => 'Registration successful'], 200);
     }
 
     public function logout(Request $request)

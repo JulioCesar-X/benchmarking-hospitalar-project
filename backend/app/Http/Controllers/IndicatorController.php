@@ -734,8 +734,8 @@ class IndicatorController extends Controller
     public function search(Request $request)
     {
         try {
-            $query = $request->input('q');
-            $indicators = Indicator::where('indicator_name', 'LIKE', '%' . $query . '%')
+            $query = $request->query('q');
+            $indicators = Indicator::whereRaw('LOWER(indicator_name) LIKE ?', ['%' . strtolower($query) . '%'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
             return response()->json($indicators, 200);
