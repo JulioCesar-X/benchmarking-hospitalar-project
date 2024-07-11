@@ -65,13 +65,13 @@ export class ServicesListSectionComponent implements OnInit, OnChanges {
     }
   }
 
-  loadServices(): void {
+  loadServices(pageIndex = 0, pageSize = 10): void {
     this.isLoading = true;
-    this.serviceService.getServicesPaginated(this.currentPage,this.pageSize).subscribe({
+    this.serviceService.getServicesPaginated(pageIndex + 1, pageSize).subscribe({
       next: (data) => {
         this.services = data.data;
         this.totalLength = data.total;
-        this.currentPage = data.current_page;
+        this.currentPage = pageIndex;
         this.isLoading = false;
       },
       error: (error) => {
@@ -113,9 +113,9 @@ export class ServicesListSectionComponent implements OnInit, OnChanges {
     });
   }
 
-  onPageChanged(event: PageEvent): void {
+  handlePageEvent(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
-    this.loadServices();
+    this.loadServices(this.currentPage, this.pageSize);
   }
 }

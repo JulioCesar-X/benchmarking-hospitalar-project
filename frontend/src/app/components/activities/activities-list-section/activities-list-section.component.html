@@ -43,6 +43,6 @@
     </ng-template>
   </div>
   <app-paginator class="mt-auto" [length]="totalLength" [pageSize]="pageSize" [pageIndex]="currentPage"
-    [pageSizeOptions]="pageSizeOptions" (page)="onPageChanged($event)">
+    [pageSizeOptions]="pageSizeOptions" (page)="handlePageEvent($event)">
   </app-paginator>
 </section>

@@ -112,8 +112,8 @@ class UserController extends Controller
 
             $usersQuery = User::with('roles')
                 ->where(function ($query) use ($term) {
-                    $query->where('name', 'LIKE', '%' . $term . '%')
-                        ->orWhere('email', 'LIKE', '%' . $term . '%');
+                    $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($term) . '%'])
+                        ->orWhereRaw('LOWER(email) LIKE ?', ['%' . strtolower($term) . '%']);
                 });
 
             // Aplicar as restrições baseadas no papel do usuário logado

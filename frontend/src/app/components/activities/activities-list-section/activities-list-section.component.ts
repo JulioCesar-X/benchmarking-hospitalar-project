@@ -82,7 +82,7 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges, AfterV
       next: (data) => {
         this.activities = data.data;
         this.totalLength = data.total;
-        this.currentPage = data.current_page;
+        this.currentPage = pageIndex;
         this.isLoading = false;
         this.sortedActivities = this.activities.slice();
         this.dataSource.data = this.sortedActivities;
@@ -126,7 +126,7 @@ export class ActivitiesListSectionComponent implements OnInit, OnChanges, AfterV
     });
   }
 
-  onPageChanged(event: PageEvent): void {
+  handlePageEvent(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
     this.loadActivities(this.currentPage, this.pageSize);

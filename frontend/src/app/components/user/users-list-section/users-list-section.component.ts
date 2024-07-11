@@ -74,15 +74,15 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
     this.dataSource.sort = this.sort;
   }
 
-  loadUsers(): void {
+  loadUsers(pageIndex = 0, pageSize = 10): void {
     this.isLoading = true;
-    this.userService.getUsersPaginated(this.currentPage, this.pageSize).subscribe({
+    this.userService.getUsersPaginated(pageIndex + 1, pageSize).subscribe({
       next: (data) => {
         this.users = data.data;
         this.dataSource = new MatTableDataSource(this.users);
         this.dataSource.sort = this.sort;
         this.totalLength = data.total;
-        this.currentPage = data.current_page;
+        this.currentPage = pageIndex;
         console.log("Paginated users loaded:", this.users);
         this.isLoading = false;
       },
@@ -125,10 +125,10 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
     });
   }
 
-  onPageChanged(event: PageEvent): void {
+  handlePageEvent(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
-    this.loadUsers();
+    this.loadUsers(this.currentPage, this.pageSize);
   }
 
   sortData(sort: Sort) {

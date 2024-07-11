@@ -69,10 +69,8 @@ class ActivityController extends Controller
         try {
             $pageSize = $request->input('size', 15);
             $pageIndex = $request->input('page', 1);
-            $activities = Activity::query()
-                ->orderBy('created_at', 'desc')
-                ->paginate($pageSize, ['*'], 'page', $pageIndex);
-
+            $activities = Activity::orderBy('created_at', 'desc')
+            ->paginate($pageSize, ['*'], 'page', $pageIndex);
             return response()->json($activities, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -210,7 +208,7 @@ class ActivityController extends Controller
     {
         try {
             $query = $request->query('q');
-            $activities = Activity::where('activity_name', 'LIKE', '%' . $query . '%')
+            $activities = Activity::whereRaw('LOWER(activity_name) LIKE ?', ['%' . strtolower($query) . '%'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
             return response()->json($activities, 200);
