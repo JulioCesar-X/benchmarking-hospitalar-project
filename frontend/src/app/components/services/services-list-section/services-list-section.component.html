@@ -14,7 +14,7 @@
   </div>
 
   <div *ngIf="!isLoading" class="min-h-full overflow-y-scroll">
-    <div class="cardsContainer" *ngIf="services.length; else noResults">
+    <div class="cardsContainer py-10" *ngIf="services.length; else noResults">
       <app-card class="min-h-full" *ngFor="let service of services" [imageUrl]="service.image_url"
         [title]="service.service_name">
         <div class="card-actions">

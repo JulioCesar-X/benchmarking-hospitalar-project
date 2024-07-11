@@ -71,7 +71,8 @@
 }
 
 .dashboardOptionsContainer.is-open {
-  animation: showOptions 200ms ease-in forwards;
+  max-width: 20px;
+  animation: showOptions 200ms ease-in forwards 200ms;
 }
 .dashboardOptionsContainer.is-closed {
   animation: hideOptions 200ms ease-in forwards;
@@ -89,19 +90,25 @@
   }
   @keyframes showOptions {
     from {
+      max-width: 20px;
+
       opacity: 0;
     }
     to {
       opacity: 1;
+      max-width: 190px;
     }
   }
 
 .titleSection.is-open {
-  animation: showOptions 200ms ease-in forwards;
+  max-width: 20px;
+
+  animation: showOptions 200ms ease-in forwards 200ms;
 }
 .titleSection.is-closed {
   animation: hideOptions 200ms ease-in forwards;
 }
+
 
 .dashboardHeader {
   display: flex;
