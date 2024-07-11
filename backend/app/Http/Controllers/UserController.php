@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
-use App\Role;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
@@ -44,45 +43,10 @@ class UserController extends Controller
             $pageIndex = $request->input('page');
 
             $users = User::with(['roles', 'sentNotifications', 'receivedNotifications'])
+            ->orderBy('updated_at', 'desc')
             ->paginate($pageSize, ['*'], 'page', $pageIndex);
 
             return response()->json($users, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    }
-
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|max:10',
-                'role_id' => 'required|exists:roles,id'
-            ]);
-
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'email_verified_at' => now(),
-            ]);
-
-            $role = Role::find($request->role_id);
-            $user->roles()->attach($role);
-
-            // Clear the cache
-            Cache::forget('users_index');
-
-            return response()->json(['message' => 'Registration successful'], 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -179,7 +143,7 @@ class UserController extends Controller
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
-            return response()->json($users->load(['roles:id,name']), 200);
+            return response()->json($users, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

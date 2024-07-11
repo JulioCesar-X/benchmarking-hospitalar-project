@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
 
 class UserSeeder extends Seeder
@@ -20,7 +19,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'João',
                 'email' => 'admin@example.com',
-                'password' => Hash::make('atec123'),
+                'password' => password_hash('atec123', PASSWORD_BCRYPT),
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now()
@@ -28,7 +27,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'David',
                 'email' => 'coo@example.com',
-                'password' => Hash::make('atec123'),
+                'password' => password_hash('atec123', PASSWORD_BCRYPT),
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now()
@@ -36,18 +35,18 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Gonçalo',
                 'email' => 'cola@example.com',
-                'password' => Hash::make('atec123'),
+                'password' => password_hash('atec123', PASSWORD_BCRYPT),
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now()
             ]
         ];
 
-        for ($i = 0; $i < 47; $i++) {
+        for ($i = 0; $i < 200; $i++) {
             $users[] = [
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
-                'password' => Hash::make('atec123'),
+                'password' => password_hash('atec123', PASSWORD_BCRYPT),
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now()

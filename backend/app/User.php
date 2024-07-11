@@ -5,7 +5,6 @@ namespace App;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
@@ -28,10 +27,6 @@ class User extends Authenticatable
     {
         return $this->belongsToMany('App\Role');
     }
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = Hash::make($value);
-    }
 
     public function hasRole($roleName)
     {
@@ -43,10 +38,8 @@ class User extends Authenticatable
         return $this->hasMany('App\Notification', 'sender_id');
     }
 
-    // Relacionamento com as notificações recebidas
     public function receivedNotifications()
     {
         return $this->hasMany('App\Notification', 'receiver_id');
     }
-
 }

@@ -29,10 +29,13 @@ class ResetPasswordMail extends Mailable
      */
     public function build()
     {
+        $frontendUrl = config('app.frontend_url');
+        $resetUrl = $frontendUrl . '/reset-password?token=' . $this->token;
+
         return $this->subject('Redefinição de Senha')
             ->markdown('emails.reset_password')
             ->with([
-                'url' => url('/reset-password?token=' . $this->token)
+                'url' => $resetUrl
             ]);
     }
 }
