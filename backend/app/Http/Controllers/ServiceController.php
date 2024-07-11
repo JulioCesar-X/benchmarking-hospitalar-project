@@ -220,7 +220,7 @@ class ServiceController extends Controller
     {
         try {
             $query = $request->query('q');
-            $service = Service::where('service_name', 'LIKE', '%' . $query . '%')
+            $service = Service::whereRaw('LOWER(service_name) LIKE ?', ['%' . strtolower($query) . '%'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
             return response()->json($service, 200);

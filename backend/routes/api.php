@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'throttle:10000,1'], function () {
     Route::post('/login', 'AuthController@login');
-    Route::post('/register', 'AuthController@register');
     Route::post('/forgot-password', 'AuthController@forgotPassword');
     Route::post('/reset-password', 'AuthController@resetPassword')->name('password.reset');
 
@@ -19,8 +18,8 @@ Route::group(['middleware' => 'throttle:10000,1'], function () {
 });
 
 Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
+    Route::post('/register', 'AuthController@register');
     Route::post('/logout', 'AuthController@logout');
-
     Route::get('activities/search', 'ActivityController@search');
 
     Route::get('indicators/sai/records-mensal', 'IndicatorController@getRecordsMensal');
@@ -62,5 +61,6 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::get('users/paginated', 'UserController@getUsersPaginated');
     Route::get('users/search', 'UserController@search');
     Route::apiResource('users', 'UserController');
+    
 
 });

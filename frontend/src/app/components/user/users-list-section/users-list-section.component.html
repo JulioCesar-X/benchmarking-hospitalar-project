@@ -1,13 +1,7 @@
 <section class="flex flex-col min-h-full forms-container">
   <div class="flex justify-start items-center pb-2 text-xl gap-10 blueBG">
-    <button
-      mat-icon-button
-      matTooltip="Clique para registrar um novo utilizador"
-      [matTooltipPosition]="'right'"
-      matTooltipClass="custom"
-      class="ml-5"
-      (click)="openDialog(null, 'create')"
-    >
+    <button mat-icon-button matTooltip="Clique para registrar um novo utilizador" [matTooltipPosition]="'right'"
+      matTooltipClass="custom" class="ml-5" (click)="openDialog(null, 'create')">
       <svg xmlns="http://www.w3.org/2000/svg" class="icon-large" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
         <path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
       </svg>
@@ -15,26 +9,29 @@
     <h2 class="whiteTxt my-0">Lista de Utilizadores</h2>
   </div>
 
-  <div class=" mt-auto" *ngIf="isLoading">
-    <app-loading-spinner
-      class=""
-      message="A carregar Utilizadores..."
-    ></app-loading-spinner>
+  <div class="mt-auto" *ngIf="isLoading">
+    <app-loading-spinner class="" message="A carregar Utilizadores..."></app-loading-spinner>
   </div>
 
   <div *ngIf="!isLoading" class="min-h-full overflow-y-scroll">
-    <div *ngIf="users.length; else noResults" class="">
-      <table class="w-[90%] mx-auto user-table rounded-xl">
+    <div *ngIf="dataSource.data.length; else noResults" class="">
+      <table matSort (matSortChange)="sortData($event)" class="w-[90%] mx-auto user-table rounded-xl">
         <thead class="top-[-2px] z-10">
           <tr class="">
-            <th class="p-2">Nome</th>
-            <th class="p-2 sm:px-4 hidden md:table-cell">Email</th>
-            <th class="p-2">Role</th>
+            <th mat-sort-header="name" class="p-2 cursor-pointer">
+              Nome
+            </th>
+            <th mat-sort-header="email" class="p-2 sm:px-4 hidden md:table-cell cursor-pointer">
+              Email
+            </th>
+            <th mat-sort-header="role" class="p-2 cursor-pointer">
+              Role
+            </th>
             <th class="py-2">Opções</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let user of users">
+          <tr *ngFor="let user of dataSource.data">
             <td class="border p-2">{{ user.name }}</td>
             <td class="border p-2 sm:px4 hidden md:table-cell">
               {{ user.email }}
@@ -42,18 +39,10 @@
             <td class="border p-2">{{ user.roles[0]?.role_name }}</td>
             <td class="border py-2">
               <div class="flex justify-center space-x-4">
-                <img
-                  src="../../../assets/images/pencil-96.png"
-                  class="w-5 h-5 cursor-pointer optionBtns"
-                  alt="Edit"
-                  (click)="openDialog(user, 'edit')"
-                />
-                <img
-                  src="../../../assets/images/trash-96.png"
-                  class="w-5 h-5 cursor-pointer optionBtns"
-                  alt="Delete"
-                  (click)="openDialog(user, 'delete')"
-                />
+                <img src="../../../assets/images/pencil-96.png" class="w-5 h-5 cursor-pointer optionBtns" alt="Edit"
+                  (click)="openDialog(user, 'edit')" />
+                <img src="../../../assets/images/trash-96.png" class="w-5 h-5 cursor-pointer optionBtns" alt="Delete"
+                  (click)="openDialog(user, 'delete')" />
               </div>
             </td>
           </tr>
@@ -66,13 +55,7 @@
       </div>
     </ng-template>
   </div>
-  <app-paginator
-    class="mt-auto"
-    [length]="totalLength"
-    [pageSize]="pageSize"
-    [pageIndex]="currentPage"
-    [pageSizeOptions]="pageSizeOptions"
-    (page)="onPageChanged($event)"
-  >
+  <app-paginator class="mt-auto" [length]="totalLength" [pageSize]="pageSize" [pageIndex]="currentPage"
+    [pageSizeOptions]="pageSizeOptions" (page)="handlePageEvent($event)">
   </app-paginator>
 </section>

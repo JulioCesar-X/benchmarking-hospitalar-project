@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,8 +13,6 @@ import { CardComponent } from '../../shared/card/card.component';
 import { Service } from '../../../core/models/service.model';
 import { ServiceService } from '../../../core/services/service/service.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-
 
 @Component({
   selector: 'app-services-list-section',
@@ -33,13 +31,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule
   ]
 })
-export class ServicesListSectionComponent implements OnInit, OnChanges {
+export class ServicesListSectionComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() services: Service[] = [];
   @Input() isLoading = true;
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 20, 50, 100];
   currentPage = 0;
   totalLength = 0;
+  allServices: Service[] = []; // Armazena todos os dados carregados
+  loadedPages: Set<number> = new Set();
 
   constructor(
     private serviceService: ServiceService,
@@ -48,11 +48,7 @@ export class ServicesListSectionComponent implements OnInit, OnChanges {
   ) { }
 
   ngOnInit(): void {
-    if (!this.services.length) {
-      this.loadServices();
-    } else {
-      this.isLoading = false;
-    }
+    this.loadServices(0, 30); // Carrega um conjunto maior de dados inicialmente
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -65,13 +61,22 @@ export class ServicesListSectionComponent implements OnInit, OnChanges {
     }
   }
 
-  loadServices(): void {
+  ngAfterViewInit() {
+    this.updateDataSource();
+  }
+
+  loadServices(pageIndex = 0, pageSize = 30): void {
     this.isLoading = true;
-    this.serviceService.getServicesPaginated(this.currentPage,this.pageSize).subscribe({
+    this.serviceService.getServicesPaginated(pageIndex + 1, pageSize).subscribe({
       next: (data) => {
-        this.services = data.data;
+        if (pageIndex === 0) {
+          this.allServices = data.data;
+        } else {
+          this.allServices = [...this.allServices, ...data.data];
+        }
         this.totalLength = data.total;
-        this.currentPage = data.current_page;
+        this.updateDataSource();
+        this.loadedPages.add(pageIndex);
         this.isLoading = false;
       },
       error: (error) => {
@@ -105,7 +110,7 @@ export class ServicesListSectionComponent implements OnInit, OnChanges {
   deleteService(serviceId: number): void {
     this.serviceService.destroyService(serviceId).subscribe({
       next: (data) => {
-        this.loadServices();
+        this.loadServices(this.currentPage, this.pageSize);
       },
       error: (error) => {
         console.error("Error deleting service:", error);
@@ -113,9 +118,22 @@ export class ServicesListSectionComponent implements OnInit, OnChanges {
     });
   }
 
-  onPageChanged(event: PageEvent): void {
+  handlePageEvent(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex;
-    this.loadServices();
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    if (!this.loadedPages.has(this.currentPage)) {
+      this.loadServices(this.currentPage, this.pageSize * 3);
+    } else {
+      this.updateDataSource();
+    }
+  }
+
+  updateDataSource(): void {
+    const startIndex = this.currentPage * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.services = this.allServices.slice(startIndex, endIndex);
   }
 }

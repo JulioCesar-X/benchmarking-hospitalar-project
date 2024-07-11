@@ -53,3 +53,28 @@ background: $main-dark-blue;
 // }
 
 html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+//opcional para arrumar os cantos
+.mx-2 {
+  margin-left: 0.1rem;
+  margin-right: 0;
+}
+.mat-sort-header-container {
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  align-items: center;
+  letter-spacing: normal;
+  outline: 0;
+}

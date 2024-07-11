@@ -1,11 +1,4 @@
-<app-create-field-modal
-  [isVisible]="isModalVisible"
-  (closeEvent)="closeModal()"
-></app-create-field-modal>
-<app-feedback *ngIf="notificationMessage"
-  [message]="notificationMessage"
-  [type]="notificationType"
-></app-feedback>
+<app-feedback *ngIf="notificationMessage" [message]="notificationMessage" [type]="notificationType"></app-feedback>
 
 <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG">
   <h2 class="text-xl mb-4 whiteTxt" *ngIf="formsAction === 'create'">
@@ -23,37 +16,29 @@
       <mat-label class="blueTxt">Nome:</mat-label>
       <input matInput id="nome" [(ngModel)]="user.name" name="name" />
     </mat-form-field>
+
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
       <mat-label class="blueTxt">Email:</mat-label>
       <input matInput id="email" [(ngModel)]="user.email" name="email" />
     </mat-form-field>
+
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
-      <mat-label class="blueTxt">NIF:</mat-label>
-      <input
-        matInput
-        id="password"
-        [(ngModel)]="user.password"
-        name="password"
-      />
+      <mat-label class="blueTxt">Senha:</mat-label>
+      <input matInput id="password" [(ngModel)]="user.password" name="password" type="password" />
     </mat-form-field>
+
+
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
       <mat-label class="blueTxt">Role do utilizador:</mat-label>
       <mat-select id="rolePanel" [(ngModel)]="user.role_id" name="role_id">
         <mat-option [value]="3">Utilizador</mat-option>
-        <mat-option [value]="2" *ngIf="getRole() === 'admin'"
-          >Coordenador</mat-option
-        >
-        <mat-option [value]="1" *ngIf="getRole() === 'admin'">Admin</mat-option>
+        <mat-option *ngIf="getRole() === 'admin'" [value]="2">Coordenador</mat-option>
+        <mat-option *ngIf="getRole() === 'admin'" [value]="1">Admin</mat-option>
       </mat-select>
     </mat-form-field>
 
-    <button
-      *ngIf="!isLoading"
-      mat-raised-button
-      type="submit"
-      class="custom-button"
-    >
-      Adicionar
+    <button *ngIf="!isLoading" mat-raised-button type="submit" class="custom-button">
+      {{ formsAction === 'create' ? 'Adicionar' : 'Atualizar' }}
     </button>
   </form>
 </div>
