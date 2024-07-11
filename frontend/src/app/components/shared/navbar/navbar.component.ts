@@ -100,5 +100,7 @@ export class NavbarComponent implements OnInit {
     this.isNavbarOpen = !this.isNavbarOpen;
   }
   
-
+  reply(){
+    alert("here should be the logic to answer")
+  }
 }

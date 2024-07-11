@@ -29,15 +29,19 @@ import { ServicesUpdatePageComponent } from './pages/services/services-update-pa
 //notifications
 import { NotificationsComponent } from './pages/notifications/notifications-page/notifications.component';
 import { NotificationsCreatePageComponent } from './pages/notifications/notifications-create-page/notifications-create-page.component';
+import { PasswordRecupModalComponent } from './components/auth/password-recup-modal/password-recup-modal.component';
+
+
 
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
   { path: 'login', component: LoginPageComponent },
-  { path: 'resetPassword', component: ResetPasswordPageComponent },
+  { path: 'forgot-password', component: PasswordRecupModalComponent },
+  { path: 'reset-password', component: ResetPasswordPageComponent },
   {
     path: 'users',
     children: [
-      { path: '', component: UsersPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin'] } },
+      { path: '', component: UsersPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin','coordenador'] } },
       { path: 'create', component: UserCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin'] } },
       { path: 'update/:id', component: UserUpdatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin'] } },
     ]

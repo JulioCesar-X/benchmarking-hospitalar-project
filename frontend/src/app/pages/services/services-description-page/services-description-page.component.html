@@ -1,8 +1,26 @@
-<div class="descriptionBox mx-2 w-full">
+<!-- <div class="descriptionBox mx-2 w-full">
   <button class="close-button" (click)="goToHomepage()">X</button>
   <app-loading-spinner *ngIf="isLoading" [message]="'Carregando...'"></app-loading-spinner>
   <div *ngIf="!isLoading">
     <h2>{{ service?.service_name }}</h2>
     <p>{{ service?.description }}</p>
   </div>
-</div>
+</div> -->
+
+
+    <app-loading-spinner class="mx-auto my-auto" *ngIf="isLoading" [message]="'Carregando...'"></app-loading-spinner>
+  
+    <div class="flex items-center mx-10" *ngIf="!isLoading">
+      <div class="cardText flex-1">
+        <p class="text-xl underline">{{ service.service_name }}</p>
+        <p class="text-lg mt-2">{{ service?.description }}</p>
+      </div>
+      <div class="h-[100%]">
+        <img class="h-[100%] ratio" [src]="service.image_url" alt="{{ service.service_name }}">
+      </div>
+    </div>
+
+
+
+
+

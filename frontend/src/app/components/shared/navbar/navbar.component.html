@@ -2,27 +2,28 @@
 <!-- this element is used to ocupy some space in the DOM at the top for the Navbar -->
 <!-- overflow-hidden -->
 <div
-  class="w-full max-w-[2500px] fixed top-0 z-[1000] whiteBG whiteBorder sm:overflow-hidden">
+  class="w-full max-w-[2500px] fixed top-0 z-[1000] whiteBG whiteBorder sm:overflow-hidden"
+>
   <header class="flex justify-between relative mb-auto max-h-99">
-    <div class="flex items-center gap-2 logoSection">
-      <div class="">
-        <img
-          class="h-[50px] w-[50px] m-1"
-          src="../../../../assets/images/novoLogo.png"
-          alt="SNS logo image"
-        />
+    <a href="http://www.portugal.gov.pt/pt.aspx" target="_blank">
+      <div class="flex items-center gap-2 logoSection">
+        <div class="">
+          <img
+            class="h-[50px] w-[50px] m-1"
+            src="../../../../assets/images/novoLogo.png"
+            alt="SNS logo image"
+          />
+        </div>
+        <div class="">
+          <h3 class="m-0 text-sm sm:text-lg darkBlueTxt">
+            Unidade local de Saúde
+          </h3>
+          <h1 class="m-0 text-sm sm:text-lg darkBlueTxt">Tâmega e Sousa</h1>
+        </div>
       </div>
-      <div class="">
-        <h3 class="m-0 text-sm sm:text-lg darkBlueTxt">
-          Unidade local de Saúde
-        </h3>
-        <h1 class="m-0 text-sm sm:text-lg darkBlueTxt">Tâmega e Sousa</h1>
-      </div>
-    </div>
+    </a>
 
     <div class="relative w-[35%] sm:w-[70%] z-[1] whiteTxt">
-      
-
       <svg
         class="background-svg"
         xmlns="http://www.w3.org/2000/svg"
@@ -35,11 +36,7 @@
         <polygon points="0,100 10,0 100,0 100,100"></polygon>
       </svg>
 
-      <div
-        id="links"
-        class="links"
-        [ngClass]="{ 'is-open': isNavbarOpen }"
-      >
+      <div id="links" class="links" [ngClass]="{ 'is-open': isNavbarOpen }">
         <a
           routerLink="/home"
           class="flex no-underline uppercase text-lg whiteTxt underlineHover"
@@ -121,23 +118,20 @@
               <span class="blue-custom">Logout</span>
             </button>
           </mat-menu>
-
-
         </div>
       </div>
 
-
       <!--  -->
       <button
-      *ngIf="isLoggedIn()"
-      mat-icon-button
-      [matMenuTriggerFor]="notificationsMenu"
-      matBadge="{{ unreadNotifications }}"
-      matBadgeColor="warn"
-      class="bellIcon_mobile"
-    >
-      <mat-icon>notifications</mat-icon>
-    </button>
+        *ngIf="isLoggedIn()"
+        mat-icon-button
+        [matMenuTriggerFor]="notificationsMenu"
+        matBadge="{{ unreadNotifications }}"
+        matBadgeColor="warn"
+        class="bellIcon_mobile"
+      >
+        <mat-icon>notifications</mat-icon>
+      </button>
 
       <!-- Hamburguer icon - mobile -->
       <div class="nav-toggle" id="nav-toggle" (click)="openNavBar()">
@@ -148,49 +142,38 @@
         ></div>
       </div>
     </div>
-
   </header>
 </div>
 
-
-
-  <!-- MatMenu para Notificações -->
+<!-- MatMenu para Notificações -->
 <div>
-  <mat-menu
-    #notificationsMenu="matMenu"
-    class="px-2 w-[270px] menu-custom"
-  >
+  <mat-menu #notificationsMenu="matMenu" class="px-2 w-[270px] menu-custom">
     <div class="max-h-[50vh]">
       <h2>Notificações</h2>
-      <div
-        *ngIf="allNotifications.length === 0"
-        class="empty-notifications"
-      >
+      <div *ngIf="allNotifications.length === 0" class="empty-notifications">
         Nenhuma notificação.
       </div>
 
       <div class="flex flex-col gap-1">
         <div
+          title="Clique para marcar como lido"
           *ngFor="let notification of allNotifications"
           (click)="markNotificationAsRead(notification)"
-          class="p-2 flex justify-between max-h-[60vh]"
+          class="p-2 flex flex-col justify-between max-h-[60vh] cursor-pointer"
           [class.unread]="!notification.isRead"
         >
-          <p>{{ notification.title }}</p>
-          <small>{{
-            notification.created_at | date : "short"
-          }}</small>
+
+        <div class="flex justify-between">
+          <p>De: senderName</p>
+          <button class="scale" (click)="reply()" >
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#283044;"><path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/></svg>
+          </button>
         </div>
-        <div
-          *ngFor="let notification of allNotifications"
-          (click)="markNotificationAsRead(notification)"
-          class="p-2 flex justify-between max-h-[60vh]"
-          [class.unread]="!notification.isRead"
-        >
+        <div>
           <p>{{ notification.title }}</p>
-          <small>{{
-            notification.created_at | date : "short"
-          }}</small>
+          <small>{{ notification.created_at | date : "short" }}</small>
+        </div>
+
         </div>
       </div>
     </div>

@@ -140,7 +140,7 @@ class ServiceController extends Controller
             $service = Service::with(['sais' => function ($query) {
                 $query->select('id', 'activity_id', 'indicator_id', 'service_id');
             }, 'sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'])
-            ->select('id', 'service_name', 'image_url')
+            ->select('id', 'service_name', 'image_url', 'description')
             ->findOrFail($id);
 
             return response()->json($service, 200);
@@ -220,7 +220,7 @@ class ServiceController extends Controller
     {
         try {
             $query = $request->query('q');
-            $service = Service::where('service_name', 'LIKE', '%' . $query . '%')
+            $service = Service::whereRaw('LOWER(service_name) LIKE ?', ['%' . strtolower($query) . '%'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
             return response()->json($service, 200);

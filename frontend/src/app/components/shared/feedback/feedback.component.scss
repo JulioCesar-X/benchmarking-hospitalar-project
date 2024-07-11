@@ -13,6 +13,14 @@
   align-items: center;
   justify-content: space-between;
 
+  &.enter {
+    animation: notification-slide-in 0.5s forwards;
+  }
+
+  &.leave {
+    animation: notification-slide-out 0.5s forwards;
+  }
+
   &.success {
     background-color: $success-color;
     color: white;
@@ -29,5 +37,27 @@
     color: inherit;
     cursor: pointer;
     margin-left: 1em;
+  }
+}
+
+@keyframes notification-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes notification-slide-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
   }
 }
