@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Indicator } from '../../models/indicator.model';
 import { Filter } from '../../models/filter.model';
 import { forkJoin } from 'rxjs';
@@ -11,7 +11,7 @@ import { forkJoin } from 'rxjs';
 })
 
 export class IndicatorService {
-  private cache: { [key: string]: any } = {};
+  private cache: Map<string, any> = new Map();
 
   constructor(private http: HttpClient) { }
 
@@ -25,28 +25,36 @@ export class IndicatorService {
   }
 
   private getCacheKey(filter: Filter): string {
-    return `${filter.year}-${filter.month}-${filter.indicatorId}-${filter.activityId}-${filter.serviceId}`;
+    return `${filter.indicatorId}-${filter.activityId}-${filter.serviceId}-${filter.year}-${filter.month}`;
   }
+
 
   getAllData(filter: Filter): Observable<any> {
     const cacheKey = this.getCacheKey(filter);
-    if (this.cache[cacheKey]) {
-      return of(this.cache[cacheKey]);
+    if (this.cache.has(cacheKey)) {
+      return of(this.cache.get(cacheKey));
+    } else {
+      return forkJoin({
+        recordsMensal: this.getRecordsMensal(filter),
+        recordsAnual: this.getRecordsAnual(filter),
+        recordsAnualLastYear: this.getRecordsLastYear(filter),
+        goalsMensal: this.getGoalsMensal(filter),
+        goalMes: this.getGoalMes(filter),
+        goalAnual: this.getGoalAnual(filter),
+        previousYearTotal: this.getPreviousYearTotal(filter),
+        currentYearTotal: this.getCurrentYearTotal(filter),
+        variations: this.getVariations(filter),
+      }).pipe(
+        map(data => {
+          this.cache.set(cacheKey, data);
+          return data;
+        }),
+        catchError(error => {
+          console.error('Error fetching data:', error);
+          return throwError(() => new Error('Failed to fetch data'));
+        })
+      );
     }
-
-    return forkJoin({
-      recordsMensal: this.getRecordsMensal(filter),
-      recordsAnual: this.getRecordsAnual(filter),
-      recordsAnualLastYear: this.getRecordsLastYear(filter),
-      goalsMensal: this.getGoalsMensal(filter),
-      goalMes: this.getGoalMes(filter),
-      goalAnual: this.getGoalAnual(filter),
-      previousYearTotal: this.getPreviousYearTotal(filter),
-      currentYearTotal: this.getCurrentYearTotal(filter),
-      variations: this.getVariations(filter),
-    }).pipe(
-      tap(data => this.cache[cacheKey] = data)
-    );
   }
 
   getRecordsMensal(filter: Filter): Observable<any> {

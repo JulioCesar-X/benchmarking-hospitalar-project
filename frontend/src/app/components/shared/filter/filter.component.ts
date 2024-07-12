@@ -8,7 +8,6 @@ import { Service } from '../../../core/models/service.model';
 import { Activity } from '../../../core/models/activity.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-
 interface ActivityForFilter {
   id: number | null;
   name: string;
@@ -27,10 +26,11 @@ interface IndicatorForFilter {
   imports: [CommonModule, FormsModule, MatTooltipModule]
 })
 export class FilterComponent implements OnInit, OnChanges {
-  
+
   servicesList: Service[] = [];
   activitiesList: ActivityForFilter[] = [];
   indicatorsList: IndicatorForFilter[] = [];
+  activityCache = new Map<number, Activity>();
 
   @Input() selectedServiceId?: number | string = 0;
   @Input() selectedActivityId?: number | undefined = undefined;
@@ -59,13 +59,11 @@ export class FilterComponent implements OnInit, OnChanges {
   }
 
   loadInitialData() {
-    
     this.serviceService.indexServices().subscribe(services => {
       this.servicesList = services;
       if (this.selectedServiceId) {
         this.updateActivityAndIndicatorSelections(Number(this.selectedServiceId));
       }
-      console.log('Services loaded:', this.servicesList);
     });
 
     this.activityService.indexActivities().subscribe(activities => {
@@ -73,7 +71,6 @@ export class FilterComponent implements OnInit, OnChanges {
         id: activity.id,
         name: activity.activity_name
       }));
-      console.log('Activities loaded:', this.activitiesList);
     });
   }
 
@@ -91,7 +88,6 @@ export class FilterComponent implements OnInit, OnChanges {
     if (selectedService) {
       const hasActivities = selectedService.activities && selectedService.activities.length > 0;
       this.activityInputChange.emit(hasActivities);
-      console.log('Has activities:', hasActivities);
       this.activitiesList = selectedService.activities?.map(activity => ({
         id: activity.id,
         name: activity.name
@@ -105,11 +101,6 @@ export class FilterComponent implements OnInit, OnChanges {
       } else {
         this.indicatorsList = [];
       }
-
-      this.selectedActivityId = undefined;
-      this.selectedIndicatorId = undefined;
-      console.log('Selected service:', selectedService);
-      console.log('Activities and Indicators updated on service select:', this.activitiesList, this.indicatorsList);
     }
   }
 
@@ -117,11 +108,18 @@ export class FilterComponent implements OnInit, OnChanges {
     const target = event.target as HTMLSelectElement;
     const activityId = target.value === 'null' ? undefined : Number(target.value);
     this.selectedActivityId = activityId !== undefined && !isNaN(activityId) ? activityId : undefined;
-    console.log('Activity ID selected:', activityId);
     if (activityId) {
-      this.activityService.showActivity(activityId).subscribe(activity => {
-        this.updateIndicatorSelection(activity);
-      });
+      if (this.activityCache.has(activityId)) {
+        const cachedActivity = this.activityCache.get(activityId);
+        if (cachedActivity) {
+          this.updateIndicatorSelection(cachedActivity);
+        }
+      } else {
+        this.activityService.showActivity(activityId).subscribe(activity => {
+          this.activityCache.set(activityId, activity);
+          this.updateIndicatorSelection(activity);
+        });
+      }
     } else {
       this.updateIndicatorSelection(undefined);
     }
@@ -134,7 +132,6 @@ export class FilterComponent implements OnInit, OnChanges {
         name: sai.indicator.indicator_name
       }))
         .filter((value, index, self) => self.findIndex(v => v.id === value.id) === index) || [];
-      console.log('Indicators filtered by activity:', this.indicatorsList);
     } else {
       const selectedService = this.servicesList.find(service => service.id === this.selectedServiceId);
       this.indicatorsList = selectedService?.indicators?.map(indicator => ({
@@ -143,8 +140,6 @@ export class FilterComponent implements OnInit, OnChanges {
       })) || [];
     }
     this.selectedIndicatorId = undefined;
-
-    console.log('Indicators updated on activity select:', this.indicatorsList);
   }
 
   resetSelections() {

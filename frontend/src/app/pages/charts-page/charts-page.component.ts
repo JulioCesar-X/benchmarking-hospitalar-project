@@ -28,7 +28,6 @@ import { MenuComponent } from '../../components/shared/menu/menu.component';
     ChartsComponent,
     MatMenuModule,
     LoadingSpinnerComponent,
-    MatMenuModule,
     MatIconModule,
     MatButtonModule,
     MenuComponent
@@ -85,7 +84,6 @@ export class ChartsPageComponent implements OnInit {
       },
       error: (error) => {
         this.setLoadingStates(false);
-        console.error('Erro ao carregar dados do gráfico:', error);
       }
     });
   }
