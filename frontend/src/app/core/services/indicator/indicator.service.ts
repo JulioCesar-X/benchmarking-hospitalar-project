@@ -28,7 +28,6 @@ export class IndicatorService {
     return `${filter.indicatorId}-${filter.activityId}-${filter.serviceId}-${filter.year}-${filter.month}`;
   }
 
-
   getAllData(filter: Filter): Observable<any> {
     const cacheKey = this.getCacheKey(filter);
     if (this.cache.has(cacheKey)) {
@@ -101,8 +100,6 @@ export class IndicatorService {
     const params = this.getHttpParams(filter);
     return this.http.get<any>('/indicators/sai/variations', { params });
   }
-
-  // Restante dos métodos...
 
   indexIndicators(): Observable<Indicator[]> {
     return this.http.get<Indicator[]>('/indicators').pipe(

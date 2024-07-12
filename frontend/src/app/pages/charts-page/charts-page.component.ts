@@ -64,6 +64,9 @@ export class ChartsPageComponent implements OnInit {
     const role = this.authService.getRole();
     this.isAdminOrCoordinator = role === 'admin' || role === 'coordenador';
 
+    // Access the resolved data
+    this.graphData = this.route.snapshot.data['chartData'];
+
     this.route.params.subscribe(params => {
       this.filter.serviceId = +params['serviceId'] || this.filter.serviceId;
       this.loadGraphData();
@@ -177,7 +180,6 @@ export class ChartsPageComponent implements OnInit {
         const pdfRemainingHeight = pdfHeight - currentPdfHeight;
         const srcHeight = Math.min(remainingHeight, (pdfRemainingHeight * canvasWidth) / pdfWidth);
         pdf.addImage(imgData, 'PNG', 0, currentPdfHeight, pdfWidth, (srcHeight * pdfWidth) / canvasWidth, undefined, 'FAST', 0);
-
 
         console.log('Imagem adicionada ao PDF.');
         pdf.save('graficos.pdf');
