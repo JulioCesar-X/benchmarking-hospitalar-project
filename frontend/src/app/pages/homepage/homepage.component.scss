@@ -162,10 +162,10 @@ main {
 
 .navigation-button {
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background-color: $main-blue ;
+  background-color: $main-blue;
   color: white;
   border: none;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
@@ -175,52 +175,40 @@ main {
     background-color: $main-dark-blue;
   }
 
-::ng-deep mat-icon{
-  height: 60px;
-  width: 60px;
-  font-size: 40px !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
   &.previous-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    height: 60px;
-    left: 100px;
-    top: 350px;
+    left: 2rem;
+    top: 25rem;
   }
 
   &.next-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    height: 60px;
-    right: 100px;
-    top: 350px;
+    right: 2rem;
+    top: 25rem;
   }
 
-  &.top-button {
-    right: 20px;
-    bottom: 140px;
-  }
-  @media (max-width:600px){
+  @media (max-width: 600px) {
     &.previous-button {
       left: 150px;
       top: 550px;
     }
-  
+
     &.next-button {
       right: 150px;
       top: 550px;
     }
   }
 
-  mat-icon {
-    font-size: 24px;
+  .btnVisible {
+    bottom: 50px !important;
+    /* End position */
+  }
+
+  .btnHidden {
+    bottom: -50px;
+    /* Position when hidden */
+  }
+
+  #prevIcon,
+  #nextIcon {
+    --lord-icon-primary: var(--main-dark-blue);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA, } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import anime from 'animejs/lib/anime.es.js';
@@ -16,7 +16,8 @@ import { AuthService } from '../../core/services/auth/auth.service';
     MatIconModule
   ],
   templateUrl: './homepage.component.html',
-  styleUrls: ['./homepage.component.scss']
+  styleUrls: ['./homepage.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomepageComponent implements OnInit, OnDestroy {
   services: Service[] = [];
@@ -25,6 +26,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   page: number = 1;
   pageSize: number = 4;
   totalServices: number = 0;
+  loadedPages: Set<number> = new Set();
 
   constructor(
     private serviceService: ServiceService,
@@ -42,12 +44,18 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   loadServices(): void {
+    if (this.loadedPages.has(this.page)) {
+      this.updateDisplayedServices();
+      return;
+    }
+
     this.isLoading = true;
     this.serviceService.getServicesPaginated(this.page, this.pageSize).subscribe({
       next: (data: any) => {
-        this.services = data.data;
+        this.services = this.services.concat(data.data); // Concatenate new services
         this.totalServices = data.total;
         this.updateDisplayedServices();
+        this.loadedPages.add(this.page);
       },
       error: (err) => {
         this.isLoading = false;
@@ -59,7 +67,9 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   updateDisplayedServices(): void {
-    this.displayedServices = this.services;
+    const startIndex = (this.page - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayedServices = this.services.slice(startIndex, endIndex);
   }
 
   loadNextServices(): void {
@@ -72,7 +82,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   loadPreviousServices(): void {
     if (this.page > 1) {
       this.page--;
-      this.loadServices();
+      this.updateDisplayedServices();
     }
   }
 

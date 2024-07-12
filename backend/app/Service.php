@@ -9,7 +9,8 @@ class Service extends Model
     protected $fillable = [
         'service_name',
         'description',
-        'image_url'
+        'image_url',
+        'more_info'
     ];
 
     public function sais()
