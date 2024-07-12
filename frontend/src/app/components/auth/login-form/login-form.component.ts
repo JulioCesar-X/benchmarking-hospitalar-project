@@ -6,6 +6,11 @@ import { AuthService } from '../../../core/services/auth/auth.service';
 import { EventEmitter, Output } from '@angular/core';
 import { PasswordRecupModalComponent } from '../../../components/auth/password-recup-modal/password-recup-modal.component'
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+
+
 @Component({
   selector: 'app-login-form',
   standalone: true,
@@ -14,7 +19,10 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
     CommonModule,
     RouterLink,
     PasswordRecupModalComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'
@@ -40,22 +48,21 @@ export class LoginFormComponent {
         this.isLoading = false;
 
         if (response == null) {
-          console.log('Login successful' + response);
+          alert("thasdfas")
+          console.log('Login failed' + response);
           this.errorMessage = 'Login failed!'
         } else {
           this.errorMessage = ''
           console.log('Login successful' + response);
           this.router.navigate(['/consultUsers']);
 
-          if(this.AuthService.getRole() == "admin" || this.AuthService.getRole() == "coordenador"){
-            this.router.navigate(['/users']);
-          }
-           else {
+
             this.router.navigate(['/home']);
-          }
+          
         }
       },
       error => {
+        this.errorMessage = 'Login failed!'
         console.error('Login failed', error);
         this.isLoading = false;
 

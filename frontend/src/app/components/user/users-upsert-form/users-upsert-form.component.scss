@@ -12,7 +12,8 @@
 }
 
 .errorSpanMessage {
-  @include errorSpanMessage();
+  color: $error-color;
+  margin-left: auto;
 }
 
 /* estilos para dar override do componente do angular material  */
@@ -44,7 +45,7 @@ textarea {
   }
 }
 ::ng-deep .mat-mdc-select-min-line {
-  color: $main-blue !important; /* Example style */
+  color: $main-blue !important;
 }
 ::ng-deep .mat-mdc-select-panel {
   background-color: $darker-main-blue !important;

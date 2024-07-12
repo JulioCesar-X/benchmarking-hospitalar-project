@@ -1,34 +1,19 @@
 @import '../../../../styles/_variables.scss';
 
-.blueBG {
-  background-color: $main-blue;
-}
+
+
+
+
+
+
+
+
 
 .redBorder {
   border: $error-color 2px solid;
 }
 
-.whiteTxt {
-  color: $fill-white;
-}
 
-.loginInput {
-  box-sizing: border-box;
-  caret-color: $fill-white;
-  color: $fill-white;
-  background-color: transparent;
-  border: none;
-  border-bottom: 2px solid $fill-white; 
-
-  &::placeholder {
-    color: $fill-white; 
-  }
-
-  &:focus {
-    outline: none;
-    border-bottom-color: $fill-white;
-  }
-}
 
 .loginInput--error,
 .loginInput--error:focus {
@@ -46,46 +31,79 @@
   font-size: 0.75rem;
 }
 
-.loginBtn {
-  background-color: transparent;
-  color: $fill-white;
-  border: $fill-white 2px solid;
-}
-.loginBtn:active {
-  background-color: $fill-white;
-  color: $main-blue;
-  border: $fill-white 2px solid;
-}
 
 .forgotPassLink:hover {
   text-decoration: underline;
 }
 
-/* spinner blue background styles */
-.loading-circle_forBlueBG {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+
+
+.blueBG {
+  background-color: $main-blue;
+}
+.blueTxt {
+  color: $main-blue;
+}
+.whiteTxt {
   color: $fill-white;
-  margin-block: 1em;
 }
 
-.spinner_forBlueBG {
-  border: 8px solid $secondary-blue;
-  border-top: 8px solid $fill-white; 
-  border-radius: 50%;
-  width: 50px; 
-  height: 50px;
-  animation: spin 2s linear infinite;
+.errorSpanMessage {
+  color: $error-color;
+  margin-left: auto;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
+/* estilos para dar override do componente do angular material  */
+input {
+  color: $main-blue !important;
+  caret-color: $main-blue !important;
+}
+textarea {
+  color: $main-blue !important;
+  caret-color: $main-blue !important;
+}
+::ng-deep .mat-mdc-form-field-flex {
+  background-color: $fill-white !important;
+}
+::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--filled {
+  background-color: $fill-white !important;
+}
+::ng-deep
+  .mdc-text-field--filled:not(.mdc-text-field--disabled)
+  .mdc-line-ripple::after {
+  border-color: $main-dark-blue !important;
+}
+.custom-button {
+  background-color: $darker-main-blue !important;
+  color: $fill-white !important;
+  border-color: $main-dark-blue !important;
+  &:hover {
+    background-color: darken($darker-main-blue, 10%) !important;
   }
-  100% {
-    transform: rotate(360deg);
-  }
+}
+::ng-deep .mat-mdc-select-min-line {
+  color: $main-blue !important;
+}
+::ng-deep .mat-mdc-select-panel {
+  background-color: $darker-main-blue !important;
+}
+.mat-mdc-option {
+  background-color: $darker-main-blue !important;
+}
+.mat-mdc-option-active {
+  color: $fill-white !important;
+}
+.mat-mdc-option:hover {
+  background-color: $main-blue !important;
+}
+::ng-deep
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled)
+  .mdc-list-item__primary-text {
+  color: $main-dark-blue !important;
+}
+::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+  color: $main-dark-blue !important;
+}
+::ng-deep svg {
+  color: $main-blue !important;
 }

@@ -5,6 +5,9 @@
     display: flex;
   }
 
+  .borderBlue{
+border: solid 2px $darker-main-blue;  }
+
 /*   .descriptionBox {
     box-sizing: border-box;
     display: flex;

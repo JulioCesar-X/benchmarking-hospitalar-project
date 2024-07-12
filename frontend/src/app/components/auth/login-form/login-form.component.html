@@ -1,31 +1,59 @@
+<app-password-recup-modal
+  [isVisible]="isModalVisible"
+  (closeEvent)="closeModal()"
+></app-password-recup-modal>
 
-<app-password-recup-modal [isVisible]="isModalVisible" (closeEvent)="closeModal()"></app-password-recup-modal>
 <form (ngSubmit)="onLogin()">
   <div
-    class="relative flex flex-col justify-center items-center rounded-xl mx-auto my-5 pb-10 w-[90%] p-10 sm:w-1/2 gap-10 sm:px-10 md:max-w-[500px] md:min-h-[300px] blueBG"
-    [ngClass]="{ redBorder: errorMessage }"
+    class="relative flex flex-col justify-center items-center mx-auto pb-10 w-[90%] p-10 sm:w-1/2 gap-5 sm:px-10 md:max-w-[500px] md:min-h-[300px] blueBG"
+    [ngClass]="{ 'redBorder': errorMessage}"
   >
-    <!-- Input containers apenas visíveis quando isLoading for falso -->
-    <div class="w-full" *ngIf="!isLoading">
-      <input type="text" [ngClass]="{'loginInput--error': errorMessage}" 
-      class="w-full loginInput" id="email" placeholder="Enter your email" [(ngModel)]="email" name="email"
-          required>
-          <span *ngIf="errorMessage" class="errorSpan">{{ errorMessage }}</span>
-      </div>
+    <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
+      <mat-label class="blueTxt">Email:</mat-label>
+      <input
+        matInput
+        id="email"
+        [ngClass]="{ 'loginInput--error': errorMessage }"
+        [(ngModel)]="email"
+        name="email"
+        required
+      />
+      <span *ngIf="errorMessage" class="errorSpan">{{ errorMessage }}</span>
+    </mat-form-field>
 
-    <div class="w-full" *ngIf="!isLoading">
-        <input type="password" [ngClass]="{'loginInput--error': errorMessage}" class="w-full loginInput" id="password" placeholder="Enter your password" [(ngModel)]="password"
-          name="password" required>
-          <span *ngIf="errorMessage" class="errorSpan">{{ errorMessage }}</span>
-      </div>
-      <button *ngIf="!isLoading" type="submit" class="mt-4 w-1/2 cursor-pointer uppercase py-1.5 px-4 rounded-full loginBtn"
-      >Login</button>
+    <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
+      <mat-label class="blueTxt">Password:</mat-label>
+      <input
+        matInput
+        id="password"
+        type="password"
+        [ngClass]="{ 'loginInput--error': errorMessage }"
+        [(ngModel)]="password"
+        name="password"
+        required
+      />
+      <span *ngIf="errorMessage" class="errorSpan">{{ errorMessage }}</span>
+    </mat-form-field>
 
-    <!-- Spinner visível apenas quando isLoading for verdadeiro -->
-     <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true"></app-loading-spinner>
+    <app-loading-spinner
+      *ngIf="isLoading"
+      [isForBlueBG]="true"
+    ></app-loading-spinner>
 
-     <!-- routerLink="/resetPassword" -->
-    <a *ngIf="!isLoading"  class="cursor-pointer mt-16 no-underline whiteTxt"
-    (click)="openModal($event)">Forgot Password?</a>
+    <button
+      *ngIf="!isLoading"
+      mat-raised-button
+      type="submit"
+      class="p-4 custom-button"
+    >
+      Login
+    </button>
+
+    <a
+      *ngIf="!isLoading"
+      class="cursor-pointer mt-16 no-underline whiteTxt forgotPassLink"
+      (click)="openModal($event)"
+      >Forgot Password?</a
+    >
   </div>
 </form>

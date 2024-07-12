@@ -8,19 +8,18 @@
 </div> -->
 
 
-    <app-loading-spinner class="mx-auto my-auto" *ngIf="isLoading" [message]="'Carregando...'"></app-loading-spinner>
-  
-    <div class="flex items-center mx-10" *ngIf="!isLoading">
-      <div class="cardText flex-1">
-        <p class="text-xl underline">{{ service.service_name }}</p>
-        <p class="text-lg mt-2">{{ service?.description }}</p>
-      </div>
-      <div class="h-[100%]">
-        <img class="h-[100%] ratio" [src]="service.image_url" alt="{{ service.service_name }}">
-      </div>
-    </div>
 
-
+    <div class="flex flex-col md:flex-row h-screen">
+      <div class="flex-1 flex items-center justify-center transparent">
+          <img [src]="service.image_url" alt="Square Image" class="max-w-full max-h-full object-cover borderBlue">
+      </div>
+      <div class="flex-1 flex items-center justify-center p-8">
+          <div>
+            <p class="text-xl underline">{{ service.service_name }}</p>
+            <p class="text-lg mt-2">{{ service?.description }}</p>
+          </div>
+      </div>
+  </div>
 
 
 

@@ -1,4 +1,4 @@
-<section class="flex flex-col min-h-full forms-container">
+<section class="flex flex-col min-h-full max-h-[70vh] forms-container">
   <div class="flex justify-start items-center pb-2 text-xl gap-10 blueBG">
     <button mat-icon-button matTooltip="Clique para registrar um novo utilizador" [matTooltipPosition]="'right'"
       matTooltipClass="custom" class="ml-5" (click)="openDialog(null, 'create')">
@@ -39,9 +39,9 @@
             <td class="border p-2">{{ user.roles[0]?.role_name }}</td>
             <td class="border py-2">
               <div class="flex justify-center space-x-4">
-                <img src="../../../assets/images/pencil-96.png" class="w-5 h-5 cursor-pointer optionBtns" alt="Edit"
+                <img src="../../../assets/images/pencil-96.png" class="w-5 h-5 cursor-pointer scale" alt="Edit"
                   (click)="openDialog(user, 'edit')" />
-                <img src="../../../assets/images/trash-96.png" class="w-5 h-5 cursor-pointer optionBtns" alt="Delete"
+                <img src="../../../assets/images/trash-96.png" class="w-5 h-5 cursor-pointer scale" alt="Delete"
                   (click)="openDialog(user, 'delete')" />
               </div>
             </td>
