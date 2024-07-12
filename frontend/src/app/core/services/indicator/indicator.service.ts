@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, throwError, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { Indicator } from '../../models/indicator.model';
 import { Filter } from '../../models/filter.model';
 import { forkJoin } from 'rxjs';
@@ -11,27 +11,41 @@ import { forkJoin } from 'rxjs';
 })
 
 export class IndicatorService {
+  private cache: { [key: string]: any } = {};
+
   constructor(private http: HttpClient) { }
 
-  indexIndicators(): Observable<Indicator[]> {
-    return this.http.get<Indicator[]>('/indicators').pipe(
-      catchError(error => throwError(() => new Error('Failed to fetch indicators')))
-    );
+  private getHttpParams(filter: Filter): HttpParams {
+    return new HttpParams()
+      .set('serviceId', filter.serviceId?.toString() || '0')
+      .set('activityId', filter.activityId?.toString() || '')
+      .set('indicatorId', filter.indicatorId?.toString() || '0')
+      .set('year', filter.year?.toString() || '0')
+      .set('month', filter.month?.toString() || '0');
   }
 
-  getIndicatorsPaginated(pageIndex: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(`/indicators/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
-      catchError(error => throwError(() => new Error('Failed to fetch paginated indicators')))
-    );
+  private getCacheKey(filter: Filter): string {
+    return `${filter.year}-${filter.month}-${filter.indicatorId}-${filter.activityId}-${filter.serviceId}`;
   }
 
+  getAllData(filter: Filter): Observable<any> {
+    const cacheKey = this.getCacheKey(filter);
+    if (this.cache[cacheKey]) {
+      return of(this.cache[cacheKey]);
+    }
 
-  getSAIPaginated(pageIndex: number, pageSize: number): Observable<any[]> {
-    return this.http.get<any>(`/indicators/sai/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
-      catchError(error => {
-        console.error('Error fetching service activity indicators:', error);
-        return throwError(() => new Error('Failed to fetch service activity indicators'));
-      })
+    return forkJoin({
+      recordsMensal: this.getRecordsMensal(filter),
+      recordsAnual: this.getRecordsAnual(filter),
+      recordsAnualLastYear: this.getRecordsLastYear(filter),
+      goalsMensal: this.getGoalsMensal(filter),
+      goalMes: this.getGoalMes(filter),
+      goalAnual: this.getGoalAnual(filter),
+      previousYearTotal: this.getPreviousYearTotal(filter),
+      currentYearTotal: this.getCurrentYearTotal(filter),
+      variations: this.getVariations(filter),
+    }).pipe(
+      tap(data => this.cache[cacheKey] = data)
     );
   }
 
@@ -44,6 +58,7 @@ export class IndicatorService {
     const params = this.getHttpParams(filter);
     return this.http.get<any>('/indicators/sai/records-anual', { params });
   }
+
   getRecordsLastYear(filter: Filter): Observable<any> {
     const params = this.getHttpParams(filter);
     return this.http.get<any>('/indicators/sai/records-last-year', { params });
@@ -79,29 +94,28 @@ export class IndicatorService {
     return this.http.get<any>('/indicators/sai/variations', { params });
   }
 
-  getAllData(filter: Filter): Observable<any> {
-    return forkJoin({
-      recordsMensal: this.getRecordsMensal(filter),
-      recordsAnual: this.getRecordsAnual(filter),
-      recordsAnualLastYear: this.getRecordsLastYear(filter),
-      goalsMensal: this.getGoalsMensal(filter),
-      goalMes: this.getGoalMes(filter),
-      goalAnual: this.getGoalAnual(filter),
-      previousYearTotal: this.getPreviousYearTotal(filter),
-      currentYearTotal: this.getCurrentYearTotal(filter),
-      variations: this.getVariations(filter),
-    });
+  // Restante dos métodos...
+
+  indexIndicators(): Observable<Indicator[]> {
+    return this.http.get<Indicator[]>('/indicators').pipe(
+      catchError(error => throwError(() => new Error('Failed to fetch indicators')))
+    );
   }
 
-  private getHttpParams(filter: Filter): HttpParams {
-    return new HttpParams()
-      .set('serviceId', filter.serviceId?.toString() || '0')
-      .set('activityId', filter.activityId?.toString() || '')
-      .set('indicatorId', filter.indicatorId?.toString() || '0')
-      .set('year', filter.year?.toString() || '0')
-      .set('month', filter.month?.toString() || '0');
+  getIndicatorsPaginated(pageIndex: number, pageSize: number): Observable<any> {
+    return this.http.get<any>(`/indicators/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
+      catchError(error => throwError(() => new Error('Failed to fetch paginated indicators')))
+    );
   }
 
+  getSAIPaginated(pageIndex: number, pageSize: number): Observable<any[]> {
+    return this.http.get<any>(`/indicators/sai/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
+      catchError(error => {
+        console.error('Error fetching service activity indicators:', error);
+        return throwError(() => new Error('Failed to fetch service activity indicators'));
+      })
+    );
+  }
 
   getIndicatorsRecords(serviceId: number, activityId: number | null, year: number, month: number, pageIndex: number, pageSize: number): Observable<any> {
     const params = new HttpParams()
@@ -137,7 +151,6 @@ export class IndicatorService {
       })
     );
   }
-
 
   storeIndicator(indicator: Indicator): Observable<Indicator> {
     return this.http.post<Indicator>('/indicators', indicator).pipe(

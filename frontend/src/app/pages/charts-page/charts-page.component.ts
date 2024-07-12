@@ -18,7 +18,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MenuComponent } from '../../components/shared/menu/menu.component';
 
-
 @Component({
   selector: 'app-charts-page',
   standalone: true,
@@ -86,6 +85,7 @@ export class ChartsPageComponent implements OnInit {
       },
       error: (error) => {
         this.setLoadingStates(false);
+        console.error('Erro ao carregar dados do gráfico:', error);
       }
     });
   }
@@ -113,7 +113,7 @@ export class ChartsPageComponent implements OnInit {
   getRole() {
     return this.authService.getRole();
   }
-  
+
   numberToMonth(monthNumber: number | undefined): string {
     const months = [
       "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -191,7 +191,6 @@ export class ChartsPageComponent implements OnInit {
       console.error('Elemento .graphicsContainer não encontrado.');
     }
   }
-
 
   exportToExcel(): void {
     if (this.filter.year === undefined || this.filter.month === undefined) {
