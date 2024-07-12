@@ -41,6 +41,7 @@ export class FilterComponent implements OnInit, OnChanges {
   @Input() dataInsertedCheckbox: boolean = false;
   @Input() showServiceInput: boolean = true;
   @Input() showActivityInput: boolean = false;
+  @Input() initialFilter?: Filter; // Add this line to accept initial filter
 
   @Output() filterEvent = new EventEmitter<Filter>();
   @Output() activityInputChange = new EventEmitter<boolean>();
@@ -53,11 +54,17 @@ export class FilterComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.loadInitialData();
+    if (this.initialFilter) {
+      this.applyInitialFilter();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedServiceId'] && changes['selectedServiceId'].currentValue) {
       this.updateActivityAndIndicatorSelections(Number(changes['selectedServiceId'].currentValue));
+    }
+    if (changes['initialFilter'] && changes['initialFilter'].currentValue) {
+      this.applyInitialFilter();
     }
   }
 
@@ -75,6 +82,20 @@ export class FilterComponent implements OnInit, OnChanges {
         name: activity.activity_name
       }));
     });
+  }
+
+  applyInitialFilter() {
+    if (this.initialFilter) {
+      this.selectedServiceId = this.initialFilter.serviceId;
+      this.selectedActivityId = this.initialFilter.activityId ? Number(this.initialFilter.activityId) : undefined;
+      this.selectedIndicatorId = this.initialFilter.indicatorId ? Number(this.initialFilter.indicatorId) : undefined;
+      this.filter.month = this.initialFilter.month;
+      this.filter.year = this.initialFilter.year;
+
+      if (this.selectedServiceId) {
+        this.updateActivityAndIndicatorSelections(Number(this.selectedServiceId));
+      }
+    }
   }
 
   onServiceSelect(event: Event) {

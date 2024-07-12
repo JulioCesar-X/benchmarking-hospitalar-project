@@ -65,7 +65,9 @@ export class ChartsPageComponent implements OnInit {
     this.isAdminOrCoordinator = role === 'admin' || role === 'coordenador';
 
     // Access the resolved data
-    this.graphData = this.route.snapshot.data['chartData'];
+    const resolvedData = this.route.snapshot.data['chartData'];
+    this.graphData = resolvedData.data;
+    this.filter = resolvedData.filter;
 
     this.route.params.subscribe(params => {
       this.filter.serviceId = +params['serviceId'] || this.filter.serviceId;
