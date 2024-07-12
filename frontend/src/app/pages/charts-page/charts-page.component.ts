@@ -18,7 +18,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MenuComponent } from '../../components/shared/menu/menu.component';
 
-
 @Component({
   selector: 'app-charts-page',
   standalone: true,
@@ -29,7 +28,6 @@ import { MenuComponent } from '../../components/shared/menu/menu.component';
     ChartsComponent,
     MatMenuModule,
     LoadingSpinnerComponent,
-    MatMenuModule,
     MatIconModule,
     MatButtonModule,
     MenuComponent
@@ -66,6 +64,11 @@ export class ChartsPageComponent implements OnInit {
     const role = this.authService.getRole();
     this.isAdminOrCoordinator = role === 'admin' || role === 'coordenador';
 
+    // Access the resolved data
+    const resolvedData = this.route.snapshot.data['chartData'];
+    this.graphData = resolvedData.data;
+    this.filter = resolvedData.filter;
+
     this.route.params.subscribe(params => {
       this.filter.serviceId = +params['serviceId'] || this.filter.serviceId;
       this.loadGraphData();
@@ -88,6 +91,8 @@ export class ChartsPageComponent implements OnInit {
         this.setLoadingStates(false);
       }
     });
+
+    this.loadIndicatorName(); // Initial load
   }
 
   loadGraphData(): void {
@@ -100,6 +105,7 @@ export class ChartsPageComponent implements OnInit {
       ...event
     };
     this.loadGraphData();
+    this.loadIndicatorName();
   }
 
   handleActivityInputChange(show: boolean): void {
@@ -113,7 +119,7 @@ export class ChartsPageComponent implements OnInit {
   getRole() {
     return this.authService.getRole();
   }
-  
+
   numberToMonth(monthNumber: number | undefined): string {
     const months = [
       "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -160,11 +166,10 @@ export class ChartsPageComponent implements OnInit {
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
 
-        // Variables to track the current height on the PDF and the current position on the canvas
-        let currentPdfHeight = 80; // Start after the header
+        
+        let currentPdfHeight = 80; 
         let srcY = 0;
 
-        // Add header information only on the first page
         pdf.setFontSize(11);
         pdf.text('Benchmarking Hospitais - Desempenho Assistencial', pdfWidth / 2, 10, { align: 'center' });
         pdf.setFontSize(9);
@@ -180,7 +185,6 @@ export class ChartsPageComponent implements OnInit {
         const srcHeight = Math.min(remainingHeight, (pdfRemainingHeight * canvasWidth) / pdfWidth);
         pdf.addImage(imgData, 'PNG', 0, currentPdfHeight, pdfWidth, (srcHeight * pdfWidth) / canvasWidth, undefined, 'FAST', 0);
 
-
         console.log('Imagem adicionada ao PDF.');
         pdf.save('graficos.pdf');
         console.log('PDF salvo como graficos.pdf.');
@@ -191,7 +195,6 @@ export class ChartsPageComponent implements OnInit {
       console.error('Elemento .graphicsContainer não encontrado.');
     }
   }
-
 
   exportToExcel(): void {
     if (this.filter.year === undefined || this.filter.month === undefined) {
@@ -245,7 +248,6 @@ export class ChartsPageComponent implements OnInit {
       valor: 'Valor',
     });
 
-    // Exemplo de dados para Departamento
     const departamento = 'Departamento de Psiquiatria';
 
     // Adiciona dados de produção mensal

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import anime from 'animejs/lib/anime.es.js';
@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ServiceService } from '../../core/services/service/service.service';
 import { Service } from '../../core/models/service.model';
 import { AuthService } from '../../core/services/auth/auth.service';
+import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component'; // Importe o componente do spinner
 
 @Component({
   selector: 'app-homepage',
@@ -13,18 +14,23 @@ import { AuthService } from '../../core/services/auth/auth.service';
   imports: [
     CommonModule,
     RouterModule,
-    MatIconModule
+    MatIconModule,
+    LoadingSpinnerComponent // Adicione o componente do spinner aqui
   ],
   templateUrl: './homepage.component.html',
-  styleUrls: ['./homepage.component.scss']
+  styleUrls: ['./homepage.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomepageComponent implements OnInit, OnDestroy {
   services: Service[] = [];
   displayedServices: any[] = [];
   isLoading: boolean = false;
+  loadingServiceId: number | null = null; // Adicione essa linha
   page: number = 1;
   pageSize: number = 4;
   totalServices: number = 0;
+  loadedPages: Set<number> = new Set();
+  showNavButtons: boolean = false; // Adicione essa linha
 
   constructor(
     private serviceService: ServiceService,
@@ -42,12 +48,18 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   loadServices(): void {
+    if (this.loadedPages.has(this.page)) {
+      this.updateDisplayedServices();
+      return;
+    }
+
     this.isLoading = true;
     this.serviceService.getServicesPaginated(this.page, this.pageSize).subscribe({
       next: (data: any) => {
-        this.services = data.data;
+        this.services = this.services.concat(data.data); // Concatenate new services
         this.totalServices = data.total;
         this.updateDisplayedServices();
+        this.loadedPages.add(this.page);
       },
       error: (err) => {
         this.isLoading = false;
@@ -59,7 +71,9 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   updateDisplayedServices(): void {
-    this.displayedServices = this.services;
+    const startIndex = (this.page - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayedServices = this.services.slice(startIndex, endIndex);
   }
 
   loadNextServices(): void {
@@ -72,7 +86,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   loadPreviousServices(): void {
     if (this.page > 1) {
       this.page--;
-      this.loadServices();
+      this.updateDisplayedServices();
     }
   }
 
@@ -91,6 +105,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   goToDescription(serviceId: number) {
+    this.loadingServiceId = serviceId; // Define o ID do serviço que está carregando
     const role = this.authService.getRole();
     if (role === 'admin' || role === 'coordenador') {
       this.router.navigate(['/charts', { serviceId }]);

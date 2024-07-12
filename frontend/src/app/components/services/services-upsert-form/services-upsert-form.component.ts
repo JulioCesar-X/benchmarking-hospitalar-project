@@ -79,6 +79,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
     this.isLoading = true;
     this.serviceService.showService(serviceId).subscribe({
       next: (data: Service) => {
+        console.log('Service loaded:', data);
         this.selectedService = data;
         this.selectedActivityIDs = data.sais?.map(sai => sai.activity.id) || [];
         this.selectedIndicatorIDs = data.sais?.map(sai => sai.indicator.id) || [];

@@ -6,13 +6,11 @@ import { ServicesDescriptionPageComponent } from './pages/services/services-desc
 import { UsersPageComponent } from './pages/user/users-page/users-page.component';
 import { UserCreatePageComponent } from './pages/user/user-create-page/user-create-page.component';
 import { RecordsGoalsUpdatePageComponent } from './pages/records/recordsGoals-update-page/recordsGoals-update-page.component';
-
 import { UserUpdatePageComponent } from './pages/user/user-update-page/user-update-page.component';
-
 import { ChartsPageComponent } from './pages/charts-page/charts-page.component';
-
 import { AuthGuard } from './core/guards/auth.guard';
 import { RoleGuard } from './core/guards/role.guard';
+import { ChartDataResolver } from './core/resolvers/chart-data.resolver'; // Import the resolver
 
 //indicators
 import { IndicatorsPageComponent } from './pages/indicators/indicators-page/indicators-page.component';
@@ -31,8 +29,6 @@ import { NotificationsComponent } from './pages/notifications/notifications-page
 import { NotificationsCreatePageComponent } from './pages/notifications/notifications-create-page/notifications-create-page.component';
 import { PasswordRecupModalComponent } from './components/auth/password-recup-modal/password-recup-modal.component';
 
-
-
 export const routes: Routes = [
   { path: 'home', component: HomepageComponent },
   { path: 'login', component: LoginPageComponent },
@@ -41,7 +37,7 @@ export const routes: Routes = [
   {
     path: 'users',
     children: [
-      { path: '', component: UsersPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin','coordenador'] } },
+      { path: '', component: UsersPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin', 'coordenador'] } },
       { path: 'create', component: UserCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin'] } },
       { path: 'update/:id', component: UserUpdatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin'] } },
     ]
@@ -71,8 +67,20 @@ export const routes: Routes = [
     ]
   },
   { path: 'description/:serviceId', component: ServicesDescriptionPageComponent },
-  { path: 'charts', component: ChartsPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['admin', 'coordenador'] } },
-  { path: 'user-charts', component: ChartsPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['user'] } },
+  {
+    path: 'charts',
+    component: ChartsPageComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: ['admin', 'coordenador'] },
+    resolve: { chartData: ChartDataResolver }
+  },
+  {
+    path: 'user-charts',
+    component: ChartsPageComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: ['user'] },
+    resolve: { chartData: ChartDataResolver }
+  },
   {
     path: 'RecordGoalsUpdate',
     component: RecordsGoalsUpdatePageComponent,

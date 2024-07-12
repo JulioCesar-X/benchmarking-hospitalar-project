@@ -35,8 +35,8 @@
     }
     select{
         color: $main-blue;
-        padding-block: 0.2em;
-        padding-inline: 0.5em;
+        padding-block: 0.8em;
+        padding-inline: 1em;
         border: none;
         outline: $main-blue;
         font-size: 1.3em;
@@ -86,4 +86,9 @@
       border: $fill-white 2px solid;
     }
     margin-top: 0;
+}
+
+.py-1{
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
 }
