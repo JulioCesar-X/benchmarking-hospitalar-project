@@ -33,6 +33,7 @@ export class ChartDataResolver implements Resolve<any> {
                     if (service.sais && service.sais.length > 0) {
                         filter.activityId = service.sais[0].activity_id;
                         filter.indicatorId = service.sais[0].indicator_id;
+                        console.log(filter);
                     } else if (service.indicators && service.indicators.length > 0) {
                         filter.indicatorId = service.indicators[0].id;
                         filter.activityId = null; // Sem atividade, apenas indicador

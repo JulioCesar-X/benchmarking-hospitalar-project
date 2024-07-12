@@ -91,6 +91,8 @@ export class ChartsPageComponent implements OnInit {
         this.setLoadingStates(false);
       }
     });
+
+    this.loadIndicatorName(); // Initial load
   }
 
   loadGraphData(): void {
@@ -103,6 +105,7 @@ export class ChartsPageComponent implements OnInit {
       ...event
     };
     this.loadGraphData();
+    this.loadIndicatorName();
   }
 
   handleActivityInputChange(show: boolean): void {
@@ -163,11 +166,10 @@ export class ChartsPageComponent implements OnInit {
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
 
-        // Variables to track the current height on the PDF and the current position on the canvas
-        let currentPdfHeight = 80; // Start after the header
+        
+        let currentPdfHeight = 80; 
         let srcY = 0;
 
-        // Add header information only on the first page
         pdf.setFontSize(11);
         pdf.text('Benchmarking Hospitais - Desempenho Assistencial', pdfWidth / 2, 10, { align: 'center' });
         pdf.setFontSize(9);
@@ -246,7 +248,6 @@ export class ChartsPageComponent implements OnInit {
       valor: 'Valor',
     });
 
-    // Exemplo de dados para Departamento
     const departamento = 'Departamento de Psiquiatria';
 
     // Adiciona dados de produção mensal

@@ -41,7 +41,7 @@ export class FilterComponent implements OnInit, OnChanges {
   @Input() dataInsertedCheckbox: boolean = false;
   @Input() showServiceInput: boolean = true;
   @Input() showActivityInput: boolean = false;
-  @Input() initialFilter?: Filter; // Add this line to accept initial filter
+  @Input() initialFilter?: Filter;
 
   @Output() filterEvent = new EventEmitter<Filter>();
   @Output() activityInputChange = new EventEmitter<boolean>();
@@ -55,6 +55,7 @@ export class FilterComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.loadInitialData();
     if (this.initialFilter) {
+      console.log('Initial filter:', this.initialFilter);
       this.applyInitialFilter();
     }
   }
@@ -89,6 +90,9 @@ export class FilterComponent implements OnInit, OnChanges {
       this.selectedServiceId = this.initialFilter.serviceId;
       this.selectedActivityId = this.initialFilter.activityId ? Number(this.initialFilter.activityId) : undefined;
       this.selectedIndicatorId = this.initialFilter.indicatorId ? Number(this.initialFilter.indicatorId) : undefined;
+      console.log('Initial indicator:', this.selectedIndicatorId);
+      console.log('Initial activity:', this.selectedActivityId);
+      console.log('Initial service:', this.selectedServiceId);
       this.filter.month = this.initialFilter.month;
       this.filter.year = this.initialFilter.year;
 
@@ -123,7 +127,10 @@ export class FilterComponent implements OnInit, OnChanges {
           name: indicator.name
         })) || [];
       } else {
-        this.indicatorsList = [];
+        this.activityService.showActivity(Number(this.selectedActivityId)).subscribe(activity => {
+          this.activityCache.set(Number(this.selectedActivityId), activity);
+          this.updateIndicatorSelection(activity);
+        });
       }
     }
   }
@@ -163,7 +170,6 @@ export class FilterComponent implements OnInit, OnChanges {
         name: indicator.name
       })) || [];
     }
-    this.selectedIndicatorId = undefined;
   }
 
   resetSelections() {
