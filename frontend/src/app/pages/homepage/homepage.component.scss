@@ -158,9 +158,9 @@
   }
 }
 
-  &:hover .cardImg img {
-    transform: scale(1.05); // Aumenta a imagem em 5% ao passar o mouse
-  }
+  // &:hover .cardImg img {
+  //   transform: scale(1.05); // Aumenta a imagem em 5% ao passar o mouse
+  // }
 
 .card:hover {
   background-color: $main-dark-blue;
@@ -295,7 +295,5 @@ main {
     --lord-icon-primary: var(--main-dark-blue);
   }
 }
-
-
 
 

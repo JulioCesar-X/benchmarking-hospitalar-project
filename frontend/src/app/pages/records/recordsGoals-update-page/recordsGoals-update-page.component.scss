@@ -23,7 +23,6 @@
     align-items: center;
     width: 30%;
 
-
 } @media(max-width:600px){
     .tab-headers{
         width: 50%;
@@ -39,8 +38,8 @@
     outline: none;
     cursor: pointer;
     padding: 1em;
-    transition: 0.3s;
-
+    transition: 0.3s;  
+    font-size: 1.4em;
 }
 
 .tab-link:hover, .tab-link.active:hover {
