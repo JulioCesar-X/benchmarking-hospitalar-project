@@ -212,11 +212,7 @@ main {
   color: white;
   border: none;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: $main-dark-blue;
-  }
+  transition: background-color 0.3s ease, opacity 0.3s ease;
 
   &.previous-button {
     left: 2rem;
@@ -241,13 +237,11 @@ main {
   }
 
   .btnVisible {
-    bottom: 50px !important;
-    /* End position */
+    opacity: 1;
   }
 
   .btnHidden {
-    bottom: -50px;
-    /* Position when hidden */
+    opacity: 0;
   }
 
   #prevIcon,

@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { MatIconModule } from '@angular/material/icon';
+
 
 @Component({
   selector: 'app-menu',
@@ -12,7 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
     RouterLink,
     RouterLinkActive,
     MatIconModule
-  ], // Import CommonModule here
+  ],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })
@@ -25,7 +27,7 @@ export class MenuComponent {
   isManageIndicatorsSubMenuOpen = false;
   isMenuOpen = true;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   getRole() {
     return this.authService.getRole();
@@ -73,5 +75,9 @@ export class MenuComponent {
   capitalize(str: string): string {
     if (str.length === 0) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  goToCharts(serviceId: number) {
+    this.router.navigate(['/charts', { serviceId }]);
   }
 }
