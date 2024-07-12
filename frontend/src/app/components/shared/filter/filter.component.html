@@ -23,7 +23,7 @@
       <div class="relative selectContainer my-auto w-full sm:min-w-[10%] sm:max-w-[300px]" *ngIf="indicatorsInput">
         <select class="w-full" [(ngModel)]="selectedIndicatorId" matTooltip="Selecione um indicador"
           [matTooltipPosition]="'below'" matTooltipClass="custom"
-          [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId === null)">
+          [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId !== null)">
           <option [ngValue]="undefined" disabled selected>Selecione um indicador</option>
           <option *ngFor="let indicator of indicatorsList" [value]="indicator.id">{{ indicator.name }}</option>
         </select>

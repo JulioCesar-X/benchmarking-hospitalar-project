@@ -10,6 +10,9 @@
       <div class="cardText">
         <p>{{ service.service_name }}</p>
       </div>
+      <div class="loading-overlay" *ngIf="loadingServiceId === service.id">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
     </div>
   </div>
 
