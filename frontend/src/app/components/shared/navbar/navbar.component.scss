@@ -235,7 +235,6 @@
   .forms-container {
     box-sizing: border-box;
     background-color: $main-blue;
-    border: $secondary-blue 7px solid;
     
     &.forms-container__error{
       border: $error-color 7px solid;

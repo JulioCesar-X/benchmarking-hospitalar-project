@@ -7,6 +7,7 @@ import { NotificationService } from '../../../core/services/notifications/notifi
 import { Notification } from '../../../core/models/notification.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 
 
 
@@ -18,7 +19,8 @@ import { MatMenuModule } from '@angular/material/menu';
     CommonModule,
     MatBadgeModule,
     MatMenuModule,
-    MatIconModule
+    MatIconModule,
+    LoadingSpinnerComponent
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']

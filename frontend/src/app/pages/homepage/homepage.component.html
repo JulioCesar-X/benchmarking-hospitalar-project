@@ -3,15 +3,33 @@
     <h1 class="headingTitle">Departamento Psiquiatria</h1>
   </div>
   <div class="homepageCardsSections">
+
+
     <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)">
+      <div class="cardImg">
+        <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
+      </div>
+      <div class="card__content">
+  
+        <div class="card__content-inner">
+          <div class="cardText text-xl">
+            <p class="card__title">{{ service.service_name }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <!-- <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)">
       <div class="cardImg">
         <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
       </div>
       <div class="cardText">
         <p>{{ service.service_name }}</p>
       </div>
-    </div>
+    </div> -->
   </div>
+
 
   <div *ngIf="isLoading || !displayedServices.length" class="random-demo">
     <div class="el"></div>

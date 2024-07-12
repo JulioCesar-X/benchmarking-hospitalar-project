@@ -6,7 +6,6 @@
   background-size: cover;
   background-position: center;
   padding-block: 5%;
-  margin-bottom: 2em;
 }
 
 .headingTitle {
@@ -24,12 +23,13 @@
 
 .homepageCardsSections {
   display: grid;
-  margin: 0 auto;
+  margin-inline: auto;
+  margin-block: 2em;
+
   grid-template-columns: repeat(4, 1fr);
-  margin-bottom: 50px;
   grid-auto-rows: 1fr;
-  gap: 1em;
-  width: 70%;
+  gap: 2em;
+  width: 80%;
   max-width: 1000px;
 }@media (max-width: 600px) {
   .homepageCardsSections{
@@ -38,28 +38,121 @@
   }
 }
 
-.card {
-  cursor: pointer;
-  display: flex;
-  background-color: $main-blue;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  border-radius: 1em;
-  overflow: hidden;
+// .card {
+//   cursor: pointer;
+//   display: flex;
+//   background-color: $main-blue;
+//   flex-direction: column;
+//   justify-content: space-between;
+//   height: 100%;
+//   border-radius: 1em;
+//   overflow: hidden;
 
+// }
+
+.card {
+  height: 50vh;
+  position: relative;
+  background: $main-blue;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 1;
+  transition: all 1s ease-in-out;
+
+  &__content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: $main-blue;
+    top: calc(100% - 120px);
+    opacity: 1;
+    transition: all 1s ease-in-out;
+
+    display: flex;
+    align-items: top;
+    justify-content: center;
+
+    &-inner {
+      position: relative;
+      display: block;
+      height: 80px;
+      display: flex;
+      flex-flow: column nowrap;
+      text-align: center;
+      justify-content: center;
+      transition: all 1s ease-in-out;
+    }
+
+
+  }
+
+  &__title {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+
+  &.a100,
+  &:hover {
+    .card__content {
+      top: 0;
+      background: $main-dark-blue;
+      transition: all 1s ease-in-out;
+
+      &-inner {
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        transition: all 1s ease-in-out;
+      }
+    }
+  }
+
+  &.a50 {
+    .card__content {
+      top: 50%;
+
+      &-inner {
+        height: 50%;
+      }
+    }
+
+    &:hover {
+      .card__content {
+        top: 0;
+
+        &-inner {
+          height: 100%;
+        }
+      }
+    }
+  }
+
+  &.a100 {
+    &:hover {
+      .card__content {
+        top: calc(100% - 80px);
+
+        &-inner {
+          height: 80px;
+        }
+      }
+    }
+  }
 }
 
 .card:hover {
   box-shadow: 5px 10px 63px -20px rgba(0, 0, 0, 0.75);
+  
 
 }
 
 .cardImg {
-  cursor: pointer;
-  display: flex;
-  align-items: flex-end;
-
+  // cursor: pointer;
+  // display: flex;
+  // align-items: flex-end;
+  width: 100%;
   img {
     width: 100%;
     aspect-ratio: 10/8;
@@ -79,7 +172,7 @@
 
 
 .cardText {
-  cursor: pointer;
+  //cursor: pointer;
   background-color: transparent;
   height: 100%;
   padding: 1em;
@@ -98,8 +191,10 @@
 //   background-color: $main-dark-blue;
 // }
 .imgSize {
-  width: $card-width;
-  height: $card-height;
+  // width: $card-width;
+  // height: $card-height;
+  width: 100%;
+  height: auto;
 }
 
 .container {
@@ -137,10 +232,8 @@ main {
 }
 
 :host {
-  margin-block: 0.5rem;
   flex: 1;
   display: flex;
-  margin-block: 0.5rem;
 }
 
 
@@ -224,3 +317,7 @@ main {
     font-size: 24px;
   }
 }
+
+
+
+
