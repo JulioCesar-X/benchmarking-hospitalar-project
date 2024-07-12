@@ -99,6 +99,7 @@ export class ChartsComponent implements OnInit, OnChanges {
   }
 
   getChartDataAndOptions(data: any): { chartData: ChartData, chartOptions: ChartOptions } {
+    const highlightMonth = this.month !== undefined ? this.month - 1 : -1;
     let labels: string[] = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     let datasets: any[] = [];
     let chartOptions: ChartOptions = {
@@ -129,19 +130,30 @@ export class ChartsComponent implements OnInit, OnChanges {
       }
     };
 
+    const defaultBackgroundColor ='rgba(81, 107, 145, 0.5)';
+    const highlightBackgroundColor = this.chartColors.primary;
+    const highlightBackgroundColor2Bar1 = this.chartColors.primary;
+    const highlightBackgroundColor2Bar2 = this.chartColors.secondary;
+
     switch (this.graphType) {
       case 'bar':
         if (this.graphLabel === "Produção Mês") {
           datasets = [{
             label: 'Valor mês',
             data: data || [],
-            backgroundColor: this.chartColors.primary
+            backgroundColor: (ctx: any) => {
+              const index = ctx.dataIndex;
+              return index === highlightMonth ? highlightBackgroundColor : defaultBackgroundColor;
+            }
           }];
         } else {
           datasets = [{
             label: 'Valor mês',
             data: data || [],
-            backgroundColor: this.chartColors.primary
+            backgroundColor: (ctx: any) => {
+              const index = ctx.dataIndex;
+              return index === highlightMonth ? highlightBackgroundColor : defaultBackgroundColor;
+            }
           }];
         }
         break;
@@ -247,12 +259,18 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               label: 'Produção',
               data: data?.recordsAnual || [],
-              backgroundColor: this.chartColors.primary
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor;
+              }
             },
             {
               label: 'Metas',
               data: data?.goalsMensal || [],
-              backgroundColor: this.chartColors.secondary
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor;
+              }
             }
           ];
         } else if (this.graphLabel === "Comparação produção acumulada") {
@@ -260,12 +278,18 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               label: `${this.year}`,
               data: data?.recordsAnual || [],
-              backgroundColor: this.chartColors.primary,
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor;
+              }
             },
             {
               label: `${this.year - 1}`,
               data: data?.recordsAnualLastYear || [],
-              backgroundColor: this.chartColors.secondary,
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor;
+              }
             }
           ];
         }
