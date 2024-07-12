@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { Service } from '../../../core/models/service.model';
 import { Activity } from '../../../core/models/activity.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 
 interface ActivityForFilter {
   id: number | null;
@@ -23,7 +24,7 @@ interface IndicatorForFilter {
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MatTooltipModule]
+  imports: [CommonModule, FormsModule, MatTooltipModule, FeedbackComponent]
 })
 export class FilterComponent implements OnInit, OnChanges {
 
@@ -45,6 +46,8 @@ export class FilterComponent implements OnInit, OnChanges {
   @Output() activityInputChange = new EventEmitter<boolean>();
 
   filter: Filter = { month: new Date().getMonth() + 1, year: new Date().getFullYear() };
+  feedbackMessage: string = '';
+  feedbackType: 'success' | 'error' = 'error';
 
   constructor(private serviceService: ServiceService, private activityService: ActivityService) { }
 
@@ -150,14 +153,40 @@ export class FilterComponent implements OnInit, OnChanges {
     this.indicatorsList = [];
   }
 
+  validateFilter(): boolean {
+    if (this.selectedServiceId === 0 || this.selectedServiceId === undefined) {
+      this.setFeedback('Selecione um serviço.', 'error');
+      return false;
+    }
+    if (this.showActivityInput && this.activitiesList.length > 0 && !this.selectedActivityId) {
+      this.setFeedback('Selecione uma atividade.', 'error');
+      return false;
+    }
+    if (this.indicatorsInput && !this.selectedIndicatorId) {
+      this.setFeedback('Selecione um indicador.', 'error');
+      return false;
+    }
+    return true;
+  }
+
   sendFilter() {
-    this.filterEvent.emit({
-      serviceId: this.selectedServiceId,
-      activityId: this.selectedActivityId !== undefined ? this.selectedActivityId : undefined,
-      indicatorId: this.selectedIndicatorId,
-      month: this.showMonthInput ? this.filter.month : undefined,
-      year: this.filter.year
-    });
+    if (this.validateFilter()) {
+      this.filterEvent.emit({
+        serviceId: this.selectedServiceId,
+        activityId: this.selectedActivityId !== undefined ? this.selectedActivityId : undefined,
+        indicatorId: this.selectedIndicatorId,
+        month: this.showMonthInput ? this.filter.month : undefined,
+        year: this.filter.year
+      });
+    }
+  }
+
+  setFeedback(message: string, type: 'success' | 'error') {
+    this.feedbackMessage = message;
+    this.feedbackType = type;
+    setTimeout(() => {
+      this.feedbackMessage = '';
+    }, 3000); // Clear the message after 3 seconds
   }
 
   trackByServiceId(index: number, service: any): number {
