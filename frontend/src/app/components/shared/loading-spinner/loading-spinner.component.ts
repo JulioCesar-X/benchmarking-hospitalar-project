@@ -11,5 +11,6 @@ import { CommonModule } from '@angular/common';
 export class LoadingSpinnerComponent {
   @Input() message: string = 'Carregando...';
   @Input() isForBlueBG: boolean = false;
+  @Input() isSmallIcon: boolean = false;
 
 }

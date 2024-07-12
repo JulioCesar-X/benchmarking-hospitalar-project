@@ -10,6 +10,7 @@ import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { PageEvent } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface Goal {
   id: number | null;
@@ -31,7 +32,8 @@ interface Goal {
     FormsModule,
     PaginatorComponent,
     LoadingSpinnerComponent,
-    FeedbackComponent
+    FeedbackComponent, 
+    MatTooltipModule
   ],
   templateUrl: './goals-list-section.component.html',
   styleUrls: ['./goals-list-section.component.scss']
@@ -234,5 +236,9 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     return months[monthNumber - 1];
+  }
+
+  cancelEditing(goal: Goal): void {
+    goal.isEditing = false;
   }
 }

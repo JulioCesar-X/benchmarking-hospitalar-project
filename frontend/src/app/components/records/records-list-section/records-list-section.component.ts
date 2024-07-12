@@ -11,7 +11,6 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { PageEvent } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
 interface Record {
   record_id: number | null;
   indicator_name: string;
@@ -55,6 +54,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
   pageSize = 10;
   currentPage = 0;
   records: Record[] = [];
+  allStaticRecords: Record[] = []; //lista estatica que armazena valores caso user cancele o editar de valores de records
   allRecords: Record[] = []; // Armazena todos os dados carregados
   loadedPages: Set<number> = new Set();
   notificationMessage = '';
@@ -74,13 +74,15 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
       this.loadRecords(0, 30); // Recarrega dados com base no novo filtro
     }
+    console.log("static list initial:", this.allStaticRecords)
+
   }
 
   ngAfterViewInit() {
     this.updateDataSource();
   }
 
-  loadRecords(pageIndex = 0, pageSize = 30): void {
+  loadRecords(pageIndex = 0, pageSize = 30,): void {
     if (this.filter?.year && this.filter?.month && this.filter?.serviceId) {
       this.isLoadingRecords = true;
       const year = this.filter.year;
@@ -98,11 +100,16 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
         )
         .subscribe(response => {
           if (pageIndex === 0) {
+
+  
             this.allRecords = response.data.map((item: any) => this.mapRecord(item, year, month)).flat();
+
           } else {
             const newRecords = response.data.map((item: any) => this.mapRecord(item, year, month)).flat();
             this.allRecords = [...this.allRecords, ...newRecords];
+
           }
+
           this.totalRecords = response.total;
           this.updateDataSource();
           this.loadedPages.add(pageIndex);
@@ -154,11 +161,15 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
     }
 
     if (record.record_id) {
+
+
       record.isUpdating = true;
       this.recordService.updateRecord(record.record_id, record)
         .pipe(finalize(() => {
+      
           record.isUpdating = false;
           record.isEditing = false;
+
         }))
         .subscribe(
           () => this.setNotification('Registro atualizado com sucesso', 'success'),
@@ -192,6 +203,8 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
     if (index !== -1) {
       this.records[index].value = record.value;
     }
+    console.log("static list initial:", this.allStaticRecords)
+
   }
 
   setNotification(message: string, type: 'success' | 'error'): void {
@@ -244,5 +257,9 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
     }
 
     return months[monthNumber - 1];
+  }
+
+  cancelEditing(record: Record): void {
+    record.isEditing = false;
   }
 }

@@ -26,13 +26,22 @@
                   class="inputContainer--input w-full p-2 border border-gray-300 rounded"
                   [(ngModel)]="goal.target_value" (ngModelChange)="onValueChange(goal)" type="number" min="1" />
               </td>
-              <td class="p-2 text-center">
+              <td class="p-2 text-center flex items-center justify-center">
                 <button *ngIf="!goal.isUpdating" (click)="editGoal(goal)"
-                  class="forms-Button w-full min-w-[60px] bg-main-blue text-white py-2 rounded">
+                  [ngClass]="{'isEditing':goal.isEditing}"
+                  class="forms-Button w-full min-w-[60px] bg-main-blue  text-white py-2 rounded"
+                  matTooltip="Clique para inserir/atualizar dados" [matTooltipPosition]="'below'"
+                  matTooltipClass="custom">
                   {{ goal.isInserted && !goal.isEditing ? 'Editar' : 'Atualizar' }}
                 </button>
-                <div *ngIf="goal.isUpdating" class="loading-circle">
-                  <div class="spinner spinner_updateRecord-special"></div>
+                <svg
+                (click)="cancelEditing(goal)"
+                class="cursor-pointer"
+                matTooltip="Clique para cancelar" [matTooltipPosition]="'below'"
+                matTooltipClass="custom" *ngIf="goal.isEditing && !goal.isUpdating" xmlns="http://www.w3.org/2000/svg" height="44px" width="44px" viewBox="0 -960 960 960" fill="#b02529"><path d="m336-280-56-56 144-144-144-143 56-56 144 144 143-144 56 56-144 143 144 144-56 56-143-144-144 144Z"/></svg>
+                
+                <div *ngIf="goal.isUpdating" >
+                  <app-loading-spinner message="" [isForBlueBG]="true" [isSmallIcon]="true"></app-loading-spinner>
                 </div>
               </td>
             </tr>

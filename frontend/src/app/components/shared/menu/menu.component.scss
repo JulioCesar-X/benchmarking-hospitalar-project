@@ -66,7 +66,6 @@
   margin-top: 1em;
   display: flex;
   flex-direction: column;
-
   gap: 0.5em;
 }
 
@@ -130,7 +129,7 @@
 }
 
 .dashboardOption {
-  font-size: 1.1em;
+  font-size: 1.4em;
 
 
   cursor: pointer;
@@ -181,7 +180,7 @@
     cursor: pointer;
     text-decoration: none;
     color: $main-blue;
-    font-size: 0.85em;
+    font-size: 1.05em;
   }
   a:hover {
     text-decoration: underline;
