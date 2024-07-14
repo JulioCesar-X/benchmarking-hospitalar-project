@@ -17,10 +17,9 @@
     <button *ngIf="!isLoading" type="submit"
       class="mt-4 w-1/2 cursor-pointer uppercase py-1.5 px-4 rounded-full loginBtn">Login</button>
 
-    <!-- Spinner visível apenas quando isLoading for verdadeiro -->
+
     <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true"></app-loading-spinner>
 
-    <!-- routerLink="/resetPassword" -->
     <a *ngIf="!isLoading" class="cursor-pointer mt-16 no-underline whiteTxt" (click)="openModal($event)">Forgot
       Password?</a>
   </div>

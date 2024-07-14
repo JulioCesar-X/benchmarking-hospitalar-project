@@ -11,7 +11,8 @@ import * as CryptoJS from 'crypto-js';
   providedIn: 'root'
 })
 export class AuthService {
-  private encryptionKey = 'atec-2024-project'; 
+  private encryptionKey = 'atec-2024-project';
+  private cookieExpirationMinutes = 4 * 60; // Expiração do cookie em minutos (4 horas)
 
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) { }
 
@@ -44,10 +45,13 @@ export class AuthService {
     return this.http.post<LoginResponse>('/login', { email, password }, { withCredentials: true })
       .pipe(
         map(response => {
-          this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict' });
-          this.cookieService.set('email', this.encrypt(response.email), { secure: true, sameSite: 'Strict' });
-          this.cookieService.set('role', this.encrypt(response.role), { secure: true, sameSite: 'Strict' });
-          this.cookieService.set('name', this.encrypt(response.name), { secure: true, sameSite: 'Strict' });
+          const expirationDate = new Date();
+          expirationDate.setTime(expirationDate.getTime() + (this.cookieExpirationMinutes * 60 * 1000));
+
+          this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict', expires: expirationDate });
+          this.cookieService.set('email', this.encrypt(response.email), { secure: true, sameSite: 'Strict', expires: expirationDate });
+          this.cookieService.set('role', this.encrypt(response.role), { secure: true, sameSite: 'Strict', expires: expirationDate });
+          this.cookieService.set('name', this.encrypt(response.name), { secure: true, sameSite: 'Strict', expires: expirationDate });
           return response;
         }),
         catchError(error => {

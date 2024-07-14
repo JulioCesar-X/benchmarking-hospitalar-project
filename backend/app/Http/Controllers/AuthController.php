@@ -14,6 +14,7 @@ use Exception;
 
 class AuthController extends Controller
 {
+    
     public function login(Request $request)
     {
         $request->validate([
@@ -34,7 +35,8 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided credentials are incorrect.'], 401);
         }
 
-        $token = $user->createToken('access_token')->plainTextToken;
+        // Set token expiration to 4 hours
+        $token = $user->createToken('access_token', ['*'], now()->addHours(4))->plainTextToken;
 
         return response()->json([
             'role' => $user->roles()->first()->role_name,
@@ -44,7 +46,6 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
-
     /**
      * Register a newly created resource in storage.
      *

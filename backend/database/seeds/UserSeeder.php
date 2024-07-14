@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
 
         $users = [
             [
-                'name' => 'João',
+                'name' => 'Avelino Almeida',
                 'email' => 'admin@example.com',
                 'password' => password_hash('atec123', PASSWORD_BCRYPT),
                 'email_verified_at' => now(),

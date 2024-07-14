@@ -58,15 +58,8 @@ export class LoginFormComponent {
       error => {
         console.error('Login failed', error);
         this.isLoading = false;
-
-        // Handle login error (e.g., show an error message)
       }
     );
-  }
-
-
-  sendPasswordRecoveryCode(){
-
   }
 
   openModal(event: Event) {
