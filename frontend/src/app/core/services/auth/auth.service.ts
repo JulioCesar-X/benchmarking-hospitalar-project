@@ -5,19 +5,31 @@ import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { LoginResponse } from '../../models/login-response.model';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private encryptionKey = 'atec-2024-project'; 
+
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) { }
+
+  private encrypt(value: string): string {
+    return CryptoJS.AES.encrypt(value, this.encryptionKey).toString();
+  }
+
+  private decrypt(value: string): string {
+    const bytes = CryptoJS.AES.decrypt(value, this.encryptionKey);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  }
 
   getToken(): string | null {
     return this.cookieService.get('access_token');
   }
 
   getUserName(): string {
-    return this.cookieService.get('name');
+    return this.decrypt(this.cookieService.get('name'));
   }
 
   isLoggedIn(): boolean {
@@ -33,9 +45,9 @@ export class AuthService {
       .pipe(
         map(response => {
           this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict' });
-          this.cookieService.set('email', response.email, { secure: true, sameSite: 'Strict' });
-          this.cookieService.set('role', response.role, { secure: true, sameSite: 'Strict' });
-          this.cookieService.set('name', response.name, { secure: true, sameSite: 'Strict' });
+          this.cookieService.set('email', this.encrypt(response.email), { secure: true, sameSite: 'Strict' });
+          this.cookieService.set('role', this.encrypt(response.role), { secure: true, sameSite: 'Strict' });
+          this.cookieService.set('name', this.encrypt(response.name), { secure: true, sameSite: 'Strict' });
           return response;
         }),
         catchError(error => {
@@ -81,7 +93,7 @@ export class AuthService {
   }
 
   getRole(): string {
-    return this.cookieService.get('role').toLowerCase() || 'guest';
+    return this.decrypt(this.cookieService.get('role')).toLowerCase() || 'guest';
   }
 
   forgotPassword(email: string): Observable<any> {
