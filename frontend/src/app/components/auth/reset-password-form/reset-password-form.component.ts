@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth/auth.service';
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   templateUrl: './reset-password-form.component.html',
   styleUrls: ['./reset-password-form.component.scss']
 })
-export class ResetPasswordFormComponent {
+export class ResetPasswordFormComponent implements OnInit {
   email!: string;
   token!: string;
   password!: string;
@@ -23,14 +23,24 @@ export class ResetPasswordFormComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
-    // Obtém o token da URL
+    // Obtém o token da URL e armazena no cookie
     const urlParams = new URLSearchParams(window.location.search);
-    this.token = urlParams.get('token') || '';
+    const token = urlParams.get('token');
+    if (token) {
+      this.authService.setResetToken(token);
+      // Remove o token da URL para não ficar visível
+      urlParams.delete('token');
+      const newUrl = `${window.location.origin}${window.location.pathname}`;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+    // Obtém o token do cookie e define no input
+    this.token = this.authService.getResetToken() || '';
   }
 
   onSubmit() {
     this.isLoading = true;
-    this.authService.resetPassword(this.email, this.token, this.password, this.passwordConfirmation).subscribe({
+    const token = this.authService.getResetToken() || ''; // Garantir que o token é uma string
+    this.authService.resetPassword(this.email, token, this.password, this.passwordConfirmation).subscribe({
       next: (response) => {
         console.log('Password has been successfully reset:', response);
         this.isLoading = false;

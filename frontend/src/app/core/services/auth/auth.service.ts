@@ -45,8 +45,6 @@ export class AuthService {
       );
   }
 
-  
-  // Create a new user
   register(data: any): Observable<any> {
     return this.http.post('/register', data).pipe(
       catchError(error => throwError(() => new Error('Failed to create user')))
@@ -92,5 +90,13 @@ export class AuthService {
 
   resetPassword(email: string, token: string, password: string, passwordConfirmation: string): Observable<any> {
     return this.http.post('/reset-password', { email, token, password, password_confirmation: passwordConfirmation });
+  }
+
+  setResetToken(token: string): void {
+    this.cookieService.set('password_reset_token', token, { secure: true, sameSite: 'Strict' });
+  }
+
+  getResetToken(): string {
+    return this.cookieService.get('password_reset_token');
   }
 }
