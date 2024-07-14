@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\User;
 use Exception;
@@ -14,27 +16,26 @@ class UserController extends Controller
     public function getUsersPaginated(Request $request)
     {
         try {
-            $pageSize = $request->input('size');
-            $pageIndex = $request->input('page');
+            $pageSize = $request->input('size', 10);
+            $pageIndex = $request->input('page', 1);
             $currentUser = Auth::user();
             $currentUserRole = $currentUser->roles->first()->role_name;
-            Log::info('Current user role: ' . $currentUserRole);
+            $currentUserId = $currentUser->id;
 
-            $usersQuery = User::with(['roles', 'sentNotifications', 'receivedNotifications']);
+            $usersQuery = User::with(['roles', 'sentNotifications', 'receivedNotifications'])
+            ->where('id', '!=', $currentUserId); 
 
-            // Aplicar as restrições baseadas no papel do usuário logado
             if ($currentUserRole === 'Admin') {
-                // O admin pode ver todos os coordenadores e utilizadores
                 $usersQuery->whereHas('roles', function ($query) {
-                    $query->where('role_name', '!=', 'Admin');
+                    $query->whereNotIn('role_name', ['Admin', 'Root']);
                 });
             } elseif ($currentUserRole === 'Coordenador') {
-                // O coordenador só pode ver utilizadores
                 $usersQuery->whereHas('roles', function ($query) {
                     $query->where('role_name', 'User');
                 });
             }
 
+            // Order by updated_at and paginate the results
             $users = $usersQuery->orderBy('updated_at', 'desc')->paginate($pageSize, ['*'], 'page', $pageIndex);
 
             return response()->json($users, 200);
@@ -109,21 +110,20 @@ class UserController extends Controller
             $term = $request->input('q');
             $currentUser = Auth::user();
             $currentUserRole = $currentUser->roles->first()->role_name;
+            $currentUserId = $currentUser->id;
 
             $usersQuery = User::with('roles')
+                ->where('id', '!=', $currentUserId) 
                 ->where(function ($query) use ($term) {
                     $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($term) . '%'])
                         ->orWhereRaw('LOWER(email) LIKE ?', ['%' . strtolower($term) . '%']);
                 });
 
-            // Aplicar as restrições baseadas no papel do usuário logado
             if ($currentUserRole === 'Admin') {
-                // O admin pode ver todos os coordenadores e utilizadores
                 $usersQuery->whereHas('roles', function ($query) {
-                    $query->where('role_name', '!=', 'Admin');
+                    $query->whereNotIn('role_name', ['Admin', 'Root']);
                 });
             } elseif ($currentUserRole === 'Coordenador') {
-                // O coordenador só pode ver utilizadores
                 $usersQuery->whereHas('roles', function ($query) {
                     $query->where('role_name', 'User');
                 });

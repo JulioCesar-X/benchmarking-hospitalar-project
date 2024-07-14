@@ -23,7 +23,7 @@
     </mat-form-field>
 
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
-      <mat-label class="blueTxt">Senha:</mat-label>
+      <mat-label class="blueTxt">NIF:</mat-label>
       <input matInput id="password" [(ngModel)]="user.password" name="password" type="password" />
     </mat-form-field>
 
@@ -33,7 +33,7 @@
       <mat-select id="rolePanel" [(ngModel)]="user.role_id" name="role_id">
         <mat-option [value]="3">Utilizador</mat-option>
         <mat-option *ngIf="getRole() === 'admin'" [value]="2">Coordenador</mat-option>
-        <mat-option *ngIf="getRole() === 'admin'" [value]="1">Admin</mat-option>
+        <mat-option *ngIf="getRole() === 'root'" [value]="1">Admin</mat-option>
       </mat-select>
     </mat-form-field>
 

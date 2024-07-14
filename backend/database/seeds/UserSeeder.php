@@ -17,8 +17,24 @@ class UserSeeder extends Seeder
 
         $users = [
             [
+                'name' => 'root',
+                'email' => 'julio.pereira.t0126213@edu.atec.pt',
+                'password' => password_hash('atec123', PASSWORD_BCRYPT),
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
                 'name' => 'Avelino Almeida',
                 'email' => 'admin@example.com',
+                'password' => password_hash('atec123', PASSWORD_BCRYPT),
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'Joao',
+                'email' => 'admin2@example.com',
                 'password' => password_hash('atec123', PASSWORD_BCRYPT),
                 'email_verified_at' => now(),
                 'created_at' => now(),
@@ -34,7 +50,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Gonçalo',
-                'email' => 'cola@example.com',
+                'email' => 'colab@example.com',
                 'password' => password_hash('atec123', PASSWORD_BCRYPT),
                 'email_verified_at' => now(),
                 'created_at' => now(),
