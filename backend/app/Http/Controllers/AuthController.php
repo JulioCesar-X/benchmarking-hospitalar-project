@@ -113,13 +113,13 @@ class AuthController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:3',
+            'password' => 'required|min:6|confirmed',
         ]);
 
         $status = Password::reset(
-            $request->only('email', 'password', 'token'),
+            $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                $user->password = Hash::make($password);
+                $user->password = bcrypt($password);
                 $user->save();
             }
         );

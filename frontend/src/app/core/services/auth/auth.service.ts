@@ -90,7 +90,7 @@ export class AuthService {
     return this.http.post('/forgot-password', { email });
   }
 
-  resetPassword(email: string, code: string, password: string, password_confirmation: string): Observable<any> {
-    return this.http.post('/reset-password', { email, code, password, password_confirmation });
+  resetPassword(email: string, token: string, password: string, passwordConfirmation: string): Observable<any> {
+    return this.http.post('/reset-password', { email, token, password, password_confirmation: passwordConfirmation });
   }
 }
