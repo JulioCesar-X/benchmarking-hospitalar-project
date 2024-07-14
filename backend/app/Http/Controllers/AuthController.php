@@ -87,26 +87,26 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out'], 200);
     }
+    
 
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $user = User::where('email', $request->email)->first();
 
-        if ($status === Password::RESET_LINK_SENT) {
-            $user = User::where('email', $request->email)->first();
-            $token = app('auth.password.broker')->createToken($user);
-
-            Mail::to($request->email)->send(new ResetPasswordMail($token));
-
-            return response()->json(['message' => __($status)], 200);
+        if (!$user) {
+            return response()->json(['message' => 'Email não registrado na aplicação.'], 400);
         }
 
-        return response()->json(['email' => __($status)], 400);
+        $token = app('auth.password.broker')->createToken($user);
+
+        Mail::to($request->email)->send(new ResetPasswordMail($token));
+
+        return response()->json(['message' => 'Link de redefinição de senha enviado!'], 200);
     }
+
+
 
     public function resetPassword(Request $request)
     {

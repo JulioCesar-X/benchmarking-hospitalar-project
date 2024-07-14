@@ -33,10 +33,10 @@ class ResetPasswordMail extends Mailable
         $resetUrl = $frontendUrl . '/reset-password?token=' . $this->token;
 
         return $this->from('hospmetrics@gmail.com')
-                    ->subject('Redefinição de Senha')
-                    ->markdown('emails.reset_password')
-                    ->with([
-                        'url' => $resetUrl
-                    ]);
+        ->subject('Redefinição de Senha')
+        ->view('emails.reset_password')
+        ->with([
+            'url' => $resetUrl
+        ]);
     }
 }
