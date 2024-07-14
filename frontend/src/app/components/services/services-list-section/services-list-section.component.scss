@@ -1,6 +1,13 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
+.scale{
+  transition: transform 0.5ms ease-in-out;
+
+}
+.scale:hover{
+  transform: scale(1.1);
+}
 // Custom tooltip styles
 ::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
   font-size: 1em !important;

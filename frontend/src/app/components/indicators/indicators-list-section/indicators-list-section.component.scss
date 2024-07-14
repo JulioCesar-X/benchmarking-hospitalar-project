@@ -74,4 +74,10 @@
   }
 }
 
+.scale{
+  transition: transform 0.5ms ease-in-out;
 
+}
+.scale:hover{
+  transform: scale(1.1);
+}

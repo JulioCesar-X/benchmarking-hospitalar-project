@@ -1,6 +1,12 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
+.whiteText{
+  color:$fill-white;
+}
+.darkBlueBG{
+  background-color: $main-blue;
+}
 .headingSection {
   background-color: $main-blue;
   color: $fill-white;

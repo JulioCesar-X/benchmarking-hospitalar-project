@@ -7,19 +7,16 @@
   </div>
 </div> -->
 
+<div class="card max-h-[70vh] ">
+  <app-loading-spinner class="my-auto" *ngIf="isLoading" [message]="'Carregando...'"></app-loading-spinner>
 
-
-    <div class="flex flex-col md:flex-row h-screen">
-      <div class="flex-1 flex items-center justify-center transparent">
-          <img [src]="service.image_url" alt="Square Image" class="max-w-full max-h-full object-cover borderBlue">
-      </div>
-      <div class="flex-1 flex items-center justify-center p-8">
-          <div>
-            <p class="text-xl underline">{{ service.service_name }}</p>
-            <p class="text-lg mt-2">{{ service?.description }}</p>
-          </div>
-      </div>
+  <div *ngIf="!isLoading">
+    <div class="cardImg">
+      <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
+    </div>
+    <div class="cardText ">
+      <p class="text-lg underline">{{ service.service_name }}</p>
+      <p class="mt-2">{{ service?.description }}</p>
+    </div>
   </div>
-
-
-
+</div>

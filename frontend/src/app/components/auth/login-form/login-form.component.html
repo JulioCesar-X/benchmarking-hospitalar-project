@@ -22,7 +22,7 @@
     </mat-form-field>
 
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
-      <mat-label class="blueTxt">Password:</mat-label>
+      <mat-label class="blueTxt">Senha:</mat-label>
       <input
         matInput
         id="password"
@@ -44,16 +44,16 @@
       *ngIf="!isLoading"
       mat-raised-button
       type="submit"
-      class="p-4 custom-button"
+      class="custom-button"
     >
       Login
     </button>
 
     <a
       *ngIf="!isLoading"
-      class="cursor-pointer mt-16 no-underline whiteTxt forgotPassLink"
+      class="cursor-pointer mt-16 no-underline whiteTxt text-sm forgotPassLink"
       (click)="openModal($event)"
-      >Forgot Password?</a
+      >Esqueceu a senha?</a
     >
   </div>
 </form>

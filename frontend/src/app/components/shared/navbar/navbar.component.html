@@ -1,6 +1,4 @@
 <div class="placeholder w-full"></div>
-<!-- this element is used to ocupy some space in the DOM at the top for the Navbar -->
-<!-- overflow-hidden -->
 <div
   class="w-full max-w-[2500px] fixed top-0 z-[1000] whiteBG whiteBorder sm:overflow-hidden"
 >
@@ -102,7 +100,7 @@
    -->
                 <div class="flex flex-col items-start">
                   <!--             <span class="text-xl mr-0 sm:mr-10">Bem vindo,</span> -->
-                  <span class="text-xl mr-0 sm:mr-10"
+                  <span class="text-xl mr-0 sm:mr-10 underlineHover"
                     >Bem vindo, {{ getUserName() }}</span
                   >
                 </div>
@@ -130,7 +128,7 @@
         [matMenuTriggerFor]="notificationsMenu"
         matBadge="{{ unreadNotifications }}"
         matBadgeColor="warn"
-        class="bellIcon_mobile"
+        class="bellIcon_mobile scale"
       >
         <mat-icon>notifications</mat-icon>
       </button>

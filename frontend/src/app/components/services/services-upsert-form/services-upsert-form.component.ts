@@ -11,7 +11,7 @@ import { SelectableListComponent } from '../../shared/selectable-list/selectable
 import { Service } from '../../../core/models/service.model';
 import { Activity } from '../../../core/models/activity.model';
 import { Indicator } from '../../../core/models/indicator.model';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-services-upsert-form',
@@ -21,7 +21,8 @@ import { Indicator } from '../../../core/models/indicator.model';
     FormsModule,
     FeedbackComponent,
     LoadingSpinnerComponent,
-    SelectableListComponent
+    SelectableListComponent, 
+    MatTooltipModule
   ],
   templateUrl: './services-upsert-form.component.html',
   styleUrls: ['./services-upsert-form.component.scss']
