@@ -1,5 +1,4 @@
 <div class="placeholder w-full"></div>
-<!-- this element is used to occupy some space in the DOM at the top for the Navbar -->
 <div class="w-full max-w-[2500px] fixed top-0 z-[1000] whiteBG whiteBorder sm:overflow-hidden">
   <header class="flex justify-between relative mb-auto max-h-99">
     <a href="http://www.portugal.gov.pt/pt.aspx" target="_blank">
@@ -23,13 +22,9 @@
       <div id="links" class="links" [ngClass]="{ 'is-open': isNavbarOpen }">
         <a routerLink="/home" class="flex no-underline uppercase text-lg whiteTxt underlineHover">Home</a>
 
-        <a *ngIf="isLoggedIn() && (getRole() === 'admin' || getRole() === 'root' || getRole()==='coordenador')" routerLinkActive="active-page"
-          ariaCurrentWhenActive="page" routerLink="/users"
+        <a *ngIf="isLoggedIn() && (getRole() === 'admin' || getRole() === 'root' || getRole()==='coordenador')"
+          routerLinkActive="active-page" ariaCurrentWhenActive="page" routerLink="/users"
           class="flex no-underline uppercase text-lg whiteTxt underlineHover">Menu</a>
-
-        <!-- <a *ngIf="isLoggedIn() && (getRole() === 'coordenador' || getRole() === 'root')" routerLinkActive="active-page"
-          ariaCurrentWhenActive="page" routerLink="/RecordGoalsUpdate"
-          class="flex no-underline uppercase text-lg whiteTxt underlineHover">Menu</a> -->
 
         <div id="loginSection" class="flex ml-auto">
           <svg [ngClass]="{ 'is-open': isNavbarOpen }" class="background-svg_adjusted"
@@ -53,6 +48,10 @@
           </div>
 
           <mat-menu #menu="matMenu" class="menu-custom" [overlapTrigger]="false">
+            <button mat-menu-item (click)="openProfile()">
+              <mat-icon class="blue-custom">person</mat-icon>
+              <span class="blue-custom">Perfil</span>
+            </button>
             <button mat-menu-item (click)="logout()">
               <mat-icon class="blue-custom">exit_to_app</mat-icon>
               <span class="blue-custom">Logout</span>

@@ -60,6 +60,7 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::delete('services/{id}', 'ServiceController@destroy');
 
     Route::get('users/paginated', 'UserController@getUsersPaginated');
+    Route::post('users/{id}/reset-password-default', 'UserController@resetPassword');
     Route::get('users/search', 'UserController@search');
     Route::apiResource('users', 'UserController');
     

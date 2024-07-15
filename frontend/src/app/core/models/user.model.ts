@@ -8,6 +8,7 @@ export interface User {
   name: string;
   email: string;
   password: string;
+  nif: string;
   role_id: number | null;
   roles: Role[];
 }

@@ -33,6 +33,10 @@ export class AuthService {
     return this.decrypt(this.cookieService.get('name'));
   }
 
+  getUserId(): string {
+    return this.decrypt(this.cookieService.get('id'));
+  }
+
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
@@ -45,6 +49,7 @@ export class AuthService {
     return this.http.post<LoginResponse>('/login', { email, password }, { withCredentials: true })
       .pipe(
         map(response => {
+          console.log('Login successful:', response); 
           const expirationDate = new Date();
           expirationDate.setTime(expirationDate.getTime() + (this.cookieExpirationMinutes * 60 * 1000));
 
@@ -52,6 +57,7 @@ export class AuthService {
           this.cookieService.set('email', this.encrypt(response.email), { secure: true, sameSite: 'Strict', expires: expirationDate });
           this.cookieService.set('role', this.encrypt(response.role), { secure: true, sameSite: 'Strict', expires: expirationDate });
           this.cookieService.set('name', this.encrypt(response.name), { secure: true, sameSite: 'Strict', expires: expirationDate });
+          this.cookieService.set('id', this.encrypt(String(response.id)), { secure: true, sameSite: 'Strict', expires: expirationDate });
           return response;
         }),
         catchError(error => {
@@ -84,6 +90,7 @@ export class AuthService {
             this.cookieService.delete('role', '/');
             this.cookieService.delete('name', '/');
             this.cookieService.delete('email', '/');
+            this.cookieService.delete('id', '/');
             console.log('Logout successful');
             this.router.navigate(['/login']);
             resolve(true);

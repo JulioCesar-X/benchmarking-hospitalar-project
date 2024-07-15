@@ -9,7 +9,7 @@ use App\User;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -56,22 +56,34 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        try {
-            $validatedData = $request->validate([
-                'name' => 'string|max:255|nullable',
-                'email' => 'string|email|max:255|unique:users,email,' . $user->id . '|nullable',
-                'password' => 'string|max:10|nullable',
-                'role_id' => 'required|exists:roles,id'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255|nullable',
+            'email' => 'string|email|max:255|unique:users,email,' . $user->id . '|nullable',
+            'password' => [
+                'nullable',
+                'string',
+                'min:10',
+                'regex:/[a-z]/',      // deve ter pelo menos uma letra minúscula
+                'regex:/[A-Z]/',      // deve ter pelo menos uma letra maiúscula
+                'regex:/[0-9]/',      // deve ter pelo menos um dígito
+                'regex:/[@$!%*?&#]/', // deve ter pelo menos um caractere especial
+            ],
+            
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
             // Atualizar os campos do usuário
-            $user->update(array_filter($validatedData, function ($key) {
+            $user->update(array_filter($validator->validated(), function ($key) {
                 return in_array($key, ['name', 'email']);
             }, ARRAY_FILTER_USE_KEY));
 
             // Atualizar a senha se fornecida
             if ($request->has('password') && $request->input('password')) {
-                $user->password = password_hash($request->password, PASSWORD_BCRYPT);
+                $user->password = bcrypt($request->input('password'));
                 $user->save();
             }
 
@@ -84,6 +96,20 @@ class UserController extends Controller
             Cache::forget('users_index');
 
             return response()->json($user->load(['roles:id,role_name', 'sentNotifications', 'receivedNotifications']), 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+    
+    public function resetPassword($id)
+    {
+        try {
+
+            $user = User::findOrFail($id);
+            $user->password = bcrypt($user->nif);
+            $user->save();
+
+            return response()->json($user, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

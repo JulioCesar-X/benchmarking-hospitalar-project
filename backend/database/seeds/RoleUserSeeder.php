@@ -20,7 +20,7 @@ class RoleUserSeeder extends Seeder
             ['user_id' => 5, 'role_id' => 3]  // Gonçalo como User
         ];
 
-        for ($i = 5; $i <= 205; $i++) {
+        for ($i = 5; $i <= 195; $i++) {
             $roleUser[] = ['user_id' => $i, 'role_id' => 3]; // Restantes como User
         }
 

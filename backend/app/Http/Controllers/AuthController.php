@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
 use App\Role;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class AuthController extends Controller
 {
-    
+
     public function login(Request $request)
     {
         $request->validate([
@@ -39,6 +40,7 @@ class AuthController extends Controller
         $token = $user->createToken('access_token', ['*'], now()->addHours(4))->plainTextToken;
 
         return response()->json([
+            'id' => $user->id,
             'role' => $user->roles()->first()->role_name,
             'name' => $user->name,
             'email' => $user->email,
@@ -54,20 +56,25 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|max:10',
-                'role_id' => 'required|exists:roles,id'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'nif' => 'required|string|size:9|unique:users',
+            'role_id' => 'required|exists:roles,id'
+        ]);
 
-            $hashedPassword = password_hash($request->password, PASSWORD_BCRYPT);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $hashedPassword = bcrypt($request->nif); // Usar o NIF como a senha padrão
 
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => $hashedPassword,
+                'nif' => $request->nif,
                 'email_verified_at' => now(),
             ]);
 
@@ -77,7 +84,7 @@ class AuthController extends Controller
             // Clear the cache
             Cache::forget('users_index');
 
-            return response()->json(['message' => 'Registration successful'], 200);
+            return response()->json(['message' => 'Registration successful'], 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
