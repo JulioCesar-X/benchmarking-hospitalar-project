@@ -1,0 +1,37 @@
+<div class="modal" [ngClass]="{ 'show': isVisible }" (click)="close()">
+    <div class="forms-container" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
+        <div class="modalHeader">
+            <h2 class="modalTitle">Atualizar perfil</h2>
+            <span class="close" (click)="close()">&times;</span>
+        </div>
+        <form (ngSubmit)="formSubmited()">
+            <div class="forms-container--inputContainer">
+                <label class="sectionTitle">Nome:</label>
+                <input matInput [(ngModel)]="user.name" name="name" class="inputContainer--input"/>
+            </div>
+            <div class="forms-container--inputContainer">
+                <label class="sectionTitle">Email:</label>
+                <input matInput [(ngModel)]="user.email" name="email" class="inputContainer--input"/>
+            </div>
+            <div class="forms-container--inputContainer">
+                <label class="sectionTitle">Senha:</label>
+                <div class="password-container">
+                    <input matInput [type]="hide() ? 'password' : 'text'" [(ngModel)]="user.password" name="password"
+                        class="inputContainer--input" />
+                    <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'"
+                        [attr.aria-pressed]="hide()">
+                        <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    </button>
+                </div>
+            </div>
+            <div *ngIf="passwordFeedback.length > 0" class="errorSpan">
+                <div *ngFor="let msg of passwordFeedback">{{ msg }}</div>
+            </div>
+            <button *ngIf="!isLoading" type="submit" class="forms-Button">ATUALIZAR</button>
+            <div *ngIf="isLoading" class="loading-circle">
+                <div class="spinner spinner_updateRecord-special"></div>
+            </div>
+        </form>
+        <app-feedback [message]="notificationMessage" [type]="notificationType"></app-feedback>
+    </div>
+</div>

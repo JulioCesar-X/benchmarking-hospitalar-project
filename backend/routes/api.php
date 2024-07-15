@@ -8,6 +8,7 @@ Route::group(['middleware' => 'throttle:10000,1'], function () {
     Route::post('/forgot-password', 'AuthController@forgotPassword');
     Route::post('/reset-password', 'AuthController@resetPassword')->name('password.reset');
 
+
     Route::get('services', 'ServiceController@index');
     Route::get('services/paginated', 'ServiceController@getServicesPaginated');
     Route::get('services/search', 'ServiceController@search');
@@ -59,6 +60,7 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::delete('services/{id}', 'ServiceController@destroy');
 
     Route::get('users/paginated', 'UserController@getUsersPaginated');
+    Route::post('users/{id}/reset-password-default', 'UserController@resetPassword');
     Route::get('users/search', 'UserController@search');
     Route::apiResource('users', 'UserController');
     

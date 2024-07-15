@@ -1,8 +1,28 @@
 <section class="timeline relative lightBlueBG" #timeline>
   <ul>
-    <li *ngFor="let item of timelineItems" [ngClass]="{'in-view': isElementInView(item)}">
-      <div>
-        <time>{{ item.title }}</time> {{ item.detail }}
+    <li *ngFor="let item of timelineItems" [id]="'notification-' + item.id"
+      [ngClass]="{'in-view': isElementInView(item), 'unread': !item.notification.is_read}">
+      <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{'expanded': item.expanded}">
+        <lord-icon class="icon" src="https://cdn.lordicon.com/lomfljuq.json" trigger="loop" delay="1500"
+          state="in-check" colors="primary:#FFFFFF" style="width:20px;height:20px">
+        </lord-icon>
+        <time>{{ item.title | date:'dd/MM/yyyy' }}</time>
+        <p>De: {{ item.notification.sender }}</p>
+        <p>Assunto: {{ item.notification.title }}</p>
+        <p>Mensagem: {{ item.detail }}</p>
+        <div *ngIf="item.expanded" class="notification-details">
+          <div class="notification-body">
+            <h3>Resposta</h3>
+            <p *ngIf="item.notification.response; else noResponse">{{ item.notification.response }}</p>
+            <ng-template #noResponse>Sem resposta ainda.</ng-template>
+          </div>
+          <p *ngIf="item.notification.updated_at" class="response-date">respondido: {{ item.notification.updated_at |
+            date:'dd/MM/yyyy' }}</p>
+          <div *ngIf="!item.notification.response">
+            <textarea [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."></textarea>
+            <button (click)="sendResponse(item)">Enviar Resposta</button>
+          </div>
+        </div>
       </div>
     </li>
   </ul>

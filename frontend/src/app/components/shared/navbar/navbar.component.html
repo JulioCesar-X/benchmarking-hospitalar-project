@@ -6,31 +6,18 @@
     <a routerLink="/home">
       <div class="flex items-center gap-2 logoSection">
         <div class="">
-          <img
-            class="h-[50px] w-[50px] m-1"
-            src="../../../../assets/images/novoLogo.png"
-            alt="SNS logo image"
-          />
+          <img class="h-[50px] w-[50px] m-1" src="../../../../assets/images/novoLogo.png" alt="SNS logo image" />
         </div>
         <div class="">
-          <h3 class="m-0 text-sm sm:text-lg darkBlueTxt">
-            Unidade local de Saúde
-          </h3>
+          <h3 class="m-0 text-sm sm:text-lg darkBlueTxt">Unidade local de Saúde</h3>
           <h1 class="m-0 text-sm sm:text-lg darkBlueTxt">Tâmega e Sousa</h1>
         </div>
       </div>
     </a>
 
     <div class="relative w-[35%] sm:w-[70%] z-[1] whiteTxt">
-      <svg
-        class="background-svg"
-        xmlns="http://www.w3.org/2000/svg"
-        version="1.1"
-        width="100%"
-        height="100%"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-      >
+      <svg class="background-svg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%"
+        viewBox="0 0 100 100" preserveAspectRatio="none">
         <polygon points="0,100 10,0 100,0 100,100"></polygon>
       </svg>
 
@@ -44,7 +31,7 @@
         >
 
         <a
-          *ngIf="isLoggedIn() && getRole() === 'admin'"
+          *ngIf="isLoggedIn() && getRole() === 'admin' || getRole() === 'root' || getRole() === 'coordenador'"
           routerLinkActive="active-page"
           ariaCurrentWhenActive="page"
           routerLink="/users"
@@ -56,48 +43,25 @@
           *ngIf="isLoggedIn() && getRole() === 'coordenador'"
           routerLinkActive="active-page"
           ariaCurrentWhenActive="page"
-          routerLink="/RecordGoalsUpdate"
+          routerLink="/users
           class="flex no-underline uppercase text-lg whiteTxt underlineHover"
           ><svg routerLink="active-page" class="mr-2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M666-440 440-666l226-226 226 226-226 226Zm-546-80v-320h320v320H120Zm400 400v-320h320v320H520Zm-400 0v-320h320v320H120Zm80-480h160v-160H200v160Zm467 48 113-113-113-113-113 113 113 113Zm-67 352h160v-160H600v160Zm-400 0h160v-160H200v160Zm160-400Zm194-65ZM360-360Zm240 0Z"/></svg>Menu</a
         >
 
         <div id="loginSection" class="flex ml-auto">
-          <svg
-            [ngClass]="{ 'is-open': isNavbarOpen }"
-            class="background-svg_adjusted"
-            xmlns="http://www.w3.org/2000/svg"
-            version="1.1"
-            width="100%"
-            height="100%"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-          >
+          <svg [ngClass]="{ 'is-open': isNavbarOpen }" class="background-svg_adjusted"
+            xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="0 0 100 100"
+            preserveAspectRatio="none">
             <polygon points="0,100 10,0 100,0 100,100"></polygon>
           </svg>
 
           <div class="flex items-center ml-auto gap-4 mr-0 sm:mr-20">
-            <a
-              *ngIf="!isLoggedIn()"
-              routerLink="/login"
-              routerLinkActive="active-page"
-              ariaCurrentWhenActive="page"
-              class="flex no-underline uppercase text-lg whiteTxt underlineHover"
-              >Login</a
-            >
+            <a *ngIf="!isLoggedIn()" routerLink="/login" routerLinkActive="active-page" ariaCurrentWhenActive="page"
+              class="flex no-underline uppercase text-lg whiteTxt underlineHover">Login</a>
 
-            <div
-              *ngIf="isLoggedIn()"
-              class="relative"
-              (mouseleave)="isDropdownOpen = false"
-            >
-              <button
-                class="flex items-center gap-x-1"
-                mat-button
-                [matMenuTriggerFor]="menu"
-                (click)="toggleDropdown()"
-              >
-                <!--             <mat-icon class="icon-login">account_circle</mat-icon>
-   -->
+            <div *ngIf="isLoggedIn()" class="relative" (mouseleave)="isDropdownOpen = false">
+              <button class="flex items-center gap-x-1" mat-button [matMenuTriggerFor]="menu"
+                (click)="toggleDropdown()">
                 <div class="flex flex-col items-start">
                   <!--             <span class="text-xl mr-0 sm:mr-10">Bem vindo,</span> -->
                   <span class="text-xl mr-0 sm:mr-10 underlineHover"
@@ -108,11 +72,11 @@
             </div>
           </div>
 
-          <mat-menu
-            #menu="matMenu"
-            class="menu-custom"
-            [overlapTrigger]="false"
-          >
+          <mat-menu #menu="matMenu" class="menu-custom" [overlapTrigger]="false">
+            <button mat-menu-item (click)="openProfile()">
+              <mat-icon class="blue-custom">person</mat-icon>
+              <span class="blue-custom">Perfil</span>
+            </button>
             <button mat-menu-item (click)="logout()">
               <mat-icon class="blue-custom">exit_to_app</mat-icon>
               <span class="blue-custom">Logout</span>
@@ -133,13 +97,8 @@
         <mat-icon>notifications</mat-icon>
       </button>
 
-      <!-- Hamburguer icon - mobile -->
       <div class="nav-toggle" id="nav-toggle" (click)="openNavBar()">
-        <div
-          class="hamburger"
-          id="hamburger"
-          [ngClass]="{ 'is-open': isNavbarOpen }"
-        ></div>
+        <div class="hamburger" id="hamburger" [ngClass]="{ 'is-open': isNavbarOpen }"></div>
       </div>
     </div>
   </header>
@@ -150,30 +109,25 @@
   <mat-menu #notificationsMenu="matMenu" class="px-2 w-[270px] menu-custom">
     <div class="max-h-[50vh]">
       <h2>Notificações</h2>
-      <div *ngIf="allNotifications.length === 0" class="empty-notifications">
-        Nenhuma notificação.
-      </div>
+      <div *ngIf="allNotifications.length === 0" class="empty-notifications">Nenhuma notificação.</div>
 
       <div class="flex flex-col gap-1">
-        <div
-          title="Clique para marcar como lido"
-          *ngFor="let notification of allNotifications"
+        <div title="Clique para marcar como lido" *ngFor="let notification of allNotifications"
           (click)="markNotificationAsRead(notification)"
-          class="p-2 flex flex-col justify-between max-h-[60vh] cursor-pointer"
-          [class.unread]="!notification.isRead"
-        >
-
-        <div class="flex justify-between">
-          <p>De: senderName</p>
-          <button class="scale" (click)="reply()" >
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#283044;"><path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/></svg>
-          </button>
-        </div>
-        <div>
-          <p>{{ notification.title }}</p>
-          <small>{{ notification.created_at | date : "short" }}</small>
-        </div>
-
+          class="p-2 flex flex-col justify-between max-h-[60vh] cursor-pointer" [class.unread]="!notification.is_read">
+          <div class="flex justify-between">
+            <p>De: senderName</p>
+            <button class="scale" (click)="reply()">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                fill="#283044;">
+                <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
+              </svg>
+            </button>
+          </div>
+          <div>
+            <p>{{ notification.title }}</p>
+            <small>{{ notification.created_at | date : "short" }}</small>
+          </div>
         </div>
       </div>
     </div>

@@ -19,32 +19,31 @@
     </div>
   </h2>
 
-  <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true" [message]="loadingCircleMessage">
-  </app-loading-spinner>
+  <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true" [message]="loadingCircleMessage"></app-loading-spinner>
 
   <form (ngSubmit)="formSubmited()">
     <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
       <mat-label class="blueTxt">Nome:</mat-label>
-      <input matInput id="nome" [(ngModel)]="user.name" name="name" />
+      <input matInput id="nome" [(ngModel)]="user.name" name="name" [disabled]="formsAction === 'edit'" />
     </mat-form-field>
 
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
       <mat-label class="blueTxt">Email:</mat-label>
-      <input matInput id="email" [(ngModel)]="user.email" name="email" />
+      <input matInput id="email" [(ngModel)]="user.email" name="email" [disabled]="formsAction === 'edit'" />
     </mat-form-field>
 
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
-      <mat-label class="blueTxt">Senha:</mat-label>
-      <input matInput id="password" [(ngModel)]="user.password" name="password" type="password" />
+      <mat-label class="blueTxt">NIF:</mat-label>
+      <input matInput id="nif" [(ngModel)]="user.nif" name="nif" type="text" [disabled]="formsAction === 'edit'" />
+      <button mat-button *ngIf="formsAction === 'edit'" (click)="resetPassword()">Resetar senha</button>
     </mat-form-field>
-
 
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
       <mat-label class="blueTxt">Role do utilizador:</mat-label>
       <mat-select id="rolePanel" [(ngModel)]="user.role_id" name="role_id">
         <mat-option [value]="3">Utilizador</mat-option>
         <mat-option *ngIf="getRole() === 'admin'" [value]="2">Coordenador</mat-option>
-        <mat-option *ngIf="getRole() === 'admin'" [value]="1">Admin</mat-option>
+        <mat-option *ngIf="getRole() === 'root'" [value]="1">Admin</mat-option>
       </mat-select>
     </mat-form-field>
 

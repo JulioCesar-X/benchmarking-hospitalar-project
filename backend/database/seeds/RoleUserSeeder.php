@@ -13,12 +13,14 @@ class RoleUserSeeder extends Seeder
     public function run()
     {
         $roleUser = [
-            ['user_id' => 1, 'role_id' => 1], // João como Admin
-            ['user_id' => 2, 'role_id' => 2], // David como Coordenador
-            ['user_id' => 3, 'role_id' => 3]  // Gonçalo como User
+            ['user_id' => 1, 'role_id' => 4], // Root
+            ['user_id' => 2, 'role_id' => 1], // Avelino como Admin
+            ['user_id' => 3, 'role_id' => 1], // João como Admin
+            ['user_id' => 4, 'role_id' => 2], // David como Coordenador
+            ['user_id' => 5, 'role_id' => 3]  // Gonçalo como User
         ];
 
-        for ($i = 4; $i <= 200; $i++) {
+        for ($i = 5; $i <= 195; $i++) {
             $roleUser[] = ['user_id' => $i, 'role_id' => 3]; // Restantes como User
         }
 

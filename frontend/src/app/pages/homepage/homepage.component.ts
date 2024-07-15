@@ -106,7 +106,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   goToDescription(serviceId: number) {
     this.loadingServiceId = serviceId; // Define o ID do serviço que está carregando
     const role = this.authService.getRole();
-    if (role === 'admin' || role === 'coordenador') {
+    if (role === 'admin' || role === 'coordenador' || role === 'root') {
       this.router.navigate(['/charts', { serviceId }]);
     } else if (role === 'user') {
       this.router.navigate(['/user-charts', { serviceId }]);

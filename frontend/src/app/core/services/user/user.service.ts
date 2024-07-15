@@ -26,8 +26,10 @@ export class UserService {
       catchError(error => throwError(() => new Error('Failed to fetch paginated users')))
     );
   }
-
   
+  resetPassword(userId: number): Observable<any> {
+    return this.http.post(`/users/${userId}/reset-password-default`, {});
+  }
 
   // Fetch a single user by ID
   showUser(id: number): Observable<User> {

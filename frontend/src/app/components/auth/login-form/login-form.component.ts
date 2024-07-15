@@ -65,15 +65,8 @@ export class LoginFormComponent {
         this.errorMessage = 'Login failed!'
         console.error('Login failed', error);
         this.isLoading = false;
-
-        // Handle login error (e.g., show an error message)
       }
     );
-  }
-
-
-  sendPasswordRecoveryCode(){
-
   }
 
   openModal(event: Event) {
@@ -85,28 +78,3 @@ closeModal() {
     this.isModalVisible = false;
 }
 }
-
-// import { Component, EventEmitter, Output } from '@angular/core';
-// import { Router } from '@angular/router';
-// import { FormsModule } from '@angular/forms';
-// import { AuthService } from '../../../login.service';
-
-// @Component({
-//   selector: 'app-login-form',
-//   standalone: true,
-//   imports: [FormsModule],
-//   templateUrl: './login-form.component.html',
-//   styleUrls: ['./login-form.component.scss']
-// })
-// export class LoginFormComponent {
-//   @Output() loginEvent = new EventEmitter<{ email: string, password: string }>();
-
-//   email: string = '';
-//   password: string = '';
-
-//   constructor(private AuthService: AuthService, private router: Router) { }
-
-//   onLogin() {
-//     this.loginEvent.emit({ email: this.email, password: this.password });
-//   }
-// }

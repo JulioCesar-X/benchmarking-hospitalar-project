@@ -130,7 +130,9 @@ export class ChartsComponent implements OnInit, OnChanges {
       }
     };
 
-    const defaultBackgroundColor ='rgba(81, 107, 145, 0.5)';
+    const defaultBackgroundColor = 'rgba(81, 107, 145, 0.5)';
+    const defaultBackgroundColor2Bar1 = 'rgba(81, 107, 145, 0.3)';
+    const defaultBackgroundColor2Bar2 = 'rgba(89, 196, 230, 0.3)';
     const highlightBackgroundColor = this.chartColors.primary;
     const highlightBackgroundColor2Bar1 = this.chartColors.primary;
     const highlightBackgroundColor2Bar2 = this.chartColors.secondary;
@@ -261,7 +263,7 @@ export class ChartsComponent implements OnInit, OnChanges {
               data: data?.recordsAnual || [],
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
-                return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor;
+                return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor2Bar1;
               }
             },
             {
@@ -269,7 +271,7 @@ export class ChartsComponent implements OnInit, OnChanges {
               data: data?.goalsMensal || [],
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
-                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor;
+                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor2Bar2;
               }
             }
           ];
@@ -280,7 +282,7 @@ export class ChartsComponent implements OnInit, OnChanges {
               data: data?.recordsAnual || [],
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
-                return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor;
+                return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor2Bar1;
               }
             },
             {
@@ -288,7 +290,7 @@ export class ChartsComponent implements OnInit, OnChanges {
               data: data?.recordsAnualLastYear || [],
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
-                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor;
+                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor2Bar2;
               }
             }
           ];
@@ -311,7 +313,10 @@ export class ChartsComponent implements OnInit, OnChanges {
               label: `${this.year - 1}`,
               data: data?.recordsAnualLastYear || [],
               borderColor: this.chartColors.secondaryBg,
-              backgroundColor: this.chartColors.secondary,
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor2Bar2;
+              },
               fill: false
             }
           ];
@@ -330,7 +335,10 @@ export class ChartsComponent implements OnInit, OnChanges {
               label: 'Meta',
               data: data?.goalsMensal || [],
               borderColor: this.chartColors.secondaryBg,
-              backgroundColor: this.chartColors.secondary,
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor2Bar2;
+              },
               fill: false
             }
           ];

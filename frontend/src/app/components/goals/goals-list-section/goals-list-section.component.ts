@@ -54,11 +54,11 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   pageSize = 10;
   currentPage = 0;
   goals: Goal[] = [];
-  allGoals: Goal[] = []; // Armazena todos os dados carregados
+  allGoals: Goal[] = []; 
   loadedPages: Set<number> = new Set();
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
-  pageOptions = [5, 10, 20, 50, 100]; // Define the pageOptions array aqui
+  pageOptions = [5, 10, 20, 50, 100]; 
 
   constructor(
     private goalService: GoalService,
@@ -66,12 +66,12 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   ) { }
 
   ngOnInit(): void {
-    this.loadGoals(0, 30); // Carrega um conjunto maior de dados inicialmente
+    this.loadGoals(0, 30); 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
-      this.loadGoals(0, 30); // Recarrega dados com base no novo filtro
+      this.loadGoals(0, 30); 
     }
   }
 

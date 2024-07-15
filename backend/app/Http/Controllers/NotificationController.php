@@ -131,20 +131,32 @@ class NotificationController extends Controller
                 return response()->json(['error' => 'Usuário não encontrado'], 404);
             }
 
-            $notifications = $user->receivedNotifications()->with(['sender:id,name', 'receiver:id,name'])->get();
+            $perPage = $request->input('per_page', 10);
+            $notifications = $user->receivedNotifications()
+                ->with(['sender:id,name', 'receiver:id,name'])
+                ->paginate($perPage);
 
-            $formattedNotifications = $notifications->map(function ($notification) {
+            $formattedNotifications = $notifications->getCollection()->map(function ($notification) {
                 return [
                     'id' => $notification->id,
                     'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
                     'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
                     'title' => $notification->title,
                     'message' => $notification->message,
-                    'created_at' => $notification->created_at
+                    'created_at' => $notification->created_at->format('Y-m-d H:i:s'),
+                    'is_read' => $notification->is_read,
+                    'response' => $notification->response,
+                    'updated_at' => $notification->updated_at ? $notification->updated_at->format('Y-m-d H:i:s') : null,
                 ];
             });
 
-            return response()->json($formattedNotifications);
+            return response()->json([
+                'data' => $formattedNotifications,
+                'current_page' => $notifications->currentPage(),
+                'last_page' => $notifications->lastPage(),
+                'per_page' => $notifications->perPage(),
+                'total' => $notifications->total(),
+            ]);
         } catch (Exception $e) {
             return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
         }

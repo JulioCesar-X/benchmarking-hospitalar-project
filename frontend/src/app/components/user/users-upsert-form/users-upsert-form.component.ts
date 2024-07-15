@@ -51,6 +51,7 @@ export class UsersUpsertFormComponent {
     id: 0,
     name: '',
     email: '',
+    nif: '',
     password: '',
     role_id: 0,
     roles: []
@@ -113,6 +114,21 @@ export class UsersUpsertFormComponent {
         this.setNotification('User created successfully', 'success');
         this.isLoading = false;
         setTimeout(() => this.router.navigate(['/users']), 2000);
+      },
+      (error: any) => {
+        const errorMessage = this.getErrorMessage(error);
+        this.setNotification(errorMessage, 'error');
+        this.isLoading = false;
+      }
+    );
+  }
+
+  resetPassword() {
+    this.isLoading = true;
+    this.userService.resetPassword(this.user.id).subscribe(
+      (response: any) => {
+        this.setNotification('Password reset to default (NIF)', 'success');
+        this.isLoading = false;
       },
       (error: any) => {
         const errorMessage = this.getErrorMessage(error);

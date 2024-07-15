@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
 use App\Role;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class AuthController extends Controller
 {
+
     public function login(Request $request)
     {
         $request->validate([
@@ -34,9 +36,11 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided credentials are incorrect.'], 401);
         }
 
-        $token = $user->createToken('access_token')->plainTextToken;
+        // Set token expiration to 4 hours
+        $token = $user->createToken('access_token', ['*'], now()->addHours(4))->plainTextToken;
 
         return response()->json([
+            'id' => $user->id,
             'role' => $user->roles()->first()->role_name,
             'name' => $user->name,
             'email' => $user->email,
@@ -44,7 +48,6 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
-
     /**
      * Register a newly created resource in storage.
      *
@@ -53,20 +56,25 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|max:10',
-                'role_id' => 'required|exists:roles,id'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'nif' => 'required|string|size:9|unique:users',
+            'role_id' => 'required|exists:roles,id'
+        ]);
 
-            $hashedPassword = password_hash($request->password, PASSWORD_BCRYPT);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $hashedPassword = bcrypt($request->nif); // Usar o NIF como a senha padrão
 
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => $hashedPassword,
+                'nif' => $request->nif,
                 'email_verified_at' => now(),
             ]);
 
@@ -76,7 +84,7 @@ class AuthController extends Controller
             // Clear the cache
             Cache::forget('users_index');
 
-            return response()->json(['message' => 'Registration successful'], 200);
+            return response()->json(['message' => 'Registration successful'], 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -87,39 +95,39 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out'], 200);
     }
+    
 
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $user = User::where('email', $request->email)->first();
 
-        if ($status === Password::RESET_LINK_SENT) {
-            $user = User::where('email', $request->email)->first();
-            $token = app('auth.password.broker')->createToken($user);
-
-            Mail::to($request->email)->send(new ResetPasswordMail($token));
-
-            return response()->json(['message' => __($status)], 200);
+        if (!$user) {
+            return response()->json(['message' => 'Email não registrado na aplicação.'], 400);
         }
 
-        return response()->json(['email' => __($status)], 400);
+        $token = app('auth.password.broker')->createToken($user);
+
+        Mail::to($request->email)->send(new ResetPasswordMail($token));
+
+        return response()->json(['message' => 'Link de redefinição de senha enviado!'], 200);
     }
+
+
 
     public function resetPassword(Request $request)
     {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:3',
+            'password' => 'required|min:6|confirmed',
         ]);
 
         $status = Password::reset(
-            $request->only('email', 'password', 'token'),
+            $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                $user->password = Hash::make($password);
+                $user->password = bcrypt($password);
                 $user->save();
             }
         );

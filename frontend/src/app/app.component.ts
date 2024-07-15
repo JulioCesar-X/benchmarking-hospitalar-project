@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]  // to accept lordIcon element in the component
+  schemas: [CUSTOM_ELEMENTS_SCHEMA] 
 })
 export class AppComponent {
 
@@ -30,9 +30,9 @@ export class AppComponent {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    const threshold = 300; // Change this to set a different scroll threshold
+    const threshold = 300;
     this.toTopBtnVisible = window.scrollY > threshold;
-    this.cdr.detectChanges(); // Manually trigger change detection
+    this.cdr.detectChanges();
 
     console.log(this.toTopBtnVisible)
     console.log("t:", threshold,"w", window.scrollY)

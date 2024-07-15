@@ -2,39 +2,40 @@
 
 namespace App\Http\Controllers;
 
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\User;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function getUsersPaginated(Request $request)
     {
         try {
-            $pageSize = $request->input('size');
-            $pageIndex = $request->input('page');
+            $pageSize = $request->input('size', 10);
+            $pageIndex = $request->input('page', 1);
             $currentUser = Auth::user();
             $currentUserRole = $currentUser->roles->first()->role_name;
-            Log::info('Current user role: ' . $currentUserRole);
+            $currentUserId = $currentUser->id;
 
-            $usersQuery = User::with(['roles', 'sentNotifications', 'receivedNotifications']);
+            $usersQuery = User::with(['roles', 'sentNotifications', 'receivedNotifications'])
+            ->where('id', '!=', $currentUserId); 
 
-            // Aplicar as restrições baseadas no papel do usuário logado
             if ($currentUserRole === 'Admin') {
-                // O admin pode ver todos os coordenadores e utilizadores
                 $usersQuery->whereHas('roles', function ($query) {
-                    $query->where('role_name', '!=', 'Admin');
+                    $query->whereNotIn('role_name', ['Admin', 'Root']);
                 });
             } elseif ($currentUserRole === 'Coordenador') {
-                // O coordenador só pode ver utilizadores
                 $usersQuery->whereHas('roles', function ($query) {
                     $query->where('role_name', 'User');
                 });
             }
 
+            // Order by updated_at and paginate the results
             $users = $usersQuery->orderBy('updated_at', 'desc')->paginate($pageSize, ['*'], 'page', $pageIndex);
 
             return response()->json($users, 200);
@@ -55,22 +56,34 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        try {
-            $validatedData = $request->validate([
-                'name' => 'string|max:255|nullable',
-                'email' => 'string|email|max:255|unique:users,email,' . $user->id . '|nullable',
-                'password' => 'string|max:10|nullable',
-                'role_id' => 'required|exists:roles,id'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255|nullable',
+            'email' => 'string|email|max:255|unique:users,email,' . $user->id . '|nullable',
+            'password' => [
+                'nullable',
+                'string',
+                'min:10',
+                'regex:/[a-z]/',      // deve ter pelo menos uma letra minúscula
+                'regex:/[A-Z]/',      // deve ter pelo menos uma letra maiúscula
+                'regex:/[0-9]/',      // deve ter pelo menos um dígito
+                'regex:/[@$!%*?&#]/', // deve ter pelo menos um caractere especial
+            ],
+            
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
             // Atualizar os campos do usuário
-            $user->update(array_filter($validatedData, function ($key) {
+            $user->update(array_filter($validator->validated(), function ($key) {
                 return in_array($key, ['name', 'email']);
             }, ARRAY_FILTER_USE_KEY));
 
             // Atualizar a senha se fornecida
             if ($request->has('password') && $request->input('password')) {
-                $user->password = password_hash($request->password, PASSWORD_BCRYPT);
+                $user->password = bcrypt($request->input('password'));
                 $user->save();
             }
 
@@ -83,6 +96,20 @@ class UserController extends Controller
             Cache::forget('users_index');
 
             return response()->json($user->load(['roles:id,role_name', 'sentNotifications', 'receivedNotifications']), 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+    
+    public function resetPassword($id)
+    {
+        try {
+
+            $user = User::findOrFail($id);
+            $user->password = bcrypt($user->nif);
+            $user->save();
+
+            return response()->json($user, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -109,21 +136,20 @@ class UserController extends Controller
             $term = $request->input('q');
             $currentUser = Auth::user();
             $currentUserRole = $currentUser->roles->first()->role_name;
+            $currentUserId = $currentUser->id;
 
             $usersQuery = User::with('roles')
+                ->where('id', '!=', $currentUserId) 
                 ->where(function ($query) use ($term) {
                     $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($term) . '%'])
                         ->orWhereRaw('LOWER(email) LIKE ?', ['%' . strtolower($term) . '%']);
                 });
 
-            // Aplicar as restrições baseadas no papel do usuário logado
             if ($currentUserRole === 'Admin') {
-                // O admin pode ver todos os coordenadores e utilizadores
                 $usersQuery->whereHas('roles', function ($query) {
-                    $query->where('role_name', '!=', 'Admin');
+                    $query->whereNotIn('role_name', ['Admin', 'Root']);
                 });
             } elseif ($currentUserRole === 'Coordenador') {
-                // O coordenador só pode ver utilizadores
                 $usersQuery->whereHas('roles', function ($query) {
                     $query->where('role_name', 'User');
                 });
