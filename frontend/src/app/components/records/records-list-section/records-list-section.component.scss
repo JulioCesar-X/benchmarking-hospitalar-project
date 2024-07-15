@@ -4,12 +4,19 @@
 .whiteText{
   color:$fill-white;
 }
+
 .darkBlueBG{
   background-color: $main-blue;
 }
+
+.borderBlue{
+  border: $main-blue 10px solid;
+  border-radius: 2em;
+}
 .headingSection {
-  background-color: $main-blue;
-  color: $fill-white;
+  
+  background-color: $fill-white;
+  color: $main-blue;
   justify-content: center;
   text-align: center;
   font-size: 1.8em;

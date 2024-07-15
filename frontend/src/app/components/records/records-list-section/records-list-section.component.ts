@@ -261,5 +261,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
 
   cancelEditing(record: Record): void {
     record.isEditing = false;
+
+    
   }
 }
