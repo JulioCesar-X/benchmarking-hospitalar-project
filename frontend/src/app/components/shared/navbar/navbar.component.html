@@ -39,15 +39,6 @@
           ><svg class="mr-2" routerLink="active-page" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M666-440 440-666l226-226 226 226-226 226Zm-546-80v-320h320v320H120Zm400 400v-320h320v320H520Zm-400 0v-320h320v320H120Zm80-480h160v-160H200v160Zm467 48 113-113-113-113-113 113 113 113Zm-67 352h160v-160H600v160Zm-400 0h160v-160H200v160Zm160-400Zm194-65ZM360-360Zm240 0Z"/></svg>Menu</a
         >
 
-        <a
-          *ngIf="isLoggedIn() && getRole() === 'coordenador'"
-          routerLinkActive="active-page"
-          ariaCurrentWhenActive="page"
-          routerLink="/users
-          class="flex no-underline uppercase text-lg whiteTxt underlineHover"
-          ><svg routerLink="active-page" class="mr-2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M666-440 440-666l226-226 226 226-226 226Zm-546-80v-320h320v320H120Zm400 400v-320h320v320H520Zm-400 0v-320h320v320H120Zm80-480h160v-160H200v160Zm467 48 113-113-113-113-113 113 113 113Zm-67 352h160v-160H600v160Zm-400 0h160v-160H200v160Zm160-400Zm194-65ZM360-360Zm240 0Z"/></svg>Menu</a
-        >
-
         <div id="loginSection" class="flex ml-auto">
           <svg [ngClass]="{ 'is-open': isNavbarOpen }" class="background-svg_adjusted"
             xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="0 0 100 100"

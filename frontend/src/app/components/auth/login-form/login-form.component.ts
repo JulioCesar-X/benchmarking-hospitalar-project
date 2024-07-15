@@ -48,21 +48,20 @@ export class LoginFormComponent {
         this.isLoading = false;
 
         if (response == null) {
-          alert("thasdfas")
-          console.log('Login failed' + response);
+          console.log('Login successful' + response);
           this.errorMessage = 'Login failed!'
         } else {
           this.errorMessage = ''
           console.log('Login successful' + response);
-          this.router.navigate(['/consultUsers']);
+          this.router.navigate(['/home']);
 
-
+          if(this.AuthService.getRole() == "admin" || this.AuthService.getRole() == "coordenador" ||  this.AuthService.getRole() == "root"){
             this.router.navigate(['/home']);
-          
+
+          }
         }
       },
       error => {
-        this.errorMessage = 'Login failed!'
         console.error('Login failed', error);
         this.isLoading = false;
       }
@@ -72,9 +71,9 @@ export class LoginFormComponent {
   openModal(event: Event) {
     event.preventDefault();
     this.isModalVisible = true;
-}
+  }
 
-closeModal() {
+  closeModal() {
     this.isModalVisible = false;
-}
+  }
 }
