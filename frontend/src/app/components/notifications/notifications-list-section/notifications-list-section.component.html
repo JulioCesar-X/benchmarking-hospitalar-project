@@ -1,8 +1,20 @@
 <section class="timeline relative lightBlueBG" #timeline>
   <ul>
     <li *ngFor="let item of timelineItems" [ngClass]="{'in-view': isElementInView(item)}">
-      <div>
-        <time>{{ item.title }}</time> {{ item.detail }}
+      <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{'expanded': item.expanded}">
+        <lord-icon class="icon" src="https://cdn.lordicon.com/lomfljuq.json" trigger="loop" delay="1500"
+          state="in-check" colors="primary:#16c72e" style="width:50px;height:50px">
+        </lord-icon>
+        <time>{{ item.title | date:'short' }}</time> <!-- Formatar a data -->
+        <p>De: {{ item.notification.sender }}</p><br>
+        <p>Assunto: {{ item.notification.title }}</p><br>
+        <p>Mensagem: {{ item.detail }}</p>
+        <div *ngIf="item.expanded" class="notification-details">
+          <div class="notification-body">
+            <h3>Resposta</h3>
+            <p>{{ item.notification.response }}</p>
+          </div>
+        </div>
       </div>
     </li>
   </ul>

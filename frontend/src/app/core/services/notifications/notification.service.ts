@@ -2,25 +2,25 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { CookieService } from 'ngx-cookie-service';
+import { AuthService } from '../auth/auth.service';
 import { Notification } from '../../models/notification.model';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
 
-  constructor(private http: HttpClient, private cookieService: CookieService) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   getNotificationsReceived(): Observable<Notification[]> {
-    const userRole = this.cookieService.get('role').toLowerCase();
-    const userEmail = this.cookieService.get('email');
+    const userEmail = this.authService.getUserEmail();
     const params = new HttpParams().set('email', userEmail);
 
     return this.http.get<Notification[]>(`/notifications/received`, {
       params,
       headers: new HttpHeaders({
-        'Authorization': `Bearer ${this.cookieService.get('access_token')}`
+        'Authorization': `Bearer ${this.authService.getToken()}`
       }),
       withCredentials: true
     }).pipe(

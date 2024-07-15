@@ -33,6 +33,10 @@ export class AuthService {
     return this.decrypt(this.cookieService.get('name'));
   }
 
+  getUserEmail(): string {
+    return this.decrypt(this.cookieService.get('email'));
+  }
+
   getUserId(): string {
     return this.decrypt(this.cookieService.get('id'));
   }

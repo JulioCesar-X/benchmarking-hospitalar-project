@@ -140,7 +140,7 @@ class NotificationController extends Controller
                     'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
                     'title' => $notification->title,
                     'message' => $notification->message,
-                    'created_at' => $notification->created_at
+                    'created_at' => $notification->created_at->format('Y-m-d H:i:s') // Formato de data ajustado
                 ];
             });
 

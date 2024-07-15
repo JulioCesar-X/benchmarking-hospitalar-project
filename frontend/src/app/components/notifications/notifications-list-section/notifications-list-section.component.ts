@@ -1,6 +1,4 @@
-import { Component, OnInit, HostListener,  ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { NgModule } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Component, OnInit, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -10,50 +8,18 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
-
-
-// export interface Notificacao {
-//   nome: string;
-//   assunto: string;
-//   mensagem: string;
-//   data: string;
-//   respondido: boolean;
-// }
-
-// const ELEMENT_DATA: Notificacao[] = [
-//   { nome: 'João', assunto: 'Assunto 1', mensagem: 'Mensagem de exemplo', data: '04/07/2024', respondido: false },
-// ];
-
-
-// @Component({
-//   selector: 'app-notifications-list-section',
-//   standalone: true,
-//   imports: [
-//     CommonModule,
-//     MatSidenavModule,
-//     MatIconModule,
-//     MatListModule,
-//     MatInputModule,
-//     MatButtonModule,
-//     MatTableModule,
-//     MatCheckboxModule,
-//     MatFormFieldModule],
-//   templateUrl: './notifications-list-section.component.html',
-//   styleUrl: './notifications-list-section.component.scss'
-// })
-
-// export class NotificationsListSectionComponent {
-//   displayedColumns: string[] = ['nome', 'assunto', 'mensagem', 'data', 'respondido'];
-//   dataSource = ELEMENT_DATA;
-// }
-
-
+import { Notification } from '../../../core/models/notification.model';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NotificationService } from '../../../core/services/notifications/notification.service';
 
 interface TimelineItem {
+  id: number;
   title: string;
-  detail: string; 
+  detail: string;
+  expanded: boolean;
+  notification: Notification;
 }
- 
+
 @Component({
   selector: 'app-notifications-list-section',
   standalone: true,
@@ -66,47 +32,44 @@ interface TimelineItem {
     MatButtonModule,
     MatTableModule,
     MatCheckboxModule,
-    MatFormFieldModule],
+    MatFormFieldModule
+  ],
   templateUrl: './notifications-list-section.component.html',
-  styleUrls: ['./notifications-list-section.component.scss']
+  styleUrls: ['./notifications-list-section.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class NotificationsListSectionComponent implements OnInit, AfterViewInit {
+export class NotificationsListSectionComponent implements OnInit {
   @ViewChild('timeline', { static: false }) timeline: ElementRef | undefined;
 
-  timelineItems: TimelineItem[] = [
-    { title: '1934', detail: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium' },
-    { title: '1937', detail: 'Proin quam velit, efficitur vel neque vitae, rhoncus commodo mi.' },
-    { title: '1940', detail: 'Proin iaculis, nibh eget efficitur varius, libero tellus porta dolor.' },
-    { title: '1943', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '1946', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '1956', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '1957', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '1967', detail: 'Aenean condimentum odio a bibendum rhoncus.' },
-    { title: '1977', detail: 'Vestibulum porttitor lorem sed pharetra dignissim.' },
-    { title: '1985', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '2000', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '2005', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' }
-  ];
+  notifications: Notification[] = [];
+  timelineItems: TimelineItem[] = [];
 
-  constructor(private cdr: ChangeDetectorRef) { }
-
-  ngAfterViewInit() {
-    this.checkElementsInView(); // Chama a verificação após a inicialização da view
-    this.cdr.detectChanges(); // Detecta mudanças explicitamente
-  }
-  
+  constructor(
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
-    //this.checkElementsInView(); // Chama a verificação após a inicialização da view
+    this.notificationService.getNotificationsReceived().subscribe(notifications => {
+      this.notifications = notifications;
+      this.timelineItems = notifications.map(notification => ({
+        id: notification.id,
+        title: notification.created_at,
+        detail: notification.message,
+        expanded: false,
+        notification: notification
+      }));
+      this.checkElementsInView(); // Chamar ao inicializar
+    });
   }
 
   @HostListener('window:scroll', ['$event'])
   onScroll() {
-    this.checkElementsInView(); // Reavalia a visibilidade dos elementos ao rolar a página
+    this.checkElementsInView();
   }
 
   private checkElementsInView() {
-    if (!this.timeline) return; // Retorna se a referência para a timeline não estiver definida
+    if (!this.timeline) return;
 
     const timelineItems = this.timeline.nativeElement.querySelectorAll('.timeline ul li');
     timelineItems.forEach((item: HTMLElement) => {
@@ -122,8 +85,13 @@ export class NotificationsListSectionComponent implements OnInit, AfterViewInit 
     });
   }
 
+  toggleExpand(item: TimelineItem) {
+    item.expanded = !item.expanded;
+    this.cdr.detectChanges();
+  }
+
   isElementInView(item: TimelineItem): boolean {
-    const elements = document.querySelectorAll('.timeline ul li div');
+    const elements = document.querySelectorAll('.timeline ul li .timeline-item');
     let elementInView = false;
 
     elements.forEach((element) => {
