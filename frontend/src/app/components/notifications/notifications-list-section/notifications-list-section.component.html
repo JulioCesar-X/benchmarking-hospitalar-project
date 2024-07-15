@@ -7,7 +7,7 @@
           trigger="loop" delay="1500" state="in-check" colors="primary:#FFFFFF" style="width:30px;height:30px">
         </lord-icon>
         <time>{{ item.title | date:'dd/MM/yyyy' }}</time>
-        <p>De: {{ item.notification.sender }}</p>
+        <p>De: {{ item.notification.sender }}</p> <!-- Atualize para sender.name -->
         <p>Assunto: {{ item.notification.title }}</p>
         <p>Mensagem: {{ item.detail }}</p>
         <div *ngIf="item.expanded" class="notification-details">
@@ -19,11 +19,23 @@
           <p *ngIf="item.notification.updated_at" class="response-date">respondido: {{ item.notification.updated_at |
             date:'dd/MM/yyyy' }}</p>
           <div *ngIf="!item.notification.response">
-            <textarea [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."></textarea>
-            <button (click)="sendResponse(item)">Enviar Resposta</button>
+            <textarea [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."
+              (click)="$event.stopPropagation()"></textarea>
+            <button *ngIf="!isLoading || item.id !== loadingItemId" class="send-button"
+              (click)="sendResponse(item, $event)">
+              Enviar Resposta
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                fill="#FFFFFF">
+                <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
+              </svg>
+            </button>
+            <div *ngIf="isLoading && item.id === loadingItemId" class="loading-circle">
+              <div class="spinner spinner_updateRecord-special"></div>
+            </div>
           </div>
         </div>
       </div>
     </li>
   </ul>
+  <app-feedback *ngIf="feedbackMessage" [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
 </section>

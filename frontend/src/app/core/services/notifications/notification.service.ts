@@ -40,8 +40,8 @@ export class NotificationService {
     );
   }
 
-  respondToNotification(id: number, response: { response: string }): Observable<any> {
-    return this.http.patch(`/notifications/${id}/respond`, response);
+  respondToNotification(id: number, response: { response: string }): Observable<Notification> {
+    return this.http.patch<Notification>(`/notifications/${id}/respond`, response);
   }
 
   private handleError(error: any) {

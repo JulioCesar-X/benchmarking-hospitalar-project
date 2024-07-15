@@ -1,15 +1,10 @@
 export interface Notification {
   id: number;
-  sender_id: number;
-  receiver_id: number;
-  sender: string;
-  receiver: string;
-  title: string;
-  message: string;
   created_at: string;
-  updated_at?: string;
-  is_read?: boolean;
+  message: string;
+  title: string;
+  sender: { id: number, name: string }; 
   response?: string;
-
+  is_read?: boolean;
+  updated_at?: string;
 }
-

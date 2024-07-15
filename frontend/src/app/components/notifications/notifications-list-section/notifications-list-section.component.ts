@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { Notification } from '../../../core/models/notification.model';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NotificationService } from '../../../core/services/notifications/notification.service';
+import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 
 interface TimelineItem {
   id: number;
@@ -35,7 +36,8 @@ interface TimelineItem {
     MatTableModule,
     MatCheckboxModule,
     MatFormFieldModule,
-    FormsModule
+    FormsModule,
+    FeedbackComponent
   ],
   templateUrl: './notifications-list-section.component.html',
   styleUrls: ['./notifications-list-section.component.scss'],
@@ -49,6 +51,10 @@ export class NotificationsListSectionComponent implements OnInit {
   currentPage = 1;
   lastPage = 1;
   perPage = 10;
+  isLoading = false;
+  feedbackMessage = '';
+  feedbackType: 'success' | 'error' = 'success';
+  loadingItemId: number | null = null;
 
   constructor(
     private notificationService: NotificationService,
@@ -74,7 +80,6 @@ export class NotificationsListSectionComponent implements OnInit {
   private loadNotifications() {
     this.notificationService.getNotificationsReceived(this.currentPage, this.perPage).subscribe(response => {
       this.notifications = this.notifications.concat(response.data);
-      console.log("<<>>", this.notifications);
       this.timelineItems = this.notifications.map(notification => ({
         id: notification.id,
         title: notification.created_at,
@@ -82,6 +87,7 @@ export class NotificationsListSectionComponent implements OnInit {
         expanded: false,
         notification: notification
       }));
+      console.log(this.timelineItems);
       this.lastPage = response.last_page;
       this.cdr.detectChanges();
       this.checkElementsInView();
@@ -127,19 +133,42 @@ export class NotificationsListSectionComponent implements OnInit {
     return false;
   }
 
-  sendResponse(item: TimelineItem) {
+  sendResponse(item: TimelineItem, event: Event) {
+    event.stopPropagation();
     if (!item.newResponse) return;
 
+    this.clearFeedback();
+
+    this.isLoading = true;
+    this.loadingItemId = item.id;
     const response = {
       response: item.newResponse
     };
 
-    this.notificationService.respondToNotification(item.id, response).subscribe(() => {
-      item.notification.response = item.newResponse;
-      item.notification.is_read = true;
-      item.notification.updated_at = new Date().toISOString();
-      item.newResponse = '';
-      this.cdr.detectChanges();
+    this.notificationService.respondToNotification(item.id, response).subscribe({
+      next: (updatedNotification) => {
+        item.notification = updatedNotification;
+        item.newResponse = '';
+        this.feedbackMessage = 'Resposta enviada com sucesso!';
+        this.feedbackType = 'success';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.feedbackMessage = 'Erro ao enviar resposta. Tente novamente.';
+        this.feedbackType = 'error';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      complete: () => {
+        this.loadingItemId = null;
+        this.cdr.detectChanges();
+      }
     });
+  }
+
+  clearFeedback() {
+    this.feedbackMessage = '';
+    this.feedbackType = 'success';
   }
 }

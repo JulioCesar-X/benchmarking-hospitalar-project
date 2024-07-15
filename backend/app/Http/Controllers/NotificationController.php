@@ -19,7 +19,9 @@ class NotificationController extends Controller
      */
     public function index()
     {
+        //daqui devem ir as notificações que o usuário logado recebeu tanto como novas notificações como respostas de notificaçoes que o usurario enviou
         try {
+            
             $cacheKey = 'notifications_index';
 
             if (Cache::has($cacheKey)) {
@@ -31,62 +33,6 @@ class NotificationController extends Controller
             Cache::put($cacheKey, $notifications, now()->addMinutes(30));
 
             return response()->json($notifications, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        try {
-            $notification = Notification::create($request->all());
-
-            // Clear the cache
-            Cache::forget('notifications_index');
-
-            return response()->json($notification->load(['sender:id,name', 'receiver:id,name']), 201);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        try {
-            $notification = Notification::with(['sender:id,name', 'receiver:id,name'])->findOrFail($id);
-            return response()->json($notification, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Notification $notification)
-    {
-        try {
-            $notification->update($request->all());
-
-            // Clear the cache
-            Cache::forget('notifications_index');
-
-            return response()->json($notification->load(['sender:id,name', 'receiver:id,name']), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
@@ -162,4 +108,31 @@ class NotificationController extends Controller
             return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function respondToNotification(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'response' => 'required|string|max:255'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        try {
+            $notification = Notification::findOrFail($id);
+            $notification->response = $request->input('response');
+            $notification->save();
+
+            // Clear the cache
+            Cache::forget('notifications_index');
+
+            $notification->load(['sender:id,name', 'receiver:id,name']);
+            return response()->json($notification, 200);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+
 }
