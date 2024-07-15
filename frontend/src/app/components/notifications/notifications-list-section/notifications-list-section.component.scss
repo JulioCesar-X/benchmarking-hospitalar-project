@@ -44,7 +44,10 @@
 
 .timeline ul li .timeline-item.expanded {
   background: $main-dark-blue;
-  transform: scale(1.05);
+  transform: scale(1.2);
+  /* Aumenta a escala da notificação */
+  z-index: 10;
+  /* Garante que a notificação expandida fique acima das outras */
 }
 
 .timeline ul li .timeline-item::before {
