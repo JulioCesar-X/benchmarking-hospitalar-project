@@ -19,6 +19,8 @@ class CreateNotificationsTable extends Migration
             $table->foreignId('receiver_id')->constrained('users');
             $table->string('title');
             $table->text('message');
+            $table->text('response')->nullable();
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -5,19 +5,31 @@ import { catchError } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { Notification } from '../../models/notification.model';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
-
   constructor(private http: HttpClient, private authService: AuthService) { }
 
-  getNotificationsReceived(): Observable<Notification[]> {
-    const userEmail = this.authService.getUserEmail();
-    const params = new HttpParams().set('email', userEmail);
+  indexNotifications(): Observable<any> {
+    return this.http.get('/notifications', {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.authService.getToken()}`
+      }),
+      withCredentials: true
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
 
-    return this.http.get<Notification[]>(`/notifications/received`, {
+  getNotificationsReceived(page: number, perPage: number): Observable<any> {
+    const userEmail = this.authService.getUserEmail();
+    const params = new HttpParams()
+      .set('email', userEmail)
+      .set('page', page.toString())
+      .set('per_page', perPage.toString());
+
+    return this.http.get<any>('/notifications/received', {
       params,
       headers: new HttpHeaders({
         'Authorization': `Bearer ${this.authService.getToken()}`
@@ -26,6 +38,10 @@ export class NotificationService {
     }).pipe(
       catchError(this.handleError)
     );
+  }
+
+  respondToNotification(id: number, response: { response: string }): Observable<any> {
+    return this.http.patch(`/notifications/${id}/respond`, response);
   }
 
   private handleError(error: any) {

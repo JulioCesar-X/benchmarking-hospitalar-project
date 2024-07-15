@@ -8,6 +8,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Notification } from '../../../core/models/notification.model';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NotificationService } from '../../../core/services/notifications/notification.service';
@@ -18,6 +19,7 @@ interface TimelineItem {
   detail: string;
   expanded: boolean;
   notification: Notification;
+  newResponse?: string;
 }
 
 @Component({
@@ -32,7 +34,8 @@ interface TimelineItem {
     MatButtonModule,
     MatTableModule,
     MatCheckboxModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    FormsModule
   ],
   templateUrl: './notifications-list-section.component.html',
   styleUrls: ['./notifications-list-section.component.scss'],
@@ -43,6 +46,9 @@ export class NotificationsListSectionComponent implements OnInit {
 
   notifications: Notification[] = [];
   timelineItems: TimelineItem[] = [];
+  currentPage = 1;
+  lastPage = 1;
+  perPage = 10;
 
   constructor(
     private notificationService: NotificationService,
@@ -50,22 +56,36 @@ export class NotificationsListSectionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.notificationService.getNotificationsReceived().subscribe(notifications => {
-      this.notifications = notifications;
-      this.timelineItems = notifications.map(notification => ({
+    this.loadNotifications();
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    const threshold = 300;
+    const position = window.innerHeight + window.scrollY;
+    const height = document.body.offsetHeight;
+
+    if (position > height - threshold && this.currentPage < this.lastPage) {
+      this.currentPage++;
+      this.loadNotifications();
+    }
+  }
+
+  private loadNotifications() {
+    this.notificationService.getNotificationsReceived(this.currentPage, this.perPage).subscribe(response => {
+      this.notifications = this.notifications.concat(response.data);
+      console.log("<<>>", this.notifications);
+      this.timelineItems = this.notifications.map(notification => ({
         id: notification.id,
         title: notification.created_at,
         detail: notification.message,
         expanded: false,
         notification: notification
       }));
+      this.lastPage = response.last_page;
+      this.cdr.detectChanges();
       this.checkElementsInView(); // Chamar ao inicializar
     });
-  }
-
-  @HostListener('window:scroll', ['$event'])
-  onScroll() {
-    this.checkElementsInView();
   }
 
   private checkElementsInView() {
@@ -91,21 +111,27 @@ export class NotificationsListSectionComponent implements OnInit {
   }
 
   isElementInView(item: TimelineItem): boolean {
-    const elements = document.querySelectorAll('.timeline ul li .timeline-item');
-    let elementInView = false;
+    const element = document.getElementById(`notification-${item.id}`);
+    if (element) {
+      const bounding = element.getBoundingClientRect();
+      return bounding.top >= 0 && bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight);
+    }
+    return false;
+  }
 
-    elements.forEach((element) => {
-      if (element.textContent?.includes(item.title)) {
-        const bounding = element.getBoundingClientRect();
-        if (
-          bounding.top >= 0 &&
-          bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-        ) {
-          elementInView = true;
-        }
-      }
+  sendResponse(item: TimelineItem) {
+    if (!item.newResponse) return;
+
+    const response = {
+      response: item.newResponse
+    };
+
+    this.notificationService.respondToNotification(item.id, response).subscribe(() => {
+      item.notification.response = item.newResponse;
+      item.notification.is_read = true;
+      item.notification.updated_at = new Date().toISOString();
+      item.newResponse = '';
+      this.cdr.detectChanges();
     });
-
-    return elementInView;
   }
 }

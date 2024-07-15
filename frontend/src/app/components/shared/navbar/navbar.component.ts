@@ -69,7 +69,7 @@ export class NavbarComponent implements OnInit {
   }
 
   getNotifications() {
-    this.notificationService.getNotificationsReceived().subscribe({
+    this.notificationService.indexNotifications().subscribe({
       next: (notifications: Notification[]) => {
         this.allNotifications = notifications;
         this.checkUnreadNotifications();
@@ -81,14 +81,14 @@ export class NavbarComponent implements OnInit {
   }
 
   markNotificationAsRead(notification: Notification) {
-    if (!notification.isRead) {
-      notification.isRead = true;
+    if (!notification.is_read) {
+      notification.is_read = true;
       this.unreadNotifications--;
     }
   }
 
   checkUnreadNotifications() {
-    this.unreadNotifications = this.allNotifications.filter(notification => !notification.isRead).length;
+    this.unreadNotifications = this.allNotifications.filter(notification => !notification.is_read).length;
   }
 
   toggleNotifications() {

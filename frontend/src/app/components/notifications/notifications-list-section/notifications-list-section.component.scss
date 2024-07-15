@@ -1,7 +1,7 @@
 @import '../../../../styles/_variables.scss';
 
 .timeline ul {
-  background-color: $fill-white;
+  background-color: transparent;
   padding: 50px 0;
   overflow: hidden;
 }
@@ -32,7 +32,7 @@
   position: relative;
   bottom: 0;
   width: 400px;
-  background: $main-dark-blue;
+  background: $main-blue;
   color: $fill-white;
   padding: 3em;
   border-radius: 0.5em;
@@ -40,11 +40,10 @@
   transition: all 0.5s ease-in-out;
   visibility: hidden;
   opacity: 0;
-  transition: all 0.5s ease-in-out;
 }
 
 .timeline ul li .timeline-item.expanded {
-  background: $main-blue;
+  background: $main-dark-blue;
   transform: scale(1.05);
 }
 
@@ -64,6 +63,10 @@
 .timeline ul li:nth-child(odd) .timeline-item::before {
   left: -15px;
   border-width: 8px 16px 8px 0;
+  border-color: transparent $main-blue transparent transparent;
+}
+
+.timeline ul li:nth-child(odd) .timeline-item.expanded::before {
   border-color: transparent $main-dark-blue transparent transparent;
 }
 
@@ -74,6 +77,10 @@
 .timeline ul li:nth-child(even) .timeline-item::before {
   right: -15px;
   border-width: 8px 0 8px 16px;
+  border-color: transparent transparent transparent $main-blue;
+}
+
+.timeline ul li:nth-child(even) .timeline-item.expanded::before {
   border-color: transparent transparent transparent $main-dark-blue;
 }
 
@@ -93,7 +100,7 @@ time {
 .notification-details {
   margin-top: 1em;
   padding: 1em;
-  background: $main-blue;
+  background: $main-dark-blue;
   color: $fill-white;
   border-radius: 0.5em;
 }
@@ -135,6 +142,6 @@ time {
   .timeline ul li:nth-child(even) .timeline-item::before {
     left: -15px;
     border-width: 8px 16px 8px 0;
-    border-color: transparent $main-blue transparent transparent;
+    border-color: transparent $main-dark-blue transparent transparent;
   }
 }

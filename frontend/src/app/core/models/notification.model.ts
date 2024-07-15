@@ -8,7 +8,7 @@ export interface Notification {
   message: string;
   created_at: string;
   updated_at?: string;
-  isRead?: boolean;
+  is_read?: boolean;
   response?: string;
 
 }

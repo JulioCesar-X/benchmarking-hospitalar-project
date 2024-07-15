@@ -82,7 +82,7 @@
       <div class="flex flex-col gap-1">
         <div title="Clique para marcar como lido" *ngFor="let notification of allNotifications"
           (click)="markNotificationAsRead(notification)"
-          class="p-2 flex flex-col justify-between max-h-[60vh] cursor-pointer" [class.unread]="!notification.isRead">
+          class="p-2 flex flex-col justify-between max-h-[60vh] cursor-pointer" [class.unread]="!notification.is_read">
           <div class="flex justify-between">
             <p>De: senderName</p>
             <button class="scale" (click)="reply()">
