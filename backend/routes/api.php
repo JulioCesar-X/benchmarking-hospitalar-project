@@ -8,12 +8,10 @@ Route::group(['middleware' => 'throttle:10000,1'], function () {
     Route::post('/forgot-password', 'AuthController@forgotPassword');
     Route::post('/reset-password', 'AuthController@resetPassword')->name('password.reset');
 
-
     Route::get('services', 'ServiceController@index');
     Route::get('services/paginated', 'ServiceController@getServicesPaginated');
     Route::get('services/search', 'ServiceController@search');
     Route::get('services/{id}', 'ServiceController@show');
-
     
     Route::get('indicators', 'IndicatorController@index');
 });

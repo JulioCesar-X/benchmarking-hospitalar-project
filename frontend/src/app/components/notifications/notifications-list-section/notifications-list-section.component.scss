@@ -24,8 +24,9 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: inherit;
+  background: $main-blue;
   z-index: 1;
+  transition: background 0.5s ease-in-out;
 }
 
 .timeline ul li .timeline-item {
@@ -45,9 +46,11 @@
 .timeline ul li .timeline-item.expanded {
   background: $main-dark-blue;
   transform: scale(1.2);
-  /* Aumenta a escala da notificação */
   z-index: 10;
-  /* Garante que a notificação expandida fique acima das outras */
+}
+
+.timeline ul li.expanded::after {
+  background: $main-dark-blue;
 }
 
 .timeline ul li .timeline-item::before {

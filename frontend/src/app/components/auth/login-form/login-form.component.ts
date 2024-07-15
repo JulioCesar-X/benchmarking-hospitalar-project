@@ -45,7 +45,7 @@ export class LoginFormComponent {
         } else {
           this.errorMessage = ''
           console.log('Login successful' + response);
-          this.router.navigate(['/consultUsers']);
+          this.router.navigate(['/home']);
 
           if(this.AuthService.getRole() == "admin" || this.AuthService.getRole() == "coordenador"){
             this.router.navigate(['/users']);

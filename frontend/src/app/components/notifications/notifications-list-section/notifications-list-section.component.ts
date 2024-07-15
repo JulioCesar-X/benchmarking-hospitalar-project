@@ -84,7 +84,7 @@ export class NotificationsListSectionComponent implements OnInit {
       }));
       this.lastPage = response.last_page;
       this.cdr.detectChanges();
-      this.checkElementsInView(); // Chamar ao inicializar
+      this.checkElementsInView();
     });
   }
 
@@ -108,6 +108,14 @@ export class NotificationsListSectionComponent implements OnInit {
   toggleExpand(item: TimelineItem) {
     item.expanded = !item.expanded;
     this.cdr.detectChanges();
+    const liElement = document.getElementById(`notification-${item.id}`);
+    if (liElement) {
+      if (item.expanded) {
+        liElement.classList.add('expanded');
+      } else {
+        liElement.classList.remove('expanded');
+      }
+    }
   }
 
   isElementInView(item: TimelineItem): boolean {

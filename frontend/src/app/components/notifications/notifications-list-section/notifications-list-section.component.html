@@ -1,10 +1,10 @@
 <section class="timeline relative lightBlueBG" #timeline>
   <ul>
     <li *ngFor="let item of timelineItems" [id]="'notification-' + item.id"
-      [ngClass]="{'in-view': isElementInView(item), 'unread': !item.notification.is_read}">
+      [ngClass]="{'in-view': isElementInView(item), 'unread': !item.notification.is_read, 'expanded': item.expanded}">
       <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{'expanded': item.expanded}">
-        <lord-icon class="icon" src="https://cdn.lordicon.com/lomfljuq.json" trigger="loop" delay="1500"
-          state="in-check" colors="primary:#FFFFFF" style="width:20px;height:20px">
+        <lord-icon *ngIf="item.notification.response" class="icon" src="https://cdn.lordicon.com/lomfljuq.json"
+          trigger="loop" delay="1500" state="in-check" colors="primary:#FFFFFF" style="width:30px;height:30px">
         </lord-icon>
         <time>{{ item.title | date:'dd/MM/yyyy' }}</time>
         <p>De: {{ item.notification.sender }}</p>

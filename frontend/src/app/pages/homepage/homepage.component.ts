@@ -15,7 +15,7 @@ import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner
     CommonModule,
     RouterModule,
     MatIconModule,
-    LoadingSpinnerComponent // Adicione o componente do spinner aqui
+    LoadingSpinnerComponent
   ],
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss'],
@@ -25,12 +25,12 @@ export class HomepageComponent implements OnInit, OnDestroy {
   services: Service[] = [];
   displayedServices: any[] = [];
   isLoading: boolean = false;
-  loadingServiceId: number | null = null; // Adicione essa linha
+  loadingServiceId: number | null = null; 
   page: number = 1;
   pageSize: number = 4;
   totalServices: number = 0;
   loadedPages: Set<number> = new Set();
-  showNavButtons: boolean = false; // Adicione essa linha
+  showNavButtons: boolean = false; 
 
   constructor(
     private serviceService: ServiceService,
@@ -105,7 +105,8 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   goToDescription(serviceId: number) {
-    this.loadingServiceId = serviceId; // Define o ID do serviço que está carregando
+
+    this.loadingServiceId = serviceId;
     const role = this.authService.getRole();
     if (role === 'admin' || role === 'coordenador' || role === 'root') {
       this.router.navigate(['/charts', { serviceId }]);

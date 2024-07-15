@@ -134,6 +134,7 @@ class NotificationController extends Controller
             $perPage = $request->input('per_page', 10);
             $notifications = $user->receivedNotifications()
                 ->with(['sender:id,name', 'receiver:id,name'])
+                ->orderBy('created_at', 'desc') // Ordenar por created_at em ordem decrescente
                 ->paginate($perPage);
 
             $formattedNotifications = $notifications->getCollection()->map(function ($notification) {
@@ -143,7 +144,7 @@ class NotificationController extends Controller
                     'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
                     'title' => $notification->title,
                     'message' => $notification->message,
-                    'created_at' => $notification->created_at->format('Y-m-d H:i:s'),
+                    'created_at' => $notification->created_at->format('Y-m-d'),
                     'is_read' => $notification->is_read,
                     'response' => $notification->response,
                     'updated_at' => $notification->updated_at ? $notification->updated_at->format('Y-m-d H:i:s') : null,
