@@ -22,6 +22,20 @@ export class NotificationService {
     );
   }
 
+  storeNotification(notification: { userId: number; title: string; message: string }): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`
+    });
+
+    return this.http.post<any>('/notifications', {
+      receiver_id: notification.userId, 
+      title: notification.title,
+      message: notification.message
+    }, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   getNotificationsReceived(page: number, perPage: number): Observable<any> {
     const userEmail = this.authService.getUserEmail();
     const params = new HttpParams()

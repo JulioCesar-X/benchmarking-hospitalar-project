@@ -16,7 +16,10 @@
           delay="1500" state="in-check" colors="primary:#FFFFFF" style="width:30px;height:30px">
         </lord-icon>
         <time>{{ item.created_at | date:'dd/MM/yyyy' }}</time>
-        <p>De: {{ item.sender }}</p>
+        <p *ngIf="item.type === 'received'">De: {{ item.sender }}</p>
+        <p *ngIf="item.type === 'sent'">Para: {{ item.receiver }}</p>
+        <p *ngIf="item.type === 'received'">Email: {{ item.sender_email }}</p>
+        <p *ngIf="item.type === 'sent'">Email: {{ item.receiver_email }}</p>
         <p>Assunto: {{ item.title }}</p>
         <p>Mensagem: {{ item.detail }}</p>
         <div *ngIf="item.expanded" class="notification-details">

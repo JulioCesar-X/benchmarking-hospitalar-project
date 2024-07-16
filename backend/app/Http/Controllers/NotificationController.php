@@ -7,6 +7,7 @@ use App\Notification;
 use App\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 
 
@@ -36,6 +37,32 @@ class NotificationController extends Controller
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
+    }
+
+    public function store(Request $request)
+    {
+        // Validar os dados da solicitação
+        $validator = Validator::make($request->all(), [
+            'receiver_id' => 'required|integer|exists:users,id',
+            'title' => 'required|string|max:255',
+            'message' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Criar a notificação
+        $notification = Notification::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $request->receiver_id,
+            'title' => $request->title,
+            'message' => $request->message,
+            'response' => null,
+            'is_read' => false
+        ]);
+
+        return response()->json($notification, 201);
     }
 
     /**
@@ -79,7 +106,7 @@ class NotificationController extends Controller
 
             $perPage = $request->input('per_page', 10);
             $notifications = $user->receivedNotifications()
-                ->with(['sender:id,name', 'receiver:id,name'])
+                ->with(['sender:id,name,email', 'receiver:id,name,email'])
                 ->orderBy('created_at', 'desc')
                 ->paginate($perPage);
 
@@ -88,6 +115,8 @@ class NotificationController extends Controller
                     'id' => $notification->id,
                     'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
                     'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
+                    'sender_email' => $notification->sender ? $notification->sender->email : 'Unknown',
+                    'receiver_email' => $notification->receiver ? $notification->receiver->email : 'Unknown',
                     'title' => $notification->title,
                     'message' => $notification->message,
                     'created_at' => $notification->created_at->format('Y-m-d'),
@@ -154,7 +183,7 @@ class NotificationController extends Controller
 
             $perPage = $request->input('per_page', 10);
             $notifications = $user->sentNotifications()
-                ->with(['sender:id,name', 'receiver:id,name'])
+                ->with(['sender:id,name,email', 'receiver:id,name,email'])
                 ->orderBy('created_at', 'desc')
                 ->paginate($perPage);
 
@@ -163,6 +192,8 @@ class NotificationController extends Controller
                     'id' => $notification->id,
                     'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
                     'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
+                    'sender_email' => $notification->sender ? $notification->sender->email : 'Unknown',
+                    'receiver_email' => $notification->receiver ? $notification->receiver->email : 'Unknown',
                     'title' => $notification->title,
                     'message' => $notification->message,
                     'created_at' => $notification->created_at->format('Y-m-d'),

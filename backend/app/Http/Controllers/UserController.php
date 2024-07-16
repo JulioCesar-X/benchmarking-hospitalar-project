@@ -13,6 +13,29 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+
+    public function index()
+    {
+        try {
+            $cacheKey = 'users_index_' . auth()->id(); 
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $users = User::with(['roles:id,role_name', 'sentNotifications', 'receivedNotifications'])
+            ->where('id', '!=', auth()->id())
+                ->get();
+
+            Cache::put($cacheKey, $users, now()->addMinutes(30));
+
+            return response()->json($users, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+
     public function getUsersPaginated(Request $request)
     {
         try {

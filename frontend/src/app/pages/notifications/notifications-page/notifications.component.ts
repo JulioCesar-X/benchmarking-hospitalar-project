@@ -3,14 +3,7 @@ import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { NotificationsListSectionComponent } from '../../../components/notifications/notifications-list-section/notifications-list-section.component';
 import { NotificationService } from '../../../core/services/notifications/notification.service';
 import { CommonModule } from '@angular/common';
-import { Notification } from '../../../core/models/notification.model';
-
-interface TimelineItem extends Notification {
-  detail: string;
-  expanded: boolean;
-  type: 'received' | 'sent';
-  newResponse?: string;
-}
+import { TimelineItem } from '../../../core/models/timeline-item.model';
 
 @Component({
   selector: 'app-notifications',
@@ -51,22 +44,26 @@ export class NotificationsComponent implements OnInit {
 
     if (this.selectedTab === 'received') {
       this.notificationService.getNotificationsReceived(1, 10).subscribe(response => {
-        this.receivedNotifications = response.data.map((notification: Notification) => ({
+        this.receivedNotifications = response.data.map((notification: any) => ({
           ...notification,
           detail: notification.message,
           expanded: false,
-          type: 'received'
+          type: 'received',
+          sender: notification.sender,
+          sender_email: notification.sender_email
         }));
         this.isLoading = false;
         this.cdr.detectChanges();
       });
     } else {
       this.notificationService.getNotificationsSent(1, 10).subscribe(response => {
-        this.sentNotifications = response.data.map((notification: Notification) => ({
+        this.sentNotifications = response.data.map((notification: any) => ({
           ...notification,
           detail: notification.message,
           expanded: false,
-          type: 'sent'
+          type: 'sent',
+          receiver: notification.receiver,
+          receiver_email: notification.receiver_email
         }));
         this.isLoading = false;
         this.cdr.detectChanges();

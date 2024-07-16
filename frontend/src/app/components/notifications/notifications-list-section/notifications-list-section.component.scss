@@ -55,12 +55,6 @@
   opacity: 0;
 }
 
-// .timeline ul li .timeline-item.expanded {
-//   background: $main-dark-blue;
-//   transform: scale(1.1);
-//   z-index: 10;
-// }
-
 .timeline ul li.expanded::after {
   background: $main-dark-blue;
 }

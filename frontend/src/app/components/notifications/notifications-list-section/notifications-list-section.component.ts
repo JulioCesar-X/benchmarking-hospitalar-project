@@ -12,21 +12,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NotificationService } from '../../../core/services/notifications/notification.service';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+import { TimelineItem } from '../../../core/models/timeline-item.model';
 
-interface TimelineItem {
-  id: number;
-  created_at: string;
-  message: string;
-  is_read: boolean;
-  sender: string;
-  title: string;
-  response?: string;
-  updated_at?: string;
-  detail: string;
-  expanded: boolean;
-  type: 'received' | 'sent';
-  newResponse?: string;
-}
 
 @Component({
   selector: 'app-notifications-list-section',
