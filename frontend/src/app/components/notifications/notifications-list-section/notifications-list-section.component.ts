@@ -1,4 +1,6 @@
-import { Component, OnInit, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -7,19 +9,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Notification } from '../../../core/models/notification.model';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NotificationService } from '../../../core/services/notifications/notification.service';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 
 interface TimelineItem {
   id: number;
+  created_at: string;
+  message: string;
+  is_read: boolean;
+  sender: string;
   title: string;
+  response?: string;
+  updated_at?: string;
   detail: string;
   expanded: boolean;
-  notification: Notification;
+  type: 'received' | 'sent';
   newResponse?: string;
 }
 
@@ -44,14 +49,12 @@ interface TimelineItem {
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class NotificationsListSectionComponent implements OnInit {
+  @Input() notifications: TimelineItem[] = [];
+  @Input() isLoading: boolean = false;
+  @Input() type: 'received' | 'sent' = 'received';
+
   @ViewChild('timeline', { static: false }) timeline: ElementRef | undefined;
 
-  notifications: Notification[] = [];
-  timelineItems: TimelineItem[] = [];
-  currentPage = 1;
-  lastPage = 1;
-  perPage = 10;
-  isLoading = false;
   feedbackMessage = '';
   feedbackType: 'success' | 'error' = 'success';
   loadingItemId: number | null = null;
@@ -62,7 +65,7 @@ export class NotificationsListSectionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadNotifications();
+    // Initial load logic if necessary
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -71,44 +74,9 @@ export class NotificationsListSectionComponent implements OnInit {
     const position = window.innerHeight + window.scrollY;
     const height = document.body.offsetHeight;
 
-    if (position > height - threshold && this.currentPage < this.lastPage) {
-      this.currentPage++;
-      this.loadNotifications();
+    if (position > height - threshold) {
+      // Implement pagination logic if necessary
     }
-  }
-
-  private loadNotifications() {
-    this.notificationService.getNotificationsReceived(this.currentPage, this.perPage).subscribe(response => {
-      this.notifications = this.notifications.concat(response.data);
-      this.timelineItems = this.notifications.map(notification => ({
-        id: notification.id,
-        title: notification.created_at,
-        detail: notification.message,
-        expanded: false,
-        notification: notification
-      }));
-      console.log(this.timelineItems);
-      this.lastPage = response.last_page;
-      this.cdr.detectChanges();
-      this.checkElementsInView();
-    });
-  }
-
-  private checkElementsInView() {
-    if (!this.timeline) return;
-
-    const timelineItems = this.timeline.nativeElement.querySelectorAll('.timeline ul li');
-    timelineItems.forEach((item: HTMLElement) => {
-      const bounding = item.getBoundingClientRect();
-      if (
-        bounding.top >= 0 &&
-        bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-      ) {
-        item.classList.add('in-view');
-      } else {
-        item.classList.remove('in-view');
-      }
-    });
   }
 
   toggleExpand(item: TimelineItem) {
@@ -147,7 +115,7 @@ export class NotificationsListSectionComponent implements OnInit {
 
     this.notificationService.respondToNotification(item.id, response).subscribe({
       next: (updatedNotification) => {
-        item.notification = updatedNotification;
+        item.response = updatedNotification.response;
         item.newResponse = '';
         this.feedbackMessage = 'Resposta enviada com sucesso!';
         this.feedbackType = 'success';

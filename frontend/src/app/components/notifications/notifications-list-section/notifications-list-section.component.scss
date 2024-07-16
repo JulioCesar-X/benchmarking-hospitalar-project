@@ -1,9 +1,21 @@
 @import '../../../../styles/_variables.scss';
 
 .timeline ul {
-  background-color: transparent;
+  background-color: $fill-white;
   padding: 50px 0;
   overflow: hidden;
+  position: relative;
+}
+
+.timeline ul::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: $main-dark-blue;
+  transform: translateX(-50%);
 }
 
 .timeline ul li {
@@ -43,11 +55,11 @@
   opacity: 0;
 }
 
-.timeline ul li .timeline-item.expanded {
-  background: $main-dark-blue;
-  transform: scale(1.1);
-  z-index: 10;
-}
+// .timeline ul li .timeline-item.expanded {
+//   background: $main-dark-blue;
+//   transform: scale(1.1);
+//   z-index: 10;
+// }
 
 .timeline ul li.expanded::after {
   background: $main-dark-blue;
@@ -73,7 +85,7 @@
 }
 
 .timeline ul li:nth-child(odd) .timeline-item.expanded::before {
-  border-color: transparent $main-dark-blue transparent transparent;
+  border-color: transparent $main-blue transparent transparent;
 }
 
 .timeline ul li:nth-child(even) .timeline-item {
@@ -87,7 +99,7 @@
 }
 
 .timeline ul li:nth-child(even) .timeline-item.expanded::before {
-  border-color: transparent transparent transparent $main-dark-blue;
+  border-color: transparent transparent transparent $main-blue;
 }
 
 time {
@@ -95,6 +107,29 @@ time {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 8px;
+}
+
+/* EFFECTS */
+.timeline ul li::after {
+  transition: background 0.5s ease-in-out;
+}
+
+.timeline ul li.in-view::after {
+  background: $main-blue;
+}
+
+.timeline ul li .timeline-item {
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.5s ease-in-out;
+}
+
+.timeline ul li:nth-child(odd) .timeline-item {
+  transform: translate3d(200px, 0, 0);
+}
+
+.timeline ul li:nth-child(even) .timeline-item {
+  transform: translate3d(-200px, 0, 0);
 }
 
 .timeline ul li.in-view .timeline-item {
@@ -213,7 +248,7 @@ textarea {
   .timeline ul li:nth-child(even) .timeline-item::before {
     left: -15px;
     border-width: 8px 16px 8px 0;
-    border-color: transparent $main-dark-blue transparent transparent;
+    border-color: transparent $main-blue transparent transparent;
   }
 }
 

@@ -1,20 +1,76 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
-
 import { NotificationsListSectionComponent } from '../../../components/notifications/notifications-list-section/notifications-list-section.component';
+import { NotificationService } from '../../../core/services/notifications/notification.service';
+import { CommonModule } from '@angular/common';
+import { Notification } from '../../../core/models/notification.model';
 
+interface TimelineItem extends Notification {
+  detail: string;
+  expanded: boolean;
+  type: 'received' | 'sent';
+  newResponse?: string;
+}
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
   imports: [
     NotificationsListSectionComponent,
-    MenuComponent
-    
+    MenuComponent,
+    CommonModule
   ],
   templateUrl: './notifications.component.html',
-  styleUrl: './notifications.component.scss'
+  styleUrls: ['./notifications.component.scss']
 })
-export class NotificationsComponent {
+export class NotificationsComponent implements OnInit {
+  selectedTab: string = 'received';
+  receivedNotifications: TimelineItem[] = [];
+  sentNotifications: TimelineItem[] = [];
+  isLoading = false;
+  feedbackMessage = '';
+  feedbackType: 'success' | 'error' = 'success';
+  loadingItemId: number | null = null;
 
+  constructor(
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
+  ) { }
+
+  ngOnInit() {
+    this.loadNotifications();
+  }
+
+  selectTab(tab: string): void {
+    this.selectedTab = tab;
+    this.loadNotifications();
+  }
+
+  private loadNotifications(): void {
+    this.isLoading = true;
+
+    if (this.selectedTab === 'received') {
+      this.notificationService.getNotificationsReceived(1, 10).subscribe(response => {
+        this.receivedNotifications = response.data.map((notification: Notification) => ({
+          ...notification,
+          detail: notification.message,
+          expanded: false,
+          type: 'received'
+        }));
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      });
+    } else {
+      this.notificationService.getNotificationsSent(1, 10).subscribe(response => {
+        this.sentNotifications = response.data.map((notification: Notification) => ({
+          ...notification,
+          detail: notification.message,
+          expanded: false,
+          type: 'sent'
+        }));
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      });
+    }
+  }
 }

@@ -1,24 +1,32 @@
 <section class="timeline relative lightBlueBG" #timeline>
   <ul>
-    <li *ngFor="let item of timelineItems" [id]="'notification-' + item.id"
-      [ngClass]="{'in-view': isElementInView(item), 'unread': !item.notification.is_read, 'expanded': item.expanded}">
-      <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{'expanded': item.expanded}">
-        <lord-icon *ngIf="item.notification.response" class="icon" src="https://cdn.lordicon.com/lomfljuq.json"
-          trigger="loop" delay="1500" state="in-check" colors="primary:#FFFFFF" style="width:30px;height:30px">
+    <li *ngFor="let item of notifications" [id]="'notification-' + item.id" [ngClass]="{
+        'in-view': isElementInView(item),
+        'unread': !item.is_read,
+        'expanded': item.expanded,
+        'sent': item.type === 'sent',
+        'received': item.type === 'received'
+      }">
+      <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{
+          'expanded': item.expanded,
+          'sent-item': item.type === 'sent',
+          'received-item': item.type === 'received'
+        }">
+        <lord-icon *ngIf="item.response" class="icon" src="https://cdn.lordicon.com/lomfljuq.json" trigger="loop"
+          delay="1500" state="in-check" colors="primary:#FFFFFF" style="width:30px;height:30px">
         </lord-icon>
-        <time>{{ item.title | date:'dd/MM/yyyy' }}</time>
-        <p>De: {{ item.notification.sender }}</p> <!-- Atualize para sender.name -->
-        <p>Assunto: {{ item.notification.title }}</p>
+        <time>{{ item.created_at | date:'dd/MM/yyyy' }}</time>
+        <p>De: {{ item.sender }}</p>
+        <p>Assunto: {{ item.title }}</p>
         <p>Mensagem: {{ item.detail }}</p>
         <div *ngIf="item.expanded" class="notification-details">
           <div class="notification-body">
             <h3>Resposta</h3>
-            <p *ngIf="item.notification.response; else noResponse">{{ item.notification.response }}</p>
+            <p *ngIf="item.response; else noResponse">{{ item.response }}</p>
             <ng-template #noResponse>Sem resposta ainda.</ng-template>
           </div>
-          <p *ngIf="item.notification.updated_at" class="response-date">respondido: {{ item.notification.updated_at |
-            date:'dd/MM/yyyy' }}</p>
-          <div *ngIf="!item.notification.response">
+          <p *ngIf="item.updated_at" class="response-date">respondido: {{ item.updated_at | date:'dd/MM/yyyy' }}</p>
+          <div *ngIf="!item.response && item.type === 'received'">
             <textarea [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."
               (click)="$event.stopPropagation()"></textarea>
             <button *ngIf="!isLoading || item.id !== loadingItemId" class="send-button"

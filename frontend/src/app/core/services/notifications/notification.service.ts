@@ -39,6 +39,24 @@ export class NotificationService {
       catchError(this.handleError)
     );
   }
+  
+  getNotificationsSent(page: number, perPage: number): Observable<any> {
+    const userEmail = this.authService.getUserEmail();
+    const params = new HttpParams()
+      .set('email', userEmail)
+      .set('page', page.toString())
+      .set('per_page', perPage.toString());
+
+    return this.http.get<any>('/notifications/sent', {
+      params,
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.authService.getToken()}`
+      }),
+      withCredentials: true
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
 
   respondToNotification(id: number, response: { response: string }): Observable<Notification> {
     return this.http.patch<Notification>(`/notifications/${id}/respond`, response);

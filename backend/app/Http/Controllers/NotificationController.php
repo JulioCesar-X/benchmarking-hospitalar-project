@@ -21,7 +21,7 @@ class NotificationController extends Controller
     {
         //daqui devem ir as notificações que o usuário logado recebeu tanto como novas notificações como respostas de notificaçoes que o usurario enviou
         try {
-            
+
             $cacheKey = 'notifications_index';
 
             if (Cache::has($cacheKey)) {
@@ -80,7 +80,7 @@ class NotificationController extends Controller
             $perPage = $request->input('per_page', 10);
             $notifications = $user->receivedNotifications()
                 ->with(['sender:id,name', 'receiver:id,name'])
-                ->orderBy('created_at', 'desc') // Ordenar por created_at em ordem decrescente
+                ->orderBy('created_at', 'desc')
                 ->paginate($perPage);
 
             $formattedNotifications = $notifications->getCollection()->map(function ($notification) {
@@ -131,6 +131,56 @@ class NotificationController extends Controller
             return response()->json($notification, 200);
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function getAllNotificationSent(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        try {
+            $email = $request->input('email');
+            $user = User::where('email', $email)->first();
+
+            if (!$user) {
+                return response()->json(['error' => 'Usuário não encontrado'], 404);
+            }
+
+            $perPage = $request->input('per_page', 10);
+            $notifications = $user->sentNotifications()
+                ->with(['sender:id,name', 'receiver:id,name'])
+                ->orderBy('created_at', 'desc')
+                ->paginate($perPage);
+
+            $formattedNotifications = $notifications->getCollection()->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
+                    'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'created_at' => $notification->created_at->format('Y-m-d'),
+                    'is_read' => $notification->is_read,
+                    'response' => $notification->response,
+                    'updated_at' => $notification->updated_at ? $notification->updated_at->format('Y-m-d H:i:s') : null,
+                ];
+            });
+
+            return response()->json([
+                'data' => $formattedNotifications,
+                'current_page' => $notifications->currentPage(),
+                'last_page' => $notifications->lastPage(),
+                'per_page' => $notifications->perPage(),
+                'total' => $notifications->total(),
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
         }
     }
 
