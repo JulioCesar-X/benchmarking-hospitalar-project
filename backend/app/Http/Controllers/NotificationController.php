@@ -65,6 +65,54 @@ class NotificationController extends Controller
         return response()->json($notification, 201);
     }
 
+    public function markAsRead($id)
+    {
+        try {
+            $notification = Notification::findOrFail($id);
+            $notification->is_read = true;
+            $notification->save();
+
+            return response()->json(['message' => 'Notification marked as read.'], 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Error marking notification as read', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getUnreadNotifications(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Usuário não autenticado'], 401);
+            }
+
+            $notifications = Notification::where('receiver_id', $user->id)
+                ->where('is_read', false)
+                ->with(['sender:id,name,email', 'receiver:id,name,email'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $formattedNotifications = $notifications->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
+                    'sender_email' => $notification->sender ? $notification->sender->email : 'Unknown',
+                    'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'created_at' => $notification->created_at->format('Y-m-d H:i:s'),
+                    'is_read' => $notification->is_read,
+                    'response' => $notification->response,
+                    'updated_at' => $notification->updated_at ? $notification->updated_at->format('Y-m-d H:i:s') : null,
+                ];
+            });
+
+            return response()->json($formattedNotifications, 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *

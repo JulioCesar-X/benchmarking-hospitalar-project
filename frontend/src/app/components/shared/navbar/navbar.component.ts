@@ -11,6 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../../core/models/user.model';
 import { UserProfileComponent } from '../../user/user-profile/user-profile.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
@@ -23,7 +24,8 @@ import { UserProfileComponent } from '../../user/user-profile/user-profile.compo
     MatIconModule
   ],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+  styleUrls: ['./navbar.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class NavbarComponent implements OnInit {
   isNavbarOpen: boolean = false;
@@ -33,6 +35,7 @@ export class NavbarComponent implements OnInit {
   unreadNotifications: number = 0;
   allNotifications: Notification[] = [];
   currentUser: User | null = null;
+  hasNewNotifications: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -69,7 +72,7 @@ export class NavbarComponent implements OnInit {
   }
 
   getNotifications() {
-    this.notificationService.indexNotifications().subscribe({
+    this.notificationService.getUnreadNotifications().subscribe({
       next: (notifications: Notification[]) => {
         this.allNotifications = notifications;
         this.checkUnreadNotifications();
@@ -82,13 +85,30 @@ export class NavbarComponent implements OnInit {
 
   markNotificationAsRead(notification: Notification) {
     if (!notification.is_read) {
-      notification.is_read = true;
-      this.unreadNotifications--;
+      this.notificationService.markAsRead(notification.id).subscribe({
+        next: () => {
+          this.allNotifications = this.allNotifications.filter(n => n.id !== notification.id);
+          this.unreadNotifications--;
+          this.checkUnreadNotifications();
+        },
+        error: (error) => {
+          console.error('Error marking notification as read', error);
+        }
+      });
     }
   }
 
   checkUnreadNotifications() {
-    this.unreadNotifications = this.allNotifications.filter(notification => !notification.is_read).length;
+    const previousCount = this.unreadNotifications;
+    this.unreadNotifications = this.allNotifications.length;
+    if (this.unreadNotifications > 0) {
+      this.hasNewNotifications = true;
+    } else {
+      this.hasNewNotifications = false;
+    }
+    if (this.unreadNotifications > previousCount) {
+      setTimeout(() => this.hasNewNotifications = false, 3000); // Remove animation after 3 seconds
+    }
   }
 
   toggleNotifications() {

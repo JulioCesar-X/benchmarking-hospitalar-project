@@ -61,8 +61,11 @@
       </div>
 
       <button *ngIf="isLoggedIn()" mat-icon-button [matMenuTriggerFor]="notificationsMenu"
-        matBadge="{{ unreadNotifications }}" matBadgeColor="warn" class="bellIcon_mobile">
-        <mat-icon>notifications</mat-icon>
+        [matBadge]="unreadNotifications > 0 ? unreadNotifications : null" matBadgeColor="warn"
+        [ngClass]="{'animated-badge': hasNewNotifications}" class="bellIcon_mobile">
+        <lord-icon src="https://cdn.lordicon.com/lznlxwtc.json" trigger="hover" colors="primary:#ffffff"
+          style="width:30px;height:30px">
+        </lord-icon>
       </button>
 
       <div class="nav-toggle" id="nav-toggle" (click)="openNavBar()">
@@ -84,13 +87,7 @@
           (click)="markNotificationAsRead(notification)"
           class="p-2 flex flex-col justify-between max-h-[60vh] cursor-pointer" [class.unread]="!notification.is_read">
           <div class="flex justify-between">
-            <p>De: senderName</p>
-            <button class="scale" (click)="reply()">
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                fill="#283044;">
-                <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
-              </svg>
-            </button>
+            <p>De: {{ notification.sender }}</p>
           </div>
           <div>
             <p>{{ notification.title }}</p>
