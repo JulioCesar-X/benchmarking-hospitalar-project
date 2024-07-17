@@ -10,7 +10,8 @@ import { UserUpdatePageComponent } from './pages/user/user-update-page/user-upda
 import { ChartsPageComponent } from './pages/charts-page/charts-page.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { RoleGuard } from './core/guards/role.guard';
-import { ChartDataResolver } from './core/resolvers/chart-data.resolver'; // Import the resolver
+import { ChartDataResolver } from './core/resolvers/chart-data.resolver';
+import { NotificationsResolver } from './core/resolvers/notifications-resolver';
 
 //indicators
 import { IndicatorsPageComponent } from './pages/indicators/indicators-page/indicators-page.component';
@@ -28,9 +29,14 @@ import { ServicesUpdatePageComponent } from './pages/services/services-update-pa
 import { NotificationsComponent } from './pages/notifications/notifications-page/notifications.component';
 import { NotificationsCreatePageComponent } from './pages/notifications/notifications-create-page/notifications-create-page.component';
 import { PasswordRecupModalComponent } from './components/auth/password-recup-modal/password-recup-modal.component';
+import { NavbarComponent } from './components/shared/navbar/navbar.component';
 
 export const routes: Routes = [
-  { path: 'home', component: HomepageComponent },
+  {
+    path: 'home',
+    component: HomepageComponent,
+    resolve: { notifications: NotificationsResolver }
+  },
   { path: 'login', component: LoginPageComponent },
   { path: 'forgot-password', component: PasswordRecupModalComponent },
   { path: 'reset-password', component: ResetPasswordPageComponent },
@@ -93,8 +99,10 @@ export const routes: Routes = [
   {
     path: 'notifications',
     children: [
-      { path: '', component: NotificationsComponent },
-      { path: 'create', component: NotificationsCreatePageComponent },
+      {
+        path: '', component: NotificationsComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] }
+      },
+      { path: 'create', component: NotificationsCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
     ]
   },
 ];

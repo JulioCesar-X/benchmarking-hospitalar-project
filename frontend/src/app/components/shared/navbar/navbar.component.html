@@ -75,18 +75,21 @@
           </mat-menu>
         </div>
       </div>
-
+      <ng-container *ngIf="unreadNotifications > 0">
       <!--  -->
       <button
         *ngIf="isLoggedIn()"
         mat-icon-button
         [matMenuTriggerFor]="notificationsMenu"
         matBadge="{{ unreadNotifications }}"
-        matBadgeColor="warn"
-        class="bellIcon_mobile scale"
+        matBadgeColor="warn" [ngClass]="{'animated-badge': hasNewNotifications}"
+        class="bellIcon_mobile"
       >
-        <mat-icon>notifications</mat-icon>
+      <lord-icon src="https://cdn.lordicon.com/lznlxwtc.json" trigger="hover" colors="primary:#ffffff"
+      style="width:20px;height:20px">
+    </lord-icon>
       </button>
+      </ng-container>
 
       <div class="nav-toggle" id="nav-toggle" (click)="openNavBar()">
         <div class="hamburger" id="hamburger" [ngClass]="{ 'is-open': isNavbarOpen }"></div>
@@ -107,13 +110,9 @@
           (click)="markNotificationAsRead(notification)"
           class="p-2 flex flex-col justify-between max-h-[60vh] cursor-pointer" [class.unread]="!notification.is_read">
           <div class="flex justify-between">
-            <p>De: senderName</p>
-            <button class="scale" (click)="reply()">
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                fill="#283044;">
-                <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
-              </svg>
-            </button>
+            <p *ngIf="!notification.response">De: {{ notification.sender }}</p>
+            <p *ngIf="notification.response">Resposta de: {{ notification.receiver }}</p>
+            <!-- Se for uma resposta, mostra o nome do receptor -->
           </div>
           <div>
             <p>{{ notification.title }}</p>

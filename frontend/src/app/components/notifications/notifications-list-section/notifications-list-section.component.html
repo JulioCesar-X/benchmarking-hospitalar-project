@@ -1,29 +1,53 @@
 <section class="timeline relative lightBlueBG" #timeline>
   <ul>
-    <li *ngFor="let item of timelineItems" [id]="'notification-' + item.id"
-      [ngClass]="{'in-view': isElementInView(item), 'unread': !item.notification.is_read}">
-      <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{'expanded': item.expanded}">
-        <lord-icon class="icon" src="https://cdn.lordicon.com/lomfljuq.json" trigger="loop" delay="1500"
-          state="in-check" colors="primary:#FFFFFF" style="width:20px;height:20px">
+    <li *ngFor="let item of notifications" [id]="'notification-' + item.id" [ngClass]="{
+        'in-view': isElementInView(item),
+        'unread': !item.is_read,
+        'expanded': item.expanded,
+        'sent': item.type === 'sent',
+        'received': item.type === 'received',
+        'highlight': item.highlighted
+      }">
+      <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{
+          'expanded': item.expanded,
+          'sent-item': item.type === 'sent',
+          'received-item': item.type === 'received'
+        }">
+        <lord-icon *ngIf="item.response" class="icon" src="https://cdn.lordicon.com/lomfljuq.json" trigger="loop"
+          delay="1500" state="in-check" colors="primary:#FFFFFF" style="width:30px;height:30px">
         </lord-icon>
-        <time>{{ item.title | date:'dd/MM/yyyy' }}</time>
-        <p>De: {{ item.notification.sender }}</p>
-        <p>Assunto: {{ item.notification.title }}</p>
-        <p>Mensagem: {{ item.detail }}</p>
+        <time>{{ item.created_at | date:'dd/MM/yyyy' }}</time>
+        <p *ngIf="item.type === 'received'">De: {{ item.sender }}</p>
+        <p *ngIf="item.type === 'sent'">Para: {{ item.receiver }}</p>
+        <p *ngIf="item.type === 'received'">Email: {{ item.sender_email }}</p>
+        <p *ngIf="item.type === 'sent'">Email: {{ item.receiver_email }}</p>
+        <p>Assunto: {{ item.title }}</p>
+        <p>Mensagem: {{ item.message }}</p>
         <div *ngIf="item.expanded" class="notification-details">
           <div class="notification-body">
             <h3>Resposta</h3>
-            <p *ngIf="item.notification.response; else noResponse">{{ item.notification.response }}</p>
+            <p *ngIf="item.response; else noResponse">{{ item.response }}</p>
             <ng-template #noResponse>Sem resposta ainda.</ng-template>
           </div>
-          <p *ngIf="item.notification.updated_at" class="response-date">respondido: {{ item.notification.updated_at |
-            date:'dd/MM/yyyy' }}</p>
-          <div *ngIf="!item.notification.response">
-            <textarea [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."></textarea>
-            <button (click)="sendResponse(item)">Enviar Resposta</button>
+          <p *ngIf="item.updated_at" class="response-date">respondido: {{ item.updated_at | date:'dd/MM/yyyy' }}</p>
+          <div *ngIf="!item.response && item.type === 'received'">
+            <textarea [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."
+              (click)="$event.stopPropagation()"></textarea>
+            <button *ngIf="!isLoading || item.id !== loadingItemId" class="send-button"
+              (click)="sendResponse(item, $event)">
+              Enviar Resposta
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                fill="#FFFFFF">
+                <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
+              </svg>
+            </button>
+            <div *ngIf="isLoading && item.id === loadingItemId" class="loading-circle">
+              <div class="spinner spinner_updateRecord-special"></div>
+            </div>
           </div>
         </div>
       </div>
     </li>
   </ul>
+  <app-feedback *ngIf="feedbackMessage" [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
 </section>

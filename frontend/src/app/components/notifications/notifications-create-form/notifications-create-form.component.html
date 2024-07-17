@@ -1,19 +1,24 @@
-
-    <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG">
-      <h2 class="text-xl mb-4 whiteTxt">Criar Notificação</h2>
-      <form>
-        <mat-form-field class="w-full mb-4 blueBG">
-          <mat-label class="blueTxt">Para</mat-label>
-          <input matInput id="para">
-        </mat-form-field>
-        <mat-form-field class="w-full mb-4">
-          <mat-label class="blueTxt">Assunto</mat-label>
-          <input matInput id="assunto">
-        </mat-form-field>
-        <mat-form-field class="w-full mb-4">
-          <mat-label class="blueTxt">Mensagem</mat-label>
-          <textarea matInput id="mensagem" rows="4"></textarea>
-        </mat-form-field>
-        <button mat-raised-button type="submit" class="custom-button">Enviar</button>
-      </form>
+<div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG">
+  <h2 class="text-xl mb-4 whiteTxt">Criar Notificação</h2>
+  <form (ngSubmit)="onSubmit()">
+    <mat-form-field class="w-full mb-4 blueBG">
+      <mat-label class="blueTxt">Para</mat-label>
+      <mat-select [(ngModel)]="selectedUser" name="para" class="blueTxt" required>
+        <mat-option *ngFor="let user of users" [value]="user.id">{{ user.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="w-full mb-4">
+      <mat-label class="blueTxt">Assunto</mat-label>
+      <input matInput [(ngModel)]="subject" name="assunto" required>
+    </mat-form-field>
+    <mat-form-field class="w-full mb-4">
+      <mat-label class="blueTxt">Mensagem</mat-label>
+      <textarea matInput [(ngModel)]="message" name="mensagem" rows="4" required></textarea>
+    </mat-form-field>
+    <div *ngIf="isLoading" class="loading-circle">
+      <div class="spinner spinner_updateRecord-special"></div>
     </div>
+    <button mat-raised-button type="submit" class="custom-button" *ngIf="!isLoading">Enviar</button>
+  </form>
+  <app-feedback [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
+</div>

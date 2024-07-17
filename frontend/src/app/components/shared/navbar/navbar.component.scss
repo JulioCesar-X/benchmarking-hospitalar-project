@@ -1,30 +1,37 @@
 @import '../../../../styles/_variables.scss';
-/* @import 'tailwindcss/base';
- */
-.test{
+
+.test {
   border: solid 2px red
 }
-.placeholder{
+
+.placeholder {
   height: 65px;
 }
+
 .whiteBG {
   background-color: $fill-white;
 }
-.whiteBorder{
+
+.whiteBorder {
   border-bottom: 5px solid $fill-white;
 }
+
 .whiteTxt {
-  color: $fill-white; 
+  color: $fill-white;
 }
-.darkBlueTxt{
+
+.darkBlueTxt {
   color: $main-dark-blue
 }
+
 .underlineHover:hover {
   text-decoration: underline;
 }
-.scale{
+
+.scale {
   transition: transform rotate 0.3s ease-in-out;
 }
+
 .scale:hover {
   transform: scale(1.2);
 }
@@ -35,7 +42,6 @@
   color: $main-blue;
 }
 
-
 .background-svg {
   fill: $main-blue;
   position: absolute;
@@ -43,21 +49,23 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; 
+  z-index: -1;
 }
-.background-svg_adjusted{
+
+.background-svg_adjusted {
   fill: $darker-main-blue;
   position: absolute;
   top: 0;
   left: 60%;
   height: 100%;
-  z-index: -1; 
+  z-index: -1;
 }
-.background-svg_adjusted.is-open{
+
+.background-svg_adjusted.is-open {
   display: none;
 }
 
-.links{
+.links {
   display: flex;
   align-items: center;
   gap: 3em;
@@ -65,15 +73,16 @@
   padding-right: 1em;
   padding-left: 8em;
   height: 100%;
-  z-index: 1; 
+  z-index: 1;
 }
 
-  @media (min-width:2500px){
-    .links{
-      padding-left: 12em;
-    }
+@media (min-width:2500px) {
+  .links {
+    padding-left: 12em;
   }
-  @media (max-width:640px){
+}
+
+@media (max-width:640px) {
   .links {
     flex-direction: column;
     align-items: end;
@@ -83,19 +92,20 @@
     right: 0;
     left: 100%;
     overflow: visible;
-    transition: all ease-in-out 250ms; 
+    transition: all ease-in-out 250ms;
     padding: 1em;
     padding-top: 4em;
     margin-left: 2em;
     height: 100vh;
     background-color: $main-dark-blue;
-  }  
-  .links.is-open{
+  }
+
+  .links.is-open {
     left: -30vw; //adjustment to make links go beyond parent container to the left
   }
 }
 
-.bellIcon_mobile{
+.bellIcon_mobile {
   transform: scale(1.3);
   z-index: 350;
   position: absolute;
@@ -103,21 +113,39 @@
   right: 60px;
   transition: transform 200ms ease-in;
 
-  @media(max-width:780px){
+  @media (max-width: 780px) {
     top: 30px;
   }
-  @media(max-width:640px){
+
+  @media (max-width: 640px) {
     top: 24px;
     right: 27px;
   }
 }
 
-/* styles for the notifications */
-.unread{
-  background-color: $lighter-main-blue;
-
+.animated-badge {
+  animation: fadeIn 0.5s ease-in-out;
 }
-.unread:hover{
+
+@keyframes fadeIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* styles for the notifications */
+.unread {
+  background-color: $secondary-blue;
+  //$lighter-main-blue
+}
+
+.unread:hover {
   background-color: $main-blue;
 }
 
@@ -128,13 +156,14 @@
     border: 1px solid $fill-white !important;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1) !important;
     border-radius: 0 !important;
+
     .mat-menu-item {
       color: $main-dark-blue !important;
     }
   }
 
-  .blue-custom{
-    color: $main-dark-blue !important; 
+  .blue-custom {
+    color: $main-dark-blue !important;
   }
 }
 
@@ -146,12 +175,18 @@
   position: absolute;
   right: 50px;
   top: 15px;
-  cursor: pointer; }
-  @media (min-width: 640px) {
-    .nav-toggle {
-      display: none; } }
+  cursor: pointer;
+}
 
-.hamburger, .hamburger::before, .hamburger::after {
+@media (min-width: 640px) {
+  .nav-toggle {
+    display: none;
+  }
+}
+
+.hamburger,
+.hamburger::before,
+.hamburger::after {
   content: '';
   display: block;
   width: 2em;
@@ -162,36 +197,37 @@
 }
 
 .hamburger::before {
-  transform: translateY(-6px); }
+  transform: translateY(-6px);
+}
 
 .hamburger::after {
-  transform: translateY(3px); }
+  transform: translateY(3px);
+}
 
 .hamburger.is-open {
-  transform: rotate(45deg); }
-  .hamburger.is-open::after {
-    transform: rotate(-90deg) translateX(3px); }
-  .hamburger.is-open::before {
-    opacity: 0; }
+  transform: rotate(45deg);
+}
 
-/* 
-    .icon-login{
-      transform: scale(2);
-      margin-right: 0.7em;
-    } */
+.hamburger.is-open::after {
+  transform: rotate(-90deg) translateX(3px);
+}
 
-    // Load
+.hamburger.is-open::before {
+  opacity: 0;
+}
+
+// Load
 .random-demo {
   display: flex;
-/*   flex-direction: column; */
-  gap:0.5em;
+  gap: 0.5em;
 
   width: 30%;
   margin: 0 auto;
 }
+
 @media (max-width: 640px) {
-  .random-demo{
-    margin:0;
+  .random-demo {
+    margin: 0;
     margin-right: 2em;
     flex-direction: column;
   }
@@ -204,61 +240,64 @@
   border-radius: 50%;
 }
 
-  /* Spinner styles */
-  .loading-circle_forBlueBG {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    color: $fill-white;
-    margin-block: 1em;
-  }
-  
-  .spinner_forBlueBG {
-    border: 8px solid $secondary-blue;
-    border-top: 8px solid $fill-white; 
-    border-radius: 50%;
-    width: 50px; 
-    height: 50px;
-    animation: spin 2s linear infinite;
-  }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+/* Spinner styles */
+.loading-circle_forBlueBG {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  color: $fill-white;
+  margin-block: 1em;
+}
+
+.spinner_forBlueBG {
+  border: 8px solid $secondary-blue;
+  border-top: 8px solid $fill-white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
 
-  .forms-container {
-    box-sizing: border-box;
-    background-color: $main-blue;
-    
-    &.forms-container__error{
-      border: $error-color 7px solid;
-    }
-    @media (max-width: 640px){
-      margin-block: 2em;
-      width: 90%;
-    }
-    }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.forms-container {
+  box-sizing: border-box;
+  background-color: $main-blue;
+  border: $secondary-blue 7px solid;
+
+  &.forms-container__error {
+    border: $error-color 7px solid;
+  }
+
+  @media (max-width: 640px) {
+    margin-block: 2em;
+    width: 90%;
+  }
+}
+
 /* Modal styles */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1200;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.107);
-  }
-  .modal.show {
-    display: block;
-  }
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1200;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.107);
+}
 
- 
+.modal.show {
+  display: block;
+}

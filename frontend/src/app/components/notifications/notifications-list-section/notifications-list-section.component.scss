@@ -1,9 +1,21 @@
 @import '../../../../styles/_variables.scss';
 
 .timeline ul {
-  background-color: transparent;
+  background-color: $fill-white;
   padding: 50px 0;
   overflow: hidden;
+  position: relative;
+}
+
+.timeline ul::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: $main-dark-blue;
+  transform: translateX(-50%);
 }
 
 .timeline ul li {
@@ -24,8 +36,9 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: inherit;
+  background: $main-blue;
   z-index: 1;
+  transition: background 0.5s ease-in-out;
 }
 
 .timeline ul li .timeline-item {
@@ -42,12 +55,16 @@
   opacity: 0;
 }
 
-.timeline ul li .timeline-item.expanded {
+.timeline ul li.sent .timeline-item {
   background: $main-dark-blue;
-  transform: scale(1.2);
-  /* Aumenta a escala da notificação */
-  z-index: 10;
-  /* Garante que a notificação expandida fique acima das outras */
+}
+
+.timeline ul li.sent .timeline-item .notification-details {
+  background: $main-blue;
+}
+
+.timeline ul li.expanded::after {
+  background: $main-dark-blue;
 }
 
 .timeline ul li .timeline-item::before {
@@ -70,7 +87,7 @@
 }
 
 .timeline ul li:nth-child(odd) .timeline-item.expanded::before {
-  border-color: transparent $main-dark-blue transparent transparent;
+  border-color: transparent $main-blue transparent transparent;
 }
 
 .timeline ul li:nth-child(even) .timeline-item {
@@ -84,7 +101,7 @@
 }
 
 .timeline ul li:nth-child(even) .timeline-item.expanded::before {
-  border-color: transparent transparent transparent $main-dark-blue;
+  border-color: transparent transparent transparent $main-blue;
 }
 
 time {
@@ -92,6 +109,29 @@ time {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 8px;
+}
+
+/* EFFECTS */
+.timeline ul li::after {
+  transition: background 0.5s ease-in-out;
+}
+
+.timeline ul li.in-view::after {
+  background: $main-blue;
+}
+
+.timeline ul li .timeline-item {
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.5s ease-in-out;
+}
+
+.timeline ul li:nth-child(odd) .timeline-item {
+  transform: translate3d(200px, 0, 0);
+}
+
+.timeline ul li:nth-child(even) .timeline-item {
+  transform: translate3d(-200px, 0, 0);
 }
 
 .timeline ul li.in-view .timeline-item {
@@ -111,6 +151,71 @@ time {
 .notification-body h3 {
   margin-top: 1em;
   color: $fill-white;
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid $main-blue;
+  border-radius: 5px;
+  color: $main-blue;
+  resize: none;
+}
+
+.send-button {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  background: $main-blue;
+  color: $fill-white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  svg {
+    margin-left: 10px;
+  }
+}
+
+.send-button:hover {
+  background: lighten($main-blue, 10%);
+}
+
+.loading-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  color: $main-blue;
+  margin-block: 1em;
+}
+
+.spinner {
+  border: 8px solid $secondary-blue;
+  border-top: 8px solid $main-blue;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+.spinner_updateRecord-special {
+  width: 25px;
+  height: 25px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .icon {
@@ -145,6 +250,58 @@ time {
   .timeline ul li:nth-child(even) .timeline-item::before {
     left: -15px;
     border-width: 8px 16px 8px 0;
-    border-color: transparent $main-dark-blue transparent transparent;
+    border-color: transparent $main-blue transparent transparent;
   }
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1000;
+
+  &.success {
+    background-color: #4caf50;
+    color: #fff;
+  }
+
+  &.error {
+    background-color: #f44336;
+    color: #fff;
+  }
+
+  &.enter {
+    animation: fadeIn 0.5s forwards;
+  }
+
+  &.leave {
+    animation: fadeOut 0.5s forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.highlight {
+  box-shadow: 0 0 10px 5px $main-red;
+  transition: box-shadow 2s;
 }

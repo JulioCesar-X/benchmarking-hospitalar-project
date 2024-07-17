@@ -1,42 +1,91 @@
 @import '../../../../styles/_variables.scss';
 
-.blueBG{
+.blueTxt {
+    color: $main-blue;
+    font-size: 1.2em;
+}
+
+.blueBG {
     background-color: $main-blue;
 }
-.blueTxt{
-    color: $main-blue;
-}
-.whiteTxt{
-    color:$fill-white;
+
+.whiteTxt {
+    color: $fill-white;
+    font-size: 2em;
+    text-align: center;
 }
 
- /* estilos para dar override do componente do angular material  */
- input{
-    color: $main-blue !important;
-    caret-color: $main-blue !important; }
- textarea{
+.custom-button {
+    background-color: $main-blue;
+    color: $fill-white;
+
+    &:hover {
+        background-color: lighten($main-blue, 10%);
+    }
+}
+
+input {
     color: $main-blue !important;
     caret-color: $main-blue !important;
- }
-::ng-deep .mat-mdc-form-field-flex  {
+}
+
+textarea {
+    color: $main-blue !important;
+    caret-color: $main-blue !important;
+}
+
+::ng-deep .mat-mdc-form-field-flex {
     background-color: $fill-white !important;
 }
 
-::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--filled{
+::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--filled {
     background-color: $fill-white !important;
 }
-
 
 ::ng-deep .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-line-ripple::after {
     border-color: $main-dark-blue !important;
-  }
-  
+}
 
-.custom-button{
+.custom-button {
     background-color: $darker-main-blue !important;
-    color: $fill-white !important; 
+    color: $fill-white !important;
     border-color: $main-dark-blue !important;
+
     &:hover {
-      background-color: darken($darker-main-blue, 10%) !important;
+        background-color: darken($darker-main-blue, 10%) !important;
+    }
+}
+
+.loading-circle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 0;
+    color: $main-blue;
+    margin-block: 1em;
+}
+
+.spinner {
+    border: 8px solid $secondary-blue;
+    border-top: 8px solid $main-blue;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
+
+.spinner_updateRecord-special {
+    width: 25px;
+    height: 25px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
     }
 }

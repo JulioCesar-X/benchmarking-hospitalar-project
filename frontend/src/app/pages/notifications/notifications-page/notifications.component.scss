@@ -2,26 +2,47 @@
 
 :host {
   position: relative;
-    flex: 1;
-    display: flex;
-  } @media(max-width:600px){
-    :host{
-        flex-direction: column;
-        gap:0.5em;
-    }
-  
-    .sticky-menu {
-      position: -webkit-sticky; 
-      position: sticky;
-      top: 60px; 
-    }
+  flex: 1;
+  display: flex;
+}
+
+@media(max-width: 600px) {
+  :host {
+    flex-direction: column;
+    gap: 0.5em;
   }
 
-  .blueBG {
-    background-color: $main-blue;
+  .sticky-menu {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 60px;
   }
-.whiteTxt{
+}
+
+.blueBG {
+  background-color: $main-blue;
+}
+
+.whiteTxt {
+  color: $fill-white;
+  font-size: 2em;
+  text-align: center;
+}
+
+.tab-headers-wrapper {
+  background-color: $main-blue;
+
+  .tab-link {
+    padding: 10px 20px;
+    cursor: pointer;
     color: $fill-white;
-    font-size: 3em;
-    text-align: center;
+    border: none;
+    background: transparent;
+    outline: none;
+
+    &.active {
+      background-color: darken($main-blue, 10%);
+      border-bottom: 2px solid $fill-white;
+    }
+  }
 }

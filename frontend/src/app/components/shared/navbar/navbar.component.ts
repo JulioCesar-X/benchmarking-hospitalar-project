@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { RouterLink, Router } from '@angular/router'; // Import ActivatedRoute
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { UserService } from '../../../core/services/user/user.service';
 import { CommonModule } from '@angular/common';
@@ -11,6 +11,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../../core/models/user.model';
 import { UserProfileComponent } from '../../user/user-profile/user-profile.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
+import { NotificationCommunicationService } from '../../../core/services/notifications/notification-communication/notification-communication.service';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 
 @Component({
@@ -25,9 +28,11 @@ import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.comp
     LoadingSpinnerComponent
   ],
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+  styleUrls: ['./navbar.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
+
   isNavbarOpen: boolean = false;
   isDropdownOpen: boolean = false;
   isLoginOut: boolean = false;
@@ -35,16 +40,39 @@ export class NavbarComponent implements OnInit {
   unreadNotifications: number = 0;
   allNotifications: Notification[] = [];
   currentUser: User | null = null;
+  hasNewNotifications: boolean = false;
+  
+  private communicationSubscription: Subscription | undefined;
+  private notificationSubscription: Subscription | undefined;
 
   constructor(
     private authService: AuthService,
     private notificationService: NotificationService,
     private dialog: MatDialog,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router,
+    private notificationCommunicationService: NotificationCommunicationService
   ) { }
 
   ngOnInit(): void {
-    this.getNotifications();
+    if (this.isLoggedIn()) {
+      this.communicationSubscription = this.notificationCommunicationService.notifications$.subscribe(
+        (notifications: Notification[]) => {
+          this.allNotifications = notifications;
+          this.checkUnreadNotifications();
+        }
+      );
+      this.startNotificationPolling();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.notificationSubscription) {
+      this.notificationSubscription.unsubscribe();
+    }
+    if (this.communicationSubscription) {
+      this.communicationSubscription.unsubscribe();
+    }
   }
 
   isLoggedIn(): boolean {
@@ -59,10 +87,14 @@ export class NavbarComponent implements OnInit {
     return this.authService.getUserName();
   }
 
-  async logout(): Promise<void> {
+  logout() {
     this.isLoginOut = true;
     try {
-      await this.authService.logout();
+      this.authService.logout();
+      if (this.notificationSubscription) {
+        this.notificationSubscription.unsubscribe();
+      }
+      this.clearNotifications(); // Clear notifications on logout
     } catch (error) {
       console.error('Error during logout:', error);
     } finally {
@@ -71,26 +103,44 @@ export class NavbarComponent implements OnInit {
   }
 
   getNotifications() {
-    this.notificationService.indexNotifications().subscribe({
-      next: (notifications: Notification[]) => {
-        this.allNotifications = notifications;
-        this.checkUnreadNotifications();
-      },
-      error: (error) => {
-        console.error('Error fetching notifications', error);
-      }
-    });
+    if (this.isLoggedIn()) {
+      this.notificationService.getUnreadNotifications().subscribe({
+        next: (notifications: Notification[]) => {
+          this.allNotifications = notifications;
+          this.checkUnreadNotifications();
+        },
+        error: (error) => {
+          console.error('Error fetching notifications', error);
+        }
+      });
+    }
   }
 
   markNotificationAsRead(notification: Notification) {
     if (!notification.is_read) {
-      notification.is_read = true;
-      this.unreadNotifications--;
+      this.notificationService.markAsRead(notification.id).subscribe({
+        next: () => {
+          this.allNotifications = this.allNotifications.filter(n => n.id !== notification.id);
+          this.unreadNotifications--;
+          this.checkUnreadNotifications();
+
+          const tab = notification.response ? 'sent' : 'received';
+          this.navigateToNotification(notification.id, tab);
+        },
+        error: (error) => {
+          console.error('Error marking notification as read', error);
+        }
+      });
     }
   }
 
   checkUnreadNotifications() {
-    this.unreadNotifications = this.allNotifications.filter(notification => !notification.is_read).length;
+    const previousCount = this.unreadNotifications;
+    this.unreadNotifications = this.allNotifications.length;
+    this.hasNewNotifications = this.unreadNotifications > 0;
+    if (this.unreadNotifications > previousCount) {
+      setTimeout(() => this.hasNewNotifications = false, 3000); // Remove animation after 3 seconds
+    }
   }
 
   toggleNotifications() {
@@ -124,5 +174,21 @@ export class NavbarComponent implements OnInit {
 
   reply() {
     alert("Here should be the logic to answer");
+  }
+
+  startNotificationPolling() {
+    if (this.isLoggedIn()) {
+      this.notificationSubscription = interval(10000).subscribe(() => this.getNotifications());
+    }
+  }
+
+  clearNotifications() {
+    this.unreadNotifications = 0;
+    this.allNotifications = [];
+    this.hasNewNotifications = false;
+  }
+
+  navigateToNotification(notificationId: number, tab: string) {
+    this.router.navigate(['/notifications'], { queryParams: { id: notificationId, tab: tab } });
   }
 }
