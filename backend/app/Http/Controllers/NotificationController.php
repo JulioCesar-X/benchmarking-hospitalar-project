@@ -8,6 +8,8 @@ use App\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NotificationMail;
 use Exception;
 
 class NotificationController extends Controller
@@ -70,8 +72,14 @@ class NotificationController extends Controller
         Cache::forget('notifications_index_' . Auth::id());
         Cache::forget('notifications_index_' . $request->receiver_id);
 
+        // Enviar e-mail de notificação
+        $receiver = User::find($request->receiver_id);
+        $notificationLink = config('app.frontend_url') . '/home';
+        Mail::to($receiver->email)->send(new NotificationMail($notificationLink));
+
         return response()->json($notification, 201);
     }
+
 
     public function markAsRead($id)
     {
@@ -205,7 +213,13 @@ class NotificationController extends Controller
 
             Cache::forget('notifications_index_' . $notification->sender_id);
 
-            $notification->load(['sender:id,name', 'receiver:id,name']);
+            $notification->load(['sender:id,name,email', 'receiver:id,name,email']);
+
+            // Enviar e-mail de notificação
+            $sender = $notification->sender;
+            $notificationLink = config('app.frontend_url') . '/home';
+            Mail::to($sender->email)->send(new NotificationMail($notificationLink));
+
             return response()->json($notification, 200);
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
