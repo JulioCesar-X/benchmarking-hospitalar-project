@@ -4,14 +4,18 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
-Chart.register(...registerables);
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormsModule } from '@angular/forms';
+
+Chart.register(...registerables);
+
 @Component({
   selector: 'app-charts',
   standalone: true,
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss'],
-  imports: [MatMenuModule, MatIconModule, MatButtonModule, CommonModule, MatTooltipModule]
+  imports: [MatMenuModule, MatIconModule, MatButtonModule, CommonModule, MatTooltipModule, MatCheckboxModule, FormsModule]
 })
 export class ChartsComponent implements OnInit, OnChanges {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -25,7 +29,6 @@ export class ChartsComponent implements OnInit, OnChanges {
   private chart: Chart | null = null;
   private tooltipFixed: boolean = false;
   private fixedTooltipIndex: number | null = null;
-
   private chartTypeMap: { [key: string]: ChartType } = {
     bar: 'bar',
     line: 'line',
@@ -46,7 +49,9 @@ export class ChartsComponent implements OnInit, OnChanges {
     quinary: 'rgb(165, 231, 240)',
     quinaryBg: 'rgba(165, 231, 240, 0.2)',
     octonary: 'rgb(167, 208, 208)',
-    octonaryBg: 'rgba(167, 208, 208, 0.2)'
+    octonaryBg: 'rgba(167, 208, 208, 0.2)',
+    red: 'rgb(255, 0, 0)',
+    redBg: 'rgba(255, 0, 0, 0.2)',
   };
 
   constructor() { }
@@ -72,6 +77,8 @@ export class ChartsComponent implements OnInit, OnChanges {
     if (this.chart) {
       this.chart.destroy(); // Destroy existing chart instance if exists
     }
+    console.log("metaZZ2.5<", data);
+    console.log("metaZZ4<", chartData);
     this.chart = new Chart(this.canvasRef.nativeElement, {
       type: this.chartTypeMap[this.graphType] || 'bar',
       data: chartData,
@@ -133,38 +140,65 @@ export class ChartsComponent implements OnInit, OnChanges {
     const defaultBackgroundColor = 'rgba(81, 107, 145, 0.5)';
     const defaultBackgroundColor2Bar1 = 'rgba(81, 107, 145, 0.3)';
     const defaultBackgroundColor2Bar2 = 'rgba(89, 196, 230, 0.3)';
+    const defaultBackgroundColor2BarRed2 = 'rgba(255, 0, 0, 0.3)';
+    // const defaultBackgroundColor2BarRed2 = 'rgba(255, 0, 0, 0.8)';
     const highlightBackgroundColor = this.chartColors.primary;
     const highlightBackgroundColor2Bar1 = this.chartColors.primary;
     const highlightBackgroundColor2Bar2 = this.chartColors.secondary;
+    const highlightBackgroundColorRed = this.chartColors.red;
 
     switch (this.graphType) {
       case 'bar':
         if (this.graphLabel === "Produção Mês") {
-          datasets = [{
-            label: 'Valor mês',
-            data: data || [],
-            backgroundColor: (ctx: any) => {
-              const index = ctx.dataIndex;
-              return index === highlightMonth ? highlightBackgroundColor : defaultBackgroundColor;
+          datasets = [
+            
+            {
+              label: 'Meta Mensal',
+              type: 'line',
+              data: data[1] || [],
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
+              
+            },
+            {
+              label: 'Valor mês',
+              data: data[0] || [],
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor : defaultBackgroundColor;
+              }
             }
-          }];
+          ];
+          console.log("metaZZ<", datasets);
         } else {
-          datasets = [{
-            label: 'Valor mês',
-            data: data || [],
-            backgroundColor: (ctx: any) => {
-              const index = ctx.dataIndex;
-              return index === highlightMonth ? highlightBackgroundColor : defaultBackgroundColor;
+          datasets = [
+            {
+              label: 'Valor mês',
+              data: data || [],
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColorRed : defaultBackgroundColor2BarRed2;
+              }
             }
-          }];
+          ];
+         
         }
         break;
 
       case 'line':
         if (this.graphLabel === "Produção Mês") {
-          datasets = [{
+          datasets = [
+            {
+              label: 'Meta Mensal',
+              type: 'line',
+              data: data[1] || [],
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
+
+            },
+            {
             label: 'Valor mês',
-            data: data || [],
+            data: data[0] || [],
             borderColor: this.chartColors.primary,
             backgroundColor: this.chartColors.primaryBg,
             fill: false
@@ -173,8 +207,8 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [{
             label: 'Valor mês',
             data: data || [],
-            borderColor: this.chartColors.primary,
-            backgroundColor: this.chartColors.primaryBg,
+            borderColor: this.chartColors.red,
+            backgroundColor: this.chartColors.redBg,
             fill: false
           }];
         } else if (this.graphLabel === "Comparação produção acumulada") {
@@ -206,8 +240,8 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               label: 'Meta',
               data: data?.goalsMensal || [],
-              borderColor: this.chartColors.secondary,
-              backgroundColor: this.chartColors.secondaryBg,
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
               fill: false
             }
           ];
@@ -216,21 +250,33 @@ export class ChartsComponent implements OnInit, OnChanges {
 
       case 'area':
         if (this.graphLabel === "Produção Mês") {
-          datasets = [{
-            label: 'Valor mês',
-            data: data || [],
-            borderColor: this.chartColors.primary,
-            backgroundColor: this.chartColors.primaryBg,
-            fill: true
-          }];
+          datasets = [
+            {
+              label: 'Meta Mensal',
+              type: 'line',
+              data: data[1] || [],
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
+
+            }, {
+              label: 'Valor mês',
+              data: data[0] || [],
+              borderColor: this.chartColors.primary,
+              backgroundColor: this.chartColors.primaryBg,
+              fill: true
+            }
+          ];
+          console.log("metaZZ2<", datasets);
         } else if (this.graphLabel === "Meta Mês") {
-          datasets = [{
-            label: 'Valor mês',
-            data: data || [],
-            borderColor: this.chartColors.primary,
-            backgroundColor: this.chartColors.primaryBg,
-            fill: true
-          }];
+          datasets = [
+            {
+              label: 'Valor mês',
+              data: data || [],
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
+              fill: true
+            }
+          ];
         }
         break;
 
@@ -241,7 +287,7 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [
             {
               data: [data?.currentYearTotal || 0, data?.goalAnual || 0],
-              backgroundColor: [this.chartColors.primary, this.chartColors.secondary]
+              backgroundColor: [this.chartColors.primary, this.chartColors.red]
             }
           ];
         } else if (this.graphLabel === "Comparação produção Total") {
@@ -271,7 +317,7 @@ export class ChartsComponent implements OnInit, OnChanges {
               data: data?.goalsMensal || [],
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
-                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor2Bar2;
+                return index === highlightMonth ? highlightBackgroundColorRed : defaultBackgroundColor2BarRed2;
               }
             }
           ];
@@ -337,7 +383,7 @@ export class ChartsComponent implements OnInit, OnChanges {
               borderColor: this.chartColors.secondaryBg,
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
-                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor2Bar2;
+                return index === highlightMonth ? highlightBackgroundColorRed : defaultBackgroundColor2BarRed2;
               },
               fill: false
             }
@@ -401,6 +447,15 @@ export class ChartsComponent implements OnInit, OnChanges {
       this.chart.update();
       this.tooltipFixed = false;
       this.fixedTooltipIndex = null;
+    }
+  }
+
+  toggleMetaMensal(show: boolean) {
+    if (this.graphLabel !== 'Produção Mês') return; // Ensure this only applies to "Produção Mês"
+    const metaDataset = this.chart?.data.datasets.find(dataset => dataset.label === 'Meta Mensal');
+    if (metaDataset) {
+      metaDataset.hidden = !show;
+      this.chart?.update();
     }
   }
 }

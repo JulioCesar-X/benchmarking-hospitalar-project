@@ -82,7 +82,7 @@
     bottom: -50px;
 }
 .text-red {
-    color: $main-red;
+    color: darken($main-red,30%);
     font-size: large;
     font-weight: bold;
 }
