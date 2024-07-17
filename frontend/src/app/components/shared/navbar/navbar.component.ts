@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink, Router } from '@angular/router'; // Import Router
+import { RouterLink, Router } from '@angular/router'; // Import ActivatedRoute
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { UserService } from '../../../core/services/user/user.service';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,8 @@ import { User } from '../../../core/models/user.model';
 import { UserProfileComponent } from '../../user/user-profile/user-profile.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
+import { NotificationCommunicationService } from '../../../core/services/notifications/notification-communication/notification-communication.service';
+
 
 @Component({
   selector: 'app-navbar',
@@ -29,6 +31,7 @@ import { interval, Subscription } from 'rxjs';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+
   isNavbarOpen: boolean = false;
   isDropdownOpen: boolean = false;
   isLoginOut: boolean = false;
@@ -37,6 +40,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   allNotifications: Notification[] = [];
   currentUser: User | null = null;
   hasNewNotifications: boolean = false;
+  
+  private communicationSubscription: Subscription | undefined;
   private notificationSubscription: Subscription | undefined;
 
   constructor(
@@ -44,12 +49,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private dialog: MatDialog,
     private userService: UserService,
-    private router: Router // Inject Router
+    private router: Router,
+    private notificationCommunicationService: NotificationCommunicationService
   ) { }
 
   ngOnInit(): void {
     if (this.isLoggedIn()) {
-      this.getNotifications();
+      this.communicationSubscription = this.notificationCommunicationService.notifications$.subscribe(
+        (notifications: Notification[]) => {
+          this.allNotifications = notifications;
+          this.checkUnreadNotifications();
+        }
+      );
       this.startNotificationPolling();
     }
   }
@@ -57,6 +68,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.notificationSubscription) {
       this.notificationSubscription.unsubscribe();
+    }
+    if (this.communicationSubscription) {
+      this.communicationSubscription.unsubscribe();
     }
   }
 
@@ -118,6 +132,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   checkUnreadNotifications() {
     const previousCount = this.unreadNotifications;
     this.unreadNotifications = this.allNotifications.length;
