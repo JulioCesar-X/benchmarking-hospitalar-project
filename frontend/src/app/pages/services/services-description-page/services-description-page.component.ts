@@ -49,4 +49,5 @@ export class ServicesDescriptionPageComponent implements OnInit {
   goToHomepage(): void {
     this.router.navigate(['/']);
   }
+
 }

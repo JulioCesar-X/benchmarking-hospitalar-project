@@ -2,6 +2,7 @@ export interface Service {
   id: number;
   image_url: string;
   service_name: string;
+  more_info?: string;
   description?: string | null;
   activities?: { id: number, name: string }[];
   indicators?: { id: number, name: string }[];

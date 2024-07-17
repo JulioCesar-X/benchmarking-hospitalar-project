@@ -106,7 +106,6 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   goToDescription(serviceId: number) {
-
     this.loadingServiceId = serviceId;
     const role = this.authService.getRole();
     if (role === 'admin' || role === 'coordenador' || role === 'root') {
