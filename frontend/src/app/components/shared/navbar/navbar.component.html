@@ -76,21 +76,18 @@
         </div>
       </div>
       <ng-container *ngIf="unreadNotifications > 0">
-      <!--  -->
-      <button
-        *ngIf="isLoggedIn()"
-        mat-icon-button
+        <button 
+        mat-icon-button 
         [matMenuTriggerFor]="notificationsMenu"
-        matBadge="{{ unreadNotifications }}"
-        matBadgeColor="warn" [ngClass]="{'animated-badge': hasNewNotifications}"
-        class="bellIcon_mobile"
-      >
-      <lord-icon src="https://cdn.lordicon.com/lznlxwtc.json" trigger="hover" colors="primary:#ffffff"
-      style="width:20px;height:20px">
-    </lord-icon>
-      </button>
+        [matBadge]="unreadNotifications"
+        matBadgeColor="warn" 
+        [ngClass]="{'animated-badge': hasNewNotifications}" 
+        class="bellIcon_mobile">
+        <lord-icon src="https://cdn.lordicon.com/lznlxwtc.json" trigger="hover" colors="primary:#ffffff"
+          style="width:20px;height:20px">
+        </lord-icon>
+        </button>
       </ng-container>
-
       <div class="nav-toggle" id="nav-toggle" (click)="openNavBar()">
         <div class="hamburger" id="hamburger" [ngClass]="{ 'is-open': isNavbarOpen }"></div>
       </div>
