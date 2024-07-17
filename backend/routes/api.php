@@ -18,8 +18,8 @@ Route::group(['middleware' => 'throttle:10000,1'], function () {
 
 Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     
-    Route::patch('notifications/{id}/mark-as-read','NotificationController@markAsRead');
     Route::get('notifications/unread', 'NotificationController@getUnreadNotifications');
+    Route::patch('notifications/{id}/mark-as-read','NotificationController@markAsRead');
     Route::patch('notifications/{id}/respond', 'NotificationController@respondToNotification');
     Route::get('notifications/sent', 'NotificationController@getAllNotificationSent');
     Route::get('notifications/received', 'NotificationController@getAllNotificationReceived');

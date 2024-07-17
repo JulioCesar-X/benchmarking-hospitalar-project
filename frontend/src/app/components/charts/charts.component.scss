@@ -19,7 +19,7 @@
 
 .chart{
     background-color: $fill-white;
-    color: $fill-white;
+    color: $main-dark-blue;
     padding: 0.5em;
     min-height: 400px;
     height: 100%;
@@ -43,4 +43,5 @@
 canvas {
     width: 100% !important;
     height: 400px !important;
+ 
 }

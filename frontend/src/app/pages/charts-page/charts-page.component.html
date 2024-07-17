@@ -52,7 +52,6 @@
         <div class="flex w-full justify-center flex-wrap">
           <div class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md">
             <h1 class="text-xl font-semibold blueText">
-              - {{ serviceName || 'Consulta Externa' }} -
               <span [ngClass]="{'text-red-600': activityName === 'N/A'}">{{ activityName }}</span>
               - {{ indicatorName || 'N/A' }} -
             </h1>
@@ -61,8 +60,8 @@
           <div class="flex w-full justify-around flex-wrap">
             <div class="w-full sm:w-[100%] py-2 ratio">
               <app-charts *ngIf="!isLoading.recordsMensal; else loading" [allowedChartTypes]="['bar', 'line', 'area']"
-                graphType="bar" graphLabel="Produção Mês" [graphData]="graphData.recordsMensal" [year]="filter.year ?? 0"
-                [month]="filter.month ?? 0">
+                graphType="area" graphLabel="Produção Mês" [graphData]="[graphData.recordsMensal, graphData.goalMes]"
+                [year]="filter.year ?? 0" [month]="filter.month ?? 0">
               </app-charts>
               <ng-template #loading>
                 <app-loading-spinner></app-loading-spinner>
@@ -136,8 +135,9 @@
 
           <div class="flex w-full justify-around flex-wrap">
             <div class="w-full sm:w-[100%] py-2 ratio">
-              <app-charts *ngIf="!isLoading.goalMes; else loading" [allowedChartTypes]="['bar', 'line', 'area']" graphType="bar"
-                graphLabel="Meta Mês" [graphData]="graphData.goalMes" [year]="filter.year ?? 0" [month]="filter.month ?? 0">
+              <app-charts *ngIf="!isLoading.goalMes; else loading" [allowedChartTypes]="['bar', 'line', 'area']"
+                graphType="bar" graphLabel="Meta Mês" [graphData]="graphData.goalMes" [year]="filter.year ?? 0"
+                [month]="filter.month ?? 0">
               </app-charts>
               <ng-template #loading>
                 <app-loading-spinner></app-loading-spinner>

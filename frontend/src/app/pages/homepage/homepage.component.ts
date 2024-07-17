@@ -7,8 +7,6 @@ import { ServiceService } from '../../core/services/service/service.service';
 import { Service } from '../../core/models/service.model';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
-import { NotificationCommunicationService } from '../../core/services/notifications/notification-communication/notification-communication.service';
-import { Notification } from '../../core/models/notification.model';
 
 @Component({
   selector: 'app-homepage',
@@ -33,26 +31,17 @@ export class HomepageComponent implements OnInit, OnDestroy {
   totalServices: number = 0;
   loadedPages: Set<number> = new Set();
   showNavButtons: boolean = false; 
-  notifications: Notification[] = [];
 
   constructor(
     private serviceService: ServiceService,
     private router: Router,
     private authService: AuthService,
-    private route: ActivatedRoute,
-    private notificationCommunicationService: NotificationCommunicationService 
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
     this.loadServices();
     this.startLoadingAnimation();
-
-    // Obtenha as notificações resolvidas e armazene no componente
-    // Obtenha as notificações resolvidas e armazene no componente
-    this.route.data.subscribe(data => {
-      this.notifications = data['notifications'] || [];
-      this.notificationCommunicationService.sendNotifications(this.notifications); // Emitir notificações
-    });
   }
 
   ngOnDestroy(): void {

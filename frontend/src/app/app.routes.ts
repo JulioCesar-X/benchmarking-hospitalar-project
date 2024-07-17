@@ -29,14 +29,10 @@ import { ServicesUpdatePageComponent } from './pages/services/services-update-pa
 import { NotificationsComponent } from './pages/notifications/notifications-page/notifications.component';
 import { NotificationsCreatePageComponent } from './pages/notifications/notifications-create-page/notifications-create-page.component';
 import { PasswordRecupModalComponent } from './components/auth/password-recup-modal/password-recup-modal.component';
-import { NavbarComponent } from './components/shared/navbar/navbar.component';
 
 export const routes: Routes = [
   {
-    path: 'home',
-    component: HomepageComponent,
-    resolve: { notifications: NotificationsResolver }
-  },
+    path: 'home', component: HomepageComponent },
   { path: 'login', component: LoginPageComponent },
   { path: 'forgot-password', component: PasswordRecupModalComponent },
   { path: 'reset-password', component: ResetPasswordPageComponent },
