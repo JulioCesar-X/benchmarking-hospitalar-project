@@ -1,16 +1,17 @@
 export interface TimelineItem {
     id: number;
-    created_at: string;
-    detail: string;
-    expanded: boolean;
-    is_read: boolean;
     sender: string;
-    sender_email?: string;
-    receiver?: string;
-    receiver_email?: string;
+    sender_email: string;
+    receiver: string;
+    receiver_email: string;
     title: string;
-    response?: string;
+    message: string;
+    created_at: string;
     updated_at?: string;
-    type: 'received' | 'sent';
+    is_read: boolean;
+    response?: string;
     newResponse?: string;
+    expanded: boolean;
+    type: 'received' | 'sent';
+    highlighted?: boolean;  // Adicione esta linha
 }

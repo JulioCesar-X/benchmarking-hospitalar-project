@@ -126,17 +126,5 @@ export class NotificationsListSectionComponent implements OnInit {
     this.feedbackMessage = '';
     this.feedbackType = 'success';
   }
-
-  highlightNotification(notificationId: number) {
-    setTimeout(() => {
-      const element = document.getElementById(`notification-${notificationId}`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        element.classList.add('highlight'); // Add the highlight class
-        setTimeout(() => {
-          element.classList.remove('highlight'); // Remove the highlight class after 10 seconds
-        }, 10000);
-      }
-    }, 500);
-  }
+  
 }

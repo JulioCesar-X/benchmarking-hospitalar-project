@@ -72,10 +72,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     return this.authService.getUserName();
   }
 
-  async logout(): Promise<void> {
+  logout() {
     this.isLoginOut = true;
     try {
-      await this.authService.logout();
+      this.authService.logout();
       if (this.notificationSubscription) {
         this.notificationSubscription.unsubscribe();
       }
@@ -108,7 +108,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.allNotifications = this.allNotifications.filter(n => n.id !== notification.id);
           this.unreadNotifications--;
           this.checkUnreadNotifications();
-          this.navigateToNotification(notification.id);
+
+          const tab = notification.response ? 'sent' : 'received';
+          this.navigateToNotification(notification.id, tab);
         },
         error: (error) => {
           console.error('Error marking notification as read', error);
@@ -116,7 +118,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       });
     }
   }
-
   checkUnreadNotifications() {
     const previousCount = this.unreadNotifications;
     this.unreadNotifications = this.allNotifications.length;
@@ -171,7 +172,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.hasNewNotifications = false;
   }
 
-  navigateToNotification(notificationId: number) {
-    this.router.navigate(['/notifications'], { queryParams: { id: notificationId } });
+  navigateToNotification(notificationId: number, tab: string) {
+    this.router.navigate(['/notifications'], { queryParams: { id: notificationId, tab: tab } });
   }
 }

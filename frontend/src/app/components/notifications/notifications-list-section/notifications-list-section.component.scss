@@ -302,6 +302,6 @@ textarea {
 }
 
 .highlight {
-  border: 2px solid $main-red;
-  transition: border 2s;
+  box-shadow: 0 0 10px 5px $main-red;
+  transition: box-shadow 2s;
 }

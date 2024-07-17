@@ -5,7 +5,8 @@
         'unread': !item.is_read,
         'expanded': item.expanded,
         'sent': item.type === 'sent',
-        'received': item.type === 'received'
+        'received': item.type === 'received',
+        'highlight': item.highlighted
       }">
       <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{
           'expanded': item.expanded,
@@ -21,7 +22,7 @@
         <p *ngIf="item.type === 'received'">Email: {{ item.sender_email }}</p>
         <p *ngIf="item.type === 'sent'">Email: {{ item.receiver_email }}</p>
         <p>Assunto: {{ item.title }}</p>
-        <p>Mensagem: {{ item.detail }}</p>
+        <p>Mensagem: {{ item.message }}</p>
         <div *ngIf="item.expanded" class="notification-details">
           <div class="notification-body">
             <h3>Resposta</h3>
