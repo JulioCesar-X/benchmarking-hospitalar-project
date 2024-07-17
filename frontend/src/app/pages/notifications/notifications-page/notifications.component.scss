@@ -46,3 +46,9 @@
     }
   }
 }
+
+.highlight {
+  border: 2px $main-red;
+  /* Change this color to match your design */
+  transition: border 1s;
+}

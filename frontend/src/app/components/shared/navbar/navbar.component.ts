@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router'; // Import Router
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { UserService } from '../../../core/services/user/user.service';
 import { CommonModule } from '@angular/common';
@@ -43,7 +43,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private notificationService: NotificationService,
     private dialog: MatDialog,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router // Inject Router
   ) { }
 
   ngOnInit(): void {
@@ -107,6 +108,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.allNotifications = this.allNotifications.filter(n => n.id !== notification.id);
           this.unreadNotifications--;
           this.checkUnreadNotifications();
+          this.navigateToNotification(notification.id);
         },
         error: (error) => {
           console.error('Error marking notification as read', error);
@@ -167,5 +169,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.unreadNotifications = 0;
     this.allNotifications = [];
     this.hasNewNotifications = false;
+  }
+
+  navigateToNotification(notificationId: number) {
+    this.router.navigate(['/notifications'], { queryParams: { id: notificationId } });
   }
 }

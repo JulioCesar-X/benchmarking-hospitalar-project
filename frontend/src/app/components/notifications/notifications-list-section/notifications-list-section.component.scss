@@ -55,6 +55,14 @@
   opacity: 0;
 }
 
+.timeline ul li.sent .timeline-item {
+  background: $main-dark-blue;
+}
+
+.timeline ul li.sent .timeline-item .notification-details {
+  background: $main-blue;
+}
+
 .timeline ul li.expanded::after {
   background: $main-dark-blue;
 }
@@ -291,4 +299,9 @@ textarea {
   to {
     opacity: 0;
   }
+}
+
+.highlight {
+  border: 2px solid $main-red;
+  transition: border 2s;
 }

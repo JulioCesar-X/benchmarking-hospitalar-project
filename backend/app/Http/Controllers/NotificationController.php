@@ -88,51 +88,53 @@ class NotificationController extends Controller
         }
     }
 
-    public function getUnreadNotifications(Request $request)
-    {
-        try {
-            $user = Auth::user();
-            if (!$user) {
-                return response()->json(['error' => 'Usuário não autenticado'], 401);
-            }
-
-            // Notificações recebidas que não foram lidas
-            $receivedNotifications = Notification::where('receiver_id', $user->id)
-                ->where('is_read', false)
-                ->with(['sender:id,name,email', 'receiver:id,name,email'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-            // Respostas a notificações enviadas pelo usuário que não foram lidas
-            $sentNotificationsResponses = Notification::where('sender_id', $user->id)
-                ->whereNotNull('response')
-                ->where('is_read', false)
-                ->with(['sender:id,name,email', 'receiver:id,name,email'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-            $allNotifications = $receivedNotifications->merge($sentNotificationsResponses);
-
-            $formattedNotifications = $allNotifications->map(function ($notification) {
-                return [
-                    'id' => $notification->id,
-                    'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
-                    'sender_email' => $notification->sender ? $notification->sender->email : 'Unknown',
-                    'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
-                    'title' => $notification->title,
-                    'message' => $notification->message,
-                    'created_at' => $notification->created_at->format('Y-m-d H:i:s'),
-                    'is_read' => $notification->is_read,
-                    'response' => $notification->response,
-                    'updated_at' => $notification->updated_at ? $notification->updated_at->format('Y-m-d H:i:s') : null,
-                ];
-            });
-
-            return response()->json($formattedNotifications, 200);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
+   public function getUnreadNotifications(Request $request)
+{
+    try {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'Usuário não autenticado'], 401);
         }
+
+        // Notificações recebidas que não foram lidas
+        $receivedNotifications = Notification::where('receiver_id', $user->id)
+            ->where('is_read', false)
+            ->where('receiver_id', '!=', $user->id) // Certifique-se de que o receiver não é o próprio usuário
+            ->with(['sender:id,name,email', 'receiver:id,name,email'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Respostas a notificações enviadas pelo usuário que não foram lidas e que foram respondidas por alguém que não seja o próprio usuário
+        $sentNotificationsResponses = Notification::where('sender_id', $user->id)
+            ->whereNotNull('response')
+            ->where('receiver_id', '!=', $user->id) // Certifique-se de que o receiver não é o próprio usuário
+            ->where('is_read', false)
+            ->with(['sender:id,name,email', 'receiver:id,name,email'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $allNotifications = $receivedNotifications->merge($sentNotificationsResponses);
+
+        $formattedNotifications = $allNotifications->map(function ($notification) {
+            return [
+                'id' => $notification->id,
+                'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
+                'sender_email' => $notification->sender ? $notification->sender->email : 'Unknown',
+                'receiver' => $notification->receiver ? $notification->receiver->name : 'Unknown',
+                'title' => $notification->title,
+                'message' => $notification->message,
+                'created_at' => $notification->created_at->format('Y-m-d H:i:s'),
+                'is_read' => $notification->is_read,
+                'response' => $notification->response,
+                'updated_at' => $notification->updated_at ? $notification->updated_at->format('Y-m-d H:i:s') : null,
+            ];
+        });
+
+        return response()->json($formattedNotifications, 200);
+    } catch (Exception $e) {
+        return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
     }
+}
 
     public function getAllNotificationReceived(Request $request)
     {

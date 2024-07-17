@@ -3,6 +3,7 @@ import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { NotificationsListSectionComponent } from '../../../components/notifications/notifications-list-section/notifications-list-section.component';
 import { NotificationService } from '../../../core/services/notifications/notification.service';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router'; // Import ActivatedRoute
 import { TimelineItem } from '../../../core/models/timeline-item.model';
 
 @Component({
@@ -27,11 +28,18 @@ export class NotificationsComponent implements OnInit {
 
   constructor(
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute // Inject ActivatedRoute
   ) { }
 
   ngOnInit() {
     this.loadNotifications();
+    this.route.queryParams.subscribe(params => {
+      const notificationId = +params['id'];
+      if (notificationId) {
+        this.highlightNotification(notificationId);
+      }
+    });
   }
 
   selectTab(tab: string): void {
@@ -69,5 +77,10 @@ export class NotificationsComponent implements OnInit {
         this.cdr.detectChanges();
       });
     }
+  }
+
+  highlightNotification(notificationId: number) {
+    const listSectionComponent = new NotificationsListSectionComponent(this.notificationService, this.cdr);
+    listSectionComponent.highlightNotification(notificationId);
   }
 }
