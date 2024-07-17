@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { UserService } from '../../../core/services/user/user.service';
@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../../core/models/user.model';
 import { UserProfileComponent } from '../../user/user-profile/user-profile.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -27,7 +28,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
   styleUrls: ['./navbar.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   isNavbarOpen: boolean = false;
   isDropdownOpen: boolean = false;
   isLoginOut: boolean = false;
@@ -36,6 +37,7 @@ export class NavbarComponent implements OnInit {
   allNotifications: Notification[] = [];
   currentUser: User | null = null;
   hasNewNotifications: boolean = false;
+  private notificationSubscription: Subscription | undefined;
 
   constructor(
     private authService: AuthService,
@@ -45,7 +47,16 @@ export class NavbarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.getNotifications();
+    if (this.isLoggedIn()) {
+      this.getNotifications();
+      this.startNotificationPolling();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.notificationSubscription) {
+      this.notificationSubscription.unsubscribe();
+    }
   }
 
   isLoggedIn(): boolean {
@@ -64,6 +75,10 @@ export class NavbarComponent implements OnInit {
     this.isLoginOut = true;
     try {
       await this.authService.logout();
+      if (this.notificationSubscription) {
+        this.notificationSubscription.unsubscribe();
+      }
+      this.clearNotifications(); // Clear notifications on logout
     } catch (error) {
       console.error('Error during logout:', error);
     } finally {
@@ -72,15 +87,17 @@ export class NavbarComponent implements OnInit {
   }
 
   getNotifications() {
-    this.notificationService.getUnreadNotifications().subscribe({
-      next: (notifications: Notification[]) => {
-        this.allNotifications = notifications;
-        this.checkUnreadNotifications();
-      },
-      error: (error) => {
-        console.error('Error fetching notifications', error);
-      }
-    });
+    if (this.isLoggedIn()) {
+      this.notificationService.getUnreadNotifications().subscribe({
+        next: (notifications: Notification[]) => {
+          this.allNotifications = notifications;
+          this.checkUnreadNotifications();
+        },
+        error: (error) => {
+          console.error('Error fetching notifications', error);
+        }
+      });
+    }
   }
 
   markNotificationAsRead(notification: Notification) {
@@ -101,11 +118,7 @@ export class NavbarComponent implements OnInit {
   checkUnreadNotifications() {
     const previousCount = this.unreadNotifications;
     this.unreadNotifications = this.allNotifications.length;
-    if (this.unreadNotifications > 0) {
-      this.hasNewNotifications = true;
-    } else {
-      this.hasNewNotifications = false;
-    }
+    this.hasNewNotifications = this.unreadNotifications > 0;
     if (this.unreadNotifications > previousCount) {
       setTimeout(() => this.hasNewNotifications = false, 3000); // Remove animation after 3 seconds
     }
@@ -142,5 +155,17 @@ export class NavbarComponent implements OnInit {
 
   reply() {
     alert("Here should be the logic to answer");
+  }
+
+  startNotificationPolling() {
+    if (this.isLoggedIn()) {
+      this.notificationSubscription = interval(10000).subscribe(() => this.getNotifications());
+    }
+  }
+
+  clearNotifications() {
+    this.unreadNotifications = 0;
+    this.allNotifications = [];
+    this.hasNewNotifications = false;
   }
 }

@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 
-
 class NotificationController extends Controller
 {
     /**
@@ -20,16 +19,24 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        //daqui devem ir as notificações que o usuário logado recebeu tanto como novas notificações como respostas de notificaçoes que o usurario enviou
         try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Usuário não autenticado'], 401);
+            }
 
-            $cacheKey = 'notifications_index';
+            $cacheKey = 'notifications_index_' . $user->id;
 
             if (Cache::has($cacheKey)) {
                 return response()->json(Cache::get($cacheKey), 200);
             }
 
-            $notifications = Notification::with(['sender:id,name', 'receiver:id,name'])->get();
+            $notifications = Notification::with(['sender:id,name', 'receiver:id,name'])
+                ->where(function ($query) use ($user) {
+                    $query->where('receiver_id', $user->id)
+                        ->orWhere('sender_id', $user->id);
+                })
+                ->get();
 
             Cache::put($cacheKey, $notifications, now()->addMinutes(30));
 
@@ -41,7 +48,6 @@ class NotificationController extends Controller
 
     public function store(Request $request)
     {
-        // Validar os dados da solicitação
         $validator = Validator::make($request->all(), [
             'receiver_id' => 'required|integer|exists:users,id',
             'title' => 'required|string|max:255',
@@ -52,15 +58,17 @@ class NotificationController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Criar a notificação
         $notification = Notification::create([
             'sender_id' => Auth::id(),
             'receiver_id' => $request->receiver_id,
             'title' => $request->title,
             'message' => $request->message,
             'response' => null,
-            'is_read' => false
+            'is_read' => true
         ]);
+
+        Cache::forget('notifications_index_' . Auth::id());
+        Cache::forget('notifications_index_' . $request->receiver_id);
 
         return response()->json($notification, 201);
     }
@@ -71,6 +79,8 @@ class NotificationController extends Controller
             $notification = Notification::findOrFail($id);
             $notification->is_read = true;
             $notification->save();
+
+            Cache::forget('notifications_index_' . $notification->receiver_id);
 
             return response()->json(['message' => 'Notification marked as read.'], 200);
         } catch (Exception $e) {
@@ -86,13 +96,24 @@ class NotificationController extends Controller
                 return response()->json(['error' => 'Usuário não autenticado'], 401);
             }
 
-            $notifications = Notification::where('receiver_id', $user->id)
+            // Notificações recebidas que não foram lidas
+            $receivedNotifications = Notification::where('receiver_id', $user->id)
                 ->where('is_read', false)
                 ->with(['sender:id,name,email', 'receiver:id,name,email'])
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            $formattedNotifications = $notifications->map(function ($notification) {
+            // Respostas a notificações enviadas pelo usuário que não foram lidas
+            $sentNotificationsResponses = Notification::where('sender_id', $user->id)
+                ->whereNotNull('response')
+                ->where('is_read', false)
+                ->with(['sender:id,name,email', 'receiver:id,name,email'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $allNotifications = $receivedNotifications->merge($sentNotificationsResponses);
+
+            $formattedNotifications = $allNotifications->map(function ($notification) {
                 return [
                     'id' => $notification->id,
                     'sender' => $notification->sender ? $notification->sender->name : 'Unknown',
@@ -110,27 +131,6 @@ class NotificationController extends Controller
             return response()->json($formattedNotifications, 200);
         } catch (Exception $e) {
             return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try {
-            $notification = Notification::findOrFail($id);
-            $notification->delete();
-
-            // Clear the cache
-            Cache::forget('notifications_index');
-
-            return response()->json(['message' => 'Deleted'], 205);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
@@ -199,10 +199,10 @@ class NotificationController extends Controller
         try {
             $notification = Notification::findOrFail($id);
             $notification->response = $request->input('response');
+            $notification->is_read = false;
             $notification->save();
 
-            // Clear the cache
-            Cache::forget('notifications_index');
+            Cache::forget('notifications_index_' . $notification->sender_id);
 
             $notification->load(['sender:id,name', 'receiver:id,name']);
             return response()->json($notification, 200);
@@ -262,6 +262,4 @@ class NotificationController extends Controller
             return response()->json(['error' => 'Erro ao buscar notificações', 'message' => $e->getMessage()], 500);
         }
     }
-
-
 }

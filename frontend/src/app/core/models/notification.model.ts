@@ -4,6 +4,7 @@ export interface Notification {
   message: string;
   is_read: boolean;
   sender: string;
+  receiver: string;
   title: string;
   response?: string;
   updated_at?: string;
