@@ -43,6 +43,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   
   private communicationSubscription: Subscription | undefined;
   private notificationSubscription: Subscription | undefined;
+  private loginSubscription: Subscription | undefined;
 
   constructor(
     private authService: AuthService,
@@ -63,6 +64,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
       );
       this.startNotificationPolling();
     }
+
+    this.loginSubscription = this.authService.loginEvent$.subscribe(() => {
+      this.getNotifications();
+    });
   }
 
   ngOnDestroy(): void {
@@ -72,7 +77,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (this.communicationSubscription) {
       this.communicationSubscription.unsubscribe();
     }
+    if (this.loginSubscription) {
+      this.loginSubscription.unsubscribe();
+    }
   }
+
+
 
   isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
