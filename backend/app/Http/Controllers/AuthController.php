@@ -11,6 +11,8 @@ use App\Mail\ResetPasswordMail;
 use App\Role;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class AuthController extends Controller
@@ -93,7 +95,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out'], 200);
     }
-    
+
 
     public function forgotPassword(Request $request)
     {
@@ -107,7 +109,7 @@ class AuthController extends Controller
 
         $token = app('auth.password.broker')->createToken($user);
 
-        Mail::to($request->email)->send(new ResetPasswordMail($token));
+        Mail::to($request->email)->send(new ResetPasswordMail($token, $request->email));
 
         return response()->json(['message' => 'Link de redefinição de senha enviado!'], 200);
     }
@@ -122,18 +124,51 @@ class AuthController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->password = bcrypt($password);
-                $user->save();
+        $tokenData = DB::table('password_resets')
+        ->where('email', $request->email)
+        ->first();
+
+        if ($tokenData && Hash::check($request->token, $tokenData->token)) {
+            $status = Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user, $password) {
+                    $user->password = bcrypt($password);
+                    $user->save();
+                }
+            );
+
+            if ($status == Password::PASSWORD_RESET) {
+                // Excluir o token de redefinição de senha
+                DB::table('password_resets')->where('email', $request->email)->delete();
+                return response()->json(['message' => 'Senha redefinida com sucesso!'], 200);
             }
-        );
 
-        if ($status == Password::PASSWORD_RESET) {
-            return response()->json(['message' => __($status)], 200);
+            return response()->json(['email' => [__($status)]], 400);
+        } else {
+            return response()->json(['message' => 'Token inválido ou expirado'], 400);
         }
+    }
 
-        return response()->json(['email' => [__($status)]], 400);
+    public function verifyResetToken(Request $request)
+    {
+        $request->validate(['token' => 'required', 'email' => 'required|email']);
+        Log::info('Verificando o token de redefinição de senha: ' . $request->token);
+        Log::info('Verificando o email de redefinição de senha: ' . $request->email);
+
+        try {
+            $tokenData = DB::table('password_resets')
+            ->where('email', $request->email)
+                ->first();
+
+            if ($tokenData && Hash::check($request->token, $tokenData->token)) {
+                return response()->json(['message' => 'Token válido'], 200);
+            } else {
+                Log::error('Erro ao verificar o token de redefinição de senha: ' . $tokenData);
+                return response()->json(['message' => 'Token inválido ou expirado'], 400);
+            }
+        } catch (Exception $e) {
+            Log::error('Erro ao verificar o token de redefinição de senha: ' . $e->getMessage());
+            return response()->json(['message' => 'Erro ao verificar o token de redefinição de senha'], 500);
+        }
     }
 }

@@ -20,7 +20,7 @@ import { signal } from '@angular/core';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule // Adicionando MatIconModule aqui
+    MatIconModule
   ],
   templateUrl: './reset-password-form.component.html',
   styleUrls: ['./reset-password-form.component.scss']
@@ -46,14 +46,34 @@ export class ResetPasswordFormComponent implements OnInit {
 
   ngOnInit() {
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    if (token) {
-      this.authService.setResetToken(token);
-      urlParams.delete('token');
-      const newUrl = `${window.location.origin}${window.location.pathname}`;
-      window.history.replaceState({}, document.title, newUrl);
+    this.token = urlParams.get('token') || '';
+    this.email = urlParams.get('email') || '';
+
+    if (this.token && this.email) {
+      this.authService.setResetToken(this.token);
+      this.authService.setResetEmail(this.email);
+      this.authService.verifyResetToken(this.token, this.email).subscribe({
+        next: () => {
+          urlParams.delete('token');
+          urlParams.delete('email');
+          const newUrl = `${window.location.origin}${window.location.pathname}`;
+          window.history.replaceState({}, document.title, newUrl);
+        },
+        error: () => {
+          this.feedbackMessage = 'Token inválido ou expirado. Redirecionando para a página de login...';
+          this.feedbackType = 'error';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 3000);
+        }
+      });
+    } else {
+      this.feedbackMessage = 'Nenhum token ou email fornecido. Redirecionando para a página de login...';
+      this.feedbackType = 'error';
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 3000);
     }
-    this.token = this.authService.getResetToken() || '';
   }
 
   onSubmit() {
@@ -81,13 +101,16 @@ export class ResetPasswordFormComponent implements OnInit {
     }
 
     const token = this.authService.getResetToken() || '';
-    this.authService.resetPassword(this.email, token, this.password, this.passwordConfirmation).subscribe({
+    const email = this.authService.getResetEmail() || '';
+
+    this.authService.resetPassword(email, token, this.password, this.passwordConfirmation).subscribe({
       next: (response) => {
         console.log('Password has been successfully reset:', response);
         this.isLoading = false;
         this.feedbackMessage = 'A senha foi redefinida com sucesso';
         this.feedbackType = 'success';
         this.authService.removeResetToken();
+        this.authService.removeResetEmail();
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 3000);
@@ -158,11 +181,13 @@ export class ResetPasswordFormComponent implements OnInit {
   }
 
   clickEventPassword(event: MouseEvent) {
+    event.preventDefault(); // Prevent default form submission
     this.hidePassword.set(!this.hidePassword());
     event.stopPropagation();
   }
 
   clickEventPasswordConfirmation(event: MouseEvent) {
+    event.preventDefault(); // Prevent default form submission
     this.hidePasswordConfirmation.set(!this.hidePasswordConfirmation());
     event.stopPropagation();
   }

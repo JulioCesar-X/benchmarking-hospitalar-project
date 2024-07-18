@@ -30,6 +30,10 @@ export class AuthService {
     return this.cookieService.get('access_token');
   }
 
+  verifyResetToken(token: string, email: string): Observable<any> {
+    return this.http.post('/verify-reset-token', { token, email });
+  }
+
   getUserName(): string {
     return this.decrypt(this.cookieService.get('name'));
   }
@@ -120,5 +124,18 @@ export class AuthService {
   removeResetToken(): void {
     this.cookieService.delete('password_reset_token');
   }
+
+  setResetEmail(email: string): void {
+    this.cookieService.set('password_reset_email', email, { secure: true, sameSite: 'Strict' });
+  }
+
+  getResetEmail(): string {
+    return this.cookieService.get('password_reset_email');
+  }
+
+  removeResetEmail(): void {
+    this.cookieService.delete('password_reset_email');
+  }
+
 
 }

@@ -44,6 +44,7 @@ export class PasswordRecupModalComponent {
         this.feedbackType = 'success';
         this.isError = false;
         this.isLoading = false;
+        this.email = '';
         setTimeout(() => {
           this.close();
           this.clearFeedbackAndRedirect();

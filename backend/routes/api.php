@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['middleware' => 'throttle:10000,1'], function () {
+    Route::post('/verify-reset-token', 'AuthController@verifyResetToken');
     Route::post('/login', 'AuthController@login');
     Route::post('/forgot-password', 'AuthController@forgotPassword');
     Route::post('/reset-password', 'AuthController@resetPassword')->name('password.reset');
