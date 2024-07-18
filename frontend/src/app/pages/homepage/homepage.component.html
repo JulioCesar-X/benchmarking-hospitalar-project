@@ -1,10 +1,10 @@
 <div class="w-full relative">
-  <div class="headingSection">
-    <h1 class="headingTitle">Departamento Psiquiatria</h1>
+  <div class="w-full headingSection">
+    <h1 class="w-[30%] ml-10 headingTitle">Departamento Psiquiatria</h1>
   </div>
-  <div class="homepageCardsSections"   #cardsSection>
+  <div class="homepageCardsSections" #cardsSection>
 
-    <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)">
+    <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)" >
       <div class="cardImg">
         <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
       </div>
@@ -37,11 +37,8 @@
   </div>
 
 
-  <div *ngIf="isLoading || !displayedServices.length" class="random-demo">
-    <div class="el"></div>
-    <div class="el"></div>
-    <div class="el"></div>
-    <div class="el"></div>
+  <div *ngIf="isLoading || !displayedServices.length">
+    <app-loading-spinner message="A carregar serviços..."></app-loading-spinner>
   </div>
 
   <!-- Botão para carregar serviços anteriores -->

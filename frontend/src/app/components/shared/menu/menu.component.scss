@@ -1,5 +1,6 @@
 @import "../../../../styles/_variables.scss";
 
+
 .icon-login {
   transform: scale(2);
 }
@@ -178,7 +179,6 @@
 
   a {
     cursor: pointer;
-    text-decoration: none;
     color: $main-blue;
     font-size: 1.05em;
   }
@@ -264,3 +264,9 @@
         display: block;
     }
 } */
+
+.Ativo{
+  font-weight: bold;
+  font-style: italic;
+  text-decoration: underline;
+}
