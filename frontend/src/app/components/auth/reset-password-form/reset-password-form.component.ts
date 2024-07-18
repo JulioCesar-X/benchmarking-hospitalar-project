@@ -7,12 +7,21 @@ import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { signal } from '@angular/core';
+
 @Component({
   selector: 'app-reset-password-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, FeedbackComponent,     MatFormFieldModule,
+  imports: [
+    FormsModule,
+    CommonModule,
+    FeedbackComponent,
+    MatFormFieldModule,
     MatInputModule,
-    MatButtonModule],
+    MatButtonModule,
+    MatIconModule // Adicionando MatIconModule aqui
+  ],
   templateUrl: './reset-password-form.component.html',
   styleUrls: ['./reset-password-form.component.scss']
 })
@@ -26,26 +35,51 @@ export class ResetPasswordFormComponent implements OnInit {
   feedbackMessage: string = '';
   feedbackType: 'success' | 'error' = 'success';
   errorMessage: string = '';
+  hidePassword = signal(true);
+  hidePasswordConfirmation = signal(true);
+  emailError: string = '';
+  passwordError: string = '';
+  passwordConfirmationError: string = '';
+  passwordFeedback: string[] = [];
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
- 
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     if (token) {
       this.authService.setResetToken(token);
-    
       urlParams.delete('token');
       const newUrl = `${window.location.origin}${window.location.pathname}`;
       window.history.replaceState({}, document.title, newUrl);
     }
-  
     this.token = this.authService.getResetToken() || '';
   }
 
   onSubmit() {
     this.isLoading = true;
+    this.resetErrors();
+
+    if (!this.validateEmail(this.email)) {
+      this.emailError = 'Formato de email inválido.';
+      this.isLoading = false;
+      return;
+    }
+
+    this.passwordFeedback = this.getPasswordFeedback(this.password);
+
+    if (this.password !== this.passwordConfirmation) {
+      this.passwordConfirmationError = 'As senhas não coincidem.';
+      this.isLoading = false;
+      return;
+    }
+
+    if (this.passwordFeedback.length > 0) {
+      this.passwordError = 'A senha deve atender aos critérios de segurança.';
+      this.isLoading = false;
+      return;
+    }
+
     const token = this.authService.getResetToken() || '';
     this.authService.resetPassword(this.email, token, this.password, this.passwordConfirmation).subscribe({
       next: (response) => {
@@ -53,7 +87,7 @@ export class ResetPasswordFormComponent implements OnInit {
         this.isLoading = false;
         this.feedbackMessage = 'A senha foi redefinida com sucesso';
         this.feedbackType = 'success';
-       
+        this.authService.removeResetToken();
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 3000);
@@ -61,11 +95,85 @@ export class ResetPasswordFormComponent implements OnInit {
       error: (error) => {
         console.error('Failed to reset password:', error);
         this.isError = true;
-        this.errorMessage = error.error.email ? error.error.email[0] : 'Erro ao redefinir a senha. Verifique os campos e tente novamente.';
-        this.feedbackMessage = this.errorMessage;
-        this.feedbackType = 'error';
+        if (error.error.email) {
+          this.emailError = error.error.email[0];
+        } else {
+          this.errorMessage = 'Erro ao redefinir a senha. Verifique os campos e tente novamente.';
+          this.feedbackMessage = this.errorMessage;
+          this.feedbackType = 'error';
+        }
         this.isLoading = false;
       }
     });
+  }
+
+  validateEmail(email: string): boolean {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
+  validateEmailOnBlur() {
+    if (!this.validateEmail(this.email)) {
+      this.emailError = 'Formato de email inválido.';
+    } else {
+      this.emailError = '';
+    }
+  }
+
+  validatePasswordOnBlur() {
+    this.passwordFeedback = this.getPasswordFeedback(this.password);
+    if (this.passwordFeedback.length > 0) {
+      this.passwordError = 'A senha deve atender aos critérios de segurança.';
+    } else {
+      this.passwordError = '';
+    }
+  }
+
+  validatePasswordConfirmationOnBlur() {
+    if (this.password !== this.passwordConfirmation) {
+      this.passwordConfirmationError = 'As senhas não coincidem.';
+    } else {
+      this.passwordConfirmationError = '';
+    }
+  }
+
+  getPasswordFeedback(password: string): string[] {
+    const feedback: string[] = [];
+    if (!/(?=.*[a-z])/.test(password)) {
+      feedback.push('Deve conter pelo menos uma letra minúscula.');
+    }
+    if (!/(?=.*[A-Z])/.test(password)) {
+      feedback.push('Deve conter pelo menos uma letra maiúscula.');
+    }
+    if (!/(?=.*\d)/.test(password)) {
+      feedback.push('Deve conter pelo menos um número.');
+    }
+    if (!/(?=.*[@$!%*?&#])/.test(password)) {
+      feedback.push('Deve conter pelo menos um caractere especial.');
+    }
+    if (!/.{10,}/.test(password)) {
+      feedback.push('Deve conter pelo menos 10 caracteres.');
+    }
+    return feedback;
+  }
+
+  clickEventPassword(event: MouseEvent) {
+    this.hidePassword.set(!this.hidePassword());
+    event.stopPropagation();
+  }
+
+  clickEventPasswordConfirmation(event: MouseEvent) {
+    this.hidePasswordConfirmation.set(!this.hidePasswordConfirmation());
+    event.stopPropagation();
+  }
+
+  resetErrors() {
+    this.emailError = '';
+    this.passwordError = '';
+    this.passwordConfirmationError = '';
+  }
+
+  preventCopyPaste(event: ClipboardEvent) {
+    event.preventDefault();
   }
 }

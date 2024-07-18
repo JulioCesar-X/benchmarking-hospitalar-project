@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -77,6 +78,16 @@ class UserController extends Controller
         }
     }
 
+    public function showCurrentUser()
+    {
+        try {
+            $user = Auth::user();
+            return response()->json($user, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
     public function update(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
@@ -119,6 +130,25 @@ class UserController extends Controller
             Cache::forget('users_index');
 
             return response()->json($user->load(['roles:id,role_name', 'sentNotifications', 'receivedNotifications']), 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $user_auth = User::findOrFail($user->id);
+
+            if (!$user_auth || !Hash::check($request->currentPassword, $user_auth->password)) {
+                return response()->json(['error' => 'Senha atual está incorreta'], 400);
+            }
+
+            $user_auth->password = bcrypt($request->newPassword);
+            $user_auth->save();
+
+            return response()->json(['message' => 'Senha atualizada com sucesso!'], 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

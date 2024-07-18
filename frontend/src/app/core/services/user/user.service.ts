@@ -38,10 +38,23 @@ export class UserService {
     );
   }
 
+  showCurrentUser(): Observable<User> {
+    return this.http.get<User>('/users/current').pipe(
+      catchError(error => throwError(() => new Error('Failed to fetch current user')))
+    );
+  }
+
   // Update a user
   updateUser(id: number, data: any): Observable<any> {
     return this.http.put(`/users/${id}`, data).pipe(
       catchError(error => throwError(() => new Error('Failed to update user')))
+    );
+  }
+
+  // Update user password
+  updateUserPassword(data: any): Observable<any> {
+    return this.http.put(`/users/update-password`, data).pipe(
+      catchError(error => throwError(() => new Error('Failed to update password')))
     );
   }
 

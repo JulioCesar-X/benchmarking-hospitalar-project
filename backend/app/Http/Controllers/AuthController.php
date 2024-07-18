@@ -40,10 +40,8 @@ class AuthController extends Controller
         $token = $user->createToken('access_token', ['*'], now()->addHours(4))->plainTextToken;
 
         return response()->json([
-            'id' => $user->id,
             'role' => $user->roles()->first()->role_name,
             'name' => $user->name,
-            'email' => $user->email,
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);

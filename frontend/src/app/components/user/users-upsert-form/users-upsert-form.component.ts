@@ -88,7 +88,7 @@ export class UsersUpsertFormComponent {
 
     this.userService.updateUser(this.user.id, this.user).subscribe(
       (response: any) => {
-        this.setNotification('User updated successfully', 'success');
+        this.setNotification('Utilizador atualizado com sucesso!', 'success');
         this.isLoading = false;
         setTimeout(() => this.router.navigate(['/users']), 2000);
       },
@@ -104,14 +104,14 @@ export class UsersUpsertFormComponent {
     this.isLoading = true;
 
     if (this.user.role_id === null) {
-      this.setNotification('Role ID is required', 'error');
+      this.setNotification('Selecione uma role para o utilizador', 'error');
       this.isLoading = false;
       return;
     }
 
     this.authService.register(this.user).subscribe(
       (response: any) => {
-        this.setNotification('User created successfully', 'success');
+        this.setNotification('Utilizador criado com sucesso!', 'success');
         this.isLoading = false;
         setTimeout(() => this.router.navigate(['/users']), 2000);
       },
@@ -127,7 +127,7 @@ export class UsersUpsertFormComponent {
     this.isLoading = true;
     this.userService.resetPassword(this.user.id).subscribe(
       (response: any) => {
-        this.setNotification('Password reset to default (NIF)', 'success');
+        this.setNotification('Password resetada para default com sucesso!', 'success');
         this.isLoading = false;
       },
       (error: any) => {
@@ -145,12 +145,12 @@ export class UsersUpsertFormComponent {
 
   getErrorMessage(error: any): string {
     if (error.status === 409) {
-      return 'User already exists';
+      return 'Utilizador já existe no banco de dados';
     }
     if (error.status === 400) {
-      return 'Invalid email';
+      return 'Email inválido ou password incorreta';
     }
-    return 'An error occurred. Please try again later.';
+    return 'Ocorreu um erro, tente novamente mais tarde!';
   }
 
   clearForm() {

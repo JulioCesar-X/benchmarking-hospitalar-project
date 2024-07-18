@@ -166,12 +166,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   openProfile() {
-    this.userService.showUser(Number(this.authService.getUserId())).subscribe(user => {
+    this.userService.showCurrentUser().subscribe(user => {
       if (user) {
         const dialogRef = this.dialog.open(UserProfileComponent, {
           width: '500px',
           data: { user: user }
         });
+        console.log('Opened profile user:',user );
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
@@ -188,7 +189,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   startNotificationPolling() {
     if (this.isLoggedIn()) {
-      this.notificationSubscription = interval(10000).subscribe(() => this.getNotifications());
+      this.notificationSubscription = interval(1000000).subscribe(() => this.getNotifications());
     }
   }
 

@@ -34,14 +34,6 @@ export class AuthService {
     return this.decrypt(this.cookieService.get('name'));
   }
 
-  getUserEmail(): string {
-    return this.decrypt(this.cookieService.get('email'));
-  }
-
-  getUserId(): string {
-    return this.decrypt(this.cookieService.get('id'));
-  }
-
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
@@ -59,11 +51,8 @@ export class AuthService {
           expirationDate.setTime(expirationDate.getTime() + (this.cookieExpirationMinutes * 60 * 1000));
 
           this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict', expires: expirationDate });
-          this.cookieService.set('email', this.encrypt(response.email), { secure: true, sameSite: 'Strict', expires: expirationDate });
           this.cookieService.set('role', this.encrypt(response.role), { secure: true, sameSite: 'Strict', expires: expirationDate });
           this.cookieService.set('name', this.encrypt(response.name), { secure: true, sameSite: 'Strict', expires: expirationDate });
-          this.cookieService.set('id', this.encrypt(String(response.id)), { secure: true, sameSite: 'Strict', expires: expirationDate });
-
           this.loginEvent.next(); // Emitir evento de login
           return response;
         }),
@@ -96,8 +85,6 @@ export class AuthService {
             this.cookieService.delete('access_token', '/');
             this.cookieService.delete('role', '/');
             this.cookieService.delete('name', '/');
-            this.cookieService.delete('email', '/');
-            this.cookieService.delete('id', '/');
             console.log('Logout successful');
             this.router.navigate(['/login']);
             resolve(true);
@@ -130,5 +117,8 @@ export class AuthService {
     return this.cookieService.get('password_reset_token');
   }
 
-  
+  removeResetToken(): void {
+    this.cookieService.delete('password_reset_token');
+  }
+
 }

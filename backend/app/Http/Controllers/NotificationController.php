@@ -145,24 +145,17 @@ class NotificationController extends Controller
 
     public function getAllNotificationReceived(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
 
         try {
-            $email = $request->input('email');
-            $user = User::where('email', $email)->first();
+            $user = Auth::user();
+            $user_auth = User::find($user->id);
 
-            if (!$user) {
+            if (!$user_auth) {
                 return response()->json(['error' => 'Usuário não encontrado'], 404);
             }
 
             $perPage = $request->input('per_page', 10);
-            $notifications = $user->receivedNotifications()
+            $notifications = $user_auth->receivedNotifications()
                 ->with(['sender:id,name,email', 'receiver:id,name,email'])
                 ->orderBy('created_at', 'desc')
                 ->paginate($perPage);
@@ -228,24 +221,17 @@ class NotificationController extends Controller
 
     public function getAllNotificationSent(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
-
         try {
-            $email = $request->input('email');
-            $user = User::where('email', $email)->first();
+
+            $user = Auth::user();
+            $user_auth = User::find($user->id);
 
             if (!$user) {
                 return response()->json(['error' => 'Usuário não encontrado'], 404);
             }
 
             $perPage = $request->input('per_page', 10);
-            $notifications = $user->sentNotifications()
+            $notifications = $user_auth->sentNotifications()
                 ->with(['sender:id,name,email', 'receiver:id,name,email'])
                 ->orderBy('created_at', 'desc')
                 ->paginate($perPage);

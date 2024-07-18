@@ -12,7 +12,6 @@
     width: 100%;
     border-bottom: $secondary-blue 4px solid;
 
-
     h2 {
         margin: 0;
         margin-bottom: 0.5em;
@@ -31,13 +30,11 @@
     border-radius: 1em;
     margin: auto;
     margin-top: 5em;
-    
 }
 
 .forms-container--inputContainer {
     @include forms-container--inputContainer();
     margin-bottom: 1.5em; // Adicionar espaço entre os inputs
-    
 }
 
 .password-container {
@@ -57,7 +54,7 @@
     box-sizing: border-box;
     caret-color: $fill-white;
     color: $fill-white;
-    background-color: transparent; // Remove background color
+    background-color: transparent !important; // Remove background color
     border: none;
     border-bottom: $fill-white 2px solid;
 }
@@ -185,4 +182,16 @@
     100% {
         transform: rotate(360deg);
     }
+}
+
+.password-container {
+    display: flex;
+    align-items: center;
+}
+
+.errorSpan {
+    color: $fill-white;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
 }

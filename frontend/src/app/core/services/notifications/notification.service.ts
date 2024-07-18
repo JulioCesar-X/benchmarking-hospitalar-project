@@ -59,9 +59,7 @@ export class NotificationService {
   }
 
   getNotificationsReceived(page: number, perPage: number): Observable<any> {
-    const userEmail = this.authService.getUserEmail();
     const params = new HttpParams()
-      .set('email', userEmail)
       .set('page', page.toString())
       .set('per_page', perPage.toString());
 
@@ -77,9 +75,7 @@ export class NotificationService {
   }
   
   getNotificationsSent(page: number, perPage: number): Observable<any> {
-    const userEmail = this.authService.getUserEmail();
     const params = new HttpParams()
-      .set('email', userEmail)
       .set('page', page.toString())
       .set('per_page', perPage.toString());
 

@@ -1,4 +1,4 @@
-import { Component, Input, Inject, signal } from '@angular/core';
+import { Component, Input, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../core/services/user/user.service';
@@ -37,14 +37,20 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss']
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnInit {
   @Input() user: User;
   @Input() formsAction: string = 'Atualizar';
   isLoading: boolean = false;
   notificationMessage: string = '';
   notificationType: 'success' | 'error' = 'success';
-  hide = signal(true);
-  passwordFeedback: string[] = [];
+  hideCurrentPassword: boolean = true;
+  hideNewPassword: boolean = true;
+  currentPassword: string = '';
+  newPassword: string = '';
+  currentPasswordError: string = '';
+  newPasswordError: string = '';
+  newPasswordFeedback: string[] = [];
+  emailError: string = '';
   isVisible: boolean = true;
   isError: boolean = false;
 
@@ -54,16 +60,50 @@ export class UserProfileComponent {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.user = data.user;
+    console.log('User:', this.user);
   }
 
+  ngOnInit(): void { }
+
   formSubmited() {
-    this.notificationMessage = '';
-    this.passwordFeedback = this.getPasswordFeedback(this.user.password);
-    if (this.passwordFeedback.length > 0) {
-      this.setNotification('A senha deve atender aos seguintes critérios:', 'error');
+    this.resetErrors();
+    this.validateEmailOnBlur();
+    this.validateCurrentPassword();
+    this.validateNewPassword();
+    if (this.emailError || this.currentPasswordError || this.newPasswordError) {
       return;
     }
-    this.editUser();
+    this.updatePassword();
+  }
+
+  validateEmail(email: string): boolean {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
+  validateEmailOnBlur() {
+    if (!this.validateEmail(this.user.email)) {
+      this.emailError = 'Formato de email inválido.';
+    } else {
+      this.emailError = '';
+    }
+  }
+
+  validateCurrentPassword() {
+    if (!this.currentPassword) {
+      this.currentPasswordError = 'A senha atual é necessária.';
+    } else {
+      this.currentPasswordError = '';
+    }
+  }
+
+  validateNewPassword() {
+    this.newPasswordFeedback = this.getPasswordFeedback(this.newPassword);
+    if (this.newPasswordFeedback.length > 0) {
+      this.newPasswordError = 'A nova senha deve atender aos critérios de segurança.';
+    } else {
+      this.newPasswordError = '';
+    }
   }
 
   getPasswordFeedback(password: string): string[] {
@@ -86,24 +126,26 @@ export class UserProfileComponent {
     return feedback;
   }
 
-  editUser() {
+  updatePassword() {
     this.isLoading = true;
-    console.log('User:', this.user);
-    if (this.user.role_id === null) {
-      this.setNotification('Role ID is required', 'error');
-      this.isLoading = false;
-      return;
-    }
+    console.log('Updating password for user:', this.user);
+    const data = {
+      currentPassword: this.currentPassword,
+      newPassword: this.newPassword
+    };
 
-    this.userService.updateUser(this.user.id, this.user).subscribe(
+    this.userService.updateUserPassword(data).subscribe(
       (response: any) => {
-        console.log('User updated:', response);
-        this.setNotification('Dados atualizados com sucesso!', 'success');
+        console.log('Password updated:', response);
+        this.setNotification('Senha atualizada com sucesso!', 'success');
         this.isLoading = false;
         setTimeout(() => this.dialogRef.close(), 2000);
       },
       (error: any) => {
         const errorMessage = this.getErrorMessage(error);
+        if (error.status === 400) {
+          this.currentPasswordError = 'Senha atual está incorreta.';
+        }
         this.setNotification(errorMessage, 'error');
         this.isLoading = false;
       }
@@ -117,20 +159,35 @@ export class UserProfileComponent {
 
   getErrorMessage(error: any): string {
     if (error.status === 409) {
-      return 'User already exists';
+      return 'Utilizador já existe no banco de dados';
     }
     if (error.status === 400) {
-      return 'Invalid email';
+      return 'Email invalido ou password incorreta';
     }
     return 'Ocorreu um erro, tente novamente mais tarde!';
   }
 
-  clickEvent(event: MouseEvent) {
-    this.hide.set(!this.hide());
+  togglePasswordVisibility(type: 'current' | 'new', event: MouseEvent) {
+    event.preventDefault(); // Prevent default form submission
+    if (type === 'current') {
+      this.hideCurrentPassword = !this.hideCurrentPassword;
+    } else {
+      this.hideNewPassword = !this.hideNewPassword;
+    }
     event.stopPropagation();
   }
 
   close() {
     this.dialogRef.close();
+  }
+
+  preventCopyPaste(event: ClipboardEvent) {
+    event.preventDefault();
+  }
+
+  resetErrors() {
+    this.emailError = '';
+    this.currentPasswordError = '';
+    this.newPasswordError = '';
   }
 }

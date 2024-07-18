@@ -7,25 +7,48 @@
         <form (ngSubmit)="formSubmited()">
             <div class="forms-container--inputContainer">
                 <label class="sectionTitle">Nome:</label>
-                <input matInput [(ngModel)]="user.name" name="name" class="inputContainer--input"/>
+                <input matInput [(ngModel)]="user.name" name="name" class="inputContainer--input" />
             </div>
             <div class="forms-container--inputContainer">
                 <label class="sectionTitle">Email:</label>
-                <input matInput [(ngModel)]="user.email" name="email" class="inputContainer--input"/>
+                <input matInput [(ngModel)]="user.email" name="email" class="inputContainer--input"
+                    (blur)="validateEmailOnBlur()" />
+                <span *ngIf="emailError" class="errorSpan">{{ emailError }}</span>
             </div>
             <div class="forms-container--inputContainer">
-                <label class="sectionTitle">Senha:</label>
+                <label class="sectionTitle">NIF:</label>
+                <input matInput [(ngModel)]="user.nif" name="nif" class="inputContainer--input" disabled />
+            </div>
+            <div class="forms-container--inputContainer">
+                <label class="sectionTitle">Senha atual:</label>
                 <div class="password-container">
-                    <input matInput [type]="hide() ? 'password' : 'text'" [(ngModel)]="user.password" name="password"
-                        class="inputContainer--input" />
-                    <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'"
-                        [attr.aria-pressed]="hide()">
-                        <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    <input matInput [type]="hideCurrentPassword ? 'password' : 'text'" [(ngModel)]="currentPassword"
+                        name="currentPassword" class="inputContainer--input" (input)="validateCurrentPassword()"
+                        (blur)="validateCurrentPassword()" (copy)="preventCopyPaste($event)"
+                        (cut)="preventCopyPaste($event)" (paste)="preventCopyPaste($event)" />
+                    <button mat-icon-button matSuffix (click)="togglePasswordVisibility('current', $event)"
+                        [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideCurrentPassword" type="button">
+                        <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
                     </button>
                 </div>
+                <span *ngIf="currentPasswordError" class="errorSpan">{{ currentPasswordError }}</span>
             </div>
-            <div *ngIf="passwordFeedback.length > 0" class="errorSpan">
-                <div *ngFor="let msg of passwordFeedback">{{ msg }}</div>
+            <div class="forms-container--inputContainer">
+                <label class="sectionTitle">Nova senha:</label>
+                <div class="password-container">
+                    <input matInput [type]="hideNewPassword ? 'password' : 'text'" [(ngModel)]="newPassword"
+                        name="newPassword" class="inputContainer--input" (input)="validateNewPassword()"
+                        (blur)="validateNewPassword()" (copy)="preventCopyPaste($event)"
+                        (cut)="preventCopyPaste($event)" (paste)="preventCopyPaste($event)" />
+                    <button mat-icon-button matSuffix (click)="togglePasswordVisibility('new', $event)"
+                        [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideNewPassword" type="button">
+                        <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                </div>
+                <span *ngIf="newPasswordError" class="errorSpan">{{ newPasswordError }}</span>
+                <div *ngIf="newPasswordFeedback.length > 0" class="errorSpan">
+                    <div *ngFor="let msg of newPasswordFeedback">{{ msg }}</div>
+                </div>
             </div>
             <button *ngIf="!isLoading" type="submit" class="forms-Button">ATUALIZAR</button>
             <div *ngIf="isLoading" class="loading-circle">
