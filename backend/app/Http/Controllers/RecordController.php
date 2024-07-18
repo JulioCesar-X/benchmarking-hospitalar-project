@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Record;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UpdateDataMail;
+use App\User;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 
@@ -24,6 +27,9 @@ class RecordController extends Controller
         try {
             $record->update($request->all());
             $this->invalidateCache($record->sai->service_id, $record->sai->activity_id, $record->sai->indicator_id);
+
+            $this->notifyRootIfNotNotified();
+
             return response()->json($record, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -45,6 +51,9 @@ class RecordController extends Controller
         try {
             $record = Record::create($request->all());
             $this->invalidateCache($record->sai->service_id, $record->sai->activity_id, $record->sai->indicator_id);
+
+            $this->notifyRootIfNotNotified();
+
             return response()->json($record, 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -67,5 +76,22 @@ class RecordController extends Controller
         Cache::forget("last_five_years_{$serviceId}_{$activityId}_{$indicatorId}");
         Cache::forget("previous_year_total_{$serviceId}_{$activityId}_{$indicatorId}");
         Cache::forget("current_year_total_{$serviceId}_{$activityId}_{$indicatorId}");
+    }
+
+    private function notifyRootIfNotNotified()
+    {
+        $date = now()->format('Y-m-d');
+        $cacheKey = "root_notified_{$date}";
+
+        if (!Cache::has($cacheKey)) {
+            $root = User::whereHas('roles', function ($query) {
+                $query->where('role_name', 'Root');
+            })->first();
+
+            if ($root) {
+                Mail::to($root->email)->send(new UpdateDataMail());
+                Cache::put($cacheKey, true, now()->endOfDay());
+            }
+        }
     }
 }

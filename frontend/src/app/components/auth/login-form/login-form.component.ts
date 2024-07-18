@@ -59,15 +59,23 @@ export class LoginFormComponent {
         if (response) {
           console.log('Login successful:', response);
           this.emailErrorMessage = '';
+          this.passwordErrorMessage = '';
           this.router.navigate(['/home']);
         } else {
           this.passwordErrorMessage = 'Credenciais inválidas. Por favor, tente novamente.';
         }
       },
       error => {
-        console.error('Login failed', error);
-        this.passwordErrorMessage = 'Erro ao tentar login. Por favor, tente novamente.';
         this.isLoading = false;
+        console.log('Login failed', error);
+
+        if (error.error && error.error.message === 'The provided credentials are incorrect.') {
+          this.passwordErrorMessage = 'Senha inválida. Por favor, tente novamente.';
+        } else if (error.error && error.error.message === 'User not found.') {
+          this.emailErrorMessage = 'Email não registrado. Por favor, verifique e tente novamente.';
+        } else {
+          this.passwordErrorMessage = 'Erro ao tentar login. Por favor, tente novamente.';
+        }
       }
     );
   }

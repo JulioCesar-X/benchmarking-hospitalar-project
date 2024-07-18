@@ -50,10 +50,9 @@ export class AuthService {
     return this.http.post<LoginResponse>('/login', { email, password }, { withCredentials: true })
       .pipe(
         map(response => {
-          console.log('Login successful:', response); 
+          console.log('Login successful:', response);
           const expirationDate = new Date();
           expirationDate.setTime(expirationDate.getTime() + (this.cookieExpirationMinutes * 60 * 1000));
-
           this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict', expires: expirationDate });
           this.cookieService.set('role', this.encrypt(response.role), { secure: true, sameSite: 'Strict', expires: expirationDate });
           this.cookieService.set('name', this.encrypt(response.name), { secure: true, sameSite: 'Strict', expires: expirationDate });
@@ -62,7 +61,7 @@ export class AuthService {
         }),
         catchError(error => {
           console.error('Login failed:', error);
-          return throwError(() => new Error('Login failed: ' + error.message));
+          return throwError(error); // Retorne o erro completo aqui
         })
       );
   }

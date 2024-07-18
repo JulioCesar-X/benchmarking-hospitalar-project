@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Mail\ResetPasswordMailConfirmation;
+use App\Mail\WelcomeMail;
 use Exception;
 
 class AuthController extends Controller
@@ -68,6 +70,7 @@ class AuthController extends Controller
         }
 
         try {
+
             $hashedPassword = bcrypt($request->nif); // Usar o NIF como a senha padrão
 
             $user = User::create([
@@ -83,7 +86,7 @@ class AuthController extends Controller
 
             // Clear the cache
             Cache::forget('users_index');
-
+            Mail::to($request->email)->send(new WelcomeMail($request->nif, $request->email));
             return response()->json(['message' => 'Registration successful'], 201);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -104,7 +107,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'Email não registrado na aplicação.'], 400);
+            return response()->json(['message' => 'User not found.'], 404);
         }
 
         $token = app('auth.password.broker')->createToken($user);
@@ -140,6 +143,9 @@ class AuthController extends Controller
             if ($status == Password::PASSWORD_RESET) {
                 // Excluir o token de redefinição de senha
                 DB::table('password_resets')->where('email', $request->email)->delete();
+
+                Mail::to($request->email)->send(new ResetPasswordMailConfirmation($request->email));
+
                 return response()->json(['message' => 'Senha redefinida com sucesso!'], 200);
             }
 

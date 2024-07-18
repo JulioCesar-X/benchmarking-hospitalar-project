@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\ResetPasswordMailConfirmation;
+use Illuminate\Support\Facades\Mail;
+
+
+
 
 class UserController extends Controller
 {
@@ -147,7 +152,7 @@ class UserController extends Controller
 
             $user_auth->password = bcrypt($request->newPassword);
             $user_auth->save();
-
+            Mail::to($user_auth->email)->send(new ResetPasswordMailConfirmation($user_auth->email));
             return response()->json(['message' => 'Senha atualizada com sucesso!'], 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
