@@ -27,7 +27,6 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::apiResource('notifications', 'NotificationController');
 
    
-    Route::post('/register', 'AuthController@register');
     Route::post('/logout', 'AuthController@logout');
     
     Route::get('indicators/sai/records-mensal', 'IndicatorController@getRecordsMensal');
@@ -59,17 +58,16 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::post('indicators', 'IndicatorController@store');
     Route::put('indicators/{id}', 'IndicatorController@update');
     Route::delete('indicators/{id}', 'IndicatorController@destroy');
-
-
+    
     Route::post('services', 'ServiceController@store');
     Route::put('services/{id}', 'ServiceController@update');
     Route::delete('services/{id}', 'ServiceController@destroy');
-
+    
+    Route::patch('users/{id}/update-role-user', 'UserController@updateRoleUser');
     Route::get('users/paginated', 'UserController@getUsersPaginated');
     Route::get('users/current', 'UserController@showCurrentUser');
     Route::post('users/{id}/reset-password-default', 'UserController@resetPassword');
     Route::get('users/search', 'UserController@search');
     Route::apiResource('users', 'UserController');
-
-
+    
 });

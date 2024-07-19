@@ -2,7 +2,6 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../core/services/user/user.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -14,8 +13,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-
 import { MatSelectModule } from '@angular/material/select';
 import { User } from '../../../core/models/user.model';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
@@ -62,40 +59,89 @@ export class UsersUpsertFormComponent {
   notificationType: 'success' | 'error' = 'success';
   isLoading = false;
 
+  nameErrorMessage: string = '';
+  emailErrorMessage: string = '';
+  nifErrorMessage: string = '';
+  roleErrorMessage: string = '';
+
   constructor(private userService: UserService, private authService: AuthService,
-    private router: Router, private route: ActivatedRoute) { }
+    private router: Router) { }
 
   formSubmited() {
     this.notificationMessage = '';
+    this.resetErrors();
+
+    if (!this.validateName(this.user.name)) {
+      this.nameErrorMessage = 'Nome deve conter apenas letras.';
+      return;
+    }
+
+    if (!this.validateEmail(this.user.email)) {
+      this.emailErrorMessage = 'Formato de email inválido.';
+      return;
+    }
+
+    if (!this.validateNIF(this.user.nif)) {
+      this.nifErrorMessage = 'NIF deve conter exatamente 9 números.';
+      return;
+    }
+
+    if (!this.user.role_id) {
+      this.roleErrorMessage = 'Role deve ser selecionada.';
+      return;
+    }
 
     if (this.formsAction === 'create') {
       this.createUser();
-      this.loadingCircleMessage = "A criar utilizador..."
+      this.loadingCircleMessage = "A criar utilizador...";
     } else if (this.formsAction === 'edit') {
       this.editUser();
-      this.loadingCircleMessage = "A editar utilizador..."
+      this.loadingCircleMessage = "A editar utilizador...";
     }
+  }
+
+  validateName(name: string): boolean {
+    const namePattern = /^[A-Za-z\s]+$/;
+    return namePattern.test(name);
+  }
+
+  validateEmail(email: string): boolean {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
+  validateNIF(nif: string): boolean {
+    const nifPattern = /^\d{9}$/;
+    return nifPattern.test(nif);
+  }
+
+  validateNameOnBlur() {
+    this.nameErrorMessage = this.validateName(this.user.name) ? '' : 'Nome deve conter apenas letras.';
+  }
+
+  validateEmailOnBlur() {
+    this.emailErrorMessage = this.validateEmail(this.user.email) ? '' : 'Formato de email inválido.';
+  }
+
+  validateNIFOnBlur() {
+    this.nifErrorMessage = this.validateNIF(this.user.nif) ? '' : 'NIF deve conter exatamente 9 números.';
+  }
+
+  validateRole() {
+    this.roleErrorMessage = this.user.role_id ? '' : 'Role deve ser selecionada.';
   }
 
   editUser() {
     this.isLoading = true;
 
-    if (this.user.role_id === null) {
-      this.setNotification('Role ID is required', 'error');
-      this.isLoading = false;
-      return;
-    }
-
-    this.userService.updateUser(this.user.id, this.user).subscribe(
+    this.userService.updateRoleUser(this.user.id, { role_id: this.user.role_id }).subscribe(
       (response: any) => {
         this.setNotification('Utilizador atualizado com sucesso!', 'success');
         this.isLoading = false;
         setTimeout(() => this.router.navigate(['/users']), 2000);
       },
       (error: any) => {
-        const errorMessage = this.getErrorMessage(error);
-        this.setNotification(errorMessage, 'error');
-        this.isLoading = false;
+        this.handleError(error);
       }
     );
   }
@@ -103,22 +149,14 @@ export class UsersUpsertFormComponent {
   createUser() {
     this.isLoading = true;
 
-    if (this.user.role_id === null) {
-      this.setNotification('Selecione uma role para o utilizador', 'error');
-      this.isLoading = false;
-      return;
-    }
-
-    this.authService.register(this.user).subscribe(
+    this.userService.storeUser(this.user).subscribe(
       (response: any) => {
         this.setNotification('Utilizador criado com sucesso!', 'success');
         this.isLoading = false;
         setTimeout(() => this.router.navigate(['/users']), 2000);
       },
       (error: any) => {
-        const errorMessage = this.getErrorMessage(error);
-        this.setNotification(errorMessage, 'error');
-        this.isLoading = false;
+        this.handleError(error);
       }
     );
   }
@@ -131,11 +169,33 @@ export class UsersUpsertFormComponent {
         this.isLoading = false;
       },
       (error: any) => {
-        const errorMessage = this.getErrorMessage(error);
-        this.setNotification(errorMessage, 'error');
+        this.setNotification('Erro ao resetar a password. Tente novamente mais tarde.', 'error');
         this.isLoading = false;
       }
     );
+  }
+
+  handleError(error: any) {
+    this.isLoading = false;
+    if (error.status === 422) {
+      const validationErrors = error.error.errors;
+      if (validationErrors.name) {
+        this.nameErrorMessage = validationErrors.name[0];
+      }
+      if (validationErrors.email) {
+        this.emailErrorMessage = validationErrors.email[0];
+      }
+      if (validationErrors.nif) {
+        this.nifErrorMessage = validationErrors.nif[0];
+      }
+      if (validationErrors.role_id) {
+        this.roleErrorMessage = validationErrors.role_id[0];
+      }
+    } else if (error.status === 409) {
+      this.setNotification('Utilizador já existe no banco de dados', 'error');
+    } else {
+      this.setNotification('Ocorreu um erro, tente novamente mais tarde!', 'error');
+    }
   }
 
   setNotification(message: string, type: 'success' | 'error') {
@@ -143,14 +203,11 @@ export class UsersUpsertFormComponent {
     this.notificationType = type;
   }
 
-  getErrorMessage(error: any): string {
-    if (error.status === 409) {
-      return 'Utilizador já existe no banco de dados';
-    }
-    if (error.status === 400) {
-      return 'Email inválido ou password incorreta';
-    }
-    return 'Ocorreu um erro, tente novamente mais tarde!';
+  resetErrors() {
+    this.nameErrorMessage = '';
+    this.emailErrorMessage = '';
+    this.nifErrorMessage = '';
+    this.roleErrorMessage = '';
   }
 
   clearForm() {

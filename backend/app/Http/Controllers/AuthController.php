@@ -8,13 +8,8 @@ use Illuminate\Support\Facades\Password;
 use App\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
-use App\Role;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Mail\ResetPasswordMailConfirmation;
-use App\Mail\WelcomeMail;
 use Exception;
 
 class AuthController extends Controller
@@ -58,48 +53,6 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'first_login' => $firstLogin
         ]);
-    }
-    /**
-     * Register a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'nif' => 'required|string|size:9|unique:users',
-            'role_id' => 'required|exists:roles,id'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        try {
-
-            $hashedPassword = bcrypt($request->nif);
-
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => $hashedPassword,
-                'nif' => $request->nif,
-                'email_verified_at' => now(),
-            ]);
-
-            $role = Role::find($request->role_id);
-            $user->roles()->attach($role);
-
-            // Clear the cache
-            Cache::forget('users_index');
-            Mail::to($request->email)->send(new WelcomeMail($request->nif, $request->email));
-            return response()->json(['message' => 'Registration successful'], 201);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
     }
 
     public function logout(Request $request)

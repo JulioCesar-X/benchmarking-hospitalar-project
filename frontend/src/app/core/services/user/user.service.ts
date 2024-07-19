@@ -20,15 +20,15 @@ export class UserService {
 
   // Fetch paginated users
   getUsersPaginated(pageIndex: number, pageSize: number): Observable<any> {
-    console.log("pagination", pageIndex, pageSize);
-
     return this.http.get<any>(`/users/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
       catchError(error => throwError(() => new Error('Failed to fetch paginated users')))
     );
   }
 
   resetPassword(userId: number): Observable<any> {
-    return this.http.post(`/users/${userId}/reset-password-default`, {});
+    return this.http.post(`/users/${userId}/reset-password-default`, {}).pipe(
+      catchError(error => throwError(() => new Error('Failed to reset password')))
+    );
   }
 
   // Fetch a single user by ID
@@ -50,12 +50,25 @@ export class UserService {
       catchError(error => throwError(() => new Error('Failed to update user')))
     );
   }
-  
+
+  // Update a user role
+  updateRoleUser(id: number, data: any): Observable<any> {
+    return this.http.patch(`/users/${id}/update-role-user`, data).pipe(
+      catchError(error => throwError(() => new Error('Failed to update user role')))
+    );
+  }
+
+  // Create a user
+  storeUser(data: any): Observable<any> {
+    return this.http.post('/users', data).pipe(
+      catchError(error => throwError(() => new Error('Failed to create user')))
+    );
+  }
+
   // Delete a user
   destroyUser(id: number): Observable<any> {
     return this.http.delete(`/users/${id}`).pipe(
       catchError(error => throwError(() => new Error('Failed to delete user')))
     );
   }
-
 }
