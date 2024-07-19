@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { User } from '../../models/user.model';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -60,11 +61,8 @@ export class UserService {
 
   // Create a user
   storeUser(data: any): Observable<any> {
-    return this.http.post('/users', data).pipe(
-      catchError(error => throwError(() => new Error('Failed to create user')))
-    );
-  }
-
+    return this.http.post('/users', data);
+  } 
   // Delete a user
   destroyUser(id: number): Observable<any> {
     return this.http.delete(`/users/${id}`).pipe(

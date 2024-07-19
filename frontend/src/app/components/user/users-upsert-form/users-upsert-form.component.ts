@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../core/services/user/user.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -65,31 +66,11 @@ export class UsersUpsertFormComponent {
   roleErrorMessage: string = '';
 
   constructor(private userService: UserService, private authService: AuthService,
-    private router: Router) { }
+    private router: Router, private route: ActivatedRoute) { }
 
   formSubmited() {
     this.notificationMessage = '';
     this.resetErrors();
-
-    if (!this.validateName(this.user.name)) {
-      this.nameErrorMessage = 'Nome deve conter apenas letras.';
-      return;
-    }
-
-    if (!this.validateEmail(this.user.email)) {
-      this.emailErrorMessage = 'Formato de email inválido.';
-      return;
-    }
-
-    if (!this.validateNIF(this.user.nif)) {
-      this.nifErrorMessage = 'NIF deve conter exatamente 9 números.';
-      return;
-    }
-
-    if (!this.user.role_id) {
-      this.roleErrorMessage = 'Role deve ser selecionada.';
-      return;
-    }
 
     if (this.formsAction === 'create') {
       this.createUser();
@@ -100,39 +81,14 @@ export class UsersUpsertFormComponent {
     }
   }
 
-  validateName(name: string): boolean {
-    const namePattern = /^[A-Za-z\s]+$/;
-    return namePattern.test(name);
-  }
-
-  validateEmail(email: string): boolean {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-  }
-
-  validateNIF(nif: string): boolean {
-    const nifPattern = /^\d{9}$/;
-    return nifPattern.test(nif);
-  }
-
-  validateNameOnBlur() {
-    this.nameErrorMessage = this.validateName(this.user.name) ? '' : 'Nome deve conter apenas letras.';
-  }
-
-  validateEmailOnBlur() {
-    this.emailErrorMessage = this.validateEmail(this.user.email) ? '' : 'Formato de email inválido.';
-  }
-
-  validateNIFOnBlur() {
-    this.nifErrorMessage = this.validateNIF(this.user.nif) ? '' : 'NIF deve conter exatamente 9 números.';
-  }
-
-  validateRole() {
-    this.roleErrorMessage = this.user.role_id ? '' : 'Role deve ser selecionada.';
-  }
-
   editUser() {
     this.isLoading = true;
+
+    if (this.user.role_id === null) {
+      this.setNotification('Role ID is required', 'error');
+      this.isLoading = false;
+      return;
+    }
 
     this.userService.updateRoleUser(this.user.id, { role_id: this.user.role_id }).subscribe(
       (response: any) => {
@@ -148,6 +104,12 @@ export class UsersUpsertFormComponent {
 
   createUser() {
     this.isLoading = true;
+
+    if (this.user.role_id === null) {
+      this.setNotification('Selecione uma role para o utilizador', 'error');
+      this.isLoading = false;
+      return;
+    }
 
     this.userService.storeUser(this.user).subscribe(
       (response: any) => {
@@ -179,17 +141,16 @@ export class UsersUpsertFormComponent {
     this.isLoading = false;
     if (error.status === 422) {
       const validationErrors = error.error.errors;
-      if (validationErrors.name) {
-        this.nameErrorMessage = validationErrors.name[0];
-      }
-      if (validationErrors.email) {
-        this.emailErrorMessage = validationErrors.email[0];
-      }
-      if (validationErrors.nif) {
-        this.nifErrorMessage = validationErrors.nif[0];
-      }
-      if (validationErrors.role_id) {
-        this.roleErrorMessage = validationErrors.role_id[0];
+      for (const [key, messages] of Object.entries(validationErrors) as [string, string[]][]) {
+        if (key === 'email') {
+          this.emailErrorMessage = messages[0];
+        } else if (key === 'nif') {
+          this.nifErrorMessage = messages[0];
+        } else if (key === 'name') {
+          this.nameErrorMessage = messages[0];
+        } else if (key === 'role_id') {
+          this.roleErrorMessage = messages[0];
+        }
       }
     } else if (error.status === 409) {
       this.setNotification('Utilizador já existe no banco de dados', 'error');
@@ -219,5 +180,56 @@ export class UsersUpsertFormComponent {
 
   getRole() {
     return this.authService.getRole();
+  }
+
+  validateName() {
+    const namePattern = /^[a-zA-Z\s]*$/;
+    if (!namePattern.test(this.user.name)) {
+      this.nameErrorMessage = 'O nome não deve conter números.';
+    } else {
+      this.nameErrorMessage = '';
+    }
+  }
+
+  validateEmail() {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(this.user.email)) {
+      this.emailErrorMessage = 'Formato de email inválido.';
+    } else {
+      this.emailErrorMessage = '';
+    }
+  }
+
+  validateNIF() {
+    const nifPattern = /^\d{9}$/;
+    if (!nifPattern.test(this.user.nif)) {
+      this.nifErrorMessage = 'O NIF deve conter 9 números.';
+    } else {
+      this.nifErrorMessage = '';
+    }
+  }
+
+  validateRole() {
+    if (!this.user.role_id) {
+      this.roleErrorMessage = 'Selecione uma role para o utilizador.';
+    } else {
+      this.roleErrorMessage = '';
+    }
+  }
+
+  validateNameOnBlur() {
+    this.validateName();
+  }
+
+  validateEmailOnBlur() {
+    this.validateEmail();
+  }
+
+  validateNIFOnBlur() {
+    this.validateNIF();
+  }
+
+  validateRoleOnBlur() {
+    this.validateRole();
   }
 }

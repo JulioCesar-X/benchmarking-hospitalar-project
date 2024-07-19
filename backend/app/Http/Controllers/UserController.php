@@ -97,7 +97,6 @@ class UserController extends Controller
         }
 
         try {
-
             $hashedPassword = bcrypt($request->nif);
 
             $user = User::create([

@@ -16,10 +16,8 @@
 .errorSpan {
   color: $error-color;
   font-size: 0.75rem;
-  margin-top: 5px;
 }
 
-/* estilos para dar override do componente do angular material  */
 input {
   color: $main-blue !important;
   caret-color: $main-blue !important;
@@ -84,21 +82,24 @@ textarea {
   color: $main-blue !important;
 }
 
-// Custom tooltip styles
-::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface {
-  font-size: 1em !important;
+.errorSpanMessage {
+  color: $error-color;
+  margin-left: auto;
 }
 
-::ng-deep .custom div {
-  padding: 1em;
-  background-color: $main-dark-blue !important;
+.password-container {
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
-::ng-deep .custom div div {
-  font-size: 2em;
+.password-container input {
+  flex-grow: 1;
 }
 
-// Styles for error messages
-mat-error {
-  color: $error-red;
+.password-container button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
