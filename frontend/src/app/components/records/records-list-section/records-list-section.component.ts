@@ -6,11 +6,12 @@ import { RecordService } from '../../../core/services/record/record.service';
 import { IndicatorService } from '../../../core/services/indicator/indicator.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
-import { PageEvent } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PaginatorComponent } from '../../shared/paginator/paginator.component';
+import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
 interface Record {
   record_id: number | null;
   indicator_name: string;
@@ -27,12 +28,16 @@ interface Record {
   standalone: true,
   imports: [
     CommonModule,
+    MatPaginatorModule,
     ReactiveFormsModule,
     FormsModule,
     PaginatorComponent,
     LoadingSpinnerComponent,
     FeedbackComponent,
     MatTooltipModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
   ],
   templateUrl: './records-list-section.component.html',
   styleUrls: ['./records-list-section.component.scss']
@@ -262,6 +267,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
   cancelEditing(record: Record): void {
     record.isEditing = false;
 
-    
+
   }
 }

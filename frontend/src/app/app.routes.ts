@@ -39,7 +39,7 @@ export const routes: Routes = [
   {
     path: 'users',
     children: [
-      { path: '', component: UsersPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
+      { path: '', component: UsersPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', ''] } },
       { path: 'create', component: UserCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
       { path: 'update/:id', component: UserUpdatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
     ]
@@ -47,25 +47,25 @@ export const routes: Routes = [
   {
     path: 'activities',
     children: [
-      { path: '', component: ActivitiesPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
-      { path: 'create', component: ActivitiesCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
-      { path: 'update/:id', component: ActivitiesUpdatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
+      { path: '', component: ActivitiesPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
+      { path: 'create', component: ActivitiesCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
+      { path: 'update/:id', component: ActivitiesUpdatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
     ]
   },
   {
     path: 'services',
     children: [
-      { path: '', component: ServicesPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
-      { path: 'create', component: ServicesCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
-      { path: 'update/:id', component: ServicesUpdatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
+      { path: '', component: ServicesPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
+      { path: 'create', component: ServicesCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
+      { path: 'update/:id', component: ServicesUpdatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
     ]
   },
   {
     path: 'indicators',
     children: [
-      { path: '', component: IndicatorsPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
-      { path: 'create', component: IndicatorsCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
-      { path: 'update/:id', component: IndicatorsUpdatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin'] } },
+      { path: '', component: IndicatorsPageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
+      { path: 'create', component: IndicatorsCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
+      { path: 'update/:id', component: IndicatorsUpdatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
     ]
   },
   { path: 'description/:serviceId', component: ServicesDescriptionPageComponent },
@@ -96,9 +96,9 @@ export const routes: Routes = [
     path: 'notifications',
     children: [
       {
-        path: '', component: NotificationsComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] }
+        path: '', component: NotificationsComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador', 'user'] }
       },
-      { path: 'create', component: NotificationsCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
+      { path: 'create', component: NotificationsCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador', 'user'] } },
     ]
   },
 ];

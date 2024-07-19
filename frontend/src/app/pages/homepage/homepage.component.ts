@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import anime from 'animejs/lib/anime.es.js';
 import { MatIconModule } from '@angular/material/icon';
 import { ServiceService } from '../../core/services/service/service.service';
 import { Service } from '../../core/models/service.model';
@@ -29,7 +30,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   pageSize: number = 4;
   totalServices: number = 0;
   loadedPages: Set<number> = new Set();
-  showNavButtons: boolean = false; 
+  showNavButtons: boolean = true; 
 
   constructor(
     private serviceService: ServiceService,
@@ -40,6 +41,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadServices();
+    this.startLoadingAnimation();
   }
 
   ngOnDestroy(): void {
@@ -87,6 +89,20 @@ export class HomepageComponent implements OnInit, OnDestroy {
       this.page--;
       this.updateDisplayedServices();
     }
+  }
+
+  startLoadingAnimation() {
+    const animate = () => {
+      if (!this.isLoading && this.displayedServices.length) return;
+      anime({
+        targets: '.random-demo .el',
+        translateX: () => anime.random(0, 270),
+        easing: 'easeInOutQuad',
+        duration: 600,
+        complete: animate
+      });
+    };
+    animate();
   }
 
   goToDescription(serviceId: number) {

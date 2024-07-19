@@ -5,6 +5,11 @@
     @include cross-icon();
 }
 
+.modalBorder{
+    border-radius: 1em;
+    border: $secondary-blue 7px solid;
+}
+
 .modalHeader {
     display: flex;
     justify-content: space-between;
@@ -139,7 +144,7 @@
 }
 
 .close {
-    color: #aaa;
+    color: $secondary-blue;
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -147,7 +152,7 @@
 
 .close:hover,
 .close:focus {
-    color: black;
+    color: $main-dark-blue;
     text-decoration: none;
     cursor: pointer;
 }
@@ -186,3 +191,68 @@
         transform: rotate(360deg);
     }
 }
+
+/* estilos do angular material */
+input {
+    color: $main-blue !important;
+    caret-color: $main-blue !important;
+  }
+  textarea {
+    color: $main-blue !important;
+    caret-color: $main-blue !important;
+  }
+  ::ng-deep .mat-mdc-form-field-flex {
+    background-color: $fill-white !important;
+  }
+  ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--filled {
+    background-color: $fill-white !important;
+  }
+  ::ng-deep
+    .mdc-text-field--filled:not(.mdc-text-field--disabled)
+    .mdc-line-ripple::after {
+    border-color: $main-dark-blue !important;
+  }
+  .custom-button {
+    background-color: $darker-main-blue !important;
+    color: $fill-white !important;
+    border-color: $main-dark-blue !important;
+    &:hover {
+      background-color: darken($darker-main-blue, 10%) !important;
+    }
+  }
+  ::ng-deep .mat-mdc-select-min-line {
+    color: $main-blue !important;
+  }
+  ::ng-deep .mat-mdc-select-panel {
+    background-color: $darker-main-blue !important;
+  }
+  .mat-mdc-option {
+    background-color: $darker-main-blue !important;
+  }
+  .mat-mdc-option-active {
+    color: $fill-white !important;
+  }
+  .mat-mdc-option:hover {
+    background-color: $main-blue !important;
+  }
+  ::ng-deep
+    .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled)
+    .mdc-list-item__primary-text {
+    color: $main-dark-blue !important;
+  }
+  ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+    color: $main-dark-blue !important;
+  }
+  ::ng-deep svg {
+    color: $main-blue !important;
+  }
+
+  .blueBG {
+    background-color: $main-blue;
+  }
+  .blueTxt {
+    color: $main-blue;
+  }
+  .whiteTxt {
+    color: $fill-white;
+  }
