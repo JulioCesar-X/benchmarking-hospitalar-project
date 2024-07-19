@@ -1,16 +1,18 @@
-import { Component, Input } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Input, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../feedback/feedback.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-dialog-content',
   templateUrl: './dialog-content.component.html',
   styleUrls: ['./dialog-content.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, FeedbackComponent]
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent, FeedbackComponent, MatButtonModule,
+  ]
 })
 export class DialogContentComponent {
   @Input() message: string = 'Tem a certeza que quer remover este item?';
@@ -19,7 +21,13 @@ export class DialogContentComponent {
   feedbackMessage: string | null = null;
   feedbackType: 'success' | 'error' = 'success';
 
-  constructor(public dialogRef: MatDialogRef<DialogContentComponent>) { }
+  constructor(public dialogRef: MatDialogRef<DialogContentComponent>, @Inject(MAT_DIALOG_DATA) public data: any)
+  {
+    if (data) {
+      this.message = data.message || this.message;
+      this.loadingMessage = data.loadingMessage || this.loadingMessage;
+    }
+  }
 
   closeModal(): void {
     this.dialogRef.close();
@@ -32,9 +40,7 @@ export class DialogContentComponent {
       this.isLoading = false;
       this.feedbackMessage = 'Item removido com sucesso!';
       this.feedbackType = 'success';
-      setTimeout(() => {
-        this.dialogRef.close(true);
-      }, 3000); // Espera 3 segundos antes de fechar o modal
-    }, 2000); // Simulação de 2 segundos para exclusão
+      this.dialogRef.close(true);
+    }, 2000); 
   }
 }

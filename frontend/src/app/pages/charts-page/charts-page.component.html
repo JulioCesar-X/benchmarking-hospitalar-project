@@ -1,6 +1,7 @@
 <div *ngIf="getRole() === 'admin' || getRole() === 'coordenador' || getRole() === 'root'">
-  <app-menu></app-menu>
+  <app-menu [isLoadingCharts]="true" [isManageDataSubMenuOpen]="true"></app-menu>
 </div>
+
 <div class="mx-0 sm:ml-1 w-full h-full">
 
   <div class="w-full">
@@ -97,8 +98,8 @@
           </div>
         </div>
 
-        <div class="flex w-full justify-around flex-wrap">
-          <div class="w-full lg:w-1/2 py-2">
+        <div class="flex w-full justify-between flex-wrap">
+          <div class="w-full lg:w-[49.9%] py-2">
             <app-charts *ngIf="!isLoading.recordsAnual; else loading"
               [allowedChartTypes]="['line', 'groupedBar', 'scatter']" graphType="line"
               graphLabel="Comparação produção acumulada"
@@ -109,7 +110,7 @@
               <app-loading-spinner></app-loading-spinner>
             </ng-template>
           </div>
-          <div class="w-full lg:w-1/2 py-2">
+          <div class="w-full lg:w-[49.9%] py-2">
             <app-charts *ngIf="!isLoading.recordsAnual; else loading" [allowedChartTypes]="['doughnut', 'pie']"
               graphType="pie" graphLabel="Comparação produção Total"
               [graphData]="{ previousYearTotal: graphData.previousYearTotal, currentYearTotal: graphData.currentYearTotal }"
@@ -172,8 +173,8 @@
             </div>
           </div>
         </div>
-        <div class="flex w-full justify-around flex-wrap">
-          <div class="w-full lg:w-1/2 py-2">
+        <div class="flex w-full justify-between flex-wrap">
+          <div class="w-full lg:w-[49.9%] py-2">
             <app-charts *ngIf="!isLoading.goalsMensal; else loading"
               [allowedChartTypes]="['line', 'groupedBar', 'scatter']" graphType="groupedBar"
               graphLabel="produção acumulada vs meta mensal"
@@ -184,7 +185,7 @@
               <app-loading-spinner></app-loading-spinner>
             </ng-template>
           </div>
-          <div class="w-full lg:w-1/2 py-2">
+          <div class="w-full lg:w-[49.9%] py-2">
             <app-charts *ngIf="!isLoading.goalAnual; else loading" [allowedChartTypes]="['doughnut', 'pie']"
               graphType="doughnut" graphLabel="Produção Anual vs Meta Anual"
               [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }"

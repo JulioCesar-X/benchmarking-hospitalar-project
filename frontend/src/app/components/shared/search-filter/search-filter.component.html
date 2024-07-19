@@ -3,7 +3,8 @@
     <div class="flex gap-1 w-[30vw] ml-auto items-center txtWhite">
       <input type="text" formControlName="searchTerm" class="w-full rounded-md py-1 px-2 inputContainer--input" placeholder="Procurar...">
     
-      <button type="submit" class="pr-1 flex items-center rounded-lg searchBtn">
+      <button matTooltip="Clique para confirmar a pesquisa" [matTooltipPosition]="'below'"
+      matTooltipClass="custom" type="submit" class="pr-1 flex items-center rounded-lg searchBtn">
           <lord-icon
           src="https://cdn.lordicon.com/fkdzyfle.json"
 

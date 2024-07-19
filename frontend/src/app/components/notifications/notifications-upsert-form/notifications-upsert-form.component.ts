@@ -15,6 +15,7 @@ import { UserService } from '../../../core/services/user/user.service';
 import { NotificationService } from './../../../core/services/notifications/notification.service';
 import { User } from '../../../core/models/user.model';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-notifications-create-form',
@@ -32,10 +33,11 @@ import { FeedbackComponent } from '../../shared/feedback/feedback.component';
     MatSelectModule,
     MatOptionModule,
     FormsModule,
-    FeedbackComponent // Importando o componente Feedback
+    FeedbackComponent, 
+    MatTooltipModule
   ],
-  templateUrl: './notifications-create-form.component.html',
-  styleUrls: ['./notifications-create-form.component.scss']
+  templateUrl: './notifications-upsert-form.component.html',
+  styleUrls: ['./notifications-upsert-form.component.scss']
 })
 export class NotificationsCreateFormComponent implements OnInit {
   users: User[] = [];

@@ -1,10 +1,9 @@
 <div class="w-full relative">
-  <div class="headingSection">
-    <h1 class="headingTitle font-medium">Departamento Psiquiatria</h1>
+  <div class="w-full headingSection">
+    <h1 class="w-[30%] ml-5 headingTitle">Departamento Psiquiatria</h1>
   </div>
-  <div class="homepageCardsSections"   #cardsSection>
-
-    <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)">
+  <div class="homepageCardsSections" (mouseleave)="showNavButtons = true" (mouseenter)="showNavButtons = false"  #cardsSection>
+    <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)" >
       <div class="cardImg">
         <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
       </div>
@@ -37,7 +36,7 @@
   </div>
 
 
-  <div *ngIf="isLoading || !displayedServices.length" class="random-demo">
+  <div *ngIf="isLoading && displayedServices.length <= 0" class="random-demo">
     <div class="el"></div>
     <div class="el"></div>
     <div class="el"></div>
@@ -45,7 +44,7 @@
   </div>
 
   <!-- Botão para carregar serviços anteriores -->
-  <button *ngIf="!isLoading && page > 1" (click)="loadPreviousServices()"
+  <button *ngIf=" showNavButtons && !isLoading && page > 1" (click)="loadPreviousServices()"
     [ngClass]="{'btnVisible': page > 1, 'btnHidden': page <= 1}" class="navigation-button previous-button">
     <lord-icon src="https://cdn.lordicon.com/whtfgdfm.json" trigger="hover" state="hover-ternd-flat-6"
       colors="primary:#ffffff" style="width:30px;height:48px; transform: rotate(180deg);">
@@ -53,7 +52,7 @@
   </button>
 
   <!-- Botão para carregar serviços seguintes -->
-  <button *ngIf="!isLoading && page * pageSize < totalServices" (click)="loadNextServices()"
+  <button *ngIf="showNavButtons && !isLoading && page * pageSize < totalServices" (click)="loadNextServices()"
     [ngClass]="{'btnVisible': page * pageSize < totalServices, 'btnHidden': page * pageSize >= totalServices}"
     class="navigation-button next-button">
     <lord-icon src="https://cdn.lordicon.com/whtfgdfm.json" trigger="hover" state="hover-ternd-flat-6"

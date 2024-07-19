@@ -6,11 +6,12 @@ import { GoalService } from '../../../core/services/goal/goal.service';
 import { IndicatorService } from '../../../core/services/indicator/indicator.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
-import { PageEvent } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PaginatorComponent } from '../../shared/paginator/paginator.component';
+import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
 
 interface Goal {
   id: number | null;
@@ -28,12 +29,16 @@ interface Goal {
   standalone: true,
   imports: [
     CommonModule,
+    MatPaginatorModule,
     ReactiveFormsModule,
     FormsModule,
     PaginatorComponent,
     LoadingSpinnerComponent,
     FeedbackComponent, 
     MatTooltipModule
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
   ],
   templateUrl: './goals-list-section.component.html',
   styleUrls: ['./goals-list-section.component.scss']

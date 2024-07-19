@@ -1,24 +1,24 @@
 <div class="modal" [ngClass]="{ 'show': isVisible }" (click)="close()">
-    <div class="forms-container" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
-        <div class="modalHeader">
+    <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG modalBorder" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
+        <div class="modalHeader mb-2">
             <h2 class="modalTitle">Atualizar perfil</h2>
             <span class="close" (click)="close()">&times;</span>
         </div>
         <form (ngSubmit)="formSubmited()">
-            <div class="forms-container--inputContainer">
-                <label class="sectionTitle">Nome:</label>
-                <input matInput [(ngModel)]="user.name" name="name" class="inputContainer--input" />
-            </div>
-            <div class="forms-container--inputContainer">
-                <label class="sectionTitle">Email:</label>
-                <input matInput [(ngModel)]="user.email" name="email" class="inputContainer--input"
+            <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
+                <mat-label class="blueTxt">Nome:</mat-label>
+                <input matInput id="nome" [(ngModel)]="user.name" name="name" class="inputContainer--input" />
+            </mat-form-field>
+            <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
+                <mat-label class="blueTxt">Email:</mat-label>
+                <input matInput id="email" [(ngModel)]="user.email" name="email" [disabled]="formsAction === 'edit'" class="inputContainer--input"
                     (blur)="validateEmailOnBlur()" />
                 <span *ngIf="emailError" class="errorSpan">{{ emailError }}</span>
-            </div>
-            <div class="forms-container--inputContainer">
-                <label class="sectionTitle">NIF:</label>
-                <input matInput [(ngModel)]="user.nif" name="nif" class="inputContainer--input" disabled />
-            </div>
+            </mat-form-field>
+            <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
+                <label class="blueTxt">NIF:</label>
+                <input matInput id="nif" [(ngModel)]="user.nif" name="nif" [disabled]="formsAction ==='edit'" class="inputContainer--input" disabled />
+            </mat-form-field>
             <div class="forms-container--inputContainer">
                 <label class="sectionTitle">Senha atual:</label>
                 <div class="password-container">
@@ -50,7 +50,7 @@
                     <div *ngFor="let msg of newPasswordFeedback">{{ msg }}</div>
                 </div>
             </div>
-            <button *ngIf="!isLoading" type="submit" class="forms-Button">ATUALIZAR</button>
+            <button mat-raised-button *ngIf="!isLoading" type="submit" class="custom-buttom">ATUALIZAR</button>
             <div *ngIf="isLoading" class="loading-circle">
                 <div class="spinner spinner_updateRecord-special"></div>
             </div>

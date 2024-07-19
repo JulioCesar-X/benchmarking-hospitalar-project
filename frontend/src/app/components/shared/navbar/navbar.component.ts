@@ -203,4 +203,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   navigateToNotification(notificationId: number, tab: string) {
     this.router.navigate(['/notifications'], { queryParams: { id: notificationId, tab: tab } });
   }
+
+  openNotifications()
+  {
+    this.router.navigate(['/notifications']);
+  }
 }

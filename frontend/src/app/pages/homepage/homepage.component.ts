@@ -30,7 +30,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   pageSize: number = 4;
   totalServices: number = 0;
   loadedPages: Set<number> = new Set();
-  showNavButtons: boolean = false; 
+  showNavButtons: boolean = true; 
 
   constructor(
     private serviceService: ServiceService,

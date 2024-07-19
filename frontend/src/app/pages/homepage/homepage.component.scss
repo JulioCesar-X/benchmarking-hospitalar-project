@@ -1,7 +1,6 @@
 @import '../../../styles/_variables.scss';
 
 .headingSection {
-  width: 100%;
   background-image: url('../../../assets/images/g579.png');
   background-size: cover;
   background-position: center;
@@ -9,7 +8,6 @@
 }
 
 .headingTitle {
-  width: 30%;
   color: $fill-white;
   font-size: 6em;
   margin-left: 2em;
@@ -17,7 +15,6 @@
 } @media (max-width: 600px) {
   .headingTitle{
     font-size: 1.5em;
-    font-weight: bold;
   }
 }
 
@@ -200,28 +197,7 @@
   min-height: 100vh;
 }
 
-// Load
-.random-demo {
-  display: flex;
-  gap: 0.5em;
-  width: 30%;
-  margin: 0 auto;
-}
 
-@media (max-width: 600px) {
-  .random-demo {
-    margin: 0;
-    margin-right: 2em;
-    flex-direction: column;
-  }
-}
-
-.el {
-  width: 50px;
-  height: 50px;
-  background-color: $main-dark-blue;
-  border-radius: 50%;
-}
 
 main {
   flex: 1;
@@ -245,24 +221,24 @@ main {
   transition: background-color 0.3s ease, opacity 0.3s ease;
 
   &.previous-button {
-    left: 2rem;
+    left: 3rem;
     top: 25rem;
   }
 
   &.next-button {
-    right: 2rem;
+    right: 3rem;
     top: 25rem;
   }
 
   @media (max-width: 600px) {
     &.previous-button {
-      left: 150px;
-      top: 550px;
+      left: 5rem;
+      top: 7rem;
     }
 
     &.next-button {
-      right: 150px;
-      top: 550px;
+      right: 5rem;
+      top: 7rem;
     }
   }
 
@@ -280,4 +256,25 @@ main {
   }
 }
 
+// Load
+.random-demo {
+  display: flex;
+  gap: 0.5em;
+  width: 30%;
+  margin: 0 auto;
+}
 
+@media (max-width: 600px) {
+  .random-demo {
+    margin: 0;
+    margin-right: 2em;
+    flex-direction: column;
+  }
+}
+
+.el {
+  width: 50px;
+  height: 50px;
+  background-color: $main-dark-blue;
+  border-radius: 50%;
+}

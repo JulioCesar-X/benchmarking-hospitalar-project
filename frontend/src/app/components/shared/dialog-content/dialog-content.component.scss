@@ -23,6 +23,9 @@
   box-sizing: border-box;
   padding: 2em;
 
+  border-radius: 1em;
+  border: $secondary-blue 7px solid;
+
   background-color: $main-blue;
 
 
@@ -80,4 +83,13 @@
 
 .forms-Button {
   @include forms-Button();
+}
+
+.custom-button {
+  background-color: $darker-main-blue !important;
+  color: $fill-white !important;
+  border-color: $main-dark-blue !important;
+  &:hover {
+    background-color: darken($darker-main-blue, 10%) !important;
+  }
 }

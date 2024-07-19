@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { MatIconModule } from '@angular/material/icon';
+import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
 
 
 @Component({
@@ -13,21 +14,27 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     RouterLink,
     RouterLinkActive,
-    MatIconModule
+    MatIconModule,
+    LoadingSpinnerComponent
   ],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })
-export class MenuComponent {
-  isManageUsersSubMenuOpen = false;
-  isManageContentSubMenuOpen = false;
-  isManageNotificationsSubMenuOpen = false;
-  isManageActivitiesSubMenuOpen = false;
-  isManageServicesSubMenuOpen = false;
-  isManageIndicatorsSubMenuOpen = false;
-  isMenuOpen = true;
+export class MenuComponent implements OnInit {
+  @Input() isManageUsersSubMenuOpen = false;
+  @Input() isManageDataSubMenuOpen = false;
+  @Input() isManageNotificationsSubMenuOpen = false;
+  @Input() isManageActivitiesSubMenuOpen = false;
+  @Input() isManageServicesSubMenuOpen = false;
+  @Input() isManageIndicatorsSubMenuOpen = false;
+  @Input() isMenuOpen = true;
+  @Input() isLoadingCharts= false;
 
   constructor(private authService: AuthService, private router: Router) { }
+
+  ngOnInit(){
+    this.isLoadingCharts = false;
+  }
 
   getRole() {
     return this.authService.getRole();
@@ -58,11 +65,16 @@ export class MenuComponent {
     this.isManageNotificationsSubMenuOpen = !this.isManageNotificationsSubMenuOpen;
     this.closeOtherSubMenus('notifications');
   }
+  openManageData(){
+    this.isManageDataSubMenuOpen = !this.isManageDataSubMenuOpen;
+    this.closeOtherSubMenus('data');
+  }
 
   closeOtherSubMenus(except: string) {
     if (except !== 'users') this.isManageUsersSubMenuOpen = false;
     if (except !== 'services') this.isManageServicesSubMenuOpen = false;
     if (except !== 'activities') this.isManageActivitiesSubMenuOpen = false;
+    if (except !== 'data') this.isManageDataSubMenuOpen = false;
     if (except !== 'indicators') this.isManageIndicatorsSubMenuOpen = false;
     if (except !== 'notifications') this.isManageNotificationsSubMenuOpen = false;
   }
@@ -78,6 +90,16 @@ export class MenuComponent {
   }
 
   goToCharts(serviceId: number) {
+    const currentUrl = this.router.url;
+    const targetUrl = `/charts;serviceId=${serviceId}`;
+
+    if (currentUrl !== targetUrl) {
+      this.isLoadingCharts = true;
+    }
+
     this.router.navigate(['/charts', { serviceId }]);
   }
+
+
+
 }
