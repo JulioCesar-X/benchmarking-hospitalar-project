@@ -72,6 +72,10 @@ export class UsersUpsertFormComponent {
     this.notificationMessage = '';
     this.resetErrors();
 
+    if (!this.validateAllFields()) {
+      return;
+    }
+
     if (this.formsAction === 'create') {
       this.createUser();
       this.loadingCircleMessage = "A criar utilizador...";
@@ -79,6 +83,15 @@ export class UsersUpsertFormComponent {
       this.editUser();
       this.loadingCircleMessage = "A editar utilizador...";
     }
+  }
+
+  validateAllFields(): boolean {
+    this.validateName();
+    this.validateEmail();
+    this.validateNIF();
+    this.validateRole();
+
+    return !this.nameErrorMessage && !this.emailErrorMessage && !this.nifErrorMessage && !this.roleErrorMessage;
   }
 
   editUser() {
@@ -142,20 +155,40 @@ export class UsersUpsertFormComponent {
     if (error.status === 422) {
       const validationErrors = error.error.errors;
       for (const [key, messages] of Object.entries(validationErrors) as [string, string[]][]) {
+        const translatedMessage = this.translateErrorMessage(messages[0]);
         if (key === 'email') {
-          this.emailErrorMessage = messages[0];
+          this.emailErrorMessage = translatedMessage;
         } else if (key === 'nif') {
-          this.nifErrorMessage = messages[0];
+          this.nifErrorMessage = translatedMessage;
         } else if (key === 'name') {
-          this.nameErrorMessage = messages[0];
+          this.nameErrorMessage = translatedMessage;
         } else if (key === 'role_id') {
-          this.roleErrorMessage = messages[0];
+          this.roleErrorMessage = translatedMessage;
         }
       }
     } else if (error.status === 409) {
       this.setNotification('Utilizador já existe no banco de dados', 'error');
     } else {
       this.setNotification('Ocorreu um erro, tente novamente mais tarde!', 'error');
+    }
+  }
+
+  translateErrorMessage(message: string): string {
+    switch (message) {
+      case 'The email has already been taken.':
+        return 'O email já foi registrado.';
+      case 'The nif has already been taken.':
+        return 'O NIF já foi registrado.';
+      case 'The name field is required.':
+        return 'O campo nome é obrigatório.';
+      case 'The email field is required.':
+        return 'O campo email é obrigatório.';
+      case 'The nif field is required.':
+        return 'O campo NIF é obrigatório.';
+      case 'The role_id field is required.':
+        return 'O campo role é obrigatório.';
+      default:
+        return message; // Retorna a mensagem original se não houver tradução
     }
   }
 

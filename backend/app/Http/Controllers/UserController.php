@@ -218,6 +218,7 @@ class UserController extends Controller
             $user->password = bcrypt($user->nif);
             $user->save();
 
+            Mail::to($user->email)->send(new ResetPasswordMailConfirmation($user->email));
             return response()->json($user, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
