@@ -43,11 +43,20 @@ class AuthController extends Controller
         // Set token expiration to 4 hours
         $token = $user->createToken('access_token', ['*'], now()->addHours(4))->plainTextToken;
 
+        $firstLogin = $user->first_login;
+
+        if ($firstLogin) {
+            // Update the first_login status
+            $user->first_login = false;
+            $user->save();
+        }
+
         return response()->json([
             'role' => $user->roles()->first()->role_name,
             'name' => $user->name,
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'first_login' => $firstLogin
         ]);
     }
     /**
@@ -71,7 +80,7 @@ class AuthController extends Controller
 
         try {
 
-            $hashedPassword = bcrypt($request->nif); // Usar o NIF como a senha padrão
+            $hashedPassword = bcrypt($request->nif);
 
             $user = User::create([
                 'name' => $request->name,
@@ -158,8 +167,6 @@ class AuthController extends Controller
     public function verifyResetToken(Request $request)
     {
         $request->validate(['token' => 'required', 'email' => 'required|email']);
-        Log::info('Verificando o token de redefinição de senha: ' . $request->token);
-        Log::info('Verificando o email de redefinição de senha: ' . $request->email);
 
         try {
             $tokenData = DB::table('password_resets')
@@ -169,11 +176,11 @@ class AuthController extends Controller
             if ($tokenData && Hash::check($request->token, $tokenData->token)) {
                 return response()->json(['message' => 'Token válido'], 200);
             } else {
-                Log::error('Erro ao verificar o token de redefinição de senha: ' . $tokenData);
+    
                 return response()->json(['message' => 'Token inválido ou expirado'], 400);
             }
         } catch (Exception $e) {
-            Log::error('Erro ao verificar o token de redefinição de senha: ' . $e->getMessage());
+
             return response()->json(['message' => 'Erro ao verificar o token de redefinição de senha'], 500);
         }
     }

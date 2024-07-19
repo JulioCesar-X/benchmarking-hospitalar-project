@@ -26,7 +26,7 @@ export class UserService {
       catchError(error => throwError(() => new Error('Failed to fetch paginated users')))
     );
   }
-  
+
   resetPassword(userId: number): Observable<any> {
     return this.http.post(`/users/${userId}/reset-password-default`, {});
   }
@@ -50,19 +50,12 @@ export class UserService {
       catchError(error => throwError(() => new Error('Failed to update user')))
     );
   }
-
-  // Update user password
-  updateUserPassword(data: any): Observable<any> {
-    return this.http.put(`/users/update-password`, data).pipe(
-      catchError(error => throwError(() => new Error('Failed to update password')))
-    );
-  }
-
+  
   // Delete a user
   destroyUser(id: number): Observable<any> {
     return this.http.delete(`/users/${id}`).pipe(
       catchError(error => throwError(() => new Error('Failed to delete user')))
     );
   }
-  
+
 }

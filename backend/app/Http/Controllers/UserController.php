@@ -107,7 +107,7 @@ class UserController extends Controller
                 'regex:/[0-9]/',      // deve ter pelo menos um dígito
                 'regex:/[@$!%*?&#]/', // deve ter pelo menos um caractere especial
             ],
-            
+            'current_password' => 'required_with:email,password|string'
         ]);
 
         if ($validator->fails()) {
@@ -115,6 +115,12 @@ class UserController extends Controller
         }
 
         try {
+            if ($request->has('email') || $request->has('password')) {
+                if (!Hash::check($request->current_password, $user->password)) {
+                    return response()->json(['error' => 'Senha atual está incorreta'], 400);
+                }
+            }
+
             // Atualizar os campos do usuário
             $user->update(array_filter($validator->validated(), function ($key) {
                 return in_array($key, ['name', 'email']);
@@ -124,6 +130,7 @@ class UserController extends Controller
             if ($request->has('password') && $request->input('password')) {
                 $user->password = bcrypt($request->input('password'));
                 $user->save();
+                Mail::to($user->email)->send(new ResetPasswordMailConfirmation($user->email));
             }
 
             // Atualizar as roles se fornecidas
@@ -135,25 +142,6 @@ class UserController extends Controller
             Cache::forget('users_index');
 
             return response()->json($user->load(['roles:id,role_name', 'sentNotifications', 'receivedNotifications']), 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    }
-
-    public function updatePassword(Request $request)
-    {
-        try {
-            $user = Auth::user();
-            $user_auth = User::findOrFail($user->id);
-
-            if (!$user_auth || !Hash::check($request->currentPassword, $user_auth->password)) {
-                return response()->json(['error' => 'Senha atual está incorreta'], 400);
-            }
-
-            $user_auth->password = bcrypt($request->newPassword);
-            $user_auth->save();
-            Mail::to($user_auth->email)->send(new ResetPasswordMailConfirmation($user_auth->email));
-            return response()->json(['message' => 'Senha atualizada com sucesso!'], 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

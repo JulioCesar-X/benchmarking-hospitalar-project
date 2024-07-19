@@ -34,7 +34,7 @@
                 <span *ngIf="currentPasswordError" class="errorSpan">{{ currentPasswordError }}</span>
             </div>
             <div class="forms-container--inputContainer">
-                <label class="sectionTitle">Nova senha:</label>
+                <label class="sectionTitle">Nova senha (opcional):</label>
                 <div class="password-container">
                     <input matInput [type]="hideNewPassword ? 'password' : 'text'" [(ngModel)]="newPassword"
                         name="newPassword" class="inputContainer--input" (input)="validateNewPassword()"

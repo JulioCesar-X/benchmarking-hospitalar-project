@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
-import { Observable,BehaviorSubject, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { LoginResponse } from '../../models/login-response.model';
 import * as CryptoJS from 'crypto-js';
 
@@ -13,8 +13,9 @@ import * as CryptoJS from 'crypto-js';
 export class AuthService {
   private encryptionKey = 'atec-2024-project';
   private cookieExpirationMinutes = 4 * 60;
-  private loginEvent = new BehaviorSubject<void>(undefined);
+  private loginEvent = new BehaviorSubject<boolean>(false); // Mudança aqui
   loginEvent$ = this.loginEvent.asObservable();
+
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) { }
 
   private encrypt(value: string): string {
@@ -56,12 +57,12 @@ export class AuthService {
           this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict', expires: expirationDate });
           this.cookieService.set('role', this.encrypt(response.role), { secure: true, sameSite: 'Strict', expires: expirationDate });
           this.cookieService.set('name', this.encrypt(response.name), { secure: true, sameSite: 'Strict', expires: expirationDate });
-          this.loginEvent.next(); // Emitir evento de login
+          this.loginEvent.next(response.first_login);
           return response;
         }),
         catchError(error => {
           console.error('Login failed:', error);
-          return throwError(error); // Retorne o erro completo aqui
+          return throwError(error);
         })
       );
   }
@@ -135,6 +136,4 @@ export class AuthService {
   removeResetEmail(): void {
     this.cookieService.delete('password_reset_email');
   }
-
-
 }

@@ -41,7 +41,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   allNotifications: Notification[] = [];
   currentUser: User | null = null;
   hasNewNotifications: boolean = false;
-  
+
   private communicationSubscription: Subscription | undefined;
   private notificationSubscription: Subscription | undefined;
   private loginSubscription: Subscription | undefined;
@@ -66,8 +66,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.startNotificationPolling();
     }
 
-    this.loginSubscription = this.authService.loginEvent$.subscribe(() => {
+    this.loginSubscription = this.authService.loginEvent$.subscribe((firstLogin: boolean) => {
       this.getNotifications();
+      if (firstLogin) {
+        this.openProfile();
+      }
     });
   }
 
@@ -82,8 +85,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.loginSubscription.unsubscribe();
     }
   }
-
-
 
   isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
@@ -172,7 +173,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
           width: '500px',
           data: { user: user }
         });
-        console.log('Opened profile user:',user );
+        console.log('Opened profile user:', user);
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {

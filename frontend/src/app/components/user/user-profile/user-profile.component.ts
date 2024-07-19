@@ -69,11 +69,13 @@ export class UserProfileComponent implements OnInit {
     this.resetErrors();
     this.validateEmailOnBlur();
     this.validateCurrentPassword();
-    this.validateNewPassword();
+    if (this.newPassword) {
+      this.validateNewPassword();
+    }
     if (this.emailError || this.currentPasswordError || this.newPasswordError) {
       return;
     }
-    this.updatePassword();
+    this.updateProfile();
   }
 
   validateEmail(email: string): boolean {
@@ -126,18 +128,22 @@ export class UserProfileComponent implements OnInit {
     return feedback;
   }
 
-  updatePassword() {
+  updateProfile() {
     this.isLoading = true;
-    console.log('Updating password for user:', this.user);
-    const data = {
-      currentPassword: this.currentPassword,
-      newPassword: this.newPassword
+    const data: any = {
+      name: this.user.name,
+      email: this.user.email,
+      current_password: this.currentPassword
     };
 
-    this.userService.updateUserPassword(data).subscribe(
+    if (this.newPassword) {
+      data.password = this.newPassword;
+    }
+
+    this.userService.updateUser(this.user.id, data).subscribe(
       (response: any) => {
-        console.log('Password updated:', response);
-        this.setNotification('Senha atualizada com sucesso!', 'success');
+        console.log('Profile updated:', response);
+        this.setNotification('Perfil atualizado com sucesso!', 'success');
         this.isLoading = false;
         setTimeout(() => this.dialogRef.close(), 2000);
       },
