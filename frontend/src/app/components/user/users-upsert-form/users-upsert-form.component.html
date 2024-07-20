@@ -1,6 +1,6 @@
 <app-feedback *ngIf="notificationMessage" [message]="notificationMessage" [type]="notificationType"></app-feedback>
 <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG">
-  <h2 class="text-xl mb-4 whiteTxt" *ngIf="formsAction === 'create'">
+  <h2 class="text-xl mb-4 whiteTxt modalBorder" *ngIf="formsAction === 'create'">
     <div class="flex gap-2 items-center">
       Criar utilizador
       <svg matTooltip="Para criar um novo utilizador, preencha os seguintes campos com informações válidas." [matTooltipPosition]="'above'" matTooltipClass="custom"
