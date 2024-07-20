@@ -213,6 +213,7 @@ input {
     background-color: $darker-main-blue !important;
     color: $fill-white !important;
     border-color: $main-dark-blue !important;
+  
     &:hover {
       background-color: darken($darker-main-blue, 10%) !important;
     }

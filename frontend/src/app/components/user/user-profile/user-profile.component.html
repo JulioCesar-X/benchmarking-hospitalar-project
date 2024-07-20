@@ -1,5 +1,5 @@
 <div class="modal" [ngClass]="{ 'show': isVisible }" (click)="close()">
-    <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG modalBorder" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
+    <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG md:max-w-[600px] md:min-h-[400px]" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
         <div class="modalHeader mb-2">
             <h2 class="modalTitle">Atualizar perfil</h2>
             <span class="close" (click)="close()">&times;</span>
@@ -21,36 +21,36 @@
             </mat-form-field>
             <div class="forms-container--inputContainer">
                 <label class="sectionTitle">Senha atual:</label>
-                <div class="password-container">
+                <mat-form-field class="password-container">
                     <input matInput [type]="hideCurrentPassword ? 'password' : 'text'" [(ngModel)]="currentPassword"
                         name="currentPassword" class="inputContainer--input" (input)="validateCurrentPassword()"
                         (blur)="validateCurrentPassword()" (copy)="preventCopyPaste($event)"
                         (cut)="preventCopyPaste($event)" (paste)="preventCopyPaste($event)" />
-                    <button mat-icon-button matSuffix (click)="togglePasswordVisibility('current', $event)"
-                        [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideCurrentPassword" type="button">
-                        <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-                    </button>
-                </div>
+                </mat-form-field>
+                <button mat-icon-button matSuffix (click)="togglePasswordVisibility('current', $event)"
+                    [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideCurrentPassword" type="button">
+                    <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
                 <span *ngIf="currentPasswordError" class="errorSpan">{{ currentPasswordError }}</span>
             </div>
             <div class="forms-container--inputContainer">
                 <label class="sectionTitle">Nova senha (opcional):</label>
-                <div class="password-container">
+                <mat-form-field class="password-container">
                     <input matInput [type]="hideNewPassword ? 'password' : 'text'" [(ngModel)]="newPassword"
                         name="newPassword" class="inputContainer--input" (input)="validateNewPassword()"
                         (blur)="validateNewPassword()" (copy)="preventCopyPaste($event)"
                         (cut)="preventCopyPaste($event)" (paste)="preventCopyPaste($event)" />
-                    <button mat-icon-button matSuffix (click)="togglePasswordVisibility('new', $event)"
-                        [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideNewPassword" type="button">
-                        <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-                    </button>
-                </div>
+                </mat-form-field>
+                <button mat-icon-button matSuffix (click)="togglePasswordVisibility('new', $event)"
+                    [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideNewPassword" type="button">
+                    <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
                 <span *ngIf="newPasswordError" class="errorSpan">{{ newPasswordError }}</span>
                 <div *ngIf="newPasswordFeedback.length > 0" class="errorSpan">
                     <div *ngFor="let msg of newPasswordFeedback">{{ msg }}</div>
                 </div>
             </div>
-            <button mat-raised-button *ngIf="!isLoading" type="submit" class="custom-buttom">ATUALIZAR</button>
+            <button mat-raised-button *ngIf="!isLoading" type="submit" class="custom-button">Atualizar</button>
             <div *ngIf="isLoading" class="loading-circle">
                 <div class="spinner spinner_updateRecord-special"></div>
             </div>
