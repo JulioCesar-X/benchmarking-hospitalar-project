@@ -34,6 +34,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
   @Input() formsAction: string = '';
   @Input() selectedService: Service = { id: -1, service_name: '', description: '', image_url: '' };
 
+  loadingCircleMessage = 'A carregar serviço';
   notificationMessage: string = '';
   Type: 'success' | 'error' = 'success';
 
@@ -189,13 +190,18 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
     }
 
     if (this.formsAction === 'create') {
+      this.loadingCircleMessage = "A criar serviço..."
       this.createService();
     } else if (this.formsAction === 'edit') {
+      this.loadingCircleMessage = "A editar serviço..."
       this.editService();
     }
   }
 
   editService() {
+    this.isLoading = true;
+
+
     const updatedService: Service = {
       id: this.selectedService.id,
       service_name: this.selectedService.service_name,
@@ -208,7 +214,12 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
     this.serviceService.updateService(this.selectedService.id!, updatedService).subscribe(
       (response: any) => {
         this.setNotification('Serviço atualizado com sucesso', 'success');
-        setTimeout(() => this.router.navigate(['/services']), 2000); // Redirect after success message
+
+        setTimeout(() => {
+          this.router.navigate(['/services']);
+          this.isLoading = false;
+        }, 2000);
+
       },
       (error: any) => {
         const errorMessage = this.getErrorMessage(error);
@@ -218,6 +229,8 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
   }
 
   createService() {
+    this.isLoading = true;
+
     const createdService: Service = {
       id: -1,
       service_name: this.selectedService.service_name,
@@ -230,7 +243,11 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
     this.serviceService.storeService(createdService).subscribe(
       (response: any) => {
         this.setNotification('Serviço criado com sucesso', 'success');
-        setTimeout(() => this.router.navigate(['/services']), 2000); // Redirect after success message
+
+        setTimeout(() => {
+          this.router.navigate(['/services']);
+          this.isLoading = false;
+        }, 2000);
       },
       (error: any) => {
         const errorMessage = this.getErrorMessage(error);

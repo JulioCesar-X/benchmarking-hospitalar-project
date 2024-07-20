@@ -34,12 +34,13 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
   @Input() formsAction: string = '';
   @Input() selectedActivity: Activity = { id: -1, activity_name: '' };
 
+  loadingCircleMessage = 'A carregar atividade';
   notificationMessage: string = '';
   Type: 'success' | 'error' = 'success';
 
   isLoadingServices: boolean = true;
   isLoadingIndicadores: boolean = true;
-  isLoading: boolean = false;
+  @Input() isLoading: boolean = false;
   isError: boolean = false;
 
   servicesList: Service[] = [];
@@ -166,13 +167,18 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
     }
 
     if (this.formsAction === 'create') {
+      this.loadingCircleMessage = "A criar atividade"
       this.createActivity();
     } else if (this.formsAction === 'edit') {
+      this.loadingCircleMessage = "A editar atividade"
       this.editActivity();
     }
   }
 
   editActivity() {
+    this.isLoading = true;
+
+
     const updatedActivity: Activity = {
       id: this.selectedActivity.id,
       activity_name: this.selectedActivity.activity_name,
@@ -182,10 +188,18 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
 
     this.activityService.updateActivity(this.selectedActivity.id!, updatedActivity).subscribe(
       (response: any) => {
+
         this.setNotification('Atividade atualizada com sucesso', 'success');
-        setTimeout(() => this.router.navigate(['/activities']), 2000); // Redirect after success message
+
+        setTimeout(() => {
+          this.router.navigate(['/activities']);
+          this.isLoading = false;
+        }, 2000);
+        
       },
       (error: any) => {
+        this.isLoading = false;
+
         const errorMessage = this.getErrorMessage(error);
         this.setNotification(errorMessage, 'error');
       }
@@ -193,6 +207,9 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
   }
 
   createActivity() {
+    this.isLoading = true;
+
+
     const createdActivity: Activity = {
       id: -1,
       activity_name: this.selectedActivity.activity_name,
@@ -203,9 +220,16 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
     this.activityService.storeActivity(createdActivity).subscribe(
       (response: any) => {
         this.setNotification('Atividade criada com sucesso', 'success');
-        setTimeout(() => this.router.navigate(['/activities']), 2000); // Redirect after success message
+
+        setTimeout(() => {
+          this.router.navigate(['/activities']);
+          this.isLoading = false;
+        }, 2000);
+      
       },
       (error: any) => {
+        this.isLoading = false;
+
         const errorMessage = this.getErrorMessage(error);
         this.setNotification(errorMessage, 'error');
       }

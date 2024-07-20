@@ -40,7 +40,8 @@
 <!-- safasfa -->
  
 <!-- sfdsfsdfsfsfsfs -->
- 
+<app-feedback [message]="notificationMessage" [type]="Type"></app-feedback>
+
 <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-10 shadow-md blueBG ">
   <h2 class="text-xl mb-4 whiteTxt" *ngIf="formsAction === 'create'">
     <div class="flex gap-2 items-center">
@@ -60,7 +61,7 @@
     </div>
   </h2>
 
-  <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true" message="A carregar indicador..."></app-loading-spinner>
+  <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true" [message]="loadingCircleMessage"></app-loading-spinner>
 
   <form *ngIf="!isLoading" (ngSubmit)="formSubmited()" #serviceForm="ngForm">
     <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
@@ -86,14 +87,14 @@
     <div class="min-h-[50px] max-h-[300px] p-2 blueScrollBar blueTxt whiteBG rounded-bl rounded-br">
       <div *ngIf="activeTab === 'services'">
         <h4 class="mx-1 blueTxt text-lg">Associar Serviços:</h4>
-        <app-loading-spinner *ngIf="isLoadingServices" message="A carregar indicadors..."></app-loading-spinner>
+        <app-loading-spinner *ngIf="isLoadingServices" message="A carregar serviços..."></app-loading-spinner>
         <app-selectable-list *ngIf="!isLoadingServices" [items]="servicesList" displayProperty="service_name"
           (selectionChange)="onServicesSelectionChange($event)"
           [preSelectedItems]="selectedServicesIDs"></app-selectable-list>
       </div>
       <div *ngIf="activeTab === 'activities'">
         <h4 class="mx-1 blueTxt text-lg">Associar Atividades:</h4>
-        <app-loading-spinner *ngIf="isLoadingActivities" message="A carregar indicadors..."></app-loading-spinner>
+        <app-loading-spinner *ngIf="isLoadingActivities" message="A carregar atividades..."></app-loading-spinner>
         <app-selectable-list *ngIf="!isLoadingActivities" [items]="activitiesList" displayProperty="activity_name"
           (selectionChange)="onActivitiesSelectionChange($event)"
           [preSelectedItems]="selectedActivitiesIDs"></app-selectable-list>

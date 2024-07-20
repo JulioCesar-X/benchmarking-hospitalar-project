@@ -36,6 +36,7 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     indicator_name: '',
   };
 
+  loadingCircleMessage:string = "A carregar indicadores..."
   notificationMessage: string = '';
   Type: 'success' | 'error' = 'success';
 
@@ -163,8 +164,10 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     }
 
     if (this.formsAction === 'create') {
+      this.loadingCircleMessage = "A criar indicador"
       this.createIndicator();
     } else if (this.formsAction === 'edit') {
+      this.loadingCircleMessage = "A editar indicador"
       this.editIndicator();
     }
   }
@@ -175,6 +178,8 @@ export class IndicatorsUpsertFormComponent implements OnInit {
   }
 
   createIndicator(): void {
+    this.isLoading = true;
+
     const createdIndicator: Indicator = {
       id: -1,
       indicator_name: this.selectedIndicator.indicator_name,
@@ -185,11 +190,17 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     this.indicatorService.storeIndicator(createdIndicator).subscribe(
       (response: any) => {
         this.setNotification('Indicator created successfully', 'success');
-        setTimeout(() => this.router.navigate(['/indicators']), 2000);
+
+        setTimeout(() => {
+          this.router.navigate(['/indicators']);
+          this.isLoading = false;
+        }, 2000);
       },
       (error: any) => {
         const errorMessage = this.getErrorMessage(error);
         this.setNotification(errorMessage, 'error');
+        this.isLoading = false;
+
       }
     );
   }
@@ -205,9 +216,14 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     this.indicatorService.updateIndicator(this.selectedIndicator.id, updatedIndicator).subscribe(
       (response: any) => {
         this.setNotification('Indicator updated successfully', 'success');
-        setTimeout(() => this.router.navigate(['/indicators']), 2000);
+        setTimeout(() => {
+          this.router.navigate(['/indicators']);
+          this.isLoading = false;
+        }, 2000);
       },
       (error: any) => {
+        this.isLoading = false;
+
         const errorMessage = this.getErrorMessage(error);
         this.setNotification(errorMessage, 'error');
       }

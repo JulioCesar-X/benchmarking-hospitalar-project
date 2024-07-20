@@ -1,3 +1,6 @@
+<app-feedback [message]="notificationMessage" [type]="Type"></app-feedback>
+
+
 <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-10 shadow-md blueBG ">
   <h2 class="text-xl mb-4 whiteTxt" *ngIf="formsAction === 'create'">
     <div class="flex gap-2 items-center">
@@ -17,7 +20,7 @@
     </div>
   </h2>
 
-  <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true" message="A carregar serviço..."></app-loading-spinner>
+  <app-loading-spinner *ngIf="isLoading" [message]="loadingCircleMessage"></app-loading-spinner>
 
   <form *ngIf="!isLoading" (ngSubmit)="formSubmited()" #serviceForm="ngForm">
     <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
