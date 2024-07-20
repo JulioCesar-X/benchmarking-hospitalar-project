@@ -1,20 +1,20 @@
 <div class="modal" [ngClass]="{ 'show': isVisible }" (click)="close()">
-    <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG md:max-w-[600px] md:min-h-[400px]" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
+    <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG md:max-w-[600px] md:min-h-[400px] modalBorder" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
         <div class="modalHeader mb-2">
             <h2 class="modalTitle">Atualizar perfil</h2>
             <span class="close" (click)="close()">&times;</span>
         </div>
         <form (ngSubmit)="formSubmited()">
-            <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
+            <mat-form-field class="w-full mb-4 blueBG">
                 <mat-label class="blueTxt">Nome:</mat-label>
                 <input matInput id="nome" [(ngModel)]="user.name" name="name" class="" />
             </mat-form-field>
-            <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
+            <mat-form-field class="w-full mb-4">
                 <mat-label class="blueTxt">Email:</mat-label>
                 <input matInput  [(ngModel)]="user.email" name="email" [disabled]="formsAction === 'edit'" class="" (blur)="validateEmailOnBlur()" type="email"/>
                 <span *ngIf="emailError" class="redTxt">{{ emailError }}</span>
             </mat-form-field>
-            <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
+            <mat-form-field class="w-full mb-4">
                 <mat-label class="blueTxt">NIF:</mat-label>
                 <input matInput id="nif" [(ngModel)]="user.nif" name="nif" disabled />
             </mat-form-field>
