@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -12,51 +12,44 @@ import { FormsModule } from '@angular/forms';
 })
 export class SelectableListComponent implements OnChanges {
   @Input() items: any[] = [];
-  @Input() displayProperty: string | string[] = 'name';
-  @Input() preSelectedItems: number[] = [];
-  @Output() selectionChange = new EventEmitter<any[]>();
+  @Input() displayProperty: string | string[] = '';
+  @Input() preSelectedItems: any[] = [];
+  @Output() selectionChange = new EventEmitter<{ selected: any[], deselected: any[] }>();
 
   selectedItems: any[] = [];
+  deselectedItems: any[] = [];
 
-  constructor(private cdRef: ChangeDetectorRef) { }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['preSelectedItems']) {
-      this.updateSelectedItems();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['preSelectedItems'] || changes['items']) {
+      this.updateSelectionState();
     }
   }
 
-  private updateSelectedItems(): void {
-    const newSelectedItems = this.items.filter(item => this.preSelectedItems.includes(item.id));
-    if (this.haveSelectedItemsChanged(newSelectedItems)) {
-      this.selectedItems = newSelectedItems;
-      this.selectionChange.emit(this.selectedItems);
-      this.cdRef.detectChanges(); // Manually trigger change detection after the items have changed
-    }
-  }
-
-  private haveSelectedItemsChanged(newSelectedItems: any[]): boolean {
-    if (newSelectedItems.length !== this.selectedItems.length) {
-      return true;
-    }
-    const currentSelectedIds = this.selectedItems.map(item => item.id).sort();
-    const newSelectedIds = newSelectedItems.map(item => item.id).sort();
-    return !currentSelectedIds.every((id, index) => id === newSelectedIds[index]);
-  }
-
-  toggleSelection(item: any): void {
-    const index = this.selectedItems.findIndex(selected => selected.id === item.id);
-    if (index > -1) {
-      this.selectedItems.splice(index, 1);
-    } else {
-      this.selectedItems.push(item);
-    }
-    this.selectionChange.emit(this.selectedItems);
-    this.cdRef.detectChanges(); // Ensure the changes are reflected in the view
+  updateSelectionState() {
+    this.selectedItems = this.items.filter(item => this.preSelectedItems.includes(item.sai_id));
+    this.deselectedItems = this.items.filter(item => !this.preSelectedItems.includes(item.sai_id));
+    this.selectionChange.emit({ selected: this.selectedItems, deselected: this.deselectedItems });
+    console.log('items:', this.items);
+    console.log('preSelectedItems:', this.preSelectedItems);
+    console.log('selectedItems:', this.selectedItems);
+    console.log('deselectedItems:', this.deselectedItems);
   }
 
   isSelected(item: any): boolean {
-    return this.selectedItems.some(selected => selected.id === item.id);
+    return this.preSelectedItems.includes(item.sai_id);
+  }
+
+  toggleSelection(item: any): void {
+    if (this.isSelected(item)) {
+      this.selectedItems = this.selectedItems.filter(selectedItem => selectedItem.sai_id !== item.sai_id);
+      this.deselectedItems.push(item);
+    } else {
+      this.deselectedItems = this.deselectedItems.filter(deselectedItem => deselectedItem.sai_id !== item.sai_id);
+      this.selectedItems.push(item);
+    }
+    this.selectionChange.emit({ selected: this.selectedItems, deselected: this.deselectedItems });
+    console.log('Selected items:', this.selectedItems);
+    console.log('Deselected items:', this.deselectedItems);
   }
 
   getDisplayText(item: any): string {

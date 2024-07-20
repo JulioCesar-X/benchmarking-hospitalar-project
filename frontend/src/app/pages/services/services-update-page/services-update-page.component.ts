@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
-import { ServicesUpsertFormComponent } from '../../../components/services/services-upsert-form/services-upsert-form.component';
+// import { ServicesUpsertFormComponent } from '../../../components/services/services-upsert-form/services-upsert-form.component';
 import { ServiceService } from '../../../core/services/service/service.service';
 import { Service } from '../../../core/models/service.model';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
@@ -13,7 +13,7 @@ import { LoadingSpinnerComponent } from '../../../components/shared/loading-spin
   imports: [
     CommonModule,
     MenuComponent,
-    ServicesUpsertFormComponent,
+    // ServicesUpsertFormComponent,
     LoadingSpinnerComponent
   ],
   templateUrl: './services-update-page.component.html',

@@ -46,6 +46,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
   selectedServicesIDs: number[] = [];
   selectedActivitiesIDs: number[] = [];
   selectedSaisIDs: number[] = [];
+  desassociations: number[] = [];
 
   activeTab: 'Desassociação' | 'Associação' = 'Desassociação';
 
@@ -63,7 +64,6 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedIndicator'] && !changes['selectedIndicator'].firstChange) {
-      // Lógica específica para quando selectedIndicator muda
       this.loadIndicator(this.selectedIndicator.id);
     }
   }
@@ -78,6 +78,10 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
       console.error('Error loading initial data', error);
       this.isLoading = false;
       this.cdr.detectChanges();
+    }
+
+    if (this.formsAction === 'edit' && this.selectedIndicator.id !== -1) {
+      this.loadIndicator(this.selectedIndicator.id);
     }
   }
 
@@ -100,6 +104,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
           activity_name: sai.activity?.activity_name
         })) || [];
         this.selectedSaisIDs = this.saisList.map(sai => sai.sai_id);
+        console.log('Selected SAIs:', this.selectedSaisIDs);
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
       },
@@ -155,18 +160,36 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
     });
   }
 
-  onServicesSelectionChange(selectedServices: any[]): void {
-    this.selectedServicesIDs = selectedServices.map(service => service.id);
+  onServicesSelectionChange(event: { selected: any[], deselected: any[] }): void {
+    this.selectedServicesIDs = event.selected.map(service => service.id);
     this.cdr.detectChanges();
   }
 
-  onActivitiesSelectionChange(selectedActivities: any[]): void {
-    this.selectedActivitiesIDs = selectedActivities.map(activity => activity.id);
+  onActivitiesSelectionChange(event: { selected: any[], deselected: any[] }): void {
+    this.selectedActivitiesIDs = event.selected.map(activity => activity.id);
     this.cdr.detectChanges();
   }
 
-  onSaisSelectionChange(selectedSais: any[]): void {
-    this.selectedSaisIDs = selectedSais.map(sai => sai.sai_id);
+  onSaisSelectionChange(event: { selected: any[], deselected: any[] }): void {
+    // Remover itens deselecionados da lista
+    event.deselected.forEach(sai => {
+      const index = this.selectedSaisIDs.indexOf(sai.sai_id);
+      if (index > -1) {
+        this.selectedSaisIDs.splice(index, 1);
+      }
+    });
+
+    // Adicionar itens selecionados à lista
+    event.selected.forEach(sai => {
+      if (!this.selectedSaisIDs.includes(sai.sai_id)) {
+        this.selectedSaisIDs.push(sai.sai_id);
+      }
+    });
+
+    // Log para depuração
+    console.log('selectedSaisIDs:', this.selectedSaisIDs);
+
+    // Forçar detecção de mudanças no Angular
     this.cdr.detectChanges();
   }
 
@@ -222,7 +245,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
         service_id: service_id,
         activity_id: this.selectedActivitiesIDs.find(activity_id => this.servicesList.find(service => service.id === service_id)?.activity_ids.includes(activity_id))
       })),
-      desassociations: this.selectedSaisIDs.map(sai_id => ({ sai_id }))
+      desassociations: this.desassociations.map(sai_id => ({ sai_id }))
     };
 
     this.indicatorService.updateIndicator(this.selectedIndicator.id, updatedIndicator).subscribe(
@@ -249,5 +272,13 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
   selectTab(tab: 'Desassociação' | 'Associação'): void {
     this.activeTab = tab;
+    this.updateSelectedItems();
+  }
+
+  updateSelectedItems(): void {
+    if (this.activeTab === 'Desassociação') {
+      this.selectedSaisIDs = this.saisList.map(sai => sai.sai_id);
+    }
+    this.cdr.detectChanges();
   }
 }

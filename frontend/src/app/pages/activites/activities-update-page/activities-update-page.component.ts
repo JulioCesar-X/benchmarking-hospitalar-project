@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
-import { ActivitiesUpsertFormComponent } from '../../../components/activities/activities-upsert-form/activities-upsert-form.component';
+// import { ActivitiesUpsertFormComponent } from '../../../components/activities/activities-upsert-form/activities-upsert-form.component';
 import { ActivityService } from '../../../core/services/activity/activity.service';
 import { Activity } from '../../../core/models/activity.model';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
@@ -13,7 +13,7 @@ import { LoadingSpinnerComponent } from '../../../components/shared/loading-spin
   imports: [
     CommonModule,
     MenuComponent,
-    ActivitiesUpsertFormComponent,
+    // ActivitiesUpsertFormComponent,
     LoadingSpinnerComponent
   ],
   templateUrl: './activities-update-page.component.html',
