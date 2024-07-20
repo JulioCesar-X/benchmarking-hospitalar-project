@@ -1,4 +1,4 @@
-<div *ngFor="let item of items" class="checkbox-container">
-  <input type="checkbox" [checked]="isSelected(item)" (click)="toggleSelection(item)">
-  <label>{{ item[displayProperty] }}</label>
+<div *ngFor="let item of items" class="flex gap-2 items-center mb-1">
+  <input class="styled-checkbox" type="checkbox" [checked]="isSelected(item)" (click)="toggleSelection(item)">
+  <label class="text-base">{{ item[displayProperty] }}</label>
 </div>

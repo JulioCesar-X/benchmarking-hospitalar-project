@@ -12,12 +12,15 @@ import { Activity } from '../../../core/models/activity.model';
 import { Service } from '../../../core/models/service.model';
 import { Indicator } from '../../../core/models/indicator.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormField, MatLabel, } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-activities-upsert-form',
   standalone: true,
   imports: [
-    CommonModule,
+    CommonModule, MatFormField, MatLabel, MatInput, MatButtonModule,
     FormsModule,
     FeedbackComponent,
     LoadingSpinnerComponent,

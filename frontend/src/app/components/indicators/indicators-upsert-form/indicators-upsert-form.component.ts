@@ -10,12 +10,17 @@ import { LoadingSpinnerComponent } from '../../../components/shared/loading-spin
 import { SelectableListComponent } from '../../../components/shared/selectable-list/selectable-list.component';
 import { Indicator } from '../../../core/models/indicator.model';
 import { Sai } from '../../../core/models/sai.model';
+import { MatFormField, MatLabel, } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 @Component({
   selector: 'app-indicators-upsert-form',
   standalone: true,
   imports: [
-    CommonModule,
+    CommonModule, MatFormField, MatLabel, MatInput, MatButtonModule, MatTooltipModule,
     FormsModule,
     FeedbackComponent,
     LoadingSpinnerComponent,

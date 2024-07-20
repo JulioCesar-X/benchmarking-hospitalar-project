@@ -12,12 +12,15 @@ import { Service } from '../../../core/models/service.model';
 import { Activity } from '../../../core/models/activity.model';
 import { Indicator } from '../../../core/models/indicator.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormField, MatLabel, } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-services-upsert-form',
   standalone: true,
   imports: [
-    CommonModule,
+    CommonModule,MatFormField,MatLabel,MatInput,MatButtonModule,
     FormsModule,
     FeedbackComponent,
     LoadingSpinnerComponent,
@@ -36,7 +39,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
 
   isLoadingActivities: boolean = true;
   isLoadingIndicators: boolean = true;
-  isLoading: boolean = false;
+  @Input() isLoading: boolean = false;
   isError: boolean = false;
 
   activitiesList: Activity[] = [];
