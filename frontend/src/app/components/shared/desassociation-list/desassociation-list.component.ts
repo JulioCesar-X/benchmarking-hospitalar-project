@@ -27,9 +27,9 @@ export class DesassociationListComponent implements OnChanges {
   }
 
   updateSelectionState() {
-    const desassociatedIds = this.desassociations.map(d => d.sai_id);
-    this.selectedItems = this.items.filter(item => !desassociatedIds.includes(item.sai_id) && this.preSelectedItems.includes(item.sai_id));
-    this.deselectedItems = this.items.filter(item => desassociatedIds.includes(item.sai_id));
+    const desassociatedIds = new Set(this.desassociations.map(d => d.sai_id));
+    this.selectedItems = this.items.filter(item => !desassociatedIds.has(item.sai_id) && this.preSelectedItems.includes(item.sai_id));
+    this.deselectedItems = this.items.filter(item => desassociatedIds.has(item.sai_id));
     console.log('updateSelectionState -> selectedItems:', this.selectedItems);
     console.log('updateSelectionState -> deselectedItems:', this.deselectedItems);
   }
@@ -39,16 +39,17 @@ export class DesassociationListComponent implements OnChanges {
   }
 
   toggleSelection(item: any): void {
+    const desassociatedIds = new Set(this.desassociations.map(d => d.sai_id));
     if (this.isSelected(item)) {
       this.selectedItems = this.selectedItems.filter(selectedItem => selectedItem.sai_id !== item.sai_id);
-      this.deselectedItems.push(item);
+      this.desassociations.push({ sai_id: item.sai_id });
     } else {
-      this.deselectedItems = this.deselectedItems.filter(deselectedItem => deselectedItem.sai_id !== item.sai_id);
+      this.desassociations = this.desassociations.filter(deselectedItem => deselectedItem.sai_id !== item.sai_id);
       this.selectedItems.push(item);
     }
-    this.selectionChange.emit({ selected: this.selectedItems, deselected: this.deselectedItems });
+    this.selectionChange.emit({ selected: this.selectedItems, deselected: this.desassociations });
     console.log('toggleSelection -> selectedItems:', this.selectedItems);
-    console.log('toggleSelection -> deselectedItems:', this.deselectedItems);
+    console.log('toggleSelection -> desassociations:', this.desassociations);
   }
 
   getDisplayText(item: any): string {
@@ -56,5 +57,9 @@ export class DesassociationListComponent implements OnChanges {
       return this.displayProperty.map(prop => item[prop]).join(' - ');
     }
     return item[this.displayProperty];
+  }
+
+  trackByFn(index: number, item: any): any {
+    return item.sai_id; // or any unique property from the item object
   }
 }

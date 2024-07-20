@@ -107,6 +107,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
           activity_name: sai.activity?.activity_name
         })) || [];
         this.selectedSaisIDs = this.saisList.map(sai => sai.sai_id);
+        this.updateSelectedItems();
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
       },
@@ -295,9 +296,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
   updateSelectedItems(): void {
     if (this.activeTab === 'Desassociação') {
-      this.selectedSaisIDs = this.desassociations.map(d => d.sai_id);
-    } else {
-      // lógica adicional para manter as seleções ao mudar de aba se necessário
+      this.selectedSaisIDs = this.saisList.filter(sai => !this.desassociations.some(d => d.sai_id === sai.sai_id)).map(sai => sai.sai_id);
     }
     this.cdr.detectChanges();
   }

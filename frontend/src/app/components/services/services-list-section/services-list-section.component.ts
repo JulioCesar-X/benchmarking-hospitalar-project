@@ -5,7 +5,6 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
 import { FormsModule } from '@angular/forms';
-import { SelectableListComponent } from '../../shared/selectable-list/selectable-list.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CardComponent } from '../../shared/card/card.component';
@@ -25,7 +24,6 @@ import { FeedbackComponent } from '../../shared/feedback/feedback.component';
     FormsModule,
     LoadingSpinnerComponent,
     PaginatorComponent,
-    SelectableListComponent,
     DialogContentComponent,
     CardComponent,
     MatTooltipModule,
