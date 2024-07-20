@@ -157,8 +157,8 @@ export class IndicatorService {
     );
   }
 
-  storeIndicator(indicator: Indicator): Observable<Indicator> {
-    return this.http.post<Indicator>('/indicators', indicator).pipe(
+  storeIndicator(indicator: any): Observable<any> {
+    return this.http.post<any>('/indicators', indicator).pipe(
       catchError(error => throwError(() => new Error('Failed to create indicator')))
     );
   }

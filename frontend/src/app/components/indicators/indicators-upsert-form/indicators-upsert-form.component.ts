@@ -8,7 +8,7 @@ import { ActivityService } from '../../../core/services/activity/activity.servic
 import { FeedbackComponent } from '../../../components/shared/feedback/feedback.component';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
 import { SelectableListComponent } from '../../../components/shared/selectable-list/selectable-list.component';
-import { Indicator } from '../../../core/models/indicator.model';
+import { Indicator, CreateIndicator } from '../../../core/models/indicator.model';
 
 @Component({
   selector: 'app-indicators-upsert-form',
@@ -46,7 +46,8 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
   selectedServicesIDs: number[] = [];
   selectedActivitiesIDs: number[] = [];
   selectedSaisIDs: number[] = [];
-  desassociations: number[] = [];
+  desassociations: { sai_id: number }[] = [];
+  associations: { service_id: number, activity_id: number }[] = [];
 
   activeTab: 'Desassociação' | 'Associação' = 'Desassociação';
 
@@ -104,7 +105,6 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
           activity_name: sai.activity?.activity_name
         })) || [];
         this.selectedSaisIDs = this.saisList.map(sai => sai.sai_id);
-        console.log('Selected SAIs:', this.selectedSaisIDs);
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
       },
@@ -162,41 +162,45 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
   onServicesSelectionChange(event: { selected: any[], deselected: any[] }): void {
     this.selectedServicesIDs = event.selected.map(service => service.id);
+    this.updateAssociations();
     this.cdr.detectChanges();
   }
 
   onActivitiesSelectionChange(event: { selected: any[], deselected: any[] }): void {
     this.selectedActivitiesIDs = event.selected.map(activity => activity.id);
+    this.updateAssociations();
     this.cdr.detectChanges();
   }
 
   onSaisSelectionChange(event: { selected: any[], deselected: any[] }): void {
-    // Remover itens deselecionados da lista
+    // Adicionar itens deselecionados à lista de desassociações, se ainda não estiverem presentes
     event.deselected.forEach(sai => {
-      const index = this.selectedSaisIDs.indexOf(sai.sai_id);
-      if (index > -1) {
-        this.selectedSaisIDs.splice(index, 1);
+      if (!this.desassociations.some(desassociation => desassociation.sai_id === sai.sai_id)) {
+        this.desassociations.push({ sai_id: sai.sai_id });
       }
     });
 
-    // Adicionar itens selecionados à lista
+    // Remover itens selecionados da lista de desassociações, se estiverem presentes
     event.selected.forEach(sai => {
-      if (!this.selectedSaisIDs.includes(sai.sai_id)) {
-        this.selectedSaisIDs.push(sai.sai_id);
-      }
+      this.desassociations = this.desassociations.filter(desassociation => desassociation.sai_id !== sai.sai_id);
     });
 
-    // Log para depuração
-    console.log('selectedSaisIDs:', this.selectedSaisIDs);
-
-    // Forçar detecção de mudanças no Angular
+    console.log('Desassociations:', this.desassociations);
     this.cdr.detectChanges();
+  }
+
+  updateAssociations(): void {
+    this.associations = [];
+    this.selectedServicesIDs.forEach(service_id => {
+      this.selectedActivitiesIDs.forEach(activity_id => {
+        this.associations.push({ service_id, activity_id });
+      });
+    });
   }
 
   formValid(): boolean {
     return this.selectedIndicator.indicator_name.trim() !== '' &&
-      this.selectedServicesIDs.length > 0 &&
-      this.selectedActivitiesIDs.length > 0;
+      (this.associations.length > 0 || this.desassociations.length > 0);
   }
 
   formSubmited(): void {
@@ -218,11 +222,9 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
   }
 
   createIndicator(): void {
-    const createdIndicator: Indicator = {
-      id: -1,
+    const createdIndicator: CreateIndicator = {
       indicator_name: this.selectedIndicator.indicator_name,
-      service_ids: this.selectedServicesIDs,
-      activity_ids: this.selectedActivitiesIDs
+      associations: this.associations,
     };
 
     this.indicatorService.storeIndicator(createdIndicator).subscribe(
@@ -238,14 +240,11 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
   }
 
   editIndicator(): void {
-    const updatedIndicator = {
-      indicator_id: this.selectedIndicator.id,
+    const updatedIndicator: Indicator = {
+      id: this.selectedIndicator.id,
       indicator_name: this.selectedIndicator.indicator_name,
-      associations: this.selectedServicesIDs.map(service_id => ({
-        service_id: service_id,
-        activity_id: this.selectedActivitiesIDs.find(activity_id => this.servicesList.find(service => service.id === service_id)?.activity_ids.includes(activity_id))
-      })),
-      desassociations: this.desassociations.map(sai_id => ({ sai_id }))
+      associations: this.associations,
+      desassociations: this.desassociations
     };
 
     this.indicatorService.updateIndicator(this.selectedIndicator.id, updatedIndicator).subscribe(

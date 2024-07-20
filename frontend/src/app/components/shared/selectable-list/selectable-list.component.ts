@@ -28,15 +28,12 @@ export class SelectableListComponent implements OnChanges {
   updateSelectionState() {
     this.selectedItems = this.items.filter(item => this.preSelectedItems.includes(item.sai_id));
     this.deselectedItems = this.items.filter(item => !this.preSelectedItems.includes(item.sai_id));
-    this.selectionChange.emit({ selected: this.selectedItems, deselected: this.deselectedItems });
-    console.log('items:', this.items);
-    console.log('preSelectedItems:', this.preSelectedItems);
-    console.log('selectedItems:', this.selectedItems);
-    console.log('deselectedItems:', this.deselectedItems);
+    console.log('updateSelectionState -> selectedItems:', this.selectedItems);
+    console.log('updateSelectionState -> deselectedItems:', this.deselectedItems);
   }
 
   isSelected(item: any): boolean {
-    return this.preSelectedItems.includes(item.sai_id);
+    return this.selectedItems.some(selectedItem => selectedItem.sai_id === item.sai_id);
   }
 
   toggleSelection(item: any): void {
@@ -48,8 +45,8 @@ export class SelectableListComponent implements OnChanges {
       this.selectedItems.push(item);
     }
     this.selectionChange.emit({ selected: this.selectedItems, deselected: this.deselectedItems });
-    console.log('Selected items:', this.selectedItems);
-    console.log('Deselected items:', this.deselectedItems);
+    console.log('toggleSelection -> selectedItems:', this.selectedItems);
+    console.log('toggleSelection -> deselectedItems:', this.deselectedItems);
   }
 
   getDisplayText(item: any): string {
