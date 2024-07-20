@@ -11,7 +11,7 @@
             </mat-form-field>
             <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
                 <mat-label class="blueTxt">Email:</mat-label>
-                <input matInput id="email" [(ngModel)]="user.email" name="email" [disabled]="formsAction === 'edit'" class="inputContainer--input"
+                <input matInput  [(ngModel)]="user.email" name="email" [disabled]="formsAction === 'edit'" class="inputContainer--input"
                     (blur)="validateEmailOnBlur()" />
                 <span *ngIf="emailError" class="errorSpan">{{ emailError }}</span>
             </mat-form-field>
