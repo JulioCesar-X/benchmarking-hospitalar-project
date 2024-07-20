@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, SimpleChanges, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { Indicator } from '../../../core/models/indicator.model';
   templateUrl: './indicators-upsert-form.component.html',
   styleUrls: ['./indicators-upsert-form.component.scss']
 })
-export class IndicatorsUpsertFormComponent implements OnInit, AfterViewInit {
+export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() formsAction: string = '';
   @Input() selectedIndicator: Indicator = {
     id: -1,
@@ -61,6 +61,13 @@ export class IndicatorsUpsertFormComponent implements OnInit, AfterViewInit {
     this.loadInitialData();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedIndicator'] && !changes['selectedIndicator'].firstChange) {
+      // Lógica específica para quando selectedIndicator muda
+      this.loadIndicator(this.selectedIndicator.id);
+    }
+  }
+
   async loadInitialData() {
     this.isLoading = true;
     try {
@@ -71,10 +78,6 @@ export class IndicatorsUpsertFormComponent implements OnInit, AfterViewInit {
       console.error('Error loading initial data', error);
       this.isLoading = false;
       this.cdr.detectChanges();
-    }
-
-    if (this.formsAction === 'edit' && this.selectedIndicator.id !== -1) {
-      this.loadIndicator(this.selectedIndicator.id);
     }
   }
 
@@ -154,14 +157,17 @@ export class IndicatorsUpsertFormComponent implements OnInit, AfterViewInit {
 
   onServicesSelectionChange(selectedServices: any[]): void {
     this.selectedServicesIDs = selectedServices.map(service => service.id);
+    this.cdr.detectChanges();
   }
 
   onActivitiesSelectionChange(selectedActivities: any[]): void {
     this.selectedActivitiesIDs = selectedActivities.map(activity => activity.id);
+    this.cdr.detectChanges();
   }
 
   onSaisSelectionChange(selectedSais: any[]): void {
     this.selectedSaisIDs = selectedSais.map(sai => sai.sai_id);
+    this.cdr.detectChanges();
   }
 
   formValid(): boolean {

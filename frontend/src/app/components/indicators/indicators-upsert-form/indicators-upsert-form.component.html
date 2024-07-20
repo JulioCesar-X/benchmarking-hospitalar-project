@@ -21,7 +21,7 @@
       <h4 class="checkboxContainer-title">Desassociação</h4>
       <app-loading-spinner *ngIf="isLoadingDesassociacao" message="A carregar SAIs..."></app-loading-spinner>
       <app-selectable-list *ngIf="!isLoadingDesassociacao" [items]="saisList"
-        displayProperty="[service_name, activity_name]" (selectionChange)="onSaisSelectionChange($event)"
+        [displayProperty]="['service_name', 'activity_name']" (selectionChange)="onSaisSelectionChange($event)"
         [preSelectedItems]="selectedSaisIDs"></app-selectable-list>
     </div>
 
