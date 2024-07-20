@@ -18,7 +18,6 @@ class CreateSaisTable extends Migration
             $table->foreignId('service_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('indicator_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('activity_id')->nullable()->constrained()->onDelete('cascade');
-            $table->string('type')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

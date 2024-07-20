@@ -554,31 +554,38 @@ class IndicatorController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Create the indicator
+            // Cria o indicador
             $indicator = Indicator::create(['indicator_name' => $request->indicator_name]);
 
             $saiData = [];
 
+            // Processa as novas associações
+            if (isset($request->associations)) {
+                foreach ($request->associations as $association) {
+                    $existingSai = Sai::where('indicator_id', $indicator->id)
+                        ->where('service_id', $association['service_id'])
+                        ->where('activity_id', $association['activity_id'])
+                        ->first();
 
-            foreach ($request->sais as $saiRequest) {
-                foreach ($request->service_ids as $serviceId) {
-                    foreach ($request->activity_ids as $activityId) {
-                        // Collect Sai data
-                        $sai = [
-                            'service_id' => $serviceId,
-                            'activity_id' => $activityId,
+                    if (!$existingSai) {
+                        $saiData[] = [
+                            'service_id' => $association['service_id'],
+                            'activity_id' => $association['activity_id'],
                             'indicator_id' => $indicator->id,
-                            'type' => $saiRequest['type']
+                            'created_at' => now(),
+                            'updated_at' => now()
                         ];
-                        $saiData[] = $sai;
-
                     }
+                }
+
+                if (!empty($saiData)) {
+                    Sai::insert($saiData);
                 }
             }
 
             DB::commit();
 
-            // Clear the cache
+            // Limpa o cache
             Cache::forget('indicators_index');
 
             return response()->json($indicator->load('sais'), 201);
@@ -587,7 +594,6 @@ class IndicatorController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-
     /**
      * Display the specified resource.
      *
@@ -613,8 +619,11 @@ class IndicatorController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Encontra o indicador pelo ID
-            $indicator = Indicator::findOrFail($request->indicator_id);
+            // Verificar se o indicador existe
+            $indicator = Indicator::find($request->id);
+            if (!$indicator) {
+                return response()->json(['error' => 'Indicator not found.'], 404);
+            }
 
             // Atualiza o nome do indicador
             $indicator->update(['indicator_name' => $request->indicator_name]);
@@ -624,26 +633,29 @@ class IndicatorController extends Controller
                 foreach ($request->desassociations as $desassociation) {
                     $sai = Sai::find($desassociation['sai_id']);
                     if ($sai) {
+                        // Excluir associações nas tabelas `goals` e `records`
+                        DB::table('goals')->where('sai_id', $sai->id)->delete();
+                        DB::table('records')->where('sai_id', $sai->id)->delete();
+
+                        // Excluir o próprio SAI
                         $sai->delete();
                     }
                 }
             }
-
             // Processar novas associações
             $newAssociations = [];
             if (isset($request->associations)) {
                 foreach ($request->associations as $association) {
                     $existingSai = Sai::where('indicator_id', $indicator->id)
-                        ->where('service_id', $association['service_id'])
-                        ->where('activity_id', $association['activity_id'])
+                        ->where('service_id', $association['service_id'] ?? null)
+                        ->where('activity_id', $association['activity_id'] ?? null)
                         ->first();
 
                     if (!$existingSai) {
                         $newAssociations[] = [
                             'indicator_id' => $indicator->id,
-                            'service_id' => $association['service_id'],
-                            'activity_id' => $association['activity_id'],
-                            'type' => 'default',
+                            'service_id' => $association['service_id'] ?? null,
+                            'activity_id' => $association['activity_id'] ?? null,
                             'created_at' => now(),
                             'updated_at' => now()
                         ];
@@ -671,34 +683,28 @@ class IndicatorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
         DB::beginTransaction();
         try {
             // Encontra o indicador pelo ID
             $indicator = Indicator::findOrFail($id);
 
-            // Remove as associações específicas do indicador
+            // Remove as associações do indicador nos 'sais'
             $sais = $indicator->sais;
-            $activityId = $request->activity_id ?? null;
-            $serviceId = $request->service_id ?? null;
 
             foreach ($sais as $sai) {
-                if ($sai->activity_id == $activityId && $sai->service_id == $serviceId) {
-                    $sai->update([
-                        'activity_id' => $sai->activity_id == $activityId ? null : $sai->activity_id,
-                        'service_id' => $sai->service_id == $serviceId ? null : $sai->service_id,
-                        'indicator_id' => $sai->indicator_id == $indicator->id ? null : $sai->indicator_id
-                    ]);
-                }
+                // Deletar registros na tabela 'goals' que referenciam este 'sai'
+                DB::table('goals')->where('sai_id', $sai->id)->delete();
+                // Deletar registros na tabela 'records' que referenciam este 'sai'
+                DB::table('records')->where('sai_id', $sai->id)->delete();
+
+                // Deleta o registro 'sai'
+                $sai->delete();
             }
 
-            // Remove registros SAI se todas as associações forem nulas
-            foreach ($sais as $sai) {
-                if (is_null($sai->service_id) && is_null($sai->indicator_id) && is_null($sai->activity_id)) {
-                    $sai->delete();
-                }
-            }
+            // Deleta o próprio indicador
+            $indicator->delete();
 
             DB::commit();
             // Limpa o cache

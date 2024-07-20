@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreServiceRequest;
-use App\Http\Requests\UpdateServiceRequest;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -86,27 +85,31 @@ class ServiceController extends Controller
         }
     }
 
-    public function store(StoreServiceRequest $request)
+    public function store(Request $request)
     {
-
         DB::beginTransaction();
         try {
-
+            // Cria o serviço
             $service = Service::create($request->only(['service_name', 'description', 'image_url', 'more_info']));
 
             $saiData = [];
-            foreach ($request->activity_ids as $activityId) {
-                foreach ($request->indicator_ids as $indicatorId) {
+
+            // Processa as novas associações
+            if (isset($request->associations)) {
+                foreach ($request->associations as $association) {
                     $saiData[] = [
-                        'activity_id' => $activityId,
                         'service_id' => $service->id,
-                        'indicator_id' => $indicatorId,
-                        'type' => 'default'
+                        'activity_id' => $association['activity_id'],
+                        'indicator_id' => $association['indicator_id'],
+                        'created_at' => now(),
+                        'updated_at' => now()
                     ];
                 }
-            }
 
-            Sai::insert($saiData);
+                if (!empty($saiData)) {
+                    Sai::insert($saiData);
+                }
+            }
 
             DB::commit();
             Cache::forget('services_index');
@@ -117,8 +120,9 @@ class ServiceController extends Controller
             Log::error('Error creating service: ', ['exception' => $exception]);
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
-
     }
+
+
 
     public function show($id)
     {
@@ -134,14 +138,14 @@ class ServiceController extends Controller
 
 
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         DB::beginTransaction();
         try {
             // Encontra o serviço pelo ID
-            $service = Service::findOrFail($request->id);
+            $service = Service::findOrFail($id);
 
-            // Atualiza o serviço
+            // Atualiza os dados do serviço
             $service->update([
                 'service_name' => $request->service_name,
                 'description' => $request->description,
@@ -149,30 +153,27 @@ class ServiceController extends Controller
                 'more_info' => $request->more_info
             ]);
 
-            // Remove as associações atuais
-            // Primeiro, removemos ou atualizamos os registros dependentes nas tabelas 'goals' e 'records'
-            $sais = $service->sais;
-            foreach ($sais as $sai) {
-                // Deletar registros na tabela 'goals' que referenciam este 'sai'
-                DB::table('goals')->where('sai_id', $sai->id)->delete();
-                // Deletar registros na tabela 'records' que referenciam este 'sai'
-                DB::table('records')->where('sai_id', $sai->id)->delete();
+            // Desassocia os SAI especificados
+            if (isset($request->desassociations)) {
+                foreach ($request->desassociations as $saiId) {
+                    // Deletar registros na tabela 'goals' que referenciam este 'sai'
+                    DB::table('goals')->where('sai_id', $saiId)->delete();
+                    // Deletar registros na tabela 'records' que referenciam este 'sai'
+                    DB::table('records')->where('sai_id', $saiId)->delete();
+                    // Deleta o registro 'sai'
+                    Sai::destroy($saiId);
+                }
             }
 
-            // Agora podemos deletar as associações na tabela 'sais'
-            $service->sais()->delete();
-
-            // Prepara os dados para inserção
+            // Prepara os dados para novas associações
             $saiData = [];
-            foreach ($request->activity_ids as $activityId) {
-                foreach ($request->indicator_ids as $indicatorId) {
-                    $saiData[] = [
-                        'service_id' => $service->id,
-                        'activity_id' => $activityId,
-                        'indicator_id' => $indicatorId,
-                        'type' => 'default'
-                    ];
-                }
+            foreach ($request->associations as $association) {
+                $saiData[] = [
+                    'service_id' => $service->id,
+                    'activity_id' => $association['activity_id'],
+                    'indicator_id' => $association['indicator_id'],
+                    'type' => 'default'
+                ];
             }
 
             // Insere novos registros
@@ -183,7 +184,7 @@ class ServiceController extends Controller
             // Limpa o cache
             Cache::forget('services_index');
 
-            return response()->json($service->load('sais'), 200);
+            return response()->json($service->load('sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'), 200);
         } catch (Exception $exception) {
             DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -196,21 +197,35 @@ class ServiceController extends Controller
     {
         DB::beginTransaction();
         try {
-
+            // Encontra o serviço pelo ID
             $service = Service::findOrFail($id);
+
+            // Remove as associações do serviço nos 'sais'
+            $sais = $service->sais;
+
+            foreach ($sais as $sai) {
+                // Deletar registros na tabela 'goals' que referenciam este 'sai'
+                DB::table('goals')->where('sai_id', $sai->id)->delete();
+                // Deletar registros na tabela 'records' que referenciam este 'sai'
+                DB::table('records')->where('sai_id', $sai->id)->delete();
+                // Deleta o registro 'sai'
+                $sai->delete();
+            }
+
+            // Deleta o próprio serviço
             $service->delete();
 
             DB::commit();
+            // Limpa o cache
             Cache::forget('services_index');
-            Cache::forget("service_{$id}");
 
-            return response()->json(['message' => 'Deleted'], 205);
+            return response()->json(['message' => 'Deleted'], 200);
         } catch (Exception $exception) {
             DB::rollBack();
-            Log::error('Error deleting service: ', ['exception' => $exception->getMessage()]);
-            return response()->json(['error' => 'Internal Server Error'], 500);
+            return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
 
     public function search(Request $request)
     {
@@ -226,4 +241,5 @@ class ServiceController extends Controller
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
+
 }
