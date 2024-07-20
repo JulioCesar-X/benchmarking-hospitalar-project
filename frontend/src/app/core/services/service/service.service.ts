@@ -28,14 +28,14 @@ export class ServiceService {
     );
   }
 
-  storeService(service: Service): Observable<Service> {
-    return this.http.post<Service>('/services', service).pipe(
+  storeService(service: any): Observable<any> {
+    return this.http.post<any>('/services', service).pipe(
       catchError(error => throwError(() => new Error('Failed to create service')))
     );
   }
 
-  updateService(id: number,service: Service): Observable<Service> {
-    return this.http.put<Service>(`/services/${id}`, service).pipe(
+  updateService(id: number,service: any): Observable<any> {
+    return this.http.put<any>(`/services/${id}`, service).pipe(
       catchError(error => throwError(() => new Error('Failed to update service')))
     );
   }

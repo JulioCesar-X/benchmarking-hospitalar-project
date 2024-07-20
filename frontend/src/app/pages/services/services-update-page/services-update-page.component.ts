@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
-// import { ServicesUpsertFormComponent } from '../../../components/services/services-upsert-form/services-upsert-form.component';
+import { ServicesUpsertFormComponent } from '../../../components/services/services-upsert-form/services-upsert-form.component';
 import { ServiceService } from '../../../core/services/service/service.service';
 import { Service } from '../../../core/models/service.model';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-services-update-page',
@@ -13,15 +15,16 @@ import { LoadingSpinnerComponent } from '../../../components/shared/loading-spin
   imports: [
     CommonModule,
     MenuComponent,
-    // ServicesUpsertFormComponent,
+    ServicesUpsertFormComponent,
     LoadingSpinnerComponent
   ],
   templateUrl: './services-update-page.component.html',
   styleUrls: ['./services-update-page.component.scss']
 })
-export class ServicesUpdatePageComponent implements OnInit {
+export class ServicesUpdatePageComponent implements OnInit, OnDestroy {
   selectedService: Service = { id: -1, service_name: '', description: '', image_url: '' };
   isLoading = true;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -30,12 +33,17 @@ export class ServicesUpdatePageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const serviceId = params['id'];
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const serviceId = +params['id'];
       if (serviceId) {
         this.loadService(serviceId);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadService(serviceId: number): void {
