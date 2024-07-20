@@ -11,23 +11,27 @@
         name="name" [ngClass]="{ 'inputContainer--input__error': isError }" required>
     </div>
     <div class="tab-buttons">
-      <button type="button" [class.active]="activeTab === 'services'" (click)="selectTab('services')">Serviços</button>
-      <button type="button" [class.active]="activeTab === 'activities'"
-        (click)="selectTab('activities')">Atividades</button>
+      <button type="button" [class.active]="activeTab === 'Desassociação'"
+        (click)="selectTab('Desassociação')">Desassociação</button>
+      <button type="button" [class.active]="activeTab === 'Associação'"
+        (click)="selectTab('Associação')">Associação</button>
     </div>
 
-    <div *ngIf="activeTab === 'services'" class="checkboxContainer">
-      <h4 class="checkboxContainer-title">Associar Serviços:</h4>
-      <app-loading-spinner *ngIf="isLoadingServices" message="A carregar serviços..."></app-loading-spinner>
-      <app-selectable-list *ngIf="!isLoadingServices" [items]="servicesList" displayProperty="service_name"
+    <div *ngIf="activeTab === 'Desassociação'" class="checkboxContainer">
+      <h4 class="checkboxContainer-title">Desassociação</h4>
+      <app-loading-spinner *ngIf="isLoadingDesassociacao" message="A carregar SAIs..."></app-loading-spinner>
+      <app-selectable-list *ngIf="!isLoadingDesassociacao" [items]="saisList"
+        displayProperty="[service_name, activity_name]" (selectionChange)="onSaisSelectionChange($event)"
+        [preSelectedItems]="selectedSaisIDs"></app-selectable-list>
+    </div>
+
+    <div *ngIf="activeTab === 'Associação'" class="checkboxContainer">
+      <h4 class="checkboxContainer-title">Associação</h4>
+      <app-loading-spinner *ngIf="isLoadingAssociacao" message="A carregar Associações..."></app-loading-spinner>
+      <app-selectable-list *ngIf="!isLoadingAssociacao" [items]="servicesList" displayProperty="service_name"
         (selectionChange)="onServicesSelectionChange($event)"
         [preSelectedItems]="selectedServicesIDs"></app-selectable-list>
-    </div>
-
-    <div *ngIf="activeTab === 'activities'" class="checkboxContainer">
-      <h4 class="checkboxContainer-title">Associar Atividades:</h4>
-      <app-loading-spinner *ngIf="isLoadingActivities" message="A carregar atividades..."></app-loading-spinner>
-      <app-selectable-list *ngIf="!isLoadingActivities" [items]="activitiesList" displayProperty="activity_name"
+      <app-selectable-list *ngIf="!isLoadingAssociacao" [items]="activitiesList" displayProperty="activity_name"
         (selectionChange)="onActivitiesSelectionChange($event)"
         [preSelectedItems]="selectedActivitiesIDs"></app-selectable-list>
     </div>

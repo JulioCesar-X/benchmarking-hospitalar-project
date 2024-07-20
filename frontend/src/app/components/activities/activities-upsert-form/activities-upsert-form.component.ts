@@ -173,8 +173,8 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
     const updatedActivity: Activity = {
       id: this.selectedActivity.id,
       activity_name: this.selectedActivity.activity_name,
-      service_ids: this.selectedServicesIDs,
-      indicator_ids: this.selectedIndicatorsIDs
+      service_ids: [...new Set(this.selectedServicesIDs)],  // Garantir que não haja IDs duplicados
+      indicator_ids: [...new Set(this.selectedIndicatorsIDs)]  // Garantir que não haja IDs duplicados
     };
 
     this.activityService.updateActivity(this.selectedActivity.id!, updatedActivity).subscribe(
@@ -193,8 +193,8 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
     const createdActivity: Activity = {
       id: -1,
       activity_name: this.selectedActivity.activity_name,
-      service_ids: this.selectedServicesIDs,
-      indicator_ids: this.selectedIndicatorsIDs
+      service_ids: [...new Set(this.selectedServicesIDs)],  // Garantir que não haja IDs duplicados
+      indicator_ids: [...new Set(this.selectedIndicatorsIDs)]  // Garantir que não haja IDs duplicados
     };
 
     this.activityService.storeActivity(createdActivity).subscribe(

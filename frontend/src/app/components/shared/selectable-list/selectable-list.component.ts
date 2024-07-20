@@ -22,7 +22,7 @@ export class SelectableListComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['preSelectedItems'] && this.items.length) {
-      this.selectedItems = this.items.filter(item => this.preSelectedItems.includes(item.id));
+      this.selectedItems = this.items.filter(item => this.preSelectedItems.includes(item.sai_id));
       this.selectionChange.emit(this.selectedItems);
       this.cdRef.detectChanges(); // Manually trigger change detection after the items have changed
     }

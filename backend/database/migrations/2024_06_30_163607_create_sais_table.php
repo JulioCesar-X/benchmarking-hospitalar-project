@@ -15,10 +15,11 @@ class CreateSaisTable extends Migration
     {
         Schema::create('sais', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('service_id')->constrained()->onDelete('cascade');
-            $table->foreignId('indicator_id')->constrained()->onDelete('cascade');
+            $table->foreignId('service_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('indicator_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('activity_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('type')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

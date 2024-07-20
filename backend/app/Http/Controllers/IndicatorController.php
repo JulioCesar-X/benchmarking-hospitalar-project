@@ -558,9 +558,7 @@ class IndicatorController extends Controller
             $indicator = Indicator::create(['indicator_name' => $request->indicator_name]);
 
             $saiData = [];
-            $goalData = [];
-            $recordData = [];
-            $currentYear = date('Y');
+
 
             foreach ($request->sais as $saiRequest) {
                 foreach ($request->service_ids as $serviceId) {
@@ -574,50 +572,9 @@ class IndicatorController extends Controller
                         ];
                         $saiData[] = $sai;
 
-                        // Temporarily store goals and records for later insertion
-                        foreach ($saiRequest['goals'] as $goalRequest) {
-                            $goalData[] = [
-                                'sai_id' => null, // Placeholder, will be replaced later
-                                'target_value' => $goalRequest['target_value'],
-                                'year' => $goalRequest['year']
-                            ];
-                        }
-
-                        // for ($i = 1; $i <= 12; $i++) {
-                        //     $recordData[] = [
-                        //         'sai_id' => null, // Placeholder, will be replaced later
-                        //         'value' => 0,
-                        //         'date' => "$currentYear-$i-01"
-                        //     ];
-                        // }
                     }
                 }
             }
-
-            // Insert SAIs in bulk and get their IDs
-            Sai::insert($saiData);
-            $saiIds = Sai::where('indicator_id', $indicator->id)->pluck('id')->toArray();
-
-            // Update goals and records with correct sai_id
-            foreach ($saiIds as $index => $saiId) {
-                foreach ($goalData as &$goal) {
-                    if ($goal['sai_id'] === null) {
-                        $goal['sai_id'] = $saiId;
-                        break;
-                    }
-                }
-
-                foreach ($recordData as &$record) {
-                    if ($record['sai_id'] === null) {
-                        $record['sai_id'] = $saiId;
-                        break;
-                    }
-                }
-            }
-
-            // Insert goals and records in bulk
-            Goal::insert($goalData);
-            Record::insert($recordData);
 
             DB::commit();
 
@@ -652,32 +609,54 @@ class IndicatorController extends Controller
      * @param  Indicator  $indicator
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Indicator $indicator)
+    public function update(Request $request)
     {
         DB::beginTransaction();
         try {
-            // Update the indicator name
+            // Encontra o indicador pelo ID
+            $indicator = Indicator::findOrFail($request->indicator_id);
+
+            // Atualiza o nome do indicador
             $indicator->update(['indicator_name' => $request->indicator_name]);
 
-            //Sai::where('indicator_id', $indicator->id)->delete();
-
-            $saiData = [];
-            foreach ($request->activity_ids as $activityId) {
-                foreach ($request->service_ids as $serviceId) {
-                    $saiData[] = [
-                        'activity_id' => $activityId,
-                        'indicator_id' => $indicator->id,
-                        'service_id' => $serviceId,
-                        'type' => 'default'
-                    ];
+            // Processar desassociações
+            if (isset($request->desassociations)) {
+                foreach ($request->desassociations as $desassociation) {
+                    $sai = Sai::find($desassociation['sai_id']);
+                    if ($sai) {
+                        $sai->delete();
+                    }
                 }
             }
-            
-            // Insert new SAIs
-            Sai::insert($saiData);
+
+            // Processar novas associações
+            $newAssociations = [];
+            if (isset($request->associations)) {
+                foreach ($request->associations as $association) {
+                    $existingSai = Sai::where('indicator_id', $indicator->id)
+                        ->where('service_id', $association['service_id'])
+                        ->where('activity_id', $association['activity_id'])
+                        ->first();
+
+                    if (!$existingSai) {
+                        $newAssociations[] = [
+                            'indicator_id' => $indicator->id,
+                            'service_id' => $association['service_id'],
+                            'activity_id' => $association['activity_id'],
+                            'type' => 'default',
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+                }
+
+                if (!empty($newAssociations)) {
+                    Sai::insert($newAssociations);
+                }
+            }
 
             DB::commit();
-            // Clear the cache for the updated data
+            // Limpa o cache para os dados atualizados
             Cache::forget('indicators_index');
 
             return response()->json($indicator->load('sais'), 200);
@@ -692,33 +671,40 @@ class IndicatorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         DB::beginTransaction();
         try {
-            // Encontrar o indicador pelo ID
+            // Encontra o indicador pelo ID
             $indicator = Indicator::findOrFail($id);
 
-            // Deletar os registros relacionados em sais e suas metas
+            // Remove as associações específicas do indicador
             $sais = $indicator->sais;
-            foreach ($sais as $serviceActivityIndicator) {
-                // Deletar as metas relacionadas
-                Goal::where('sai_id', $serviceActivityIndicator->id)->delete();
-                // Deletar os registros relacionados
-                Record::where('sai_id', $serviceActivityIndicator->id)->delete();
-                // Deletar o sai
-                $serviceActivityIndicator->delete();
+            $activityId = $request->activity_id ?? null;
+            $serviceId = $request->service_id ?? null;
+
+            foreach ($sais as $sai) {
+                if ($sai->activity_id == $activityId && $sai->service_id == $serviceId) {
+                    $sai->update([
+                        'activity_id' => $sai->activity_id == $activityId ? null : $sai->activity_id,
+                        'service_id' => $sai->service_id == $serviceId ? null : $sai->service_id,
+                        'indicator_id' => $sai->indicator_id == $indicator->id ? null : $sai->indicator_id
+                    ]);
+                }
             }
 
-            // Deletar o indicador
-            $indicator->delete();
+            // Remove registros SAI se todas as associações forem nulas
+            foreach ($sais as $sai) {
+                if (is_null($sai->service_id) && is_null($sai->indicator_id) && is_null($sai->activity_id)) {
+                    $sai->delete();
+                }
+            }
 
             DB::commit();
-
-            // Clear the cache
+            // Limpa o cache
             Cache::forget('indicators_index');
 
-            return response()->json(['message' => 'Indicator and related records deleted successfully'], 200);
+            return response()->json(['message' => 'Deleted'], 200);
         } catch (Exception $exception) {
             DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);

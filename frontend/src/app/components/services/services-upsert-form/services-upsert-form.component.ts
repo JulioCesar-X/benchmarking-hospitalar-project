@@ -21,7 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     FormsModule,
     FeedbackComponent,
     LoadingSpinnerComponent,
-    SelectableListComponent, 
+    SelectableListComponent,
     MatTooltipModule
   ],
   templateUrl: './services-upsert-form.component.html',
@@ -29,7 +29,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 })
 export class ServicesUpsertFormComponent implements OnInit, OnChanges {
   @Input() formsAction: string = '';
-  @Input() selectedService: Service = { id: -1, service_name: '', description: '', image_url: '' };
+  @Input() selectedService: Service = { id: -1, service_name: '', description: '', image_url: '', more_info: '' };
 
   notificationMessage: string = '';
   Type: 'success' | 'error' = 'success';
@@ -80,17 +80,17 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
     this.isLoading = true;
     this.serviceService.showService(serviceId).subscribe({
       next: (data: Service) => {
-        console.log('Service loaded:', data);
         this.selectedService = data;
         this.selectedActivityIDs = data.sais?.map(sai => sai.activity.id) || [];
         this.selectedIndicatorIDs = data.sais?.map(sai => sai.indicator.id) || [];
+        console.log('selectedActivityIDs', this.selectedActivityIDs);
+        console.log('selectedIndicatorIDs', this.selectedIndicatorIDs);
+
         this.cdRef.detectChanges();
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading service', error);
-        this.isLoading = false;
-      },
-      complete: () => {
         this.isLoading = false;
       }
     });
@@ -100,16 +100,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
     return new Promise((resolve, reject) => {
       this.activityService.indexActivities().subscribe({
         next: (data: Activity[]) => {
-          if (data && Array.isArray(data)) {
-            this.activitiesList = data.map(activity => ({
-              id: activity.id,
-              activity_name: activity.activity_name,
-              services: activity.services || [],
-              indicators: activity.indicators || []
-            }));
-          } else {
-            console.warn('Data is not an array:', data);
-          }
+          this.activitiesList = data;
           resolve();
         },
         error: (error) => {
@@ -128,14 +119,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
     return new Promise((resolve, reject) => {
       this.indicatorService.indexIndicators().subscribe({
         next: (data: Indicator[]) => {
-          if (data && Array.isArray(data)) {
-            this.indicatorsList = data.map(indicator => ({
-              id: indicator.id,
-              indicator_name: indicator.indicator_name
-            }));
-          } else {
-            console.warn('Data is not an array:', data);
-          }
+          this.indicatorsList = data;
           resolve();
         },
         error: (error) => {
@@ -152,10 +136,12 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
 
   onActivitiesSelectionChange(selectedActivities: any[]) {
     this.selectedActivityIDs = selectedActivities.map(activity => activity.id);
+    console.log('Updated selectedActivityIDs:', this.selectedActivityIDs);
   }
 
   onIndicatorsSelectionChange(selectedIndicators: any[]) {
     this.selectedIndicatorIDs = selectedIndicators.map(indicator => indicator.id);
+    console.log('Updated selectedIndicatorIDs:', this.selectedIndicatorIDs);
   }
 
   onFileSelected(event: Event): void {
@@ -193,23 +179,32 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
   }
 
   editService() {
+    if (!this.selectedActivityIDs.length || !this.selectedIndicatorIDs.length) {
+      this.setNotification('Por favor, selecione pelo menos uma atividade e um indicador.', 'error');
+      return;
+    }
+
     const updatedService: Service = {
       id: this.selectedService.id,
       service_name: this.selectedService.service_name,
       description: this.selectedService.description,
       image_url: this.selectedService.image_url,
-      activity_ids: this.selectedActivityIDs,
-      indicator_ids: this.selectedIndicatorIDs
+      more_info: this.selectedService.more_info,
+      activity_ids: [...new Set(this.selectedActivityIDs)],  // Garantir que não haja IDs duplicados
+      indicator_ids: [...new Set(this.selectedIndicatorIDs)]  // Garantir que não haja IDs duplicados
     };
+
+    console.log('Updating service with data:', updatedService);
 
     this.serviceService.updateService(this.selectedService.id!, updatedService).subscribe(
       (response: any) => {
         this.setNotification('Serviço atualizado com sucesso', 'success');
-        setTimeout(() => this.router.navigate(['/services']), 2000); // Redirect after success message
+        setTimeout(() => this.router.navigate(['/services']), 2000);
       },
       (error: any) => {
         const errorMessage = this.getErrorMessage(error);
         this.setNotification(errorMessage, 'error');
+        console.error('Error updating service:', error);
       }
     );
   }
@@ -220,8 +215,9 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges {
       service_name: this.selectedService.service_name,
       description: this.selectedService.description,
       image_url: this.selectedService.image_url,
-      activity_ids: this.selectedActivityIDs,
-      indicator_ids: this.selectedIndicatorIDs
+      more_info: this.selectedService.more_info,
+      activity_ids: [...new Set(this.selectedActivityIDs)],  // Garantir que não haja IDs duplicados
+      indicator_ids: [...new Set(this.selectedIndicatorIDs)]  // Garantir que não haja IDs duplicados
     };
 
     this.serviceService.storeService(createdService).subscribe(

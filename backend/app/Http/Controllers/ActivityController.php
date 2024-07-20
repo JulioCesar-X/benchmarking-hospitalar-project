@@ -143,10 +143,23 @@ class ActivityController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Atualiza o nome da atividade
             $activity->update(['activity_name' => $request->activity_name]);
 
-            //Sai::where('activity_id', $activity->id)->delete();
+            // Remove as associações atuais
+            // Primeiro, removemos ou atualizamos os registros dependentes nas tabelas 'goals' e 'records'
+            $sais = $activity->sais;
+            foreach ($sais as $sai) {
+                // Deletar registros na tabela 'goals' que referenciam este 'sai'
+                DB::table('goals')->where('sai_id', $sai->id)->delete();
+                // Deletar registros na tabela 'records' que referenciam este 'sai'
+                DB::table('records')->where('sai_id', $sai->id)->delete();
+            }
 
+            // Agora podemos deletar as associações na tabela 'sais'
+            $activity->sais()->delete();
+
+            // Prepara os dados para inserção
             $saiData = [];
             foreach ($request->service_ids as $serviceId) {
                 foreach ($request->indicator_ids as $indicatorId) {
@@ -159,11 +172,12 @@ class ActivityController extends Controller
                 }
             }
 
+            // Insere novos registros
             Sai::insert($saiData);
 
             DB::commit();
 
-            // Clear the cache
+            // Limpa o cache
             Cache::forget('activities_index');
 
             return response()->json($activity->load('sais'), 200);

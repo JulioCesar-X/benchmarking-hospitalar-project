@@ -43,7 +43,7 @@ export class ServicesUpdatePageComponent implements OnInit {
     this.serviceService.showService(serviceId).subscribe({
       next: (data) => {
         this.selectedService = data;
-        this.isLoading = false; // Será atualizado uma vez que os dados sejam totalmente carregados
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading service', error);

@@ -34,7 +34,7 @@ export class ServiceService {
     );
   }
 
-  updateService(id: number, service: Service): Observable<Service> {
+  updateService(id: number,service: Service): Observable<Service> {
     return this.http.put<Service>(`/services/${id}`, service).pipe(
       catchError(error => throwError(() => new Error('Failed to update service')))
     );

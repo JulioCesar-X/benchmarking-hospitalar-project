@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,7 +9,6 @@ import { FeedbackComponent } from '../../../components/shared/feedback/feedback.
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
 import { SelectableListComponent } from '../../../components/shared/selectable-list/selectable-list.component';
 import { Indicator } from '../../../core/models/indicator.model';
-import { Sai } from '../../../core/models/sai.model';
 
 @Component({
   selector: 'app-indicators-upsert-form',
@@ -24,7 +23,7 @@ import { Sai } from '../../../core/models/sai.model';
   templateUrl: './indicators-upsert-form.component.html',
   styleUrls: ['./indicators-upsert-form.component.scss']
 })
-export class IndicatorsUpsertFormComponent implements OnInit {
+export class IndicatorsUpsertFormComponent implements OnInit, AfterViewInit {
   @Input() formsAction: string = '';
   @Input() selectedIndicator: Indicator = {
     id: -1,
@@ -36,15 +35,19 @@ export class IndicatorsUpsertFormComponent implements OnInit {
 
   isLoadingServices: boolean = true;
   isLoadingActivities: boolean = true;
+  isLoadingDesassociacao: boolean = false;
+  isLoadingAssociacao: boolean = false;
   isLoading: boolean = false;
   isError: boolean = false;
 
   servicesList: any[] = [];
   activitiesList: any[] = [];
+  saisList: any[] = [];
   selectedServicesIDs: number[] = [];
   selectedActivitiesIDs: number[] = [];
+  selectedSaisIDs: number[] = [];
 
-  activeTab: 'services' | 'activities' = 'services';
+  activeTab: 'Desassociação' | 'Associação' = 'Desassociação';
 
   constructor(
     private router: Router,
@@ -75,19 +78,31 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    if (this.formsAction === 'edit' && this.selectedIndicator.id !== -1) {
+      this.loadIndicator(this.selectedIndicator.id);
+    }
+  }
+
   loadIndicator(indicatorId: number): void {
     this.isLoading = true;
     this.indicatorService.showIndicator(indicatorId).subscribe({
       next: (data: Indicator) => {
         this.selectedIndicator = data;
-        this.selectedServicesIDs = data.sais?.map(sai => sai.service?.id).filter((id): id is number => id !== undefined) || [];
-        this.selectedActivitiesIDs = data.sais?.map(sai => sai.activity?.id).filter((id): id is number => id !== undefined) || [];
-        this.isLoading = false;
+        this.saisList = data.sais?.map(sai => ({
+          sai_id: sai.id,
+          service_id: sai.service?.id,
+          activity_id: sai.activity?.id,
+          service_name: sai.service?.service_name,
+          activity_name: sai.activity?.activity_name
+        })) || [];
+        this.selectedSaisIDs = this.saisList.map(sai => sai.sai_id);
+        this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading indicator', error);
-        this.isLoading = false;
+        this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
       }
     });
@@ -145,10 +160,14 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     this.selectedActivitiesIDs = selectedActivities.map(activity => activity.id);
   }
 
+  onSaisSelectionChange(selectedSais: any[]): void {
+    this.selectedSaisIDs = selectedSais.map(sai => sai.sai_id);
+  }
+
   formValid(): boolean {
     return this.selectedIndicator.indicator_name.trim() !== '' &&
-           this.selectedServicesIDs.length > 0 &&
-           this.selectedActivitiesIDs.length > 0;
+      this.selectedServicesIDs.length > 0 &&
+      this.selectedActivitiesIDs.length > 0;
   }
 
   formSubmited(): void {
@@ -190,11 +209,14 @@ export class IndicatorsUpsertFormComponent implements OnInit {
   }
 
   editIndicator(): void {
-    const updatedIndicator: Indicator = {
-      id: this.selectedIndicator.id,
+    const updatedIndicator = {
+      indicator_id: this.selectedIndicator.id,
       indicator_name: this.selectedIndicator.indicator_name,
-      service_ids: this.selectedServicesIDs,
-      activity_ids: this.selectedActivitiesIDs
+      associations: this.selectedServicesIDs.map(service_id => ({
+        service_id: service_id,
+        activity_id: this.selectedActivitiesIDs.find(activity_id => this.servicesList.find(service => service.id === service_id)?.activity_ids.includes(activity_id))
+      })),
+      desassociations: this.selectedSaisIDs.map(sai_id => ({ sai_id }))
     };
 
     this.indicatorService.updateIndicator(this.selectedIndicator.id, updatedIndicator).subscribe(
@@ -219,7 +241,7 @@ export class IndicatorsUpsertFormComponent implements OnInit {
     return 'An error occurred. Please try again later.';
   }
 
-  selectTab(tab: 'services' | 'activities'): void {
+  selectTab(tab: 'Desassociação' | 'Associação'): void {
     this.activeTab = tab;
   }
 }
