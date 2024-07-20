@@ -20,22 +20,28 @@
     <div *ngIf="activeTab === 'Desassociação'" class="checkboxContainer">
       <h4 class="checkboxContainer-title">Desassociação</h4>
       <app-loading-spinner *ngIf="isLoadingDesassociacao" message="A carregar SAIs..."></app-loading-spinner>
-      <app-selectable-list *ngIf="!isLoadingDesassociacao" [items]="saisList"
+      <app-desassociation-list *ngIf="!isLoadingDesassociacao" [items]="saisList"
         [displayProperty]="['service_name', 'activity_name']" (selectionChange)="onSaisSelectionChange($event)"
-        [preSelectedItems]="selectedSaisIDs"></app-selectable-list>
+        [preSelectedItems]="selectedSaisIDs"></app-desassociation-list>
     </div>
 
     <div *ngIf="activeTab === 'Associação'" class="checkboxContainer">
       <h4 class="checkboxContainer-title">Associação</h4>
       <app-loading-spinner *ngIf="isLoadingAssociacao" message="A carregar Associações..."></app-loading-spinner>
-      <app-selectable-list *ngIf="!isLoadingAssociacao" [items]="servicesList" displayProperty="service_name"
+      <app-association-list *ngIf="!isLoadingAssociacao" [items]="servicesList" displayProperty="service_name"
         (selectionChange)="onServicesSelectionChange($event)"
-        [preSelectedItems]="selectedServicesIDs"></app-selectable-list>
-      <app-selectable-list *ngIf="!isLoadingAssociacao" [items]="activitiesList" displayProperty="activity_name"
+        [preSelectedItems]="selectedServicesIDs"></app-association-list>
+      <app-association-list *ngIf="!isLoadingAssociacao" [items]="activitiesList" displayProperty="activity_name"
         (selectionChange)="onActivitiesSelectionChange($event)"
-        [preSelectedItems]="selectedActivitiesIDs"></app-selectable-list>
+        [preSelectedItems]="selectedActivitiesIDs"></app-association-list>
     </div>
 
     <button type="submit" class="forms-Button" [disabled]="!formValid()">Confirmar</button>
   </div>
 </form>
+
+<div>
+  <h3>Debug Info</h3>
+  <p>Associations: {{ associations | json }}</p>
+  <p>Desassociations: {{ desassociations | json }}</p>
+</div>

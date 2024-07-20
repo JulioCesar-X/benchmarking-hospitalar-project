@@ -7,7 +7,8 @@ import { ServiceService } from '../../../core/services/service/service.service';
 import { ActivityService } from '../../../core/services/activity/activity.service';
 import { FeedbackComponent } from '../../../components/shared/feedback/feedback.component';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
-import { SelectableListComponent } from '../../../components/shared/selectable-list/selectable-list.component';
+import { DesassociationListComponent } from '../../../components/shared/desassociation-list/desassociation-list.component';
+import { AssociationListComponent } from '../../../components/shared/association-list/association-list.component';
 import { Indicator, CreateIndicator } from '../../../core/models/indicator.model';
 
 @Component({
@@ -18,7 +19,8 @@ import { Indicator, CreateIndicator } from '../../../core/models/indicator.model
     FormsModule,
     FeedbackComponent,
     LoadingSpinnerComponent,
-    SelectableListComponent
+    DesassociationListComponent,
+    AssociationListComponent
   ],
   templateUrl: './indicators-upsert-form.component.html',
   styleUrls: ['./indicators-upsert-form.component.scss']
@@ -161,41 +163,58 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
   }
 
   onServicesSelectionChange(event: { selected: any[], deselected: any[] }): void {
+    event.selected.forEach(service => {
+      this.selectedActivitiesIDs.forEach(activity_id => {
+        if (!this.associations.some(association => association.service_id === service.id && association.activity_id === activity_id)) {
+          this.associations.push({ service_id: service.id, activity_id });
+        }
+      });
+    });
+
+    event.deselected.forEach(service => {
+      this.associations = this.associations.filter(association => association.service_id !== service.id);
+    });
+
     this.selectedServicesIDs = event.selected.map(service => service.id);
-    this.updateAssociations();
+
+    console.log('Associations:', this.associations);
     this.cdr.detectChanges();
   }
 
   onActivitiesSelectionChange(event: { selected: any[], deselected: any[] }): void {
+    event.selected.forEach(activity => {
+      this.selectedServicesIDs.forEach(service_id => {
+        if (!this.associations.some(association => association.service_id === service_id && association.activity_id === activity.id)) {
+          this.associations.push({ service_id, activity_id: activity.id });
+        }
+      });
+    });
+
+    event.deselected.forEach(activity => {
+      this.associations = this.associations.filter(association => association.activity_id !== activity.id);
+    });
+
     this.selectedActivitiesIDs = event.selected.map(activity => activity.id);
-    this.updateAssociations();
+
+    console.log('Associations:', this.associations);
     this.cdr.detectChanges();
   }
 
   onSaisSelectionChange(event: { selected: any[], deselected: any[] }): void {
-    // Adicionar itens deselecionados à lista de desassociações, se ainda não estiverem presentes
     event.deselected.forEach(sai => {
       if (!this.desassociations.some(desassociation => desassociation.sai_id === sai.sai_id)) {
         this.desassociations.push({ sai_id: sai.sai_id });
       }
     });
 
-    // Remover itens selecionados da lista de desassociações, se estiverem presentes
     event.selected.forEach(sai => {
       this.desassociations = this.desassociations.filter(desassociation => desassociation.sai_id !== sai.sai_id);
     });
 
+    this.selectedSaisIDs = event.selected.map(sai => sai.sai_id);
+
     console.log('Desassociations:', this.desassociations);
     this.cdr.detectChanges();
-  }
-
-  updateAssociations(): void {
-    this.associations = [];
-    this.selectedServicesIDs.forEach(service_id => {
-      this.selectedActivitiesIDs.forEach(activity_id => {
-        this.associations.push({ service_id, activity_id });
-      });
-    });
   }
 
   formValid(): boolean {
@@ -276,7 +295,9 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
   updateSelectedItems(): void {
     if (this.activeTab === 'Desassociação') {
-      this.selectedSaisIDs = this.saisList.map(sai => sai.sai_id);
+      this.selectedSaisIDs = this.desassociations.map(d => d.sai_id);
+    } else {
+      // lógica adicional para manter as seleções ao mudar de aba se necessário
     }
     this.cdr.detectChanges();
   }
