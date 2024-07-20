@@ -262,8 +262,13 @@ input {
 }
 
 .errorSpan {
-    color: $main-blue;
+    color: $fill-white;
     font-size: 12px;
     margin-top: 5px;
     display: block;
+}
+
+.redTxt {
+  color: $error-color !important;
+  font-size: 0.75rem;
 }

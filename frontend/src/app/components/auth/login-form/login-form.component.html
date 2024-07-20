@@ -8,7 +8,7 @@
 
     <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
       <mat-label class="blueTxt">Email: </mat-label>
-      <input matInput id="email" [ngClass]="{'loginInput--error': emailErrorMessage}" [(ngModel)]="email" name="email"
+      <input matInput id="email" type="email" [ngClass]="{'loginInput--error': emailErrorMessage}" [(ngModel)]="email" name="email"
         required (blur)="validateEmailOnBlur()" />
       <span *ngIf="emailErrorMessage" class="errorSpan">{{ emailErrorMessage }}</span>
     </mat-form-field>
