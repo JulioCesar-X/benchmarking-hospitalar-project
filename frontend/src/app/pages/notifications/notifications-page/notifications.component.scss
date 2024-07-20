@@ -25,24 +25,56 @@
 
 .whiteTxt {
   color: $fill-white;
-  font-size: 2em;
+  font-size: 1.5em;
   text-align: center;
 }
 
-.tab-headers-wrapper {
-  background-color: $main-blue;
+.tab-headers-wrapper{
+  background-color: $darker-main-blue;
+  font-size: 1em;
+}
+.tab-headers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
 
-  .tab-link {
-    padding: 10px 20px;
-    cursor: pointer;
-    color: $fill-white;
-    border: none;
-    background: transparent;
-    outline: none;
 
-    &.active {
-      background-color: darken($main-blue, 10%);
-      border-bottom: 2px solid $fill-white;
-    }
+} @media(max-width:600px){
+  .tab-headers{
+      width: 50%;
+      margin-left: 4em;
   }
 }
+
+.tab-link {
+  color: $fill-white;
+  width: 100%;
+  border: 2px solid $fill-white;
+  background-color: $darker-main-blue;
+  outline: none;
+  cursor: pointer;
+  padding: 1em;
+  transition: 0.3s;
+
+}
+
+.tab-link:hover, .tab-link.active:hover {
+  background-color: darken($main-blue, 10);
+}
+
+.tab-link.active {
+  background-color: $main-blue;
+}
+
+// Custom tooltip styles
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
+  font-size: 1em !important;
+}
+::ng-deep .custom div{
+  padding: 1em;
+  background-color: $main-dark-blue !important;
+}
+::ng-deep .custom div div{
+  font-size: 2em;
+} 

@@ -5,12 +5,14 @@ import { NotificationService } from '../../../core/services/notifications/notifi
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router'; // Import Router
 import { TimelineItem } from '../../../core/models/timeline-item.model';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
   imports: [
-    NotificationsListSectionComponent,
+    NotificationsListSectionComponent, MatTooltipModule,
     MenuComponent,
     CommonModule
   ],

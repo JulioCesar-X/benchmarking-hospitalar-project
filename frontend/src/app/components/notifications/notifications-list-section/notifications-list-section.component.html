@@ -49,5 +49,6 @@
       </div>
     </li>
   </ul>
+  <h2 class="text-center text-2xl font-bold blueTxt" *ngIf="notifications.length === 0">Sem notificações para mostrar</h2>
   <app-feedback *ngIf="feedbackMessage" [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
 </section>

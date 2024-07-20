@@ -1,7 +1,11 @@
 @import '../../../../styles/_variables.scss';
 
+.blueTxt{
+  color: $main-blue;
+}
 .timeline ul {
-  background-color: $fill-white;
+  margin-top: 3em;
+  background-color: transparent;
   padding: 50px 0;
   overflow: hidden;
   position: relative;
@@ -58,10 +62,19 @@
 .timeline ul li.sent .timeline-item {
   background: $main-dark-blue;
 }
+.timeline ul li.sent:nth-child(odd) .timeline-item::before{
+  border-color: transparent $main-dark-blue transparent transparent !important;
+}
+.timeline ul li.sent:nth-child(even) .timeline-item::before{
+  border-color: transparent transparent transparent $main-dark-blue !important;
+}
 
 .timeline ul li.sent .timeline-item .notification-details {
   background: $main-blue;
 }
+
+
+
 
 .timeline ul li.expanded::after {
   background: $main-dark-blue;
@@ -86,7 +99,10 @@
   border-color: transparent $main-blue transparent transparent;
 }
 
-.timeline ul li:nth-child(odd) .timeline-item.expanded::before {
+.timeline ul li.sent:nth-child(odd) .timeline-item.expanded::before {
+  border-color: transparent $darker-main-blue transparent transparent;
+}
+.timeline ul li.received:nth-child(odd) .timeline-item.expanded::before {
   border-color: transparent $main-blue transparent transparent;
 }
 

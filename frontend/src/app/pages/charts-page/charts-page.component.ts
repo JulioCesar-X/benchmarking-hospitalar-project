@@ -157,7 +157,9 @@ export class ChartsPageComponent implements OnInit {
     const element = document.querySelector('.graphicsContainer') as HTMLElement;
     if (element) {
       console.log('Elemento .graphicsContainer encontrado.');
-      html2canvas(element).then(canvas => {
+     
+      // Ajustar a escala para melhorar a qualidade da imagem
+      html2canvas(element, { scale: 2 }).then(canvas => {
         console.log('Canvas gerado com sucesso.');
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
@@ -165,26 +167,34 @@ export class ChartsPageComponent implements OnInit {
         const pdfHeight = pdf.internal.pageSize.getHeight();
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
-
-        
-        let currentPdfHeight = 80; 
+   
+        let currentPdfHeight = 10; // Ajustar altura inicial para permitir margens
+        const pageMargin = 10; // Margem da página
         let srcY = 0;
-
+   
+        // Adicionar texto ao PDF
         pdf.setFontSize(11);
-        pdf.text('Benchmarking Hospitais - Desempenho Assistencial', pdfWidth / 2, 10, { align: 'center' });
+        pdf.text('Benchmarking Hospitais - Desempenho Assistencial', pdfWidth / 2, currentPdfHeight, { align: 'center' });
+        currentPdfHeight += 10; // Ajustar altura após o texto
         pdf.setFontSize(9);
-        pdf.text(`Serviço: ${this.serviceName || 'N/A'}`, 10, 20);
-        pdf.text(`Atividade: ${this.activityName || 'N/A'}`, 10, 30);
-        pdf.text(`Indicador: ${this.indicatorName || 'N/A'}`, 10, 40);
-        pdf.text(`Tempo: ${this.filter.year}${(this.filter.month ?? 0).toString().padStart(2, '0')}`, 10, 50);
-        pdf.text('Dados publicados a:', 10, 60);
-        pdf.text(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 10, 70);
-
+        pdf.text(`Serviço: ${this.serviceName || 'N/A'}`, pageMargin, currentPdfHeight);
+        currentPdfHeight += 10;
+        pdf.text(`Atividade: ${this.activityName || 'N/A'}`, pageMargin, currentPdfHeight);
+        currentPdfHeight += 10;
+        pdf.text(`Indicador: ${this.indicatorName || 'N/A'}`, pageMargin, currentPdfHeight);
+        currentPdfHeight += 10;
+        pdf.text(`Tempo: ${this.filter.year}${(this.filter.month ?? 0).toString().padStart(2, '0')}`, pageMargin, currentPdfHeight);
+        currentPdfHeight += 10;
+        pdf.text('Dados publicados a:', pageMargin, currentPdfHeight);
+        pdf.text(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, pageMargin, currentPdfHeight + 10);
+        currentPdfHeight += 20;
+   
+        // Adicionar imagem ao PDF
         const remainingHeight = canvasHeight - srcY;
-        const pdfRemainingHeight = pdfHeight - currentPdfHeight;
+        const pdfRemainingHeight = pdfHeight - currentPdfHeight - pageMargin;
         const srcHeight = Math.min(remainingHeight, (pdfRemainingHeight * canvasWidth) / pdfWidth);
-        pdf.addImage(imgData, 'PNG', 0, currentPdfHeight, pdfWidth, (srcHeight * pdfWidth) / canvasWidth, undefined, 'FAST', 0);
-
+        pdf.addImage(imgData, 'PNG', 0, currentPdfHeight, pdfWidth, (srcHeight * pdfWidth) / canvasWidth, undefined, 'SLOW', 0);
+   
         console.log('Imagem adicionada ao PDF.');
         pdf.save('graficos.pdf');
         console.log('PDF salvo como graficos.pdf.');
@@ -311,6 +321,7 @@ export class ChartsPageComponent implements OnInit {
       a.download = 'dados_graficos.xlsx';
       a.click();
       // window.URL.revokeObjectURL(url);
+      window.location.href = '/charts;serviceId=1';
     }).catch((error) => {
       console.error('Erro ao gerar o arquivo Excel:', error);
     });
