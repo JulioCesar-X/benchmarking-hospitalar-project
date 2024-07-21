@@ -10,7 +10,8 @@ class Service extends Model
         'service_name',
         'description',
         'image_url',
-        'more_info'
+        'more_info',
+        'order'
     ];
 
     public function sais()

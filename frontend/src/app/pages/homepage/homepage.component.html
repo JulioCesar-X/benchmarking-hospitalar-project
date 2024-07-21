@@ -2,40 +2,48 @@
   <div class="headingSection">
     <h1 class="headingTitle font-medium">Departamento Psiquiatria</h1>
   </div>
-  <div class="homepageCardsSections"   #cardsSection>
-
-    <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)">
-      <div class="cardImg">
-        <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
-      </div>
-      <div class="card__content">
-        <div class="card__content-inner">
-          <div class="cardText text-xl">
-            <p class="card__title">{{ service.service_name }}</p>
+  <div class="homepageCardsSections" cdkDropList (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let service of displayedServices">
+      <div *ngIf="userRole === 'admin' || userRole === 'root'; else noDrag">
+        <div class="card" cdkDrag (click)="goToDescription(service.id)">
+          <div class="cardImg">
+            <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
           </div>
-          <div class="p-5" *ngIf="loadingServiceId === service.id">
-            <lord-icon
-              src="https://cdn.lordicon.com/lqxfrxad.json"
-              trigger="loop"
-              colors="primary:#ffffff"
-              style="width:150px;height:150px;">
-            </lord-icon>
+          <div class="card__content">
+            <div class="card__content-inner">
+              <div class="cardText text-xl">
+                <p class="card__title">{{ service.service_name }}</p>
+              </div>
+              <div class="p-5" *ngIf="loadingServiceId === service.id">
+                <lord-icon src="https://cdn.lordicon.com/lqxfrxad.json" trigger="loop" colors="primary:#ffffff"
+                  style="width:150px;height:150px;">
+                </lord-icon>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      <ng-template #noDrag>
+        <div class="card" (click)="goToDescription(service.id)">
+          <div class="cardImg">
+            <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
+          </div>
+          <div class="card__content">
+            <div class="card__content-inner">
+              <div class="cardText text-xl">
+                <p class="card__title">{{ service.service_name }}</p>
+              </div>
+              <div class="p-5" *ngIf="loadingServiceId === service.id">
+                <lord-icon src="https://cdn.lordicon.com/lqxfrxad.json" trigger="loop" colors="primary:#ffffff"
+                  style="width:150px;height:150px;">
+                </lord-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
     </div>
-    
-    
-    <!-- <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)">
-      <div class="cardImg">
-        <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
-      </div>
-      <div class="cardText">
-        <p>{{ service.service_name }}</p>
-      </div>
-    </div> -->
   </div>
-
 
   <div *ngIf="isLoading || !displayedServices.length" class="random-demo">
     <div class="el"></div>

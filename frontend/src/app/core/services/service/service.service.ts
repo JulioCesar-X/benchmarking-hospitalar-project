@@ -22,6 +22,10 @@ export class ServiceService {
     );
   }
 
+  updateServiceOrder(services: Service[]): Observable<any> {
+    return this.http.post<any>('/services/update-order', { services });
+  }
+
   showService(id: number): Observable<Service> {
     return this.http.get<Service>(`/services/${id}`).pipe(
       catchError(error => throwError(() => new Error('Failed to fetch service')))

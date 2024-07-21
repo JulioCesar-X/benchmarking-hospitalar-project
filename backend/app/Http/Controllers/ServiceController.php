@@ -75,7 +75,7 @@ class ServiceController extends Controller
             $pageSize = $request->input('size', 15);
             $pageIndex = $request->input('page', 1);
 
-            $services = Service::orderBy('created_at', 'desc')
+            $services = Service::orderBy('order', 'asc')
                 ->paginate($pageSize, ['*'], 'page', $pageIndex);
 
             return response()->json($services, 200);
@@ -84,6 +84,19 @@ class ServiceController extends Controller
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
+
+    public function updateOrder(Request $request)
+    {
+        $services = $request->input('services');
+
+        foreach ($services as $index => $service) {
+            Service::where('id', $service['id'])->update(['order' => $index]);
+        }
+
+        return response()->json(['message' => 'Ordem dos serviços atualizada com sucesso.'], 200);
+    }
+
+
 
     public function store(Request $request)
     {

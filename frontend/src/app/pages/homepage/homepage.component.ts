@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
-import anime from 'animejs/lib/anime.es.js';
 import { MatIconModule } from '@angular/material/icon';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ServiceService } from '../../core/services/service/service.service';
 import { Service } from '../../core/models/service.model';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
+import anime from 'animejs/lib/anime.es.js';
 
 @Component({
   selector: 'app-homepage',
@@ -15,6 +16,7 @@ import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner
     CommonModule,
     RouterModule,
     MatIconModule,
+    DragDropModule,
     LoadingSpinnerComponent
   ],
   templateUrl: './homepage.component.html',
@@ -25,12 +27,13 @@ export class HomepageComponent implements OnInit, OnDestroy {
   services: Service[] = [];
   displayedServices: any[] = [];
   isLoading: boolean = false;
-  loadingServiceId: number | null = null; 
+  loadingServiceId: number | null = null;
   page: number = 1;
   pageSize: number = 4;
   totalServices: number = 0;
   loadedPages: Set<number> = new Set();
-  showNavButtons: boolean = false; 
+  showNavButtons: boolean = false;
+  userRole: string | null = null; // Propriedade para armazenar a função do usuário
 
   constructor(
     private serviceService: ServiceService,
@@ -42,6 +45,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadServices();
     this.startLoadingAnimation();
+    this.userRole = this.authService.getRole(); // Inicializa a função do usuário
   }
 
   ngOnDestroy(): void {
@@ -64,6 +68,7 @@ export class HomepageComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.isLoading = false;
+        console.error('Erro ao carregar serviços', err);
       },
       complete: () => {
         this.isLoading = false;
@@ -119,5 +124,23 @@ export class HomepageComponent implements OnInit, OnDestroy {
 
   scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  drop(event: CdkDragDrop<Service[]>) {
+    console.log('Item moved from', event.previousIndex, 'to', event.currentIndex);
+    moveItemInArray(this.displayedServices, event.previousIndex, event.currentIndex);
+    this.saveOrder();
+  }
+
+  saveOrder() {
+    console.log('Saving order', this.displayedServices);
+    this.serviceService.updateServiceOrder(this.displayedServices).subscribe({
+      next: () => {
+        console.log('Ordem dos serviços atualizada com sucesso.');
+      },
+      error: (err) => {
+        console.error('Erro ao atualizar a ordem dos serviços.', err);
+      }
+    });
   }
 }
