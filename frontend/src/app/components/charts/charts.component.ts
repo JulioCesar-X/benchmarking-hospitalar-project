@@ -146,6 +146,16 @@ export class ChartsComponent implements OnInit, OnChanges {
     const highlightBackgroundColor2Bar2 = this.chartColors.secondary;
     const highlightBackgroundColorRed = this.chartColors.red;
 
+    const fillDataArray = (dataObj: any) => {
+      const filledArray = Array(12).fill(0);
+      if (dataObj && dataObj.hasData) {
+        Object.entries(dataObj.data).forEach(([month, value]: any) => {
+          filledArray[parseInt(month, 10) - 1] = value;
+        });
+      }
+      return filledArray;
+    };
+
     switch (this.graphType) {
       case 'bar':
         if (this.graphLabel === "Produção Mês") {
@@ -153,13 +163,13 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               label: 'Meta Mensal',
               type: 'line',
-              data: data[1] && data[1].hasData ? data[1].data : [],
+              data: fillDataArray(data[1]),
               borderColor: this.chartColors.red,
               backgroundColor: this.chartColors.redBg,
             },
             {
               label: 'Valor mês',
-              data: data[0] && data[0].hasData ? data[0].data : [],
+              data: fillDataArray(data[0]),
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
                 return index === highlightMonth ? highlightBackgroundColor : defaultBackgroundColor;
@@ -170,7 +180,7 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [
             {
               label: 'Valor mês',
-              data: data && data.hasData ? data.data : [],
+              data: fillDataArray(data),
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
                 return index === highlightMonth ? highlightBackgroundColorRed : defaultBackgroundColor2BarRed2;
@@ -186,13 +196,13 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               label: 'Meta Mensal',
               type: 'line',
-              data: data[1] && data[1].hasData ? data[1].data : [],
+              data: fillDataArray(data[1]),
               borderColor: this.chartColors.red,
               backgroundColor: this.chartColors.redBg,
             },
             {
               label: 'Valor mês',
-              data: data[0] && data[0].hasData ? data[0].data : [],
+              data: fillDataArray(data[0]),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: false
@@ -201,7 +211,7 @@ export class ChartsComponent implements OnInit, OnChanges {
         } else if (this.graphLabel === "Meta Mês") {
           datasets = [{
             label: 'Valor mês',
-            data: data && data.hasData ? data.data : [],
+            data: fillDataArray(data),
             borderColor: this.chartColors.red,
             backgroundColor: this.chartColors.redBg,
             fill: false
@@ -210,14 +220,14 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [
             {
               label: `${this.year}`,
-              data: data.recordsAnual && data.recordsAnual.hasData ? data.recordsAnual.data : [],
+              data: fillDataArray(data.recordsAnual),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: false
             },
             {
               label: `${this.year - 1}`,
-              data: data.recordsAnualLastYear && data.recordsAnualLastYear.hasData ? data.recordsAnualLastYear.data : [],
+              data: fillDataArray(data.recordsAnualLastYear),
               borderColor: this.chartColors.secondary,
               backgroundColor: this.chartColors.secondaryBg,
               fill: false
@@ -227,14 +237,14 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [
             {
               label: 'Produção',
-              data: data.recordsAnual && data.recordsAnual.hasData ? data.recordsAnual.data : [],
+              data: fillDataArray(data.recordsAnual),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: false
             },
             {
               label: 'Meta',
-              data: data.goalsMensal && data.goalsMensal.hasData ? data.goalsMensal.data : [],
+              data: fillDataArray(data.goalsMensal),
               borderColor: this.chartColors.red,
               backgroundColor: this.chartColors.redBg,
               fill: false
@@ -249,13 +259,13 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               label: 'Meta Mensal',
               type: 'line',
-              data: data[1] && data[1].hasData ? data[1].data : [],
+              data: fillDataArray(data[1]),
               borderColor: this.chartColors.red,
               backgroundColor: this.chartColors.redBg,
             },
             {
               label: 'Valor mês',
-              data: data[0] && data[0].hasData ? data[0].data : [],
+              data: fillDataArray(data[0]),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: true
@@ -265,7 +275,7 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [
             {
               label: 'Valor mês',
-              data: data && data.hasData ? data.data : [],
+              data: fillDataArray(data),
               borderColor: this.chartColors.red,
               backgroundColor: this.chartColors.redBg,
               fill: true
@@ -306,7 +316,7 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [
             {
               label: 'Produção',
-              data: data.recordsAnual && data.recordsAnual.hasData ? data.recordsAnual.data : [],
+              data: fillDataArray(data.recordsAnual),
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
                 return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor2Bar1;
@@ -314,7 +324,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             },
             {
               label: 'Metas',
-              data: data.goalsMensal && data.goalsMensal.hasData ? data.goalsMensal.data : [],
+              data: fillDataArray(data.goalsMensal),
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
                 return index === highlightMonth ? highlightBackgroundColorRed : defaultBackgroundColor2BarRed2;
@@ -325,7 +335,7 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [
             {
               label: `${this.year}`,
-              data: data.recordsAnual && data.recordsAnual.hasData ? data.recordsAnual.data : [],
+              data: fillDataArray(data.recordsAnual),
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
                 return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor2Bar1;
@@ -333,7 +343,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             },
             {
               label: `${this.year - 1}`,
-              data: data.recordsAnualLastYear && data.recordsAnualLastYear.hasData ? data.recordsAnualLastYear.data : [],
+              data: fillDataArray(data.recordsAnualLastYear),
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
                 return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor2Bar2;
@@ -349,7 +359,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               type: 'line',
               label: `${this.year}`,
-              data: data.recordsAnual && data.recordsAnual.hasData ? data.recordsAnual.data : [],
+              data: fillDataArray(data.recordsAnual),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: false
@@ -357,7 +367,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               type: 'bar',
               label: `${this.year - 1}`,
-              data: data.recordsAnualLastYear && data.recordsAnualLastYear.hasData ? data.recordsAnualLastYear.data : [],
+              data: fillDataArray(data.recordsAnualLastYear),
               borderColor: this.chartColors.secondaryBg,
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
@@ -371,7 +381,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               type: 'line',
               label: 'Produção',
-              data: data.recordsAnual && data.recordsAnual.hasData ? data.recordsAnual.data : [],
+              data: fillDataArray(data.recordsAnual),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: false
@@ -379,7 +389,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               type: 'bar',
               label: 'Meta',
-              data: data.goalsMensal && data.goalsMensal.hasData ? data.goalsMensal.data : [],
+              data: fillDataArray(data.goalsMensal),
               borderColor: this.chartColors.secondaryBg,
               backgroundColor: (ctx: any) => {
                 const index = ctx.dataIndex;
