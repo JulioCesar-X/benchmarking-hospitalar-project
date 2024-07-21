@@ -34,19 +34,32 @@ export class IndicatorService {
       return of(this.cache.get(cacheKey));
     } else {
       return forkJoin({
-        recordsMensal: this.getRecordsMensal(filter),
-        recordsAnual: this.getRecordsAnual(filter),
-        recordsAnualLastYear: this.getRecordsLastYear(filter),
-        goalsMensal: this.getGoalsMensal(filter),
-        goalMes: this.getGoalMes(filter),
-        goalAnual: this.getGoalAnual(filter),
-        previousYearTotal: this.getPreviousYearTotal(filter),
-        currentYearTotal: this.getCurrentYearTotal(filter),
-        variations: this.getVariations(filter),
+        recordsMensal: this.getRecordsMensal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+        recordsAnual: this.getRecordsAnual(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+        recordsAnualLastYear: this.getRecordsLastYear(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+        goalsMensal: this.getGoalsMensal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+        goalMes: this.getGoalMes(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+        goalAnual: this.getGoalAnual(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+        previousYearTotal: this.getPreviousYearTotal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+        currentYearTotal: this.getCurrentYearTotal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+        variations: this.getVariations(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
       }).pipe(
         map(data => {
           this.cache.set(cacheKey, data);
-          return data;
+
+          const processedData = {
+            recordsMensal: data.recordsMensal.hasData ? data.recordsMensal.data : null,
+            recordsAnual: data.recordsAnual.hasData ? data.recordsAnual.data : null,
+            recordsAnualLastYear: data.recordsAnualLastYear.hasData ? data.recordsAnualLastYear.data : null,
+            goalsMensal: data.goalsMensal.hasData ? data.goalsMensal.data : null,
+            goalMes: data.goalMes.hasData ? data.goalMes.data : null,
+            goalAnual: data.goalAnual.hasData ? data.goalAnual.data : null,
+            previousYearTotal: data.previousYearTotal.hasData ? data.previousYearTotal.data : null,
+            currentYearTotal: data.currentYearTotal.hasData ? data.currentYearTotal.data : null,
+            variations: data.variations.hasData ? data.variations.data : null,
+          };
+
+          return processedData;
         }),
         catchError(error => {
           console.error('Error fetching data:', error);
