@@ -177,3 +177,8 @@ select {
   border-bottom: solid 1px $main-blue;
   margin-block: 1em;
 }
+
+.association-container {
+  display: flex;
+  justify-content: space-between;
+}

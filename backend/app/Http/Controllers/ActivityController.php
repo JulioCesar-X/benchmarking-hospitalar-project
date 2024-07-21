@@ -87,21 +87,47 @@ class ActivityController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Verifica se o nome da atividade já existe
+            $existingActivity = Activity::where('activity_name', $request->activity_name)->first();
+            if ($existingActivity) {
+                return response()->json(['error' => 'Activity name already exists.'], 400);
+            }
+
             // Cria a atividade
             $activity = Activity::create(['activity_name' => $request->activity_name]);
 
             $saiData = [];
+            $existingCombinations = [];
 
             // Processa as novas associações
             if (isset($request->associations)) {
                 foreach ($request->associations as $association) {
-                    $saiData[] = [
-                        'service_id' => $association['service_id'],
-                        'activity_id' => $activity->id,
-                        'indicator_id' => $association['indicator_id'],
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ];
+                    $combinationKey = $association['service_id'] . '_' . $association['indicator_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        // Se encontrar duplicações, retorna uma mensagem de erro
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Duplicated association detected for service_id: ' . $association['service_id'] . ', indicator_id: ' . $association['indicator_id']
+                        ], 400);
+                    }
+
+                    $existingSai = Sai::where('activity_id', $activity->id)
+                        ->where('service_id', $association['service_id'])
+                        ->where('indicator_id', $association['indicator_id'])
+                        ->first();
+
+                    if (!$existingSai) {
+                        $saiData[] = [
+                            'service_id' => $association['service_id'],
+                            'activity_id' => $activity->id,
+                            'indicator_id' => $association['indicator_id'],
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    $existingCombinations[] = $combinationKey;
                 }
 
                 if (!empty($saiData)) {
@@ -149,6 +175,14 @@ class ActivityController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Verifica se o nome da atividade já existe (exceto para a atividade atual)
+            $existingActivity = Activity::where('activity_name', $request->activity_name)
+                ->where('id', '<>', $activity->id)
+                ->first();
+            if ($existingActivity) {
+                return response()->json(['error' => 'Activity name already exists.'], 400);
+            }
+
             // Atualiza o nome da atividade
             $activity->update(['activity_name' => $request->activity_name]);
 
@@ -169,8 +203,20 @@ class ActivityController extends Controller
 
             // Prepara os dados para novas inserções
             $saiData = [];
+            $existingCombinations = [];
+
             if (isset($request->associations)) {
                 foreach ($request->associations as $association) {
+                    $combinationKey = $association['service_id'] . '_' . $association['indicator_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        // Se encontrar duplicações, retorna uma mensagem de erro
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Duplicated association detected for service_id: ' . $association['service_id'] . ', indicator_id: ' . $association['indicator_id']
+                        ], 400);
+                    }
+
                     $existingSai = Sai::where('activity_id', $activity->id)
                         ->where('service_id', $association['service_id'])
                         ->where('indicator_id', $association['indicator_id'])
@@ -185,6 +231,8 @@ class ActivityController extends Controller
                             'updated_at' => now()
                         ];
                     }
+
+                    $existingCombinations[] = $combinationKey;
                 }
 
                 if (!empty($saiData)) {
@@ -243,7 +291,7 @@ class ActivityController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-    
+
     /**
      * Search for activities based on a keyword.
      *

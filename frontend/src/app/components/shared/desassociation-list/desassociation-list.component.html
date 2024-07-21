@@ -1,4 +1,28 @@
-<div *ngFor="let item of items; trackBy: trackByFn" class="checkbox-container">
-    <input type="checkbox" class="styled-checkbox" [checked]="isSelected(item)" (change)="toggleSelection(item)">
-    <label>{{ getDisplayText(item) }}</label>
+<div class="desassociation-container">
+    <h3 class="title">ASSOCIADOS</h3>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 custom-table">
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+                </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let item">
+                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggleSelection(item) : null"
+                    [checked]="isSelected(item)" [aria-label]="checkboxLabel(item)">
+                </mat-checkbox>
+            </td>
+        </ng-container>
+
+        <!-- Dynamic Columns -->
+        <ng-container *ngFor="let prop of displayProperties" [matColumnDef]="prop">
+            <th mat-header-cell *matHeaderCellDef> {{ columnTitles[prop] || prop }} </th>
+            <td mat-cell *matCellDef="let item"> {{ item[prop] }} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
 </div>

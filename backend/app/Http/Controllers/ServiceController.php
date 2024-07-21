@@ -89,21 +89,47 @@ class ServiceController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Verifica se o nome do serviço já existe
+            $existingService = Service::where('service_name', $request->service_name)->first();
+            if ($existingService) {
+                return response()->json(['error' => 'Service name already exists.'], 400);
+            }
+
             // Cria o serviço
             $service = Service::create($request->only(['service_name', 'description', 'image_url', 'more_info']));
 
             $saiData = [];
+            $existingCombinations = [];
 
             // Processa as novas associações
             if (isset($request->associations)) {
                 foreach ($request->associations as $association) {
-                    $saiData[] = [
-                        'service_id' => $service->id,
-                        'activity_id' => $association['activity_id'],
-                        'indicator_id' => $association['indicator_id'],
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ];
+                    $combinationKey = $association['activity_id'] . '_' . $association['indicator_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        // Se encontrar duplicações, retorna uma mensagem de erro
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Duplicated association detected for activity_id: ' . $association['activity_id'] . ', indicator_id: ' . $association['indicator_id']
+                        ], 400);
+                    }
+
+                    $existingSai = Sai::where('service_id', $service->id)
+                        ->where('activity_id', $association['activity_id'])
+                        ->where('indicator_id', $association['indicator_id'])
+                        ->first();
+
+                    if (!$existingSai) {
+                        $saiData[] = [
+                            'service_id' => $service->id,
+                            'activity_id' => $association['activity_id'],
+                            'indicator_id' => $association['indicator_id'],
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    $existingCombinations[] = $combinationKey;
                 }
 
                 if (!empty($saiData)) {
@@ -138,56 +164,89 @@ class ServiceController extends Controller
 
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         DB::beginTransaction();
         try {
-            // Encontra o serviço pelo ID
-            $service = Service::findOrFail($id);
+            // Verificar se o serviço existe
+            $service = Service::find($request->id);
+            if (!$service) {
+                return response()->json(['error' => 'Service not found.'], 404);
+            }
+
+            // Verifica se o nome do serviço já existe (exceto para o serviço atual)
+            $existingService = Service::where('service_name', $request->service_name)
+                ->where('id', '<>', $service->id)
+                ->first();
+            if ($existingService) {
+                return response()->json(['error' => 'Service name already exists.'], 400);
+            }
 
             // Atualiza os dados do serviço
-            $service->update([
-                'service_name' => $request->service_name,
-                'description' => $request->description,
-                'image_url' => $request->image_url,
-                'more_info' => $request->more_info
-            ]);
+            $service->update($request->only(['service_name', 'description', 'image_url', 'more_info']));
 
-            // Desassocia os SAI especificados
+            // Processa as desassociações
             if (isset($request->desassociations)) {
-                foreach ($request->desassociations as $saiId) {
-                    // Deletar registros na tabela 'goals' que referenciam este 'sai'
-                    DB::table('goals')->where('sai_id', $saiId)->delete();
-                    // Deletar registros na tabela 'records' que referenciam este 'sai'
-                    DB::table('records')->where('sai_id', $saiId)->delete();
-                    // Deleta o registro 'sai'
-                    Sai::destroy($saiId);
+                foreach ($request->desassociations as $desassociation) {
+                    $sai = Sai::find($desassociation['sai_id']);
+                    if ($sai) {
+                        // Deletar registros na tabela 'goals' que referenciam este 'sai'
+                        DB::table('goals')->where('sai_id', $sai->id)->delete();
+                        // Deletar registros na tabela 'records' que referenciam este 'sai'
+                        DB::table('records')->where('sai_id', $sai->id)->delete();
+                        // Deleta o próprio sai
+                        $sai->delete();
+                    }
                 }
             }
 
-            // Prepara os dados para novas associações
+            // Prepara os dados para novas inserções
             $saiData = [];
-            foreach ($request->associations as $association) {
-                $saiData[] = [
-                    'service_id' => $service->id,
-                    'activity_id' => $association['activity_id'],
-                    'indicator_id' => $association['indicator_id'],
-                    'type' => 'default'
-                ];
+            $existingCombinations = [];
+
+            if (isset($request->associations)) {
+                foreach ($request->associations as $association) {
+                    $combinationKey = $association['activity_id'] . '_' . $association['indicator_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        // Se encontrar duplicações, retorna uma mensagem de erro
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Duplicated association detected for activity_id: ' . $association['activity_id'] . ', indicator_id: ' . $association['indicator_id']
+                        ], 400);
+                    }
+
+                    $existingSai = Sai::where('service_id', $service->id)
+                        ->where('activity_id', $association['activity_id'])
+                        ->where('indicator_id', $association['indicator_id'])
+                        ->first();
+
+                    if (!$existingSai) {
+                        $saiData[] = [
+                            'service_id' => $service->id,
+                            'activity_id' => $association['activity_id'],
+                            'indicator_id' => $association['indicator_id'],
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    $existingCombinations[] = $combinationKey;
+                }
+
+                if (!empty($saiData)) {
+                    Sai::insert($saiData);
+                }
             }
 
-            // Insere novos registros
-            Sai::insert($saiData);
-
             DB::commit();
-
-            // Limpa o cache
             Cache::forget('services_index');
 
             return response()->json($service->load('sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'), 200);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
+            Log::error('Error updating service: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
 

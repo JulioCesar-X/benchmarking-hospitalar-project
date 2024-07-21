@@ -1,19 +1,20 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-association-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, MatChipsModule],
   templateUrl: './association-list.component.html',
   styleUrls: ['./association-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssociationListComponent implements OnChanges {
   @Input() items: any[] = [];
-  @Input() displayProperty: string | string[] = '';
+  @Input() displayProperties: string[] = [];
   @Input() preSelectedItems: any[] = [];
+  @Input() columnTitle: string = '';
   @Output() selectionChange = new EventEmitter<{ selected: any[], deselected: any[] }>();
 
   selectedItems: any[] = [];
@@ -50,9 +51,6 @@ export class AssociationListComponent implements OnChanges {
   }
 
   getDisplayText(item: any): string {
-    if (Array.isArray(this.displayProperty)) {
-      return this.displayProperty.map(prop => item[prop]).join(' - ');
-    }
-    return item[this.displayProperty];
+    return this.displayProperties.map(prop => item[prop]).join(' - ');
   }
 }

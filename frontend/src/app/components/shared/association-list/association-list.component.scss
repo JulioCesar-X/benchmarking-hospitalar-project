@@ -1,0 +1,39 @@
+@import '../../../../styles/variables';
+
+
+.association-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 1em;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+}
+
+.column {
+    width: 48%;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 1em;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #000;
+}
+
+.mat-mdc-chip-set-stacked {
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.mat-chip-option {
+    margin: 5px 0;
+    background-color: #424242;
+    color: white;
+}
+
+.mat-chip-option.mat-mdc-chip-selected {
+    background-color: #e91e63;
+    color: white;
+}

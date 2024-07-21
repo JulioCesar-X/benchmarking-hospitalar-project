@@ -1,0 +1,61 @@
+@import '../../../../styles/variables';
+
+.desassociation-container {
+    padding: 1em;
+    border-radius: 10px;
+    background-color: $main-blue;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 1em;
+    font-weight: bold;
+    font-size: 1.5em;
+    color: $fill-white;
+}
+
+table {
+    width: 100%;
+}
+
+.mat-elevation-z8 {
+    box-shadow: none;
+    background: transparent;
+}
+
+.custom-table {
+    background-color: $main-dark-blue;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 3px -2px rgba(0, 0, 0, .2), 0 3px 4px 0 rgba(0, 0, 0, .14), 0 1px 8px 0 rgba(0, 0, 0, .12);
+}
+
+.mat-header-cell {
+    background-color: $main-blue;
+    font-weight: bold;
+    text-align: left;
+    color: black !important;
+}
+
+.mat-cell,
+.mat-header-cell {
+    padding: 8px;
+    text-align: left;
+    color: black !important;
+}
+
+.mat-column-select {
+    width: 50px;
+    text-align: center;
+}
+
+.mat-column-service,
+.mat-column-activity {
+    text-align: left;
+}
+
+.mat-checkbox-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

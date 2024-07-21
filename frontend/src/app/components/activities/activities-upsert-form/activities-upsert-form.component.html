@@ -20,20 +20,26 @@
     <div *ngIf="activeTab === 'Desassociação'" class="checkboxContainer">
       <h4 class="checkboxContainer-title">Desassociação</h4>
       <app-loading-spinner *ngIf="isLoadingDesassociacao" message="A carregar SAIs..."></app-loading-spinner>
-      <app-desassociation-list *ngIf="!isLoadingDesassociacao" [items]="saisList"
-        [displayProperty]="['service_name', 'indicator_name']" (selectionChange)="onSaisSelectionChange($event)"
-        [preSelectedItems]="selectedSaisIDs"></app-desassociation-list>
+      <app-desassociation-list [items]="saisList" [displayProperties]="['service_name', 'indicator_name']"
+        [preSelectedItems]="selectedSaisIDs"
+        (selectionChange)="onSaisSelectionChange($event)">
+      </app-desassociation-list>
     </div>
 
     <div *ngIf="activeTab === 'Associação'" class="checkboxContainer">
-      <h4 class="checkboxContainer-title">Associação</h4>
+      <h4 class="checkboxContainer-title">Para associar</h4>
       <app-loading-spinner *ngIf="isLoadingAssociacao" message="A carregar Associações..."></app-loading-spinner>
-      <app-association-list *ngIf="!isLoadingAssociacao" [items]="servicesList" displayProperty="service_name"
-        (selectionChange)="onServicesSelectionChange($event)"
-        [preSelectedItems]="selectedServicesIDs"></app-association-list>
-      <app-association-list *ngIf="!isLoadingAssociacao" [items]="indicatorsList" displayProperty="indicator_name"
-        (selectionChange)="onIndicatorsSelectionChange($event)"
-        [preSelectedItems]="selectedIndicatorsIDs"></app-association-list>
+      <div class="association-container">
+        <app-association-list [items]="servicesList" [displayProperties]="['service_name']"
+          [preSelectedItems]="selectedServicesIDs" [columnTitle]="'Serviços'"
+          (selectionChange)="onServicesSelectionChange($event)">
+        </app-association-list>
+      
+        <app-association-list [items]="indicatorsList" [displayProperties]="['indicator_name']"
+          [preSelectedItems]="selectedIndicatorsIDs" [columnTitle]="'Indicadores'"
+          (selectionChange)="onIndicatorsSelectionChange($event)">
+        </app-association-list>
+      </div>
     </div>
 
     <button type="submit" class="forms-Button" [disabled]="!formValid()">Confirmar</button>

@@ -554,14 +554,31 @@ class IndicatorController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Verifica se o nome do indicador já existe
+            $existingIndicator = Indicator::where('indicator_name', $request->indicator_name)->first();
+            if ($existingIndicator) {
+                return response()->json(['error' => 'Indicator name already exists.'], 400);
+            }
+
             // Cria o indicador
             $indicator = Indicator::create(['indicator_name' => $request->indicator_name]);
 
             $saiData = [];
+            $existingCombinations = [];
 
             // Processa as novas associações
             if (isset($request->associations)) {
                 foreach ($request->associations as $association) {
+                    $combinationKey = $association['service_id'] . '_' . $association['activity_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        // Se encontrar duplicações, retorna uma mensagem de erro
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Duplicated association detected for service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
+                        ], 400);
+                    }
+
                     $existingSai = Sai::where('indicator_id', $indicator->id)
                         ->where('service_id', $association['service_id'])
                         ->where('activity_id', $association['activity_id'])
@@ -576,6 +593,8 @@ class IndicatorController extends Controller
                             'updated_at' => now()
                         ];
                     }
+
+                    $existingCombinations[] = $combinationKey;
                 }
 
                 if (!empty($saiData)) {
@@ -625,45 +644,68 @@ class IndicatorController extends Controller
                 return response()->json(['error' => 'Indicator not found.'], 404);
             }
 
+            // Verifica se o nome do indicador já existe (exceto para o indicador atual)
+            $existingIndicator = Indicator::where('indicator_name', $request->indicator_name)
+                ->where('id', '<>', $indicator->id)
+                ->first();
+            if ($existingIndicator) {
+                return response()->json(['error' => 'Indicator name already exists.'], 400);
+            }
+
             // Atualiza o nome do indicador
             $indicator->update(['indicator_name' => $request->indicator_name]);
 
-            // Processar desassociações
+            // Processa as desassociações
             if (isset($request->desassociations)) {
                 foreach ($request->desassociations as $desassociation) {
                     $sai = Sai::find($desassociation['sai_id']);
                     if ($sai) {
-                        // Excluir associações nas tabelas `goals` e `records`
+                        // Deletar registros na tabela 'goals' que referenciam este 'sai'
                         DB::table('goals')->where('sai_id', $sai->id)->delete();
+                        // Deletar registros na tabela 'records' que referenciam este 'sai'
                         DB::table('records')->where('sai_id', $sai->id)->delete();
-
-                        // Excluir o próprio SAI
+                        // Deleta o próprio sai
                         $sai->delete();
                     }
                 }
             }
-            // Processar novas associações
-            $newAssociations = [];
+
+            // Prepara os dados para novas inserções
+            $saiData = [];
+            $existingCombinations = [];
+
             if (isset($request->associations)) {
                 foreach ($request->associations as $association) {
+                    $combinationKey = $association['service_id'] . '_' . $association['activity_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        // Se encontrar duplicações, retorna uma mensagem de erro
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Duplicated association detected for service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
+                        ], 400);
+                    }
+
                     $existingSai = Sai::where('indicator_id', $indicator->id)
-                        ->where('service_id', $association['service_id'] ?? null)
-                        ->where('activity_id', $association['activity_id'] ?? null)
+                        ->where('service_id', $association['service_id'])
+                        ->where('activity_id', $association['activity_id'])
                         ->first();
 
                     if (!$existingSai) {
-                        $newAssociations[] = [
+                        $saiData[] = [
                             'indicator_id' => $indicator->id,
-                            'service_id' => $association['service_id'] ?? null,
-                            'activity_id' => $association['activity_id'] ?? null,
+                            'service_id' => $association['service_id'],
+                            'activity_id' => $association['activity_id'],
                             'created_at' => now(),
                             'updated_at' => now()
                         ];
                     }
+
+                    $existingCombinations[] = $combinationKey;
                 }
 
-                if (!empty($newAssociations)) {
-                    Sai::insert($newAssociations);
+                if (!empty($saiData)) {
+                    Sai::insert($saiData);
                 }
             }
 

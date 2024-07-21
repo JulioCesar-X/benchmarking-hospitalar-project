@@ -236,3 +236,8 @@ input[type="file"] {
 ::ng-deep .custom div div{
   font-size: 2em;
 } 
+
+.association-container {
+  display: flex;
+  justify-content: space-between;
+}
