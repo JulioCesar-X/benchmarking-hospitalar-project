@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { Chart, ChartType, ChartData, ChartOptions, registerables } from 'chart.js';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
+import { debounce } from 'lodash';
 
 Chart.register(...registerables);
 
@@ -15,7 +16,8 @@ Chart.register(...registerables);
   standalone: true,
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss'],
-  imports: [MatMenuModule, MatIconModule, MatButtonModule, CommonModule, MatTooltipModule, MatCheckboxModule, FormsModule]
+  imports: [MatMenuModule, MatIconModule, MatButtonModule, CommonModule, MatTooltipModule, MatCheckboxModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChartsComponent implements OnInit, OnChanges {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -52,7 +54,9 @@ export class ChartsComponent implements OnInit, OnChanges {
     redBg: 'rgba(255, 0, 0, 0.2)',
   };
 
-  constructor() { }
+  constructor() {
+    this.changeChartType = debounce(this.changeChartType.bind(this), 300); // Debounce to prevent rapid calls
+  }
 
   ngOnInit() {
     this.initializeChart(this.graphData);
@@ -60,7 +64,7 @@ export class ChartsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['graphData'] && changes['graphData'].currentValue !== changes['graphData'].previousValue) {
-      this.initializeChart(this.graphData);
+      this.updateChart(this.graphData);
     }
   }
 
@@ -76,10 +80,19 @@ export class ChartsComponent implements OnInit, OnChanges {
     });
   }
 
+  updateChart(data: any) {
+    if (this.chart) {
+      const { chartData, chartOptions } = this.getChartDataAndOptions(data);
+      this.chart.data = chartData;
+      this.chart.options = chartOptions;
+      this.chart.update();
+    }
+  }
+
   changeChartType(type: string) {
     if (this.allowedChartTypes.includes(type)) {
       this.graphType = type;
-      this.initializeChart(this.graphData);
+      this.initializeChart(this.graphData); // Reinitialize chart to apply new type
     }
   }
 
@@ -89,6 +102,9 @@ export class ChartsComponent implements OnInit, OnChanges {
     let datasets: any[] = [];
     let chartOptions: ChartOptions = {
       maintainAspectRatio: false,
+      animation: {
+        duration: 300, // Adjust animation duration for smooth transitions
+      },
       scales: {
         y: {
           beginAtZero: true
