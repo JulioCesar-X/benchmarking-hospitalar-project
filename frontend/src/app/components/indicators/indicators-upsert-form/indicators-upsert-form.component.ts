@@ -225,7 +225,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
   formSubmited(): void {
     if (!this.formValid()) {
-      this.setNotification('Please fill all required fields and select at least one service and one activity.', 'error');
+      this.setNotification('Por favor, preencha todos os campos obrigatórios.', 'error');
       return;
     }
 
@@ -242,14 +242,14 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
   }
 
   createIndicator(): void {
-    const createdIndicator: CreateIndicator = {
+    const createdIndicator = {
       indicator_name: this.selectedIndicator.indicator_name,
       associations: this.associations,
     };
 
     this.indicatorService.storeIndicator(createdIndicator).subscribe(
       (response: any) => {
-        this.setNotification('Indicator created successfully', 'success');
+        this.setNotification('Indicador criado com sucesso!', 'success');
         setTimeout(() => this.router.navigate(['/indicators']), 2000);
       },
       (error: any) => {
@@ -260,7 +260,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
   }
 
   editIndicator(): void {
-    const updatedIndicator: Indicator = {
+    const updatedIndicator = {
       id: this.selectedIndicator.id,
       indicator_name: this.selectedIndicator.indicator_name,
       associations: this.associations,
@@ -269,7 +269,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
     this.indicatorService.updateIndicator(this.selectedIndicator.id, updatedIndicator).subscribe(
       (response: any) => {
-        this.setNotification('Indicator updated successfully', 'success');
+        this.setNotification('Indicador atualizado com sucesso!', 'success');
         setTimeout(() => this.router.navigate(['/indicators']), 2000);
       },
       (error: any) => {
@@ -280,14 +280,24 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
   }
 
   getErrorMessage(error: any): string {
-    if (error.status === 409) {
-      return 'Indicator already exists';
-    }
     if (error.status === 400) {
-      return 'Invalid entry';
+      if (error.error.error === 'Nome do indicador já existe.') {
+        return 'Nome do indicador já existe.';
+      }
+      if (error.error.error.startsWith('Associação duplicada detectada')) {
+        return error.error.error;
+      }
+      return 'Entrada inválida.';
     }
-    return 'An error occurred. Please try again later.';
+    if (error.status === 404) {
+      return 'Indicador não encontrado.';
+    }
+    if (error.status === 409) {
+      return 'Indicador já existe.';
+    }
+    return 'Ocorreu um erro. Tente novamente mais tarde.';
   }
+
 
   selectTab(tab: 'Desassociação' | 'Associação'): void {
     this.activeTab = tab;

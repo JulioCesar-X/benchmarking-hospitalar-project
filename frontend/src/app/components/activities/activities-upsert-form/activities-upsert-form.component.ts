@@ -10,8 +10,6 @@ import { LoadingSpinnerComponent } from '../../../components/shared/loading-spin
 import { DesassociationListComponent } from '../../../components/shared/desassociation-list/desassociation-list.component';
 import { AssociationListComponent } from '../../../components/shared/association-list/association-list.component';
 import { Activity, CreateActivity } from '../../../core/models/activity.model';
-import { Service } from '../../../core/models/service.model';
-import { Indicator } from '../../../core/models/indicator.model';
 
 @Component({
   selector: 'app-activities-upsert-form',
@@ -227,7 +225,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
   formSubmited(): void {
     if (!this.formValid()) {
-      this.setNotification('Please fill all required fields and select at least one service and one indicator.', 'error');
+      this.setNotification('Por favor, preencha todos os campos obrigatórios e selecione pelo menos um serviço e um indicador.', 'error');
       return;
     }
 
@@ -251,7 +249,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
     this.activityService.storeActivity(createdActivity).subscribe(
       (response: any) => {
-        this.setNotification('Activity created successfully', 'success');
+        this.setNotification('Atividade criada com sucesso', 'success');
         setTimeout(() => this.router.navigate(['/activities']), 2000);
       },
       (error: any) => {
@@ -271,7 +269,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
     this.activityService.updateActivity(this.selectedActivity.id, updatedActivity).subscribe(
       (response: any) => {
-        this.setNotification('Activity updated successfully', 'success');
+        this.setNotification('Atividade atualizada com sucesso', 'success');
         setTimeout(() => this.router.navigate(['/activities']), 2000);
       },
       (error: any) => {
@@ -283,12 +281,18 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
   getErrorMessage(error: any): string {
     if (error.status === 409) {
-      return 'Activity already exists';
+      return 'Atividade já existe';
     }
     if (error.status === 400) {
-      return 'Invalid entry';
+      if (error.error.error === 'Nome da atividade já existe.') {
+        return 'Nome da atividade já existe.';
+      }
+      if (error.error.error.startsWith('Associação duplicada detectada')) {
+        return error.error.error;
+      }
+      return 'Entrada inválida';
     }
-    return 'An error occurred. Please try again later.';
+    return 'Ocorreu um erro. Por favor, tente novamente mais tarde.';
   }
 
   selectTab(tab: 'Desassociação' | 'Associação'): void {

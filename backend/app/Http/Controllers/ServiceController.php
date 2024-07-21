@@ -92,7 +92,7 @@ class ServiceController extends Controller
             // Verifica se o nome do serviço já existe
             $existingService = Service::where('service_name', $request->service_name)->first();
             if ($existingService) {
-                return response()->json(['error' => 'Service name already exists.'], 400);
+                return response()->json(['error' => 'Nome do serviço já existe.'], 400);
             }
 
             // Cria o serviço
@@ -110,7 +110,7 @@ class ServiceController extends Controller
                         // Se encontrar duplicações, retorna uma mensagem de erro
                         DB::rollBack();
                         return response()->json([
-                            'error' => 'Duplicated association detected for activity_id: ' . $association['activity_id'] . ', indicator_id: ' . $association['indicator_id']
+                            'error' => 'Associação duplicada detectada para activity_id: ' . $association['activity_id'] . ', indicator_id: ' . $association['indicator_id']
                         ], 400);
                     }
 
@@ -143,8 +143,8 @@ class ServiceController extends Controller
             return response()->json($service->load('sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'), 201);
         } catch (Exception $exception) {
             DB::rollBack();
-            Log::error('Error creating service: ', ['exception' => $exception]);
-            return response()->json(['error' => 'Internal Server Error'], 500);
+            Log::error('Erro ao criar o serviço: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
         }
     }
 
@@ -171,7 +171,7 @@ class ServiceController extends Controller
             // Verificar se o serviço existe
             $service = Service::find($request->id);
             if (!$service) {
-                return response()->json(['error' => 'Service not found.'], 404);
+                return response()->json(['error' => 'Serviço não encontrado.'], 404);
             }
 
             // Verifica se o nome do serviço já existe (exceto para o serviço atual)
@@ -179,7 +179,7 @@ class ServiceController extends Controller
                 ->where('id', '<>', $service->id)
                 ->first();
             if ($existingService) {
-                return response()->json(['error' => 'Service name already exists.'], 400);
+                return response()->json(['error' => 'Nome do serviço já existe.'], 400);
             }
 
             // Atualiza os dados do serviço
@@ -212,7 +212,7 @@ class ServiceController extends Controller
                         // Se encontrar duplicações, retorna uma mensagem de erro
                         DB::rollBack();
                         return response()->json([
-                            'error' => 'Duplicated association detected for activity_id: ' . $association['activity_id'] . ', indicator_id: ' . $association['indicator_id']
+                            'error' => 'Associação duplicada detectada para activity_id: ' . $association['activity_id'] . ', indicator_id: ' . $association['indicator_id']
                         ], 400);
                     }
 
@@ -245,8 +245,8 @@ class ServiceController extends Controller
             return response()->json($service->load('sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'), 200);
         } catch (Exception $exception) {
             DB::rollBack();
-            Log::error('Error updating service: ', ['exception' => $exception]);
-            return response()->json(['error' => 'Internal Server Error'], 500);
+            Log::error('Erro ao atualizar o serviço: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
         }
     }
 

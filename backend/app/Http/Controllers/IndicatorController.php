@@ -557,7 +557,7 @@ class IndicatorController extends Controller
             // Verifica se o nome do indicador já existe
             $existingIndicator = Indicator::where('indicator_name', $request->indicator_name)->first();
             if ($existingIndicator) {
-                return response()->json(['error' => 'Indicator name already exists.'], 400);
+                return response()->json(['error' => 'Nome do indicador já existe.'], 400);
             }
 
             // Cria o indicador
@@ -575,7 +575,7 @@ class IndicatorController extends Controller
                         // Se encontrar duplicações, retorna uma mensagem de erro
                         DB::rollBack();
                         return response()->json([
-                            'error' => 'Duplicated association detected for service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
+                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
                         ], 400);
                     }
 
@@ -610,7 +610,7 @@ class IndicatorController extends Controller
             return response()->json($indicator->load('sais'), 201);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
+            return response()->json(['error' => 'Ocorreu um erro ao criar o indicador. Tente novamente mais tarde.'], 500);
         }
     }
     /**
@@ -641,7 +641,7 @@ class IndicatorController extends Controller
             // Verificar se o indicador existe
             $indicator = Indicator::find($request->id);
             if (!$indicator) {
-                return response()->json(['error' => 'Indicator not found.'], 404);
+                return response()->json(['error' => 'Indicador não encontrado.'], 404);
             }
 
             // Verifica se o nome do indicador já existe (exceto para o indicador atual)
@@ -649,7 +649,7 @@ class IndicatorController extends Controller
                 ->where('id', '<>', $indicator->id)
                 ->first();
             if ($existingIndicator) {
-                return response()->json(['error' => 'Indicator name already exists.'], 400);
+                return response()->json(['error' => 'Nome do indicador já existe.'], 400);
             }
 
             // Atualiza o nome do indicador
@@ -682,7 +682,7 @@ class IndicatorController extends Controller
                         // Se encontrar duplicações, retorna uma mensagem de erro
                         DB::rollBack();
                         return response()->json([
-                            'error' => 'Duplicated association detected for service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
+                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
                         ], 400);
                     }
 
@@ -716,46 +716,7 @@ class IndicatorController extends Controller
             return response()->json($indicator->load('sais'), 200);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    }
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        DB::beginTransaction();
-        try {
-            // Encontra o indicador pelo ID
-            $indicator = Indicator::findOrFail($id);
-
-            // Remove as associações do indicador nos 'sais'
-            $sais = $indicator->sais;
-
-            foreach ($sais as $sai) {
-                // Deletar registros na tabela 'goals' que referenciam este 'sai'
-                DB::table('goals')->where('sai_id', $sai->id)->delete();
-                // Deletar registros na tabela 'records' que referenciam este 'sai'
-                DB::table('records')->where('sai_id', $sai->id)->delete();
-
-                // Deleta o registro 'sai'
-                $sai->delete();
-            }
-
-            // Deleta o próprio indicador
-            $indicator->delete();
-
-            DB::commit();
-            // Limpa o cache
-            Cache::forget('indicators_index');
-
-            return response()->json(['message' => 'Deleted'], 200);
-        } catch (Exception $exception) {
-            DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
+            return response()->json(['error' => 'Ocorreu um erro ao atualizar o indicador. Tente novamente mais tarde.'], 500);
         }
     }
 

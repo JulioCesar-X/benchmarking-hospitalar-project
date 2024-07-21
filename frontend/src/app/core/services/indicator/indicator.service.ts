@@ -158,9 +158,7 @@ export class IndicatorService {
   }
 
   storeIndicator(indicator: any): Observable<any> {
-    return this.http.post<any>('/indicators', indicator).pipe(
-      catchError(error => throwError(() => new Error('Failed to create indicator')))
-    );
+    return this.http.post<any>('/indicators', indicator);
   }
 
   showIndicator(id: number): Observable<Indicator> {
@@ -170,9 +168,7 @@ export class IndicatorService {
   }
 
   updateIndicator(id: number, indicator: any): Observable<any> {
-    return this.http.put<any>(`/indicators/${id}`, indicator).pipe(
-      catchError(error => throwError(() => new Error('Failed to update indicator')))
-    );
+    return this.http.put<any>(`/indicators/${id}`, indicator);
   }
 
   destroyIndicator(id: number): Observable<any> {

@@ -90,7 +90,7 @@ class ActivityController extends Controller
             // Verifica se o nome da atividade já existe
             $existingActivity = Activity::where('activity_name', $request->activity_name)->first();
             if ($existingActivity) {
-                return response()->json(['error' => 'Activity name already exists.'], 400);
+                return response()->json(['error' => 'Nome da atividade já existe.'], 400);
             }
 
             // Cria a atividade
@@ -108,7 +108,7 @@ class ActivityController extends Controller
                         // Se encontrar duplicações, retorna uma mensagem de erro
                         DB::rollBack();
                         return response()->json([
-                            'error' => 'Duplicated association detected for service_id: ' . $association['service_id'] . ', indicator_id: ' . $association['indicator_id']
+                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', indicator_id: ' . $association['indicator_id']
                         ], 400);
                     }
 
@@ -143,7 +143,7 @@ class ActivityController extends Controller
             return response()->json($activity->load('sais'), 201);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
         }
     }
 
@@ -180,7 +180,7 @@ class ActivityController extends Controller
                 ->where('id', '<>', $activity->id)
                 ->first();
             if ($existingActivity) {
-                return response()->json(['error' => 'Activity name already exists.'], 400);
+                return response()->json(['error' => 'Nome da atividade já existe.'], 400);
             }
 
             // Atualiza o nome da atividade
@@ -213,7 +213,7 @@ class ActivityController extends Controller
                         // Se encontrar duplicações, retorna uma mensagem de erro
                         DB::rollBack();
                         return response()->json([
-                            'error' => 'Duplicated association detected for service_id: ' . $association['service_id'] . ', indicator_id: ' . $association['indicator_id']
+                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', indicator_id: ' . $association['indicator_id']
                         ], 400);
                     }
 
@@ -248,7 +248,7 @@ class ActivityController extends Controller
             return response()->json($activity->load('sais'), 200);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
         }
     }
 

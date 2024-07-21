@@ -252,7 +252,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
 
   formSubmited(): void {
     if (!this.formValid()) {
-      this.setNotification('Please fill all required fields and select at least one activity and one indicator.', 'error');
+      this.setNotification('Por favor, preencha todos os campos obrigatórios e selecione pelo menos uma atividade e um indicador.', 'error');
       return;
     }
 
@@ -279,7 +279,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
 
     this.serviceService.storeService(createdService).subscribe(
       (response: any) => {
-        this.setNotification('Service created successfully', 'success');
+        this.setNotification('Serviço criado com sucesso', 'success');
         setTimeout(() => this.router.navigate(['/services']), 2000);
       },
       (error: any) => {
@@ -302,7 +302,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
 
     this.serviceService.updateService(this.selectedService.id, updatedService).subscribe(
       (response: any) => {
-        this.setNotification('Service updated successfully', 'success');
+        this.setNotification('Serviço atualizado com sucesso', 'success');
         setTimeout(() => this.router.navigate(['/services']), 2000);
       },
       (error: any) => {
@@ -314,12 +314,18 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
 
   getErrorMessage(error: any): string {
     if (error.status === 409) {
-      return 'Service already exists';
+      return 'Serviço já existe';
     }
     if (error.status === 400) {
-      return 'Invalid entry';
+      if (error.error.error === 'Nome do serviço já existe.') {
+        return 'Nome do serviço já existe.';
+      }
+      if (error.error.error.startsWith('Associação duplicada detectada')) {
+        return error.error.error;
+      }
+      return 'Entrada inválida';
     }
-    return 'An error occurred. Please try again later.';
+    return 'Ocorreu um erro. Por favor, tente novamente mais tarde.';
   }
 
   selectTab(tab: 'Desassociação' | 'Associação'): void {

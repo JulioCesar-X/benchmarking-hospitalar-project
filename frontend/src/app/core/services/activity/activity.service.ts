@@ -30,15 +30,11 @@ export class ActivityService {
   }
 
   storeActivity(activity: any): Observable<any> {
-    return this.http.post<any>('/activities', activity).pipe(
-      catchError(error => throwError(() => new Error('Failed to create activity')))
-    );
+    return this.http.post<any>('/activities', activity);
   }
 
   updateActivity(id: number, activity: any): Observable<any> {
-    return this.http.put<any>(`/activities/${id}`, activity).pipe(
-      catchError(error => throwError(() => new Error('Failed to update activity')))
-    );
+    return this.http.put<any>(`/activities/${id}`, activity);
   }
 
   destroyActivity(id: number): Observable<any> {
