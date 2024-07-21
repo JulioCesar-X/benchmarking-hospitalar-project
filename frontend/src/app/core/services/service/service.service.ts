@@ -44,7 +44,7 @@ export class ServiceService {
     return this.http.post<any>('/services', service);
   }
 
-  updateService(id: number,service: any): Observable<any> {
+  updateService(id: number, service: any): Observable<any> {
     return this.http.put<any>(`/services/${id}`, service);
   }
 

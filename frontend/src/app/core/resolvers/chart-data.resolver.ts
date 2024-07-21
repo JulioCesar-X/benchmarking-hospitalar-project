@@ -6,7 +6,6 @@ import { IndicatorService } from '../services/indicator/indicator.service';
 import { ServiceService } from '../services/service/service.service';
 import { Filter } from '../models/filter.model';
 
-
 @Injectable({
     providedIn: 'root'
 })
@@ -20,8 +19,8 @@ export class ChartDataResolver implements Resolve<any> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
         const serviceId = +route.paramMap.get('serviceId')!;
         const filter: Filter = {
-            indicatorId: 1, // Indicador padrão
-            activityId: 1,  // Atividade padrão
+            indicatorId: 1,
+            activityId: 1,
             serviceId: serviceId,
             month: new Date().getMonth() + 1,
             year: new Date().getFullYear()
@@ -33,15 +32,14 @@ export class ChartDataResolver implements Resolve<any> {
                     if (service.sais && service.sais.length > 0) {
                         filter.activityId = service.sais[0].activity_id;
                         filter.indicatorId = service.sais[0].indicator_id;
-                        console.log(filter);
                     } else if (service.indicators && service.indicators.length > 0) {
                         filter.indicatorId = service.indicators[0].id;
-                        filter.activityId = null; // Sem atividade, apenas indicador
+                        filter.activityId = null;
                     } else {
                         return of({ error: true, message: 'Service has no activities or indicators' });
                     }
                     return this.indicatorService.getAllData(filter).pipe(
-                        map(data => ({ data, filter })), // Retorna dados e filtro
+                        map(data => ({ data, filter })),
                         catchError(error => {
                             return of({ error: true, message: 'Failed to fetch data' });
                         })

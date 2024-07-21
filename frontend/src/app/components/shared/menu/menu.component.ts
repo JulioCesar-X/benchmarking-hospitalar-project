@@ -92,6 +92,7 @@ export class MenuComponent {
         } else {
           this.feedbackMessage = 'Nenhum serviço válido encontrado';
           this.feedbackType = 'error';
+          this.loadingCharts = false; // Stop loading
         }
         this.loadingCharts = false; // Stop loading
       },
