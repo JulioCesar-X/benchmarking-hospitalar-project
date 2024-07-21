@@ -6,6 +6,7 @@ import { IndicatorService } from '../services/indicator/indicator.service';
 import { ServiceService } from '../services/service/service.service';
 import { Filter } from '../models/filter.model';
 
+
 @Injectable({
     providedIn: 'root'
 })
@@ -32,8 +33,9 @@ export class ChartDataResolver implements Resolve<any> {
                     if (service.sais && service.sais.length > 0) {
                         filter.activityId = service.sais[0].activity_id;
                         filter.indicatorId = service.sais[0].indicator_id;
+                        console.log(filter);
                     } else if (service.indicators && service.indicators.length > 0) {
-                        filter.indicatorId = service.indicators[0].id || filter.indicatorId;
+                        filter.indicatorId = service.indicators[0].id;
                         filter.activityId = null; // Sem atividade, apenas indicador
                     } else {
                         return of({ error: true, message: 'Service has no activities or indicators' });

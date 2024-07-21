@@ -1,7 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { MatIconModule } from '@angular/material/icon';
 import { ServiceService } from '../../../core/services/service/service.service';
@@ -86,7 +85,10 @@ export class MenuComponent {
     this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {
-          this.router.navigate(['/charts', { serviceId: service.id }]);
+          // Navigate to charts with resolver
+          this.router.navigate(['/charts', { serviceId: service.id }], {
+            state: { preLoad: true }
+          });
         } else {
           this.feedbackMessage = 'Nenhum serviço válido encontrado';
           this.feedbackType = 'error';
