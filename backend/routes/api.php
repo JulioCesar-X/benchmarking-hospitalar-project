@@ -60,7 +60,8 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::delete('indicators/{id}', 'IndicatorController@destroy');
     
     Route::post('services', 'ServiceController@store');
-    Route::post('/services/update-order', 'ServiceController@updateOrder');
+    Route::get('services/first-valid', 'ServiceController@getFirstValidService');
+    Route::post('services/update-order', 'ServiceController@updateOrder');
     Route::put('services/{id}', 'ServiceController@update');
     Route::delete('services/{id}', 'ServiceController@destroy');
     

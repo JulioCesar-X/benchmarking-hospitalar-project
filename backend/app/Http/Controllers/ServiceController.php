@@ -69,6 +69,16 @@ class ServiceController extends Controller
         }
     }
 
+    public function getFirstValidService(){
+        try {
+            $service = Service::orderBy('order', 'asc')->first();
+            return response()->json($service, 200);
+        } catch (Exception $exception) {
+            Log::error('Error fetching first valid service: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
+    }
+
     public function getServicesPaginated(Request $request)
     {
         try {

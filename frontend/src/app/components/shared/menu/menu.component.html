@@ -79,7 +79,12 @@
         <a routerLink="/RecordGoalsUpdate" routerLinkActive="Ativo">Consultar Metas</a>
       </div>
       <div class="subMenuItem">
-        <a (click)="goToCharts(1)">Consultar Métricas</a>
+        <a (click)="goToCharts()">Consultar Métricas</a>
+        <div *ngIf="loadingCharts" class="loading-icon">
+          <lord-icon src="https://cdn.lordicon.com/jpgpblwn.json" trigger="loop" state="loop-oscillate"
+            colors="primary:#0a2e5c" style="width:35px;height:35px">
+          </lord-icon>
+        </div>
       </div>
     </div>
 
@@ -99,4 +104,7 @@
       </div>
     </div>
   </div>
+
+  <!-- Componente de Feedback -->
+  <app-feedback [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
 </aside>

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of, map } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Service } from '../../models/service.model';
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,13 @@ export class ServiceService {
   indexServices(): Observable<Service[]> {
     return this.http.get<Service[]>('/services').pipe(
       catchError(error => throwError(() => new Error('Failed to fetch services')))
+    );
+  }
+
+  getFirstValidService(): Observable<Service | null> { // Ajustado para permitir null
+    return this.http.get<Service[]>(`/services`).pipe(
+      map(services => services.find(service => service.id) || null),
+      catchError(error => of(null))
     );
   }
 
