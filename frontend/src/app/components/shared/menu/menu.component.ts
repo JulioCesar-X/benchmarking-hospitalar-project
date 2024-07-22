@@ -31,7 +31,6 @@ export class MenuComponent implements OnInit {
   @Input() isManageIndicatorsSubMenuOpen = false;
   @Input() isMenuOpen = true;
   @Input() isLoadingCharts= false;
-  loadingCharts = false;
   feedbackMessage = '';
   feedbackType: 'success' | 'error' = 'success';
 
@@ -93,16 +92,10 @@ export class MenuComponent implements OnInit {
   }
 
   goToCharts() {
-    this.loadingCharts = true; 
+    this.isLoadingCharts = true; 
     this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {
-          // const currentUrl = this.router.url;
-          // const targetUrl = `/charts;serviceId=${service.id}`;
-
-          // if (currentUrl !== targetUrl) {
-          this.loadingCharts = true;
-          // }
 
           this.router.navigate(['/charts', { serviceId: service.id }], {
             state: { preLoad: true }
@@ -110,14 +103,14 @@ export class MenuComponent implements OnInit {
         } else {
           this.feedbackMessage = 'Nenhum serviço válido encontrado';
           this.feedbackType = 'error';
-          this.loadingCharts = false; // Stop loading
+          this.isLoadingCharts = false; // Stop loading
         }
-        this.loadingCharts = false; // Stop loading
+        this.isLoadingCharts = false; // Stop loading
       },
       error: (error) => {
         this.feedbackMessage = error.message;
         this.feedbackType = 'error';
-        this.loadingCharts = false; // Stop loading
+        this.isLoadingCharts = false; // Stop loading
       }
     });
   }
