@@ -285,6 +285,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
       image_url: this.selectedService.image_url,
       more_info: this.selectedService.more_info,
       associations: this.associations,
+      desassociations: this.desassociations
     };
     this.serviceService.updateService(this.selectedService.id, updatedService).subscribe(
       (response: any) => {
@@ -312,7 +313,6 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
       image_url: this.selectedService.image_url,
       more_info: this.selectedService.more_info,
       associations: this.associations,
-      desassociations: this.desassociations
     };
 
     this.serviceService.storeService(createdService).subscribe(

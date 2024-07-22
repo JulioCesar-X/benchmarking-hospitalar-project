@@ -260,6 +260,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
       id: this.selectedActivity.id,
       activity_name: this.selectedActivity.activity_name,
       associations: this.associations,
+      desassociations: this.desassociations
     };
 
     this.activityService.updateActivity(this.selectedActivity.id, updatedActivity).subscribe(
@@ -284,7 +285,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
     const createdActivity: CreateActivity = {
       activity_name: this.selectedActivity.activity_name,
       associations: this.associations,
-      desassociations: this.desassociations
+      // s
     };
 
     this.activityService.storeActivity(createdActivity).subscribe(

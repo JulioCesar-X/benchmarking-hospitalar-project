@@ -24,7 +24,7 @@
 
       <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true" [message]="loadingCircleMessage"></app-loading-spinner>
 
-      <form *ngIf="!isLoading" (ngSubmit)="formSubmited()" #serviceForm="ngForm">
+      <div *ngIf="!isLoading">
         <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
           <mat-label class="blueTxt">Nome do atividade:</mat-label>
           <input matInput [(ngModel)]="selectedActivity.activity_name" id="name" name="name" />
@@ -73,7 +73,7 @@
   {{ formsAction === 'create' ? 'Adicionar' : 'Atualizar' }}
 </button>
   </div>
-</form>
+</div>
 <div>
   <h3>Debug Info</h3>
   <p>Associations: {{ associations | json }}</p>

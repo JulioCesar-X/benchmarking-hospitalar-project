@@ -43,17 +43,17 @@
     <!-- checkboxes -->
 
     <div class="min-h-[50px] max-h-[300px] p-2 blueScrollBar blueTxt whiteBG rounded-bl rounded-br">
-      <div *ngIf="activeTab === 'Desassociação'">
+      <div *ngIf="activeTab === 'Desassociação'" class="checkboxContainer">
         <h4 class="mx-1 blueTxt text-lg">Associar Serviços:</h4>
-        <app-loading-spinner *ngIf="isLoadingServices" message="A carregar serviços..."></app-loading-spinner>
+        <app-loading-spinner *ngIf="isLoadingDesassociacao" message="A carregar SAIs..."></app-loading-spinner>
         <app-desassociation-list [items]="saisList" [displayProperties]="['service_name', 'activity_name']"
         [columnTitles]="{ service_name: 'Serviço', activity_name: 'Atividade' }" [preSelectedItems]="selectedSaisIDs"
         (selectionChange)="onSaisSelectionChange($event)">
       </app-desassociation-list>
       </div>
-      <div *ngIf="activeTab === 'Associação'">
+      <div *ngIf="activeTab === 'Associação'" class="checkboxContainer">
         <h4 class="mx-1 blueTxt text-lg">Associar Atividades:</h4>
-        <app-loading-spinner *ngIf="isLoadingActivities" message="A carregar atividades..."></app-loading-spinner>
+        <app-loading-spinner *ngIf="isLoadingAssociacao" message="A carregar Associações..."></app-loading-spinner>
         <div class="association-container">
           <app-association-list [items]="servicesList" [displayProperties]="['service_name']"
             [preSelectedItems]="selectedServicesIDs" [columnTitle]="'Serviços'"
@@ -66,7 +66,6 @@
           </app-association-list>
       </div>
     </div>
-   
     <button *ngIf="!isLoading" mat-raised-button type="submit" class="mt-2 custom-button" [disabled]="!formValid()">
       {{ formsAction === 'create' ? 'Adicionar' : 'Atualizar' }}
     </button>

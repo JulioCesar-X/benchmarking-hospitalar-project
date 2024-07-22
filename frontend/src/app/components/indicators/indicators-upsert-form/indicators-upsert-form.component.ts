@@ -116,11 +116,13 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
         this.updateSelectedItems();
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading indicator', error);
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
+        this.isLoading = false;
       }
     });
   }
