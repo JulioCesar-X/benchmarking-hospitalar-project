@@ -101,7 +101,7 @@ export class MenuComponent implements OnInit {
           // const targetUrl = `/charts;serviceId=${service.id}`;
 
           // if (currentUrl !== targetUrl) {
-          //   this.loadingCharts = true;
+          this.loadingCharts = true;
           // }
 
           this.router.navigate(['/charts', { serviceId: service.id }], {

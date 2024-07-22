@@ -26,7 +26,8 @@ import { MatButtonModule } from '@angular/material/button';
     FeedbackComponent,
     LoadingSpinnerComponent,
     DesassociationListComponent,
-    AssociationListComponent
+    AssociationListComponent, 
+    MatTooltipModule
   ],
   templateUrl: './activities-upsert-form.component.html',
   styleUrls: ['./activities-upsert-form.component.scss']

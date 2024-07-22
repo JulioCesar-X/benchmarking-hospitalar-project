@@ -28,7 +28,8 @@ import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginato
     PaginatorComponent,
     DialogContentComponent,
     CardComponent,
-    MatTooltipModule
+    MatTooltipModule, 
+    FeedbackComponent
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
