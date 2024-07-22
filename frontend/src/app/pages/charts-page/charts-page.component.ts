@@ -5,7 +5,6 @@ import { ActivatedRoute } from '@angular/router';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IndicatorService } from '../../core/services/indicator/indicator.service';
-import { ServiceService } from '../../core/services/service/service.service';
 import { MatMenuModule } from '@angular/material/menu';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -58,7 +57,6 @@ export class ChartsPageComponent implements OnInit {
   constructor(
     private indicatorService: IndicatorService,
     private authService: AuthService,
-    private serviceService: ServiceService,
     private route: ActivatedRoute
   ) { }
 
@@ -101,7 +99,9 @@ export class ChartsPageComponent implements OnInit {
   }
 
   loadGraphData(): void {
+    
     this.filterSubject.next(this.filter);
+
   }
 
   handleFilterData(event: Partial<Filter>): void {
@@ -221,7 +221,7 @@ export class ChartsPageComponent implements OnInit {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('DadosGraficos');
 
-    //Adicionar cabeçalhos e subtítulos
+    // Adicionar cabeçalhos e subtítulos
     worksheet.mergeCells('A1:F1');
     worksheet.getCell('A1').value = `Dados publicados a ${this.filter.year}${(this.filter.month ?? 0).toString()}`;
     worksheet.getCell('A1').font = { bold: true };
@@ -238,8 +238,12 @@ export class ChartsPageComponent implements OnInit {
     worksheet.getCell('A4').value = `Indicador: ${this.indicatorName}`;
     worksheet.getCell('A4').font = { bold: true };
 
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const formattedTime = currentDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
     worksheet.mergeCells('A5:F5');
-    worksheet.getCell('A5').value = `Tempo: ${this.filter.year}${(this.filter.month ?? 0).toString().padStart(2, '0')}`;
+    worksheet.getCell('A5').value = `Data: ${formattedDate} ${formattedTime}`;
     worksheet.getCell('A5').font = { bold: true };
 
     worksheet.mergeCells('A6:F6');
@@ -358,10 +362,7 @@ export class ChartsPageComponent implements OnInit {
         });
       }
     });
-    
-    const path_back = this.serviceService.getFirstValidService();
-    console.log('Path back:', path_back);
-    
+
     workbook.xlsx.writeBuffer().then((buffer) => {
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = window.URL.createObjectURL(blob);
@@ -369,13 +370,10 @@ export class ChartsPageComponent implements OnInit {
       a.href = url;
       a.download = 'dados_graficos.xlsx';
       a.click();
-      // window.URL.revokeObjectURL(url);
-      window.location.href = '/charts';
+      window.location.href = window.location.href; // Redireciona para a mesma página
     }).catch((error) => {
       console.error('Erro ao gerar o arquivo Excel:', error);
     });
-
-
   }
 
   setLoadingStates(value: boolean): void {
