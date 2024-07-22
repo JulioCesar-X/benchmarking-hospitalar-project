@@ -221,13 +221,14 @@ main {
   transition: background-color 0.3s ease, opacity 0.3s ease;
 
   &.previous-button {
-    left: 3rem;
-    top: 25rem;
+    left: 15rem;
+    top: 35rem;
   }
 
   &.next-button {
-    right: 3rem;
-    top: 25rem;
+    right: 15rem;
+    // left: 100rem;
+    top: 35rem;
   }
 
   @media (max-width: 600px) {
