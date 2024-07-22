@@ -119,11 +119,13 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
         this.updateSelectedItems();
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading service', error);
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
+        this.isLoading = false;
       }
     });
   }
@@ -291,6 +293,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
           this.router.navigate(['/services']);
           this.isLoading = false;
         }, 2000);
+
       },
       (error: any) => {
         const errorMessage = this.getErrorMessage(error);
@@ -304,7 +307,6 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
   createService() {
     this.isLoading = true;
     const createdService: CreateService = {
-
       service_name: this.selectedService.service_name,
       description: this.selectedService.description,
       image_url: this.selectedService.image_url,

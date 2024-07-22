@@ -118,11 +118,13 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
         this.updateSelectedItems();
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading activity', error);
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
+        this.isLoading = false;
       }
     });
   }
