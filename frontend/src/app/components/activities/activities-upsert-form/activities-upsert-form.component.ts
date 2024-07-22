@@ -1,17 +1,18 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, SimpleChanges, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { IndicatorService } from '../../../core/services/indicator/indicator.service';
 import { ServiceService } from '../../../core/services/service/service.service';
 import { ActivityService } from '../../../core/services/activity/activity.service';
-import { IndicatorService } from '../../../core/services/indicator/indicator.service';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
-import { SelectableListComponent } from '../../shared/selectable-list/selectable-list.component';
-import { Activity } from '../../../core/models/activity.model';
 import { Service } from '../../../core/models/service.model';
 import { Indicator } from '../../../core/models/indicator.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DesassociationListComponent } from '../../../components/shared/desassociation-list/desassociation-list.component';
+import { AssociationListComponent } from '../../../components/shared/association-list/association-list.component';
+import { Activity, CreateActivity } from '../../../core/models/activity.model';
 import { MatFormField, MatLabel, } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,38 +25,47 @@ import { MatButtonModule } from '@angular/material/button';
     FormsModule,
     FeedbackComponent,
     LoadingSpinnerComponent,
-    SelectableListComponent,
-    MatTooltipModule
+    DesassociationListComponent,
+    AssociationListComponent
   ],
   templateUrl: './activities-upsert-form.component.html',
   styleUrls: ['./activities-upsert-form.component.scss']
 })
-export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
+export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() formsAction: string = '';
-  @Input() selectedActivity: Activity = { id: -1, activity_name: '' };
+  @Input() selectedActivity: Activity = {
+    id: -1,
+    activity_name: '',
+  };
 
   loadingCircleMessage = 'A carregar atividade';
   notificationMessage: string = '';
   Type: 'success' | 'error' = 'success';
 
   isLoadingServices: boolean = true;
-  isLoadingIndicadores: boolean = true;
-  @Input() isLoading: boolean = false;
+  isLoadingIndicators: boolean = true;
+  @Input()isLoading: boolean = false;
+  isLoadingDesassociacao: boolean = false;
+  isLoadingAssociacao: boolean = false;
   isError: boolean = false;
 
-  servicesList: Service[] = [];
-  indicatorsList: Indicator[] = [];
-  selectedIndicatorsIDs: any[] = [];
-  selectedServicesIDs: any[] = [];
+  servicesList: any[] = [];
+  indicatorsList: any[] = [];
+  saisList: any[] = [];
+  selectedServicesIDs: number[] = [];
+  selectedIndicatorsIDs: number[] = [];
+  selectedSaisIDs: number[] = [];
+  desassociations: { sai_id: number }[] = [];
+  associations: { service_id: number, indicator_id: number }[] = [];
 
-  activeTab: 'services' | 'indicators' = 'services';
+  activeTab: 'Desassociação' | 'Associação' = 'Desassociação';
 
   constructor(
     private router: Router,
-    private serviceService: ServiceService,
     private activityService: ActivityService,
+    private serviceService: ServiceService,
     private indicatorService: IndicatorService,
-    private cdRef: ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -63,7 +73,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedActivity'] && this.formsAction === 'edit' && this.selectedActivity.id !== -1) {
+    if (changes['selectedActivity'] && !changes['selectedActivity'].firstChange) {
       this.loadActivity(this.selectedActivity.id);
     }
   }
@@ -73,10 +83,21 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
     try {
       await Promise.all([this.getServices(), this.getIndicators()]);
       this.isLoading = false;
-      this.cdRef.detectChanges();
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error loading initial data', error);
       this.isLoading = false;
+      this.cdr.detectChanges();
+    }
+
+    if (this.formsAction === 'edit' && this.selectedActivity.id !== -1) {
+      this.loadActivity(this.selectedActivity.id);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.formsAction === 'edit' && this.selectedActivity.id !== -1) {
+      this.loadActivity(this.selectedActivity.id);
     }
   }
 
@@ -85,16 +106,22 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
     this.activityService.showActivity(activityId).subscribe({
       next: (data: Activity) => {
         this.selectedActivity = data;
-        this.selectedServicesIDs = data.sais?.map(sai => sai.service.id) || [];
-        this.selectedIndicatorsIDs = data.sais?.map(sai => sai.indicator.id) || [];
-        this.cdRef.detectChanges();
+        this.saisList = data.sais?.map(sai => ({
+          sai_id: sai.id,
+          service_id: sai.service?.id,
+          indicator_id: sai.indicator?.id,
+          service_name: sai.service?.service_name,
+          indicator_name: sai.indicator?.indicator_name
+        })) || [];
+        this.selectedSaisIDs = this.saisList.map(sai => sai.sai_id);
+        this.updateSelectedItems();
+        this.isLoadingDesassociacao = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading activity', error);
-        this.isLoading = false;
-      },
-      complete: () => {
-        this.isLoading = false;
+        this.isLoadingDesassociacao = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -102,25 +129,20 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
   getServices(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.serviceService.indexServices().subscribe({
-        next: (data: Service[]) => {
-          if (data && Array.isArray(data)) {
-            this.servicesList = data.map(service => ({
-              id: service.id,
-              service_name: service.service_name,
-              image_url: service.image_url,
-            }));
-          } else {
-            console.warn('Data is not an array:', data);
-          }
+        next: (data) => {
+          this.servicesList = data.map(service => ({
+            id: service.id,
+            service_name: service.service_name
+          }));
           resolve();
         },
         error: (error) => {
-          console.error('Erro ao obter serviços', error);
+          console.error('Error obtaining services', error);
           reject(error);
         },
         complete: () => {
           this.isLoadingServices = false;
-          this.cdRef.detectChanges();
+          this.cdr.detectChanges();
         }
       });
     });
@@ -130,39 +152,87 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
     return new Promise((resolve, reject) => {
       this.indicatorService.indexIndicators().subscribe({
         next: (data) => {
-          if (data && Array.isArray(data)) {
-            this.indicatorsList = data.map(indicator => ({
-              id: indicator.id,
-              indicator_name: indicator.indicator_name
-            }));
-          } else {
-            console.warn('Data is not an array:', data);
-          }
+          this.indicatorsList = data.map(indicator => ({
+            id: indicator.id,
+            indicator_name: indicator.indicator_name
+          }));
           resolve();
         },
         error: (error) => {
-          console.error('Erro ao obter Indicadores', error);
+          console.error('Error obtaining indicators', error);
           reject(error);
         },
         complete: () => {
-          this.isLoadingIndicadores = false;
-          this.cdRef.detectChanges();
+          this.isLoadingIndicators = false;
+          this.cdr.detectChanges();
         }
       });
     });
   }
 
-  onServicesSelectionChange(selectedServices: any[]) {
-    this.selectedServicesIDs = selectedServices.map(service => service.id);
+  onServicesSelectionChange(event: { selected: any[], deselected: any[] }): void {
+    event.selected.forEach(service => {
+      this.selectedIndicatorsIDs.forEach(indicator_id => {
+        if (!this.associations.some(association => association.service_id === service.id && association.indicator_id === indicator_id)) {
+          this.associations.push({ service_id: service.id, indicator_id });
+        }
+      });
+    });
+
+    event.deselected.forEach(service => {
+      this.associations = this.associations.filter(association => association.service_id !== service.id);
+    });
+
+    this.selectedServicesIDs = event.selected.map(service => service.id);
+
+    console.log('Associations:', this.associations);
+    this.cdr.detectChanges();
   }
 
-  onIndicatorsSelectionChange(selectedIndicators: any[]) {
-    this.selectedIndicatorsIDs = selectedIndicators.map(indicator => indicator.id);
+  onIndicatorsSelectionChange(event: { selected: any[], deselected: any[] }): void {
+    event.selected.forEach(indicator => {
+      this.selectedServicesIDs.forEach(service_id => {
+        if (!this.associations.some(association => association.service_id === service_id && association.indicator_id === indicator.id)) {
+          this.associations.push({ service_id, indicator_id: indicator.id });
+        }
+      });
+    });
+
+    event.deselected.forEach(indicator => {
+      this.associations = this.associations.filter(association => association.indicator_id !== indicator.id);
+    });
+
+    this.selectedIndicatorsIDs = event.selected.map(indicator => indicator.id);
+
+    console.log('Associations:', this.associations);
+    this.cdr.detectChanges();
   }
 
-  formSubmited() {
+  onSaisSelectionChange(event: { selected: any[], deselected: any[] }): void {
+    event.deselected.forEach(sai => {
+      if (!this.desassociations.some(desassociation => desassociation.sai_id === sai.sai_id)) {
+        this.desassociations.push({ sai_id: sai.sai_id });
+      }
+    });
+
+    event.selected.forEach(sai => {
+      this.desassociations = this.desassociations.filter(desassociation => desassociation.sai_id !== sai.sai_id);
+    });
+
+    this.selectedSaisIDs = event.selected.map(sai => sai.sai_id);
+
+    console.log('Desassociations:', this.desassociations);
+    this.cdr.detectChanges();
+  }
+
+  formValid(): boolean {
+    return this.selectedActivity.activity_name.trim() !== '' &&
+      (this.associations.length > 0 || this.desassociations.length > 0);
+  }
+
+  formSubmited(): void {
     if (!this.formValid()) {
-      this.setNotification('Por favor, associe pelo menos um serviço e um indicador.', 'error');
+      this.setNotification('Por favor, preencha todos os campos obrigatórios e selecione pelo menos um serviço e um indicador.', 'error');
       return;
     }
 
@@ -174,28 +244,28 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
       this.editActivity();
     }
   }
+  
+  setNotification(message: string, type: 'success' | 'error'): void {
+    this.notificationMessage = message;
+    this.Type = type;
+  }
+
 
   editActivity() {
     this.isLoading = true;
-
-
     const updatedActivity: Activity = {
       id: this.selectedActivity.id,
       activity_name: this.selectedActivity.activity_name,
-      service_ids: this.selectedServicesIDs,
-      indicator_ids: this.selectedIndicatorsIDs
+      associations: this.associations,
     };
 
-    this.activityService.updateActivity(this.selectedActivity.id!, updatedActivity).subscribe(
+    this.activityService.updateActivity(this.selectedActivity.id, updatedActivity).subscribe(
       (response: any) => {
-
         this.setNotification('Atividade atualizada com sucesso', 'success');
-
         setTimeout(() => {
           this.router.navigate(['/activities']);
           this.isLoading = false;
         }, 2000);
-        
       },
       (error: any) => {
         this.isLoading = false;
@@ -208,24 +278,19 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
 
   createActivity() {
     this.isLoading = true;
-
-
-    const createdActivity: Activity = {
-      id: -1,
+    const createdActivity: CreateActivity = {
       activity_name: this.selectedActivity.activity_name,
-      service_ids: this.selectedServicesIDs,
-      indicator_ids: this.selectedIndicatorsIDs
+      associations: this.associations,
+      desassociations: this.desassociations
     };
 
     this.activityService.storeActivity(createdActivity).subscribe(
       (response: any) => {
         this.setNotification('Atividade criada com sucesso', 'success');
-
         setTimeout(() => {
           this.router.navigate(['/activities']);
           this.isLoading = false;
         }, 2000);
-      
       },
       (error: any) => {
         this.isLoading = false;
@@ -236,26 +301,31 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges {
     );
   }
 
-  setNotification(message: string, type: 'success' | 'error') {
-    this.notificationMessage = message;
-    this.Type = type;
-  }
-
   getErrorMessage(error: any): string {
     if (error.status === 409) {
       return 'Atividade já existe';
     }
     if (error.status === 400) {
+      if (error.error.error === 'Nome da atividade já existe.') {
+        return 'Nome da atividade já existe.';
+      }
+      if (error.error.error.startsWith('Associação duplicada detectada')) {
+        return error.error.error;
+      }
       return 'Entrada inválida';
     }
     return 'Ocorreu um erro. Por favor, tente novamente mais tarde.';
   }
 
-  formValid(): boolean {
-    return this.selectedServicesIDs.length > 0 && this.selectedIndicatorsIDs.length > 0;
+  selectTab(tab: 'Desassociação' | 'Associação'): void {
+    this.activeTab = tab;
+    this.updateSelectedItems();
   }
 
-  selectTab(tab: 'services' | 'indicators') {
-    this.activeTab = tab;
+  updateSelectedItems(): void {
+    if (this.activeTab === 'Desassociação') {
+      this.selectedSaisIDs = this.saisList.filter(sai => !this.desassociations.some(d => d.sai_id === sai.sai_id)).map(sai => sai.sai_id);
+    }
+    this.cdr.detectChanges();
   }
 }

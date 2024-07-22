@@ -87,31 +87,63 @@ class ActivityController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Verifica se o nome da atividade já existe
+            $existingActivity = Activity::where('activity_name', $request->activity_name)->first();
+            if ($existingActivity) {
+                return response()->json(['error' => 'Nome da atividade já existe.'], 400);
+            }
+
+            // Cria a atividade
             $activity = Activity::create(['activity_name' => $request->activity_name]);
 
             $saiData = [];
-            foreach ($request->service_ids as $serviceId) {
-                foreach ($request->indicator_ids as $indicatorId) {
-                    $saiData[] = [
-                        'service_id' => $serviceId,
-                        'activity_id' => $activity->id,
-                        'indicator_id' => $indicatorId,
-                        'type' => 'default'
-                    ];
+            $existingCombinations = [];
+
+            // Processa as novas associações
+            if (isset($request->associations)) {
+                foreach ($request->associations as $association) {
+                    $combinationKey = $association['service_id'] . '_' . $association['indicator_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        // Se encontrar duplicações, retorna uma mensagem de erro
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', indicator_id: ' . $association['indicator_id']
+                        ], 400);
+                    }
+
+                    $existingSai = Sai::where('activity_id', $activity->id)
+                        ->where('service_id', $association['service_id'])
+                        ->where('indicator_id', $association['indicator_id'])
+                        ->first();
+
+                    if (!$existingSai) {
+                        $saiData[] = [
+                            'service_id' => $association['service_id'],
+                            'activity_id' => $activity->id,
+                            'indicator_id' => $association['indicator_id'],
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    $existingCombinations[] = $combinationKey;
+                }
+
+                if (!empty($saiData)) {
+                    Sai::insert($saiData);
                 }
             }
 
-            Sai::insert($saiData);
-
             DB::commit();
 
-            // Clear the cache
+            // Limpa o cache
             Cache::forget('activities_index');
 
             return response()->json($activity->load('sais'), 201);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
         }
     }
 
@@ -143,33 +175,80 @@ class ActivityController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Verifica se o nome da atividade já existe (exceto para a atividade atual)
+            $existingActivity = Activity::where('activity_name', $request->activity_name)
+                ->where('id', '<>', $activity->id)
+                ->first();
+            if ($existingActivity) {
+                return response()->json(['error' => 'Nome da atividade já existe.'], 400);
+            }
+
+            // Atualiza o nome da atividade
             $activity->update(['activity_name' => $request->activity_name]);
 
-            //Sai::where('activity_id', $activity->id)->delete();
-
-            $saiData = [];
-            foreach ($request->service_ids as $serviceId) {
-                foreach ($request->indicator_ids as $indicatorId) {
-                    $saiData[] = [
-                        'service_id' => $serviceId,
-                        'activity_id' => $activity->id,
-                        'indicator_id' => $indicatorId,
-                        'type' => 'default'
-                    ];
+            // Processa as desassociações
+            if (isset($request->desassociations)) {
+                foreach ($request->desassociations as $desassociation) {
+                    $sai = Sai::find($desassociation['sai_id']);
+                    if ($sai) {
+                        // Deletar registros na tabela 'goals' que referenciam este 'sai'
+                        DB::table('goals')->where('sai_id', $sai->id)->delete();
+                        // Deletar registros na tabela 'records' que referenciam este 'sai'
+                        DB::table('records')->where('sai_id', $sai->id)->delete();
+                        // Deleta o próprio sai
+                        $sai->delete();
+                    }
                 }
             }
 
-            Sai::insert($saiData);
+            // Prepara os dados para novas inserções
+            $saiData = [];
+            $existingCombinations = [];
+
+            if (isset($request->associations)) {
+                foreach ($request->associations as $association) {
+                    $combinationKey = $association['service_id'] . '_' . $association['indicator_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        // Se encontrar duplicações, retorna uma mensagem de erro
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', indicator_id: ' . $association['indicator_id']
+                        ], 400);
+                    }
+
+                    $existingSai = Sai::where('activity_id', $activity->id)
+                        ->where('service_id', $association['service_id'])
+                        ->where('indicator_id', $association['indicator_id'])
+                        ->first();
+
+                    if (!$existingSai) {
+                        $saiData[] = [
+                            'service_id' => $association['service_id'],
+                            'activity_id' => $activity->id,
+                            'indicator_id' => $association['indicator_id'],
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    $existingCombinations[] = $combinationKey;
+                }
+
+                if (!empty($saiData)) {
+                    Sai::insert($saiData);
+                }
+            }
 
             DB::commit();
 
-            // Clear the cache
+            // Limpa o cache
             Cache::forget('activities_index');
 
             return response()->json($activity->load('sais'), 200);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
         }
     }
 
@@ -183,15 +262,30 @@ class ActivityController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Encontra a atividade pelo ID
             $activity = Activity::findOrFail($id);
+
+            // Remove as associações da atividade nos 'sais'
+            $sais = $activity->sais;
+
+            foreach ($sais as $sai) {
+                // Deletar registros na tabela 'goals' que referenciam este 'sai'
+                DB::table('goals')->where('sai_id', $sai->id)->delete();
+                // Deletar registros na tabela 'records' que referenciam este 'sai'
+                DB::table('records')->where('sai_id', $sai->id)->delete();
+
+                // Deleta o registro 'sai'
+                $sai->delete();
+            }
+
+            // Deleta a própria atividade
             $activity->delete();
 
             DB::commit();
-
-            // Clear the cache
+            // Limpa o cache
             Cache::forget('activities_index');
 
-            return response()->json(['message' => 'Deleted'], 205);
+            return response()->json(['message' => 'Deleted'], 200);
         } catch (Exception $exception) {
             DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);

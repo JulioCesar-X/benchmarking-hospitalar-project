@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { SelectableListComponent } from '../../shared/selectable-list/selectable-list.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { Activity } from '../../../core/models/activity.model';
 import { ActivityService } from '../../../core/services/activity/activity.service';
@@ -28,7 +27,6 @@ import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginato
     FormsModule,
     LoadingSpinnerComponent,
     PaginatorComponent,
-    SelectableListComponent,
     DialogContentComponent,
     MatTooltipModule,
     MatSortModule

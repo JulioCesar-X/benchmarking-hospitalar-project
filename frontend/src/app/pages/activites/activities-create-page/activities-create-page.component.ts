@@ -7,7 +7,11 @@ import { ActivitiesUpsertFormComponent } from '../../../components/activities/ac
 @Component({
   selector: 'app-activities-create-page',
   standalone: true,
-  imports: [CommonModule, MenuComponent, ActivitiesUpsertFormComponent],
+  imports: [
+    CommonModule,
+    MenuComponent,
+    ActivitiesUpsertFormComponent
+  ],
   templateUrl: './activities-create-page.component.html',
   styleUrls: ['./activities-create-page.component.scss']
 })

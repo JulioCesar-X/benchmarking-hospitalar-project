@@ -1,45 +1,3 @@
-<!-- <app-feedback [message]="notificationMessage" [type]="Type"></app-feedback>
-
-<form (ngSubmit)="formSubmited()" #indicatorForm="ngForm">
-  <div class="forms-container" [ngClass]="{ 'forms-container__error': isError }">
-    <h2 class="forms-container--title" *ngIf="formsAction === 'create'">Criar indicador</h2>
-    <h2 class="forms-container--title" *ngIf="formsAction === 'edit'">Editar indicador</h2>
-
-    <div class="forms-container--inputContainer">
-      <label for="name">Nome do indicador:</label>
-      <input type="text" class="inputContainer--input" [(ngModel)]="selectedIndicator.indicator_name" id="name"
-        name="name" [ngClass]="{ 'inputContainer--input__error': isError }" required>
-    </div>
-    <div class="tab-buttons">
-      <button type="button" [class.active]="activeTab === 'services'" (click)="selectTab('services')">Serviços</button>
-      <button type="button" [class.active]="activeTab === 'activities'"
-        (click)="selectTab('activities')">indicadors</button>
-    </div>
-
-    <div *ngIf="activeTab === 'services'" class="checkboxContainer">
-      <h4 class="checkboxContainer-title">Associar Serviços:</h4>
-      <app-loading-spinner *ngIf="isLoadingServices" message="A carregar serviços..."></app-loading-spinner>
-      <app-selectable-list *ngIf="!isLoadingServices" [items]="servicesList" displayProperty="service_name"
-        (selectionChange)="onServicesSelectionChange($event)"
-        [preSelectedItems]="selectedServicesIDs"></app-selectable-list>
-    </div>
-
-    <div *ngIf="activeTab === 'activities'" class="checkboxContainer">
-      <h4 class="checkboxContainer-title">Associar indicadors:</h4>
-      <app-loading-spinner *ngIf="isLoadingActivities" message="A carregar indicadors..."></app-loading-spinner>
-      <app-selectable-list *ngIf="!isLoadingActivities" [items]="activitiesList" displayProperty="activity_name"
-        (selectionChange)="onActivitiesSelectionChange($event)"
-        [preSelectedItems]="selectedActivitiesIDs"></app-selectable-list>
-    </div>
-
-    <button type="submit" class="forms-Button" [disabled]="!formValid()">Confirmar</button>
-  </div>
-</form> -->
-
-
-<!-- safasfa -->
- 
-<!-- sfdsfsdfsfsfsfs -->
 <app-feedback [message]="notificationMessage" [type]="Type"></app-feedback>
 
 <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-10 shadow-md blueBG ">
@@ -73,11 +31,11 @@
     <div class="tab-headers-wrapper mt-5">
       <div id="tabHead" class="flex items-center justify-between pr-2">
     <div id="tabHeaders" class="flex w-[30%]">
-      <button type="button" class="tab-link" [class.active]="activeTab === 'services'" (click)="selectTab('services')">
-        Serviços
+      <button type="button" class="tab-link" [class.active]="activeTab === 'Desassociação'" (click)="selectTab('Desassociação')">
+        Desassociação
       </button>
-      <button type="button" class="tab-link" [class.active]="activeTab === 'activities'" (click)="selectTab('activities')">
-        Atividades
+      <button type="button" class="tab-link" [class.active]="activeTab === 'Associação'" (click)="selectTab('Associação')">
+        Associação
       </button>
     </div>
     </div>
@@ -85,24 +43,37 @@
     <!-- checkboxes -->
 
     <div class="min-h-[50px] max-h-[300px] p-2 blueScrollBar blueTxt whiteBG rounded-bl rounded-br">
-      <div *ngIf="activeTab === 'services'">
+      <div *ngIf="activeTab === 'Desassociação'">
         <h4 class="mx-1 blueTxt text-lg">Associar Serviços:</h4>
         <app-loading-spinner *ngIf="isLoadingServices" message="A carregar serviços..."></app-loading-spinner>
-        <app-selectable-list *ngIf="!isLoadingServices" [items]="servicesList" displayProperty="service_name"
-          (selectionChange)="onServicesSelectionChange($event)"
-          [preSelectedItems]="selectedServicesIDs"></app-selectable-list>
+        <app-desassociation-list [items]="saisList" [displayProperties]="['service_name', 'activity_name']"
+        [columnTitles]="{ service_name: 'Serviço', activity_name: 'Atividade' }" [preSelectedItems]="selectedSaisIDs"
+        (selectionChange)="onSaisSelectionChange($event)">
+      </app-desassociation-list>
       </div>
-      <div *ngIf="activeTab === 'activities'">
+      <div *ngIf="activeTab === 'Associação'">
         <h4 class="mx-1 blueTxt text-lg">Associar Atividades:</h4>
         <app-loading-spinner *ngIf="isLoadingActivities" message="A carregar atividades..."></app-loading-spinner>
-        <app-selectable-list *ngIf="!isLoadingActivities" [items]="activitiesList" displayProperty="activity_name"
-          (selectionChange)="onActivitiesSelectionChange($event)"
-          [preSelectedItems]="selectedActivitiesIDs"></app-selectable-list>
+        <div class="association-container">
+          <app-association-list [items]="servicesList" [displayProperties]="['service_name']"
+            [preSelectedItems]="selectedServicesIDs" [columnTitle]="'Serviços'"
+            (selectionChange)="onServicesSelectionChange($event)">
+          </app-association-list>
+        
+          <app-association-list [items]="activitiesList" [displayProperties]="['activity_name']"
+            [preSelectedItems]="selectedActivitiesIDs" [columnTitle]="'Atividades'"
+            (selectionChange)="onActivitiesSelectionChange($event)">
+          </app-association-list>
       </div>
     </div>
    
-    <button *ngIf="!isLoading" mat-raised-button type="submit" class="mt-2 custom-button">
+    <button *ngIf="!isLoading" mat-raised-button type="submit" class="mt-2 custom-button" [disabled]="!formValid()">
       {{ formsAction === 'create' ? 'Adicionar' : 'Atualizar' }}
     </button>
-  </form>
+</div>
+
+<div>
+  <h3>Debug Info</h3>
+  <p>Associations: {{ associations | json }}</p>
+  <p>Desassociations: {{ desassociations | json }}</p>
 </div>

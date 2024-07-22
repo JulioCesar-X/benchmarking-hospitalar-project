@@ -1,0 +1,10 @@
+<div class="association-container">
+    <div class="column">
+        <h3 class="title">{{ columnTitle }}</h3>
+        <mat-chip-listbox multiple class="mat-mdc-chip-set-stacked">
+            <mat-chip-option *ngFor="let item of items" [selected]="isSelected(item)" (click)="toggleSelection(item)">
+                {{ getDisplayText(item) }}
+            </mat-chip-option>
+        </mat-chip-listbox>
+    </div>
+</div>

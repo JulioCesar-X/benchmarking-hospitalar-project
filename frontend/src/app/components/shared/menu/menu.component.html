@@ -263,7 +263,7 @@
         "
       >
         >
-        <a (click)="goToCharts(1)" routerLinkActive="Ativo"
+        <a (click)="goToCharts()" routerLinkActive="Ativo"
           >Consultar Métricas</a
         >
       </div>
@@ -311,6 +311,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Componente de Feedback -->
+  <app-feedback [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
 </aside>
 
 <div class="modal" [ngClass]="{ show: isLoadingCharts }">

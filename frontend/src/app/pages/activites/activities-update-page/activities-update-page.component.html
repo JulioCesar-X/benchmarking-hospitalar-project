@@ -1,6 +1,7 @@
 <div class="sticky-menu"> 
   <app-menu [isManageActivitiesSubMenuOpen]="true"></app-menu>
 </div>
+<app-loading-spinner *ngIf="isLoading" message="Carregando atividade..."></app-loading-spinner>
 <div class="sm:mx-0 md:mx-1 lg:mx-2 w-full">
   <app-activities-upsert-form *ngIf="!isLoading" [formsAction]="'edit'"
     [selectedActivity]="selectedActivity" [isLoading]="isLoading"></app-activities-upsert-form>

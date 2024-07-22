@@ -66,8 +66,10 @@ export class ChartsPageComponent implements OnInit {
 
     // Access the resolved data
     const resolvedData = this.route.snapshot.data['chartData'];
-    this.graphData = resolvedData.data;
-    this.filter = resolvedData.filter;
+    if (resolvedData) {
+      this.graphData = resolvedData.data;
+      this.filter = resolvedData.filter;
+    }
 
     this.route.params.subscribe(params => {
       this.filter.serviceId = +params['serviceId'] || this.filter.serviceId;
@@ -89,6 +91,7 @@ export class ChartsPageComponent implements OnInit {
       },
       error: (error) => {
         this.setLoadingStates(false);
+        console.error('Erro ao carregar os dados do gráfico:', error);
       }
     });
 
@@ -167,9 +170,10 @@ export class ChartsPageComponent implements OnInit {
         const pdfHeight = pdf.internal.pageSize.getHeight();
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
-   
-        let currentPdfHeight = 10; // Ajustar altura inicial para permitir margens
-        const pageMargin = 10; // Margem da página
+
+
+        let currentPdfHeight = 10;
+        const pageMargin = 10; 
         let srcY = 0;
    
         // Adicionar texto ao PDF

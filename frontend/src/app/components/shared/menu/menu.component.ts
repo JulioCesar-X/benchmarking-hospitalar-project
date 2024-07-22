@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { RouterModule, Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { MatIconModule } from '@angular/material/icon';
+import { ServiceService } from '../../../core/services/service/service.service';
+import { FeedbackComponent } from '../feedback/feedback.component'; // Import FeedbackComponent
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
-
 
 @Component({
   selector: 'app-menu',
@@ -15,10 +15,12 @@ import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.comp
     RouterLink,
     RouterLinkActive,
     MatIconModule,
+    FeedbackComponent, 
     LoadingSpinnerComponent
   ],
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss']
+  styleUrls: ['./menu.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MenuComponent implements OnInit {
   @Input() isManageUsersSubMenuOpen = false;
@@ -29,8 +31,11 @@ export class MenuComponent implements OnInit {
   @Input() isManageIndicatorsSubMenuOpen = false;
   @Input() isMenuOpen = true;
   @Input() isLoadingCharts= false;
+  loadingCharts = false;
+  feedbackMessage = '';
+  feedbackType: 'success' | 'error' = 'success';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private serviceService: ServiceService) { }
 
   ngOnInit(){
     this.isLoadingCharts = false;
@@ -39,7 +44,6 @@ export class MenuComponent implements OnInit {
   getRole() {
     return this.authService.getRole();
   }
-
 
   openManageUsers() {
     this.isManageUsersSubMenuOpen = !this.isManageUsersSubMenuOpen;
@@ -79,27 +83,43 @@ export class MenuComponent implements OnInit {
     if (except !== 'notifications') this.isManageNotificationsSubMenuOpen = false;
   }
 
-  openMenu(){
-      this.isMenuOpen = !this.isMenuOpen;
-    }
-  
+  openMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
 
   capitalize(str: string): string {
     if (str.length === 0) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  goToCharts(serviceId: number) {
-    const currentUrl = this.router.url;
-    const targetUrl = `/charts;serviceId=${serviceId}`;
+  goToCharts() {
+    this.loadingCharts = true; 
+    this.serviceService.getFirstValidService().subscribe({
+      next: (service) => {
+        if (service) {
+          // const currentUrl = this.router.url;
+          // const targetUrl = `/charts;serviceId=${service.id}`;
 
-    if (currentUrl !== targetUrl) {
-      this.isLoadingCharts = true;
-    }
+          // if (currentUrl !== targetUrl) {
+          //   this.loadingCharts = true;
+          // }
 
-    this.router.navigate(['/charts', { serviceId }]);
+          this.router.navigate(['/charts', { serviceId: service.id }], {
+            state: { preLoad: true }
+          });
+        } else {
+          this.feedbackMessage = 'Nenhum serviço válido encontrado';
+          this.feedbackType = 'error';
+          this.loadingCharts = false; // Stop loading
+        }
+        this.loadingCharts = false; // Stop loading
+      },
+      error: (error) => {
+        this.feedbackMessage = error.message;
+        this.feedbackType = 'error';
+        this.loadingCharts = false; // Stop loading
+      }
+    });
   }
-
-
-
 }
+

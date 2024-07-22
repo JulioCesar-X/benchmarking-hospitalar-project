@@ -29,16 +29,12 @@ export class ActivityService {
     );
   }
 
-  storeActivity(activity: Activity): Observable<Activity> {
-    return this.http.post<Activity>('/activities', activity).pipe(
-      catchError(error => throwError(() => new Error('Failed to create activity')))
-    );
+  storeActivity(activity: any): Observable<any> {
+    return this.http.post<any>('/activities', activity);
   }
 
-  updateActivity(id: number, activity: Activity): Observable<Activity> {
-    return this.http.put<Activity>(`/activities/${id}`, activity).pipe(
-      catchError(error => throwError(() => new Error('Failed to update activity')))
-    );
+  updateActivity(id: number, activity: any): Observable<any> {
+    return this.http.put<any>(`/activities/${id}`, activity);
   }
 
   destroyActivity(id: number): Observable<any> {

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SelectableListComponent } from './selectable-list.component';
+import { AssociationListComponent } from './association-list.component';
 
-describe('SelectableListComponent', () => {
-  let component: SelectableListComponent;
-  let fixture: ComponentFixture<SelectableListComponent>;
+describe('AssociationListComponent', () => {
+  let component: AssociationListComponent;
+  let fixture: ComponentFixture<AssociationListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SelectableListComponent]
+      imports: [AssociationListComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(SelectableListComponent);
+    fixture = TestBed.createComponent(AssociationListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
