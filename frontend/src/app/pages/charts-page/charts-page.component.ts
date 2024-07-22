@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IndicatorService } from '../../core/services/indicator/indicator.service';
+import { ServiceService } from '../../core/services/service/service.service';
 import { MatMenuModule } from '@angular/material/menu';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -57,6 +58,7 @@ export class ChartsPageComponent implements OnInit {
   constructor(
     private indicatorService: IndicatorService,
     private authService: AuthService,
+    private serviceService: ServiceService,
     private route: ActivatedRoute
   ) { }
 
@@ -254,7 +256,7 @@ export class ChartsPageComponent implements OnInit {
     ];
 
     // Adiciona uma linha para os cabeçalhos das colunas
-    worksheet.addRow({
+    const headerRow = worksheet.addRow({
       tipo: 'Tipo de Dado',
       departamento: 'Departamento',
       ano: 'Ano',
@@ -262,42 +264,82 @@ export class ChartsPageComponent implements OnInit {
       valor: 'Valor',
     });
 
+    // Adiciona filtro aos cabeçalhos
+    worksheet.autoFilter = {
+      from: 'A7',
+      to: 'E7',
+    };
+
     const departamento = 'Departamento de Psiquiatria';
 
+    console.log('Dados do gráfico:', this.graphData);
+
+    // Função para adicionar dados ao worksheet
+    const addDataToWorksheet = (dataObj: any, tipo: string, ano: number, departamento: string) => {
+      if (dataObj && dataObj.data) {
+        Object.keys(dataObj.data).forEach((key) => {
+          worksheet.addRow({
+            tipo: tipo,
+            departamento: departamento,
+            ano: ano,
+            mes: key,
+            valor: dataObj.data[key],
+          });
+        });
+      }
+    };
+
     // Adiciona dados de produção mensal
-    (this.graphData.recordsMensal || []).forEach((value: number, index: number) => {
-      worksheet.addRow({ tipo: 'Produção Mês', departamento, ano: this.filter.year, mes: index + 1, valor: value, indice: 1 });
-    });
+    addDataToWorksheet(this.graphData.recordsMensal, 'Produção Mês', this.filter.year, departamento);
 
     // Adiciona dados de produção anual
-    (this.graphData.recordsAnual || []).forEach((value: number, index: number) => {
-      worksheet.addRow({ tipo: 'Produção Acumulada', departamento, ano: this.filter.year, mes: index + 1, valor: value, indice: 1 });
-    });
+    addDataToWorksheet(this.graphData.recordsAnual, 'Produção Acumulada', this.filter.year, departamento);
 
     // Adiciona dados de produção do ano anterior
-    (this.graphData.recordsAnualLastYear || []).forEach((value: number, index: number) => {
-      worksheet.addRow({ tipo: 'Produção Acumulada (Ano Anterior)', departamento, ano: (this.filter.year ?? 0) - 1, mes: index + 1, valor: value, indice: 1 });
-    });
+    addDataToWorksheet(this.graphData.recordsAnualLastYear, 'Produção Acumulada (Ano Anterior)', this.filter.year - 1, departamento);
 
     // Adiciona metas mensais
-    (this.graphData.goalsMensal || []).forEach((value: number, index: number) => {
-      worksheet.addRow({ tipo: 'Meta Mês', departamento, ano: this.filter.year, mes: index + 1, valor: value, indice: 1 });
-    });
+    addDataToWorksheet(this.graphData.goalsMensal, 'Meta Mês', this.filter.year, departamento);
 
     // Adiciona meta anual
-    worksheet.addRow({ tipo: 'Meta Ano', departamento, ano: this.filter.year, mes: '', valor: this.graphData.goalAnual ?? 0, indice: 1 });
-
-    // Adiciona dados dos últimos cinco anos
-    (this.graphData.lastFiveYears || []).forEach((item: any) => {
-      worksheet.addRow({ tipo: 'Produção Últimos 5 Anos', departamento, ano: item.year, mes: '', valor: item.total, indice: 1 });
+    worksheet.addRow({
+      tipo: 'Meta Ano',
+      departamento: departamento,
+      ano: this.filter.year,
+      mes: '',
+      valor: this.graphData.goalAnual?.data ?? 0,
     });
 
+    // Adiciona dados dos últimos cinco anos
+    if (this.graphData.lastFiveYears && this.graphData.lastFiveYears.data) {
+      this.graphData.lastFiveYears.data.forEach((item: any) => {
+        worksheet.addRow({
+          tipo: 'Produção Últimos 5 Anos',
+          departamento: departamento,
+          ano: item.year,
+          mes: '',
+          valor: item.total,
+        });
+      });
+    }
+
     // Adiciona totais de anos anteriores e atuais
-    worksheet.addRow({ tipo: 'Total Ano Anterior', departamento, ano: (this.filter.year ?? 0) - 1, mes: '', valor: this.graphData.previousYearTotal ?? 0, indice: 1 });
-    worksheet.addRow({ tipo: 'Total Ano Atual', departamento, ano: this.filter.year, mes: '', valor: this.graphData.currentYearTotal ?? 0, indice: 1 });
+    worksheet.addRow({
+      tipo: 'Total Ano Anterior',
+      departamento: departamento,
+      ano: this.filter.year - 1,
+      mes: '',
+      valor: this.graphData.previousYearTotal?.data ?? 0,
+    });
+    worksheet.addRow({
+      tipo: 'Total Ano Atual',
+      departamento: departamento,
+      ano: this.filter.year,
+      mes: '',
+      valor: this.graphData.currentYearTotal?.data ?? 0,
+    });
 
     // Formatação de cabeçalhos
-    const headerRow = worksheet.getRow(7);
     headerRow.eachCell((cell) => {
       cell.font = { bold: true };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -316,7 +358,10 @@ export class ChartsPageComponent implements OnInit {
         });
       }
     });
-
+    
+    const path_back = this.serviceService.getFirstValidService();
+    console.log('Path back:', path_back);
+    
     workbook.xlsx.writeBuffer().then((buffer) => {
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = window.URL.createObjectURL(blob);
@@ -325,10 +370,12 @@ export class ChartsPageComponent implements OnInit {
       a.download = 'dados_graficos.xlsx';
       a.click();
       // window.URL.revokeObjectURL(url);
-      window.location.href = '/charts;serviceId=1';
+      window.location.href = '/charts';
     }).catch((error) => {
       console.error('Erro ao gerar o arquivo Excel:', error);
     });
+
+
   }
 
   setLoadingStates(value: boolean): void {
