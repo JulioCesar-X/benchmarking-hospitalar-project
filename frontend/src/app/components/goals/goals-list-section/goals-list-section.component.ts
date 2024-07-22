@@ -9,13 +9,18 @@ import { of } from 'rxjs';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
+import { ExcelImportComponent } from '../../shared/excel-import/excel-import.component';
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 interface Goal {
   id: number | null;
   indicator_name: string;
+  service_name?: string;
+  activity_name?: string;
   target_value: string;
   year: number;
   sai_id: number | null;
@@ -34,8 +39,9 @@ interface Goal {
     FormsModule,
     PaginatorComponent,
     LoadingSpinnerComponent,
-    FeedbackComponent, 
-    MatTooltipModule
+    FeedbackComponent,
+    MatTooltipModule,
+    ExcelImportComponent
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
@@ -44,6 +50,8 @@ interface Goal {
   styleUrls: ['./goals-list-section.component.scss']
 })
 export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewInit {
+  @ViewChild('excelImport') excelImportComponent!: ExcelImportComponent;
+
   @Input() filter: Filter = {
     indicatorId: 1,
     activityId: 1,
@@ -51,19 +59,21 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear()
   };
+
   @Input() indicators: any[] = [];
   @Input() isLoading: boolean = false;
 
+  dropdownOpen = false;
   isLoadingGoals = true;
   totalGoals = 0;
   pageSize = 10;
   currentPage = 0;
   goals: Goal[] = [];
-  allGoals: Goal[] = []; 
+  allGoals: Goal[] = [];
   loadedPages: Set<number> = new Set();
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
-  pageOptions = [5, 10, 20, 50, 100]; 
+  pageOptions = [5, 10, 20, 50, 100];
 
   constructor(
     private goalService: GoalService,
@@ -71,12 +81,12 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   ) { }
 
   ngOnInit(): void {
-    this.loadGoals(0, 30); 
+    this.loadGoals(0, 30);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
-      this.loadGoals(0, 30); 
+      this.loadGoals(0, 30);
     }
   }
 
@@ -126,11 +136,130 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
         target_value: goal.target_value,
         year: goal.year,
         sai_id: item.sai_id,
+        service_name: item.service_name, // Garantir que está preenchendo corretamente
+        activity_name: item.activity_name, // Garantir que está preenchendo corretamente
         isInserted: goal.target_value !== '',
         isUpdating: false,
         isEditing: false
       };
     });
+  }
+
+  onGoalsImported(goals: any[]): void {
+    goals.forEach(goal => {
+      const newGoal: Goal = {
+        id: null,
+        indicator_name: 'Imported Goal', // Placeholder, replace with actual indicator name if available
+        target_value: goal.target_value,
+        year: goal.year,
+        sai_id: goal.sai_id,
+        isInserted: true,
+        isUpdating: false,
+        isEditing: false
+      };
+      this.allGoals.push(newGoal);
+    });
+    this.updateDataSource();
+  }
+
+  exportGoals(): void {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Goals');
+
+    // Adicionar cabeçalhos e subtítulos
+    worksheet.mergeCells('A1:D1');
+    worksheet.getCell('A1').value = `Metas do Ano ${this.filter.year}`;
+    worksheet.getCell('A1').font = { bold: true };
+
+    const serviceName = this.allGoals.length > 0 && this.allGoals[0].service_name ? this.allGoals[0].service_name : 'N/A';
+    const activityName = this.allGoals.length > 0 && this.allGoals[0].activity_name ? this.allGoals[0].activity_name : 'N/A';
+
+    worksheet.mergeCells('A2:D2');
+    worksheet.getCell('A2').value = `Serviço: ${serviceName}`;
+    worksheet.getCell('A2').font = { bold: true };
+
+    worksheet.mergeCells('A3:D3');
+    worksheet.getCell('A3').value = `Atividade: ${activityName}`;
+    worksheet.getCell('A3').font = { bold: true };
+
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const formattedTime = currentDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    worksheet.mergeCells('A4:D4');
+    worksheet.getCell('A4').value = `Data: ${formattedDate} ${formattedTime}`;
+    worksheet.getCell('A4').font = { bold: true };
+
+    worksheet.mergeCells('A5:D5');
+    worksheet.getCell('A5').value = '(Valores acumulados)';
+    worksheet.getCell('A5').font = { bold: true };
+
+    // Configurar colunas
+    worksheet.columns = [
+      { header: 'ID', key: 'sai_id', width: 10 },
+      { header: 'Nome do Indicador', key: 'indicator_name', width: 30 },
+      { header: 'Ano', key: 'year', width: 15 },
+      { header: 'Meta Anual', key: 'target_value', width: 15 }
+    ];
+
+    // Adicionar a linha dos cabeçalhos das colunas
+    const headerRow = worksheet.addRow({
+      sai_id: 'ID',
+      indicator_name: 'Nome do indicador',
+      year: 'Ano',
+      target_value: 'Meta Anual',
+    });
+
+    // Adicionar os dados
+    this.allGoals.forEach(goal => {
+      worksheet.addRow({
+        sai_id: goal.sai_id,
+        indicator_name: goal.indicator_name,
+        year: goal.year,
+        target_value: Number(goal.target_value) // Garantir que o valor seja numérico
+      });
+    });
+
+    // Adicionar filtro aos cabeçalhos
+    worksheet.autoFilter = {
+      from: 'A6',
+      to: 'D6',
+    };
+
+    // Formatação de cabeçalhos
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFB6DDE8' }
+      };
+    });
+
+    // Formatação de dados
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber > 6) { // Ajuste para a linha correta dos dados
+        row.eachCell((cell) => {
+          cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        });
+      }
+    });
+
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, 'GoalsDataExport.xlsx');
+    }).catch((error) => {
+      console.error('Erro ao gerar o arquivo Excel:', error);
+    });
+  }
+
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  triggerFileInput(): void {
+    this.excelImportComponent.triggerFileInput();
   }
 
   editGoal(goal: Goal): void {

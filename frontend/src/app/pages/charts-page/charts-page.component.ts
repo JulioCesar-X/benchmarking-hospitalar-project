@@ -245,7 +245,6 @@ export class ChartsPageComponent implements OnInit {
     worksheet.mergeCells('A5:F5');
     worksheet.getCell('A5').value = `Data: ${formattedDate} ${formattedTime}`;
     worksheet.getCell('A5').font = { bold: true };
-
     worksheet.mergeCells('A6:F6');
     worksheet.getCell('A6').value = '(Valores acumulados)';
     worksheet.getCell('A6').font = { bold: true };

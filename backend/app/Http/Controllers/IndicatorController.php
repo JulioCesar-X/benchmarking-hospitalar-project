@@ -476,7 +476,7 @@ class IndicatorController extends Controller
         }
 
         try {
-            $query = Sai::with(['indicator:id,indicator_name', 'records' => function ($query) use ($year, $month) {
+            $query = Sai::with(['indicator:id,indicator_name', 'service:id,service_name', 'activity:id,activity_name', 'records' => function ($query) use ($year, $month) {
                 $query->select('id', 'sai_id', 'value', 'date')
                 ->whereYear('date', $year)
                     ->whereMonth('date', $month);
@@ -487,7 +487,7 @@ class IndicatorController extends Controller
             }
 
             $total = $query->count();
-            $records = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id']);
+            $records = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id', 'service_id', 'activity_id']);
 
             $response = [
                 'total' => $total,
@@ -495,6 +495,8 @@ class IndicatorController extends Controller
                     return [
                         'sai_id' => $sai->id,
                         'indicator_name' => $sai->indicator->indicator_name,
+                        'service_name' => $sai->service ? $sai->service->service_name : 'N/A',
+                        'activity_name' => $sai->activity ? $sai->activity->activity_name : 'N/A',
                         'records' => $sai->records->map(function ($record) {
                             return [
                                 'record_id' => $record->id,
@@ -507,7 +509,6 @@ class IndicatorController extends Controller
             ];
 
             Cache::put($cacheKey, $response, now()->addMinutes(30));
-            
 
             return response()->json($response);
         } catch (Exception $exception) {
@@ -531,19 +532,16 @@ class IndicatorController extends Controller
         $cacheKey = "indicators_goals_{$serviceId}_{$activityId}_{$year}_{$page}_{$size}";
 
         if (Cache::has($cacheKey)) {
-            
             return response()->json(Cache::get($cacheKey), 200);
         }
 
         try {
             $query = Sai::with([
-                'indicator:id,indicator_name',
+                'indicator:id,indicator_name', 'service:id,service_name', 'activity:id,activity_name',
                 'goals' => function ($query) use ($year) {
                     $query->select('id', 'sai_id', 'target_value', 'year')
                     ->where('year', $year);
-                },
-                'service:id,service_name',
-                'activity:id,activity_name'
+                }
             ])->where('service_id', $serviceId);
 
             if ($activityId !== null && $activityId !== '') {
@@ -551,12 +549,14 @@ class IndicatorController extends Controller
             }
 
             $total = $query->count();
-            $sais = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id']);
+            $sais = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id', 'service_id', 'activity_id']);
 
             $response = $sais->map(function ($sai) {
                 return [
                     'sai_id' => $sai->id,
                     'indicator_name' => $sai->indicator->indicator_name,
+                    'service_name' => $sai->service ? $sai->service->service_name : 'N/A',
+                    'activity_name' => $sai->activity ? $sai->activity->activity_name : 'N/A',
                     'goal' => $sai->goals->first()
                 ];
             });
@@ -570,11 +570,9 @@ class IndicatorController extends Controller
 
             // Armazenar o resultado no cache por 30 minutos
             Cache::put($cacheKey, $result, now()->addMinutes(30));
-            
 
             return response()->json($result);
         } catch (Exception $exception) {
-            
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }

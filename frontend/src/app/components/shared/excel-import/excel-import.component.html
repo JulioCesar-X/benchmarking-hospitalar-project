@@ -1,0 +1,5 @@
+<a id="importExcel" href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem"
+    (click)="triggerFileInput()">
+    <img src="../../../assets/icons/csv.png" height="16" class="inline mr-2" /> Importar do Excel
+</a>
+<input type="file" #fileInput style="display: none;" (change)="onFileChange($event)" />
