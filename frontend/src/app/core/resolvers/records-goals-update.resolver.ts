@@ -38,29 +38,34 @@ export class RecordsGoalsUpdateResolver implements Resolve<any> {
                 if (service && service.id) {
                     console.log('Service data retrieved:', service);
 
-                    // Map activities and indicators based on the service data
-                    const activities = service.sais?.map((sai: any) => ({
-                        id: sai.activity_id,
-                        name: sai.activity?.activity_name || ''
-                    })).filter((activity: any) => activity.id) || [];
-
-                    const indicators = service.sais?.map((sai: any) => ({
-                        id: sai.indicator_id,
-                        name: sai.indicator?.indicator_name || ''
-                    })).filter((indicator: any) => indicator.id) || [];
-
-                    // Update filter with first activity and indicator if they exist
-                    if (activities.length > 0) {
-                        filter.activityId = activities[0].id;
+                    if (service.sais && service.sais.length > 0) {
+                        filter.activityId = filter.activityId !== 1 ? filter.activityId : service.sais[0].activity.id;
+                        filter.indicatorId = filter.indicatorId !== 1 ? filter.indicatorId : service.sais[0].indicator.id;
+                    } else if (service.indicators && service.indicators.length > 0) {
+                        filter.indicatorId = filter.indicatorId !== 1 ? filter.indicatorId : service.indicators[0].id;
+                        filter.activityId = filter.activityId !== 1 ? filter.activityId : null;
                     } else {
-                        filter.activityId = null;
+                        console.error('Service has no activities or indicators:', service);
+                        return of({ error: true, message: 'Service has no activities or indicators' });
                     }
 
-                    if (indicators.length > 0) {
-                        filter.indicatorId = indicators[0].id;
-                    }
+                    const activities = service.sais.map((sai: any) => ({
+                        id: sai.activity.id,
+                        name: sai.activity.activity_name
+                    })).filter((value: any, index: any, self: any) => self.findIndex((v: any) => v.id === value.id) === index);
 
-                    return of({ data: service, filter, activities, indicators });
+                    const indicators = service.sais.map((sai: any) => ({
+                        id: sai.indicator.id,
+                        name: sai.indicator.indicator_name
+                    })).filter((value: any, index: any, self: any) => self.findIndex((v: any) => v.id === value.id) === index);
+
+                    return this.serviceService.indexServices().pipe(
+                        map((allServices: any) => ({ data: service, filter, activities, indicators, allServices })),
+                        catchError(error => {
+                            console.error('Failed to fetch all services:', error);
+                            return of({ error: true, message: 'Failed to fetch all services' });
+                        })
+                    );
                 } else {
                     console.error('Service not found for serviceId:', serviceId);
                     return of({ error: true, message: 'Service not found' });

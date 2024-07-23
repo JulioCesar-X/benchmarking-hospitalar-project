@@ -35,10 +35,9 @@ interface IndicatorForFilter {
 })
 export class FilterComponent implements OnInit, OnChanges {
 
-  servicesList: Service[] = [];
-  activitiesList: ActivityForFilter[] = [];
-  indicatorsList: IndicatorForFilter[] = [];
-  activityCache = new Map<number, Activity>();
+  @Input() allServices: Service[] = []; // Adicione esta linha
+  @Input() initialActivities: ActivityForFilter[] = []; // Adicione esta linha
+  @Input() initialIndicators: IndicatorForFilter[] = []; // Adicione esta linha
 
   @Input() selectedServiceId?: number | string = 0;
   @Input() selectedActivityId?: number | undefined = undefined;
@@ -54,6 +53,11 @@ export class FilterComponent implements OnInit, OnChanges {
   @Output() filterEvent = new EventEmitter<Filter>();
   @Output() activityInputChange = new EventEmitter<boolean>();
 
+  servicesList: Service[] = [];
+  activitiesList: ActivityForFilter[] = [];
+  indicatorsList: IndicatorForFilter[] = [];
+  activityCache = new Map<number, Activity>();
+
   filter: Filter = { month: new Date().getMonth() + 1, year: new Date().getFullYear() };
   feedbackMessage: string = '';
   feedbackType: 'success' | 'error' = 'error';
@@ -61,13 +65,14 @@ export class FilterComponent implements OnInit, OnChanges {
   constructor(private serviceService: ServiceService, private activityService: ActivityService) { }
 
   ngOnInit() {
+    this.servicesList = this.allServices;
+    this.activitiesList = this.initialActivities;
+    this.indicatorsList = this.initialIndicators;
     if (this.initialServiceData) {
-      this.servicesList = [this.initialServiceData];
       this.updateActivityAndIndicatorSelections(this.initialServiceData.id);
     } else {
       this.loadInitialData();
     }
-
     if (this.initialFilter) {
       this.applyInitialFilter();
     }
@@ -88,6 +93,13 @@ export class FilterComponent implements OnInit, OnChanges {
       if (this.selectedServiceId) {
         this.updateActivityAndIndicatorSelections(Number(this.selectedServiceId));
       }
+    });
+
+    this.activityService.indexActivities().subscribe(activities => {
+      this.activitiesList = activities.map(activity => ({
+        id: activity.id,
+        name: activity.activity_name
+      }));
     });
   }
 
@@ -123,7 +135,7 @@ export class FilterComponent implements OnInit, OnChanges {
       this.activityInputChange.emit(hasActivities);
       this.activitiesList = selectedService.activities?.map(activity => ({
         id: activity.id,
-        name: activity.name // Ajustar para `name` se os dados possuem essa estrutura
+        name: activity.name
       })) || [];
 
       if (this.activitiesList.length === 0) {

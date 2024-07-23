@@ -25,8 +25,6 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
   currentIndicators: any[] = [];
   isLoading = false;
   resolvedData: any;
-  activities: any[] = [];
-  indicators: any[] = [];
 
   filter: Filter = {
     indicatorId: 1,
@@ -37,6 +35,10 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
   };
 
   selectedTab: string = 'Records';
+  initialActivities: any[] = [];
+  initialIndicators: any[] = [];
+  allServices: any[] = [];
+  showActivityInput: boolean = false; // Adicione esta linha
 
   constructor(
     private indicatorService: IndicatorService,
@@ -49,8 +51,9 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
     if (this.resolvedData && !this.resolvedData.error) {
       this.currentIndicators = this.resolvedData.data;
       this.filter = this.resolvedData.filter;
-      this.activities = this.resolvedData.activities;
-      this.indicators = this.resolvedData.indicators;
+      this.initialActivities = this.resolvedData.activities;
+      this.initialIndicators = this.resolvedData.indicators;
+      this.allServices = this.resolvedData.allServices;
     } else {
       console.error(this.resolvedData?.message || 'Error resolving data');
     }
@@ -80,7 +83,7 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
   }
 
   handleActivityInputChange(show: boolean): void {
-    // Placeholder function to handle activity input changes
+    this.showActivityInput = show;
   }
 
   loadRecords(): void {
