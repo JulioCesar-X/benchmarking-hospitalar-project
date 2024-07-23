@@ -48,13 +48,13 @@
 }
 
 .tab-link {
-  color: $fill-white;
+  color: $lighter-main-blue;
   width: 100%;
-  border: 2px solid $fill-white;
+  border: 2px solid $lighter-main-blue;
   background-color: $darker-main-blue;
   outline: none;
   cursor: pointer;
-  padding: 1em;
+  padding: 0.5em;
   transition: 0.3s;
 
 }
