@@ -221,14 +221,17 @@ main {
   transition: background-color 0.3s ease, opacity 0.3s ease;
 
   &.previous-button {
-    left: 15rem;
-    top: 35rem;
+    // left: 15rem;
+    // top: 35rem;
+    left: 3rem;
+    top: 25rem;
   }
 
   &.next-button {
-    right: 15rem;
-    // left: 100rem;
-    top: 35rem;
+    // right: 15rem;
+    // top: 35rem;
+    right: 3rem;
+    top: 25rem;
   }
 
   @media (max-width: 600px) {
@@ -279,3 +282,4 @@ main {
   background-color: $main-dark-blue;
   border-radius: 50%;
 }
+
