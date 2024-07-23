@@ -24,6 +24,9 @@ import { GoalsListSectionComponent } from '../../../components/goals/goals-list-
 export class RecordsGoalsUpdatePageComponent implements OnInit {
   currentIndicators: any[] = [];
   isLoading = false;
+  resolvedData: any;
+  activities: any[] = [];
+  indicators: any[] = [];
 
   filter: Filter = {
     indicatorId: 1,
@@ -41,12 +44,15 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const resolvedData = this.route.snapshot.data['recordGoalsData'];
-    if (resolvedData.error) {
-      console.error(resolvedData.message);
+    this.resolvedData = this.route.snapshot.data['recordGoalsData'];
+    console.log('Resolved Data:', this.resolvedData);
+    if (this.resolvedData && !this.resolvedData.error) {
+      this.currentIndicators = this.resolvedData.data;
+      this.filter = this.resolvedData.filter;
+      this.activities = this.resolvedData.activities;
+      this.indicators = this.resolvedData.indicators;
     } else {
-      this.currentIndicators = resolvedData.data;
-      this.filter = resolvedData.filter;
+      console.error(this.resolvedData?.message || 'Error resolving data');
     }
   }
 
@@ -84,7 +90,7 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
     const year = Number(this.filter.year) || new Date().getFullYear();
     const month = Number(this.filter.month) || new Date().getMonth() + 1;
 
-    this.indicatorService.getIndicatorsRecords(serviceId, activityId, year, month, 0, 10).subscribe(
+    this.indicatorService.getIndicatorsRecords(serviceId, activityId ?? 0, year ?? new Date().getFullYear(), month ?? (new Date().getMonth() + 1), 0, 10).subscribe(
       data => {
         console.log('Records data', data);
         this.currentIndicators = data;
@@ -103,7 +109,7 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
     const activityId = this.filter.activityId !== null && this.filter.activityId !== undefined ? Number(this.filter.activityId) : 0;
     const year = Number(this.filter.year) || new Date().getFullYear();
 
-    this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, 0, 10).subscribe(
+    this.indicatorService.getIndicatorsGoals(serviceId, activityId ?? 0, year ?? new Date().getFullYear(), 0, 10).subscribe(
       data => {
         console.log('Goals data', data);
         this.currentIndicators = data;

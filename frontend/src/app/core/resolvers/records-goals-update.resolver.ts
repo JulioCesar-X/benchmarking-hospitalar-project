@@ -18,6 +18,13 @@ export class RecordsGoalsUpdateResolver implements Resolve<any> {
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
         const serviceId = +route.paramMap.get('serviceId')!;
+        console.log(`Resolving data for serviceId: ${serviceId}`);
+
+        if (isNaN(serviceId) || serviceId <= 0) {
+            console.error('Invalid serviceId:', serviceId);
+            return of({ error: true, message: 'Invalid serviceId' });
+        }
+
         const filter: Filter = {
             indicatorId: 1,
             activityId: 1,
@@ -29,26 +36,38 @@ export class RecordsGoalsUpdateResolver implements Resolve<any> {
         return this.serviceService.showService(serviceId).pipe(
             switchMap((service: any) => {
                 if (service && service.id) {
-                    if (service.sais && service.sais.length > 0) {
-                        filter.activityId = service.sais[0].activity_id;
-                        filter.indicatorId = service.sais[0].indicator_id;
-                    } else if (service.indicators && service.indicators.length > 0) {
-                        filter.indicatorId = service.indicators[0].id;
-                        filter.activityId = null;
+                    console.log('Service data retrieved:', service);
+
+                    // Map activities and indicators based on the service data
+                    const activities = service.sais?.map((sai: any) => ({
+                        id: sai.activity_id,
+                        name: sai.activity?.activity_name || ''
+                    })).filter((activity: any) => activity.id) || [];
+
+                    const indicators = service.sais?.map((sai: any) => ({
+                        id: sai.indicator_id,
+                        name: sai.indicator?.indicator_name || ''
+                    })).filter((indicator: any) => indicator.id) || [];
+
+                    // Update filter with first activity and indicator if they exist
+                    if (activities.length > 0) {
+                        filter.activityId = activities[0].id;
                     } else {
-                        return of({ error: true, message: 'Service has no activities or indicators' });
+                        filter.activityId = null;
                     }
-                    return this.indicatorService.getAllData(filter).pipe(
-                        map(data => ({ data, filter })),
-                        catchError(error => {
-                            return of({ error: true, message: 'Failed to fetch data' });
-                        })
-                    );
+
+                    if (indicators.length > 0) {
+                        filter.indicatorId = indicators[0].id;
+                    }
+
+                    return of({ data: service, filter, activities, indicators });
                 } else {
+                    console.error('Service not found for serviceId:', serviceId);
                     return of({ error: true, message: 'Service not found' });
                 }
             }),
             catchError(error => {
+                console.error('Service fetch failed:', error);
                 return of({ error: true, message: 'Service fetch failed' });
             })
         );

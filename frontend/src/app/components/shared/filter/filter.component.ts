@@ -49,6 +49,7 @@ export class FilterComponent implements OnInit, OnChanges {
   @Input() showServiceInput: boolean = true;
   @Input() showActivityInput: boolean = false;
   @Input() initialFilter?: Filter;
+  @Input() initialServiceData: any;
 
   @Output() filterEvent = new EventEmitter<Filter>();
   @Output() activityInputChange = new EventEmitter<boolean>();
@@ -60,9 +61,14 @@ export class FilterComponent implements OnInit, OnChanges {
   constructor(private serviceService: ServiceService, private activityService: ActivityService) { }
 
   ngOnInit() {
-    this.loadInitialData();
+    if (this.initialServiceData) {
+      this.servicesList = [this.initialServiceData];
+      this.updateActivityAndIndicatorSelections(this.initialServiceData.id);
+    } else {
+      this.loadInitialData();
+    }
+
     if (this.initialFilter) {
-      console.log('Initial filter:', this.initialFilter);
       this.applyInitialFilter();
     }
   }
@@ -83,13 +89,6 @@ export class FilterComponent implements OnInit, OnChanges {
         this.updateActivityAndIndicatorSelections(Number(this.selectedServiceId));
       }
     });
-
-    this.activityService.indexActivities().subscribe(activities => {
-      this.activitiesList = activities.map(activity => ({
-        id: activity.id,
-        name: activity.activity_name
-      }));
-    });
   }
 
   applyInitialFilter() {
@@ -97,9 +96,6 @@ export class FilterComponent implements OnInit, OnChanges {
       this.selectedServiceId = this.initialFilter.serviceId;
       this.selectedActivityId = this.initialFilter.activityId ? Number(this.initialFilter.activityId) : undefined;
       this.selectedIndicatorId = this.initialFilter.indicatorId ? Number(this.initialFilter.indicatorId) : undefined;
-      console.log('Initial indicator:', this.selectedIndicatorId);
-      console.log('Initial activity:', this.selectedActivityId);
-      console.log('Initial service:', this.selectedServiceId);
       this.filter.month = this.initialFilter.month;
       this.filter.year = this.initialFilter.year;
 
@@ -114,6 +110,8 @@ export class FilterComponent implements OnInit, OnChanges {
     const serviceId = Number(target.value);
     if (!isNaN(serviceId)) {
       this.selectedServiceId = serviceId;
+      this.selectedActivityId = undefined; // Reset activity
+      this.selectedIndicatorId = undefined; // Reset indicator
       this.updateActivityAndIndicatorSelections(serviceId);
     }
   }
@@ -125,7 +123,7 @@ export class FilterComponent implements OnInit, OnChanges {
       this.activityInputChange.emit(hasActivities);
       this.activitiesList = selectedService.activities?.map(activity => ({
         id: activity.id,
-        name: activity.name
+        name: activity.name // Ajustar para `name` se os dados possuem essa estrutura
       })) || [];
 
       if (this.activitiesList.length === 0) {
@@ -134,10 +132,14 @@ export class FilterComponent implements OnInit, OnChanges {
           name: indicator.name
         })) || [];
       } else {
-        this.activityService.showActivity(Number(this.selectedActivityId)).subscribe(activity => {
-          this.activityCache.set(Number(this.selectedActivityId), activity);
-          this.updateIndicatorSelection(activity);
-        });
+        if (this.selectedActivityId) {
+          this.activityService.showActivity(Number(this.selectedActivityId)).subscribe(activity => {
+            this.activityCache.set(Number(this.selectedActivityId), activity);
+            this.updateIndicatorSelection(activity);
+          });
+        } else {
+          this.updateIndicatorSelection(undefined);
+        }
       }
     }
   }

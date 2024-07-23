@@ -2,7 +2,7 @@
   <div class="w-full headingSection">
     <h1 class="w-[30%] ml-5 headingTitle">Departamento Psiquiatria</h1>
   </div>
-  <div class="homepageCardsSections" cdkDropList (cdkDropListDropped)="drop($event)">
+  <div class="homepageCardsSections" cdkDropList (cdkDropListDropped)="drop($event)" (mouseenter)="showNavButtons = true" #cardsSection >
     <div *ngFor="let service of displayedServices">
       <div *ngIf="userRole === 'admin' || userRole === 'root'; else noDrag">
         <div class="card" cdkDrag (click)="goToDescription(service.id)">
@@ -53,13 +53,13 @@
   </div>
 
   <!-- Botão para carregar serviços anteriores -->
-  <button *ngIf=" showNavButtons && !isLoading && page > 1" (click)="loadPreviousServices()"
+  <button *ngIf="showNavButtons && !isLoading && page > 1" (click)="loadPreviousServices()"
     [ngClass]="{'btnVisible': page > 1, 'btnHidden': page <= 1}" class="navigation-button previous-button">
     <lord-icon src="https://cdn.lordicon.com/whtfgdfm.json" trigger="hover" state="hover-ternd-flat-6"
       colors="primary:#ffffff" style="width:30px;height:48px; transform: rotate(180deg);">
     </lord-icon>
   </button>
-
+  
   <!-- Botão para carregar serviços seguintes -->
   <button *ngIf="showNavButtons && !isLoading && page * pageSize < totalServices" (click)="loadNextServices()"
     [ngClass]="{'btnVisible': page * pageSize < totalServices, 'btnHidden': page * pageSize >= totalServices}"

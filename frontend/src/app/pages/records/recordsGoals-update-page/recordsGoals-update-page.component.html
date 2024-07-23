@@ -3,8 +3,8 @@
 </div>
 
 <div class="sm:mx-1 w-full flex flex-col relative">
-  <app-filter [initialFilter]="filter" (filterEvent)="handleFilterData($event)"
-    (activityInputChange)="handleActivityInputChange($event)" [indicatorsInput]="false" [showServiceInput]="true"
+  <app-filter [initialFilter]="filter" [initialServiceData]="resolvedData.data" (filterEvent)="handleFilterData($event)"
+    (activityInputChange)="handleActivityInputChange($event)" [indicatorsInput]="true" [showServiceInput]="true"
     [showActivityInput]="true" [showMonthInput]="true">
   </app-filter>
 
