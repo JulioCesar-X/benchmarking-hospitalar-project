@@ -6,7 +6,7 @@
         <select class="w-full" [(ngModel)]="selectedServiceId" (change)="onServiceSelect($event)"
           matTooltip="Selecione um serviço" [matTooltipPosition]="'below'" matTooltipClass="custom">
           <option [ngValue]="0" disabled>Selecione um serviço</option>
-          <option *ngFor="let service of allServices" [value]="service.id">{{ service.service_name }}</option>
+          <option *ngFor="let service of servicesList" [value]="service.id">{{ service.service_name }}</option>
         </select>
       </div>
 

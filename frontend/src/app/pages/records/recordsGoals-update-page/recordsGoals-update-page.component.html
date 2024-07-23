@@ -3,10 +3,9 @@
 </div>
 
 <div class="sm:mx-1 w-full flex flex-col relative">
-  <app-filter [initialFilter]="filter" [initialServiceData]="resolvedData.data" [initialActivities]="initialActivities"
-    [initialIndicators]="initialIndicators" [allServices]="allServices" (filterEvent)="handleFilterData($event)"
-    (activityInputChange)="handleActivityInputChange($event)" [indicatorsInput]="false" [showServiceInput]="true"
-    [showActivityInput]="showActivityInput" [showMonthInput]="true">
+  <app-filter [showMonthInput]="selectedTab === 'Records'" [indicatorsInput]="false" [dataInsertedCheckbox]="true"
+    [showServiceInput]="true" [showActivityInput]="true" (filterEvent)="handleFilterData($event)"
+    (activityInputChange)="handleActivityInputChange($event)">
   </app-filter>
 
   <div class="flex flex-col flex-1 gap-4 mt-2 mx-auto w-[100%] pb-4 shadow-md graphicsContainer">

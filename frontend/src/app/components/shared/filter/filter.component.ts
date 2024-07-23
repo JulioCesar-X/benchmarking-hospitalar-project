@@ -35,9 +35,10 @@ interface IndicatorForFilter {
 })
 export class FilterComponent implements OnInit, OnChanges {
 
-  @Input() allServices: Service[] = []; // Adicione esta linha
-  @Input() initialActivities: ActivityForFilter[] = []; // Adicione esta linha
-  @Input() initialIndicators: IndicatorForFilter[] = []; // Adicione esta linha
+  servicesList: Service[] = [];
+  activitiesList: ActivityForFilter[] = [];
+  indicatorsList: IndicatorForFilter[] = [];
+  activityCache = new Map<number, Activity>();
 
   @Input() selectedServiceId?: number | string = 0;
   @Input() selectedActivityId?: number | undefined = undefined;
@@ -48,15 +49,9 @@ export class FilterComponent implements OnInit, OnChanges {
   @Input() showServiceInput: boolean = true;
   @Input() showActivityInput: boolean = false;
   @Input() initialFilter?: Filter;
-  @Input() initialServiceData: any;
 
   @Output() filterEvent = new EventEmitter<Filter>();
   @Output() activityInputChange = new EventEmitter<boolean>();
-
-  servicesList: Service[] = [];
-  activitiesList: ActivityForFilter[] = [];
-  indicatorsList: IndicatorForFilter[] = [];
-  activityCache = new Map<number, Activity>();
 
   filter: Filter = { month: new Date().getMonth() + 1, year: new Date().getFullYear() };
   feedbackMessage: string = '';
@@ -65,15 +60,9 @@ export class FilterComponent implements OnInit, OnChanges {
   constructor(private serviceService: ServiceService, private activityService: ActivityService) { }
 
   ngOnInit() {
-    this.servicesList = this.allServices;
-    this.activitiesList = this.initialActivities;
-    this.indicatorsList = this.initialIndicators;
-    if (this.initialServiceData) {
-      this.updateActivityAndIndicatorSelections(this.initialServiceData.id);
-    } else {
-      this.loadInitialData();
-    }
+    this.loadInitialData();
     if (this.initialFilter) {
+      console.log('Initial filter:', this.initialFilter);
       this.applyInitialFilter();
     }
   }
@@ -108,6 +97,9 @@ export class FilterComponent implements OnInit, OnChanges {
       this.selectedServiceId = this.initialFilter.serviceId;
       this.selectedActivityId = this.initialFilter.activityId ? Number(this.initialFilter.activityId) : undefined;
       this.selectedIndicatorId = this.initialFilter.indicatorId ? Number(this.initialFilter.indicatorId) : undefined;
+      console.log('Initial indicator:', this.selectedIndicatorId);
+      console.log('Initial activity:', this.selectedActivityId);
+      console.log('Initial service:', this.selectedServiceId);
       this.filter.month = this.initialFilter.month;
       this.filter.year = this.initialFilter.year;
 
@@ -145,10 +137,10 @@ export class FilterComponent implements OnInit, OnChanges {
         })) || [];
       } else {
         if (this.selectedActivityId) {
-          this.activityService.showActivity(Number(this.selectedActivityId)).subscribe(activity => {
-            this.activityCache.set(Number(this.selectedActivityId), activity);
-            this.updateIndicatorSelection(activity);
-          });
+        this.activityService.showActivity(Number(this.selectedActivityId)).subscribe(activity => {
+          this.activityCache.set(Number(this.selectedActivityId), activity);
+          this.updateIndicatorSelection(activity);
+        });
         } else {
           this.updateIndicatorSelection(undefined);
         }

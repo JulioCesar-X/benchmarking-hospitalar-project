@@ -99,9 +99,7 @@ export class ChartsPageComponent implements OnInit {
   }
 
   loadGraphData(): void {
-    
     this.filterSubject.next(this.filter);
-
   }
 
   handleFilterData(event: Partial<Filter>): void {
