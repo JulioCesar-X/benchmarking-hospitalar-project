@@ -469,12 +469,6 @@ class IndicatorController extends Controller
         $page = $request->input('page', 1);
         $size = $request->input('size', 10);
 
-        $cacheKey = "indicators_records_{$serviceId}_{$activityId}_{$year}_{$month}_{$page}_{$size}";
-
-        if (Cache::has($cacheKey)) {
-            return response()->json(Cache::get($cacheKey), 200);
-        }
-
         try {
             $query = Sai::with(['indicator:id,indicator_name', 'service:id,service_name', 'activity:id,activity_name', 'records' => function ($query) use ($year, $month) {
                 $query->select('id', 'sai_id', 'value', 'date')
@@ -508,13 +502,12 @@ class IndicatorController extends Controller
                 })
             ];
 
-            Cache::put($cacheKey, $response, now()->addMinutes(30));
-
             return response()->json($response);
         } catch (Exception $exception) {
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
+
     /**
      * Display a listing of the resource.
      *

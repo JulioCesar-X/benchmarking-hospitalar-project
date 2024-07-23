@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Filter } from '../../../core/models/filter.model';
 import { RecordService } from '../../../core/services/record/record.service';
 import { IndicatorService } from '../../../core/services/indicator/indicator.service';
@@ -15,6 +16,8 @@ import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginato
 import { ExcelImportComponent } from '../../shared/excel-import/excel-import.component';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { forkJoin } from 'rxjs';
+
 
 interface Record {
   record_id: number | null;
@@ -41,7 +44,8 @@ interface Record {
     LoadingSpinnerComponent,
     FeedbackComponent,
     MatTooltipModule,
-    ExcelImportComponent
+    ExcelImportComponent,
+    MatProgressBarModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
@@ -65,6 +69,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
 
   dropdownOpen = false;
   isLoadingRecords = true;
+  isImportingRecords = false;
   totalRecords = 0;
   pageSize = 10;
   currentPage = 0;
@@ -124,7 +129,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
   mapRecord(item: any, year: number, month: number): Record[] {
     if (item.records.length === 0) {
       return [{
-        record_id: null,
+        record_id: item.record_id,
         indicator_name: item.indicator_name,
         service_name: item.service_name,
         activity_name: item.activity_name,
@@ -152,22 +157,77 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
   }
 
   onRecordsImported(records: any[]): void {
-    records.forEach(record => {
-      const newRecord: Record = {
-        record_id: null,
-        indicator_name: 'Imported Record',
-        service_name: 'N/A',
-        activity_name: 'N/A',
-        sai_id: record.sai_id,
-        value: record.value,
-        date: record.date,
-        isInserted: true,
-        isUpdating: false,
-        isEditing: false
-      };
-      this.allRecords.push(newRecord);
+    const newRecords: Record[] = records.map(record => {
+      // Verifique se já existe um registro com a mesma data e sai_id
+      const existingRecord = this.allRecords.find(r => r.sai_id === record.sai_id && r.date === record.date);
+
+      if (existingRecord) {
+        // Atualize o valor do registro existente
+        existingRecord.value = record.value;
+        return existingRecord;
+      } else {
+        // Adicione um novo registro
+        return {
+          record_id: record.record_id || null, // Certifique-se de que o record_id seja nulo se não existir
+          indicator_name: record.indicator_name,
+          service_name: record.service_name || 'N/A',
+          activity_name: record.activity_name || 'N/A',
+          sai_id: record.sai_id,
+          value: record.value,
+          date: record.date, // Data já formatada
+          isInserted: true,
+          isUpdating: false,
+          isEditing: false
+        };
+      }
     });
+
+    this.allRecords.push(...newRecords.filter(record => !record.record_id)); // Apenas novos registros sem record_id
+
+    // Aqui vamos enviar os dados para o backend
+    this.sendRecordsToBackend(newRecords);
+
     this.updateDataSource();
+  }
+
+  sendRecordsToBackend(records: Record[]): void {
+    const requests = records.map(record => {
+      if (record.record_id) {
+        return this.recordService.updateRecord(record.record_id, record).pipe(
+          finalize(() => {
+            record.isUpdating = false;
+            record.isEditing = false;
+          })
+        );
+      } else {
+        const newRecord = {
+          ...record,
+          isUpdating: false
+        };
+        return this.recordService.storeRecord(newRecord).pipe(
+          finalize(() => newRecord.isUpdating = false)
+        );
+      }
+    });
+
+    forkJoin(requests).subscribe(
+      () => {
+        this.setNotification('Registros criados/atualizados com sucesso', 'success');
+        // Recarregar registros após as operações de backend para garantir que o cache foi atualizado
+        this.loadRecords(this.currentPage, this.pageSize);
+      },
+      error => {
+        this.setNotification('Erro ao criar/atualizar registros', 'error');
+      }
+    );
+  }
+
+  onImportStarted(): void {
+    this.isImportingRecords = true;
+  }
+
+  onImportFinished(): void {
+    this.isImportingRecords = false;
   }
 
   exportRecords(): void {
@@ -261,7 +321,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       console.error('Erro ao gerar o arquivo Excel:', error);
     });
   }
-  
 
   toggleDropdown(): void {
     this.dropdownOpen = !this.dropdownOpen;

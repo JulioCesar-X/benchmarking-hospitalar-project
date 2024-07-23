@@ -9,7 +9,6 @@ import { forkJoin } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-
 export class IndicatorService {
   private cache: Map<string, any> = new Map();
 
@@ -145,12 +144,7 @@ export class IndicatorService {
       .set('size', pageSize.toString());
     console.log('params >>', params.toString());
 
-    return this.http.get<any>('/indicators/sai/records', { params }).pipe(
-      catchError(error => {
-        console.error('Error fetching data:', error);
-        return throwError(() => new Error('Falha ao buscar indicadores com registros'));
-      })
-    );
+    return this.http.get<any>('/indicators/sai/records', { params });
   }
 
   getIndicatorsGoals(serviceId: number, activityId: number | null, year: number, pageIndex: number, pageSize: number): Observable<any> {
@@ -189,4 +183,5 @@ export class IndicatorService {
       catchError(error => throwError(() => new Error('Failed to delete indicator')))
     );
   }
+
 }

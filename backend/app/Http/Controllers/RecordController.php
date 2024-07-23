@@ -26,7 +26,6 @@ class RecordController extends Controller
 
         try {
             $record->update($request->all());
-            $this->invalidateCache($record->sai->service_id, $record->sai->activity_id, $record->sai->indicator_id);
 
             $this->notifyRootIfNotNotified();
 
@@ -49,8 +48,16 @@ class RecordController extends Controller
         }
 
         try {
+            // Verifica se já existe um registro para a mesma data e sai_id
+            $existingRecord = Record::where('sai_id', $request->sai_id)
+                ->where('date', $request->date)
+                ->first();
+
+            if ($existingRecord) {
+                return response()->json(['error' => 'Record already exists for this date'], 409);
+            }
+
             $record = Record::create($request->all());
-            $this->invalidateCache($record->sai->service_id, $record->sai->activity_id, $record->sai->indicator_id);
 
             $this->notifyRootIfNotNotified();
 
@@ -58,24 +65,6 @@ class RecordController extends Controller
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
-    }
-
-    private function invalidateCache($serviceId, $activityId, $indicatorId)
-    {
-        $years = range(date('Y') - 5, date('Y'));
-        $months = range(1, 12);
-
-        foreach ($years as $year) {
-            foreach ($months as $month) {
-                Cache::forget("records_mensal_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
-                Cache::forget("records_anual_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
-                Cache::forget("records_last_year_{$serviceId}_{$activityId}_{$indicatorId}");
-                Cache::forget("variations_{$serviceId}_{$activityId}_{$indicatorId}_{$year}_{$month}");
-            }
-        }
-        Cache::forget("last_five_years_{$serviceId}_{$activityId}_{$indicatorId}");
-        Cache::forget("previous_year_total_{$serviceId}_{$activityId}_{$indicatorId}");
-        Cache::forget("current_year_total_{$serviceId}_{$activityId}_{$indicatorId}");
     }
 
     private function notifyRootIfNotNotified()

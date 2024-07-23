@@ -21,16 +21,16 @@
             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
             Exportar Registros
           </button>
-          <button (click)="triggerFileInput()"
-            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
-            Importar Registros
-          </button>
-          <app-excel-import #excelImport importType="record"
-            (recordsImported)="onRecordsImported($event)"></app-excel-import>
+          <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+            <app-excel-import #excelImport importType="record" (recordsImported)="onRecordsImported($event)"
+              (importStarted)="onImportStarted()" (importFinished)="onImportFinished()"></app-excel-import>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <mat-progress-bar *ngIf="isImportingRecords" mode="indeterminate"></mat-progress-bar>
 
   <div class="my-auto" *ngIf="isLoadingRecords">
     <app-loading-spinner [isForBlueBG]="true" message="A carregar registros..."></app-loading-spinner>
