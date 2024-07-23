@@ -43,9 +43,6 @@
       <span *ngIf="nifErrorMessage" class="errorSpan">{{ nifErrorMessage }}</span>
     </mat-form-field>
 
-    <button mat-raised-button color="warn" (click)="resetPassword()" *ngIf="formsAction === 'edit'">Resetar
-      senha</button>
-
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
       <mat-label class="blueTxt">Role do utilizador:</mat-label>
       <mat-select id="rolePanel" [(ngModel)]="user.role_id" name="role_id" required (blur)="validateRoleOnBlur()">
@@ -57,8 +54,12 @@
       <span *ngIf="roleErrorMessage" class="errorSpan">{{ roleErrorMessage }}</span>
     </mat-form-field>
 
-    <button *ngIf="!isLoading" mat-raised-button type="submit" class="custom-button">
-      {{ formsAction === 'create' ? 'Adicionar' : 'Atualizar' }}
-    </button>
+    <div class="flex gap-2">
+      <button *ngIf="!isLoading" mat-raised-button type="submit" class="custom-button">
+        {{ formsAction === 'create' ? 'Adicionar' : 'Atualizar' }}
+      </button>
+      
+      <button mat-raised-button color="warn" (click)="resetPassword()" *ngIf="formsAction === 'edit'" class="">Resetar senha</button>
+    </div>
   </form>
 </div>
