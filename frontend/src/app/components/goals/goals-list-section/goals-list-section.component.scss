@@ -135,18 +135,28 @@
   text-align: center;
   font-size: 1.5em;
 
+  thead {
+    position: sticky;
+    top: 0;
+    background-color: $main-dark-blue;
+    z-index: 1;
+
+  }
+
   th {
     background-color: $main-dark-blue;
     color: $fill-white;
     font-weight: bold;
+    padding: 2px;
   }
 
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
+  td {
+    padding: 12px;
+    border-bottom: 1px solid $secondary-blue;
   }
 
   tr:hover {
-    background-color: $lighter-main-blue;
+    background-color: lighten($darker-main-blue, 25%);
   }
 }
 

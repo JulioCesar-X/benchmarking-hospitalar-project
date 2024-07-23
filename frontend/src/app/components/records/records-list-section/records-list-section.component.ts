@@ -69,7 +69,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
 
   dropdownOpen = false;
   isLoadingRecords = true;
-  isImportingRecords = false;
+  isImporting: boolean = false;
   totalRecords = 0;
   pageSize = 10;
   currentPage = 0;
@@ -222,12 +222,12 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
     );
   }
 
-  onImportStarted(): void {
-    this.isImportingRecords = true;
+  onImportStarted() {
+    this.isImporting = true;
   }
 
-  onImportFinished(): void {
-    this.isImportingRecords = false;
+  onImportFinished() {
+    this.isImporting = false;
   }
 
   exportRecords(): void {

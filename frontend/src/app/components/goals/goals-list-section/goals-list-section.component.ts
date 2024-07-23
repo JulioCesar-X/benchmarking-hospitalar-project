@@ -15,6 +15,7 @@ import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginato
 import { ExcelImportComponent } from '../../shared/excel-import/excel-import.component';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 interface Goal {
   id: number | null;
@@ -41,7 +42,8 @@ interface Goal {
     LoadingSpinnerComponent,
     FeedbackComponent,
     MatTooltipModule,
-    ExcelImportComponent
+    ExcelImportComponent,
+    MatProgressBarModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
@@ -74,6 +76,9 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
   pageOptions = [5, 10, 20, 50, 100];
+  isImporting: boolean = false;
+
+
 
   constructor(
     private goalService: GoalService,
@@ -210,6 +215,14 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
         this.setNotification('Erro ao criar/atualizar metas', 'error');
       }
     );
+  }
+
+  onImportStarted(): void {
+    this.isImporting = true;
+  }
+
+  onImportFinished(): void {
+    this.isImporting = false;
   }
 
   exportGoals(): void {
