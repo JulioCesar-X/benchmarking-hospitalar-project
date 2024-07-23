@@ -71,7 +71,7 @@ input[type="file"] {
 }
 
 .tab-link.active {
-  background-color: $main-blue;
+  background-color: $main-dark-blue;
 }
 
 
@@ -132,7 +132,7 @@ textarea {
   color: $main-dark-blue !important;
 }
 ::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
-  color: $main-dark-blue !important;
+  color: $fill-white !important;
 }
 ::ng-deep svg {
   color: $main-blue !important;
@@ -151,6 +151,12 @@ textarea {
 } 
 
 .association-container {
+  padding:1em;
   display: flex;
   justify-content: space-between;
+  background-color: $main-dark-blue;
+}
+.checkboxContainer{
+  max-height: 40vh;
+  overflow-y: scroll;
 }

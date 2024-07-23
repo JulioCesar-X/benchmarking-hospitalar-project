@@ -1,12 +1,11 @@
-@import '../../../../styles/variables';
+/* @import '../../../../styles/variables';
 
 
 .association-container {
     display: flex;
     justify-content: space-between;
     padding: 1em;
-    background-color: #e0e0e0;
-    border-radius: 10px;
+    background-color: $lighter-main-blue;
 }
 
 .column {
@@ -18,7 +17,7 @@
     margin-bottom: 1em;
     font-weight: bold;
     font-size: 1.2em;
-    color: #000;
+    color: $main-blue;
 }
 
 .mat-mdc-chip-set-stacked {
@@ -29,11 +28,23 @@
 
 .mat-chip-option {
     margin: 5px 0;
-    background-color: #424242;
-    color: white;
+    background-color: $main-dark-blue;
+    color: $fill-white;
 }
 
-.mat-chip-option.mat-mdc-chip-selected {
-    background-color: #e91e63;
-    color: white;
+
+.mat-mdc-standard-chip:not(.mdc-evolution-chip--disabled){
+    background-color: $main-blue;
+    max-width: 50%;
+}
+.mat-mdc-standard-chip.mdc-evolution-chip--selected:not(.mdc-evolution-chip--disabled){
+    background-color: $darker-main-blue;
+}
+ */
+
+ @import '../../../../styles/_variables.scss';
+@import '../../../../styles/_mixins.scss';
+
+.whiteTxt{
+    color: $fill-white;
 }

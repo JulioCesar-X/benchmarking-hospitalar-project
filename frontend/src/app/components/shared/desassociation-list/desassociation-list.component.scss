@@ -1,18 +1,12 @@
 @import '../../../../styles/variables';
 
-.desassociation-container {
-    padding: 1em;
-    border-radius: 10px;
-    background-color: $main-blue;
-}
-
-.title {
+/* .title {
     text-align: center;
     margin-bottom: 1em;
     font-weight: bold;
     font-size: 1.5em;
     color: $fill-white;
-}
+} */
 
 table {
     width: 100%;
@@ -25,7 +19,6 @@ table {
 
 .custom-table {
     background-color: $main-dark-blue;
-    border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 3px 3px -2px rgba(0, 0, 0, .2), 0 3px 4px 0 rgba(0, 0, 0, .14), 0 1px 8px 0 rgba(0, 0, 0, .12);
 }
@@ -59,3 +52,14 @@ table {
     align-items: center;
     justify-content: center;
 }
+
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
+    font-size: 1em !important;
+  }
+  ::ng-deep .custom div{
+    padding: 1em;
+    background-color: $main-dark-blue !important;
+  }
+  ::ng-deep .custom div div{
+    font-size: 2em;
+  } 
