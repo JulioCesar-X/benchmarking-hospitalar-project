@@ -30,7 +30,7 @@ import { MenuComponent } from '../../components/shared/menu/menu.component';
     LoadingSpinnerComponent,
     MatIconModule,
     MatButtonModule,
-    MenuComponent
+    MenuComponent, 
   ],
   templateUrl: './charts-page.component.html',
   styleUrls: ['./charts-page.component.scss']
@@ -57,8 +57,7 @@ export class ChartsPageComponent implements OnInit {
   constructor(
     private indicatorService: IndicatorService,
     private authService: AuthService,
-    private route: ActivatedRoute
-  ) { }
+    private route: ActivatedRoute){ }
 
   ngOnInit(): void {
     const role = this.authService.getRole();

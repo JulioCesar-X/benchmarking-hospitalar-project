@@ -96,9 +96,9 @@ export const routes: Routes = [
     path: 'notifications',
     children: [
       {
-        path: '', component: NotificationsComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador', 'user'] }
+        path: '', component: NotificationsComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] }
       },
-      { path: 'create', component: NotificationsCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador', 'user'] } },
+      { path: 'create', component: NotificationsCreatePageComponent, canActivate: [AuthGuard, RoleGuard], data: { expectedRole: ['root', 'admin', 'coordenador'] } },
     ]
   },
 ];

@@ -18,7 +18,7 @@
   </div>
 
   <div class="mt-auto" *ngIf="isLoading" >
-    <app-loading-spinner message="A carregar atividades..."></app-loading-spinner>
+    <app-loading-spinner [isForBlueBG]="true" message="A carregar atividades..."></app-loading-spinner>
   </div>
 
   <div *ngIf="!isLoading" class="min-h-full overflow-y-scroll">
@@ -37,7 +37,7 @@
               <div class="flex justify-center space-x-4">
                 <img matTooltip="Clique para editar atividade" [matTooltipPosition]="'below'"
                 matTooltipClass="custom"
-                 src="../../../assets/images/pencil-96.png" class="w-5 h-5 cursor-pointer optionBtns scale" alt="Edit"
+                src="../../../assets/images/pencil-96.png" class="w-5 h-5 cursor-pointer optionBtns scale" alt="Edit"
                   (click)="openDialog(activity, 'edit')" />
                 <img matTooltip="Clique para apagar atividade" [matTooltipPosition]="'below'"
                 matTooltipClass="custom" src="../../../assets/images/trash-96.png" class="w-5 h-5 cursor-pointer optionBtns scale" alt="Delete"

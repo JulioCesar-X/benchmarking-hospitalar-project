@@ -151,7 +151,7 @@
 }
 .dashboardOption.is-open,
 .dashboardOption:hover {
-  background-color: $secondary-blue;
+  background-color: $lighter-main-blue;
   color: $main-blue;
 
   .plusIcon::before,
@@ -163,7 +163,7 @@
 .subMenu {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 0);
   margin-top: -0.3em;
-  background-color: $secondary-blue;
+  background-color: $lighter-main-blue;
   flex-direction: column;
   padding-block: 1em;
   padding-right: 2em;

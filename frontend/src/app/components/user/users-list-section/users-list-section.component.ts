@@ -63,6 +63,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
       this.allUsers = this.users.slice();
       this.updateDataSource();
     }
+    
   }
 
   ngOnChanges(changes: SimpleChanges): void {

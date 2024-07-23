@@ -77,7 +77,7 @@
               <mat-icon class="blue-custom">person</mat-icon>
               <span class="blue-custom">Perfil</span>
             </button>
-            <button mat-menu-item (click)="openNotifications()">
+            <button *ngIf="isLoggedIn() && getRole() === 'admin' || getRole() === 'root' || getRole() ==='coordenador'" mat-menu-item (click)="openNotifications()">
               <mat-icon class="blue-custom">notifications</mat-icon>
               <span class="blue-custom">Notificações</span>
             </button>

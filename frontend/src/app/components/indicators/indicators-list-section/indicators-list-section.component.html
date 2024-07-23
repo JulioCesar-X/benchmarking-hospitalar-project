@@ -16,7 +16,7 @@
   </div>
 
   <div class="mt-auto" *ngIf="isLoading">
-    <app-loading-spinner class="" message="A carregar Indicadores..."></app-loading-spinner>
+    <app-loading-spinner [isForBlueBG]="true" message="A carregar Indicadores..."></app-loading-spinner>
   </div>
 
   <div *ngIf="!isLoading" class="min-h-full overflow-y-scroll">

@@ -22,7 +22,7 @@
         </div>
       </h2>
       
-      <app-loading-spinner *ngIf="isLoading" [message]="loadingCircleMessage"></app-loading-spinner>
+      <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true" [message]="loadingCircleMessage"></app-loading-spinner>
 
       <form (ngSubmit)="formSubmited()" #serviceForm="ngForm" *ngIf="!isLoading">
         <mat-form-field class="w-full mb-4 blueBG">

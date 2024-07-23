@@ -44,6 +44,7 @@ import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 export class UsersUpsertFormComponent {
   loadingCircleMessage: string = "A carregar";
   @Input() formsAction: string = '';
+  
 
   @Input() user: User = {
     id: 0,
@@ -71,11 +72,9 @@ export class UsersUpsertFormComponent {
   formSubmited() {
     this.notificationMessage = '';
     this.resetErrors();
-
     if (!this.validateAllFields()) {
       return;
     }
-
     if (this.formsAction === 'create') {
       this.createUser();
       this.loadingCircleMessage = "A criar utilizador...";
