@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectionModel } from '@angular/cdk/collections';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 
 @Component({
   selector: 'app-desassociation-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatTableModule, MatCheckboxModule],
+  imports: [CommonModule, FormsModule, MatTableModule, MatCheckboxModule, MatTooltipModule],
   templateUrl: './desassociation-list.component.html',
   styleUrls: ['./desassociation-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

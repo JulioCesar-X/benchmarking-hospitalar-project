@@ -2,7 +2,6 @@
   <app-menu [isManageIndicatorsSubMenuOpen]="true"></app-menu>
 </div>
 <div class="sm:mx-0 md:mx-1 lg:mx-2 w-full">
-  <app-loading-spinner *ngIf="isLoading" message="Carregando indicador..."></app-loading-spinner>
   <app-indicators-upsert-form *ngIf="!isLoading" [formsAction]="'edit'"
     [selectedIndicator]="selectedIndicator"></app-indicators-upsert-form>
 </div>

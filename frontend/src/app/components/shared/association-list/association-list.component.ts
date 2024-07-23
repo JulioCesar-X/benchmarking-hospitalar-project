@@ -1,16 +1,18 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-association-list',
   standalone: true,
-  imports: [CommonModule, MatChipsModule],
+  imports: [CommonModule, MatChipsModule, MatCheckbox],
   templateUrl: './association-list.component.html',
   styleUrls: ['./association-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssociationListComponent implements OnChanges {
+  @Input({ required: true}) componentTitle = 'Title';
   @Input() items: any[] = [];
   @Input() displayProperties: string[] = [];
   @Input() preSelectedItems: any[] = [];
