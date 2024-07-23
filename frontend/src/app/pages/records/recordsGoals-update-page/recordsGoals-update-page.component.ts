@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { CommonModule } from '@angular/common';
 import { FilterComponent } from '../../../components/shared/filter/filter.component';
@@ -34,10 +35,19 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
 
   selectedTab: string = 'Records';
 
-  constructor(private indicatorService: IndicatorService) { }
+  constructor(
+    private indicatorService: IndicatorService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
-    this.loadRecords(); // Carregar registros ao iniciar
+    const resolvedData = this.route.snapshot.data['recordGoalsData'];
+    if (resolvedData.error) {
+      console.error(resolvedData.message);
+    } else {
+      this.currentIndicators = resolvedData.data;
+      this.filter = resolvedData.filter;
+    }
   }
 
   selectTab(tab: string): void {

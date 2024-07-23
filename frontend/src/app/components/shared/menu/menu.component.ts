@@ -15,7 +15,7 @@ import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.comp
     RouterLink,
     RouterLinkActive,
     MatIconModule,
-    FeedbackComponent, 
+    FeedbackComponent,
     LoadingSpinnerComponent
   ],
   templateUrl: './menu.component.html',
@@ -30,14 +30,16 @@ export class MenuComponent implements OnInit {
   @Input() isManageServicesSubMenuOpen = false;
   @Input() isManageIndicatorsSubMenuOpen = false;
   @Input() isMenuOpen = true;
-  @Input() isLoadingCharts= false;
+  @Input() isLoadingCharts = false;
+
+  loading = false;  // Adicionando a propriedade loading
   loadingCharts = false;
   feedbackMessage = '';
   feedbackType: 'success' | 'error' = 'success';
 
   constructor(private authService: AuthService, private router: Router, private serviceService: ServiceService) { }
 
-  ngOnInit(){
+  ngOnInit() {
     this.isLoadingCharts = false;
   }
 
@@ -69,7 +71,7 @@ export class MenuComponent implements OnInit {
     this.isManageNotificationsSubMenuOpen = !this.isManageNotificationsSubMenuOpen;
     this.closeOtherSubMenus('notifications');
   }
-  openManageData(){
+  openManageData() {
     this.isManageDataSubMenuOpen = !this.isManageDataSubMenuOpen;
     this.closeOtherSubMenus('data');
   }
@@ -92,18 +94,34 @@ export class MenuComponent implements OnInit {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  goToCharts() {
-    this.loadingCharts = true; 
+  goToRecordsGoalsUpdate() {
+    this.loading = true;
     this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {
-          // const currentUrl = this.router.url;
-          // const targetUrl = `/charts;serviceId=${service.id}`;
+          this.router.navigate(['/record-goals-update', { serviceId: service.id }], {
+            state: { preLoad: true }
+          });
+        } else {
+          this.feedbackMessage = 'Nenhum serviço válido encontrado';
+          this.feedbackType = 'error';
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        this.feedbackMessage = error.message;
+        this.feedbackType = 'error';
+        this.loading = false;
+      }
+    });
+  }
 
-          // if (currentUrl !== targetUrl) {
+  goToCharts() {
+    this.loadingCharts = true;
+    this.serviceService.getFirstValidService().subscribe({
+      next: (service) => {
+        if (service) {
           this.loadingCharts = true;
-          // }
-
           this.router.navigate(['/charts', { serviceId: service.id }], {
             state: { preLoad: true }
           });
@@ -122,4 +140,3 @@ export class MenuComponent implements OnInit {
     });
   }
 }
-
