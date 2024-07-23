@@ -50,7 +50,7 @@ export class ChartsComponent implements OnInit, OnChanges {
     quinaryBg: 'rgba(165, 231, 240, 0.2)',
     octonary: 'rgb(167, 208, 208)',
     octonaryBg: 'rgba(167, 208, 208, 0.2)',
-    red: 'rgb(255, 0, 0)',
+    red: 'rgb(218, 65, 103)',
     redBg: 'rgba(255, 0, 0, 0.2)',
   };
 

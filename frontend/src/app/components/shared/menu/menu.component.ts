@@ -96,16 +96,14 @@ export class MenuComponent implements OnInit {
     this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {
-
           this.router.navigate(['/charts', { serviceId: service.id }], {
-            state: { preLoad: true }
+            //state: { preLoad: true }
           });
         } else {
           this.feedbackMessage = 'Nenhum serviço válido encontrado';
           this.feedbackType = 'error';
           this.isLoadingCharts = false; // Stop loading
         }
-        this.isLoadingCharts = false; // Stop loading
       },
       error: (error) => {
         this.feedbackMessage = error.message;
