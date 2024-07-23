@@ -521,13 +521,6 @@ class IndicatorController extends Controller
         $page = $request->input('page', 1);
         $size = $request->input('size', 10);
 
-        // Gerar uma chave de cache única baseada nos parâmetros de consulta
-        $cacheKey = "indicators_goals_{$serviceId}_{$activityId}_{$year}_{$page}_{$size}";
-
-        if (Cache::has($cacheKey)) {
-            return response()->json(Cache::get($cacheKey), 200);
-        }
-
         try {
             $query = Sai::with([
                 'indicator:id,indicator_name', 'service:id,service_name', 'activity:id,activity_name',
@@ -550,7 +543,12 @@ class IndicatorController extends Controller
                     'indicator_name' => $sai->indicator->indicator_name,
                     'service_name' => $sai->service ? $sai->service->service_name : 'N/A',
                     'activity_name' => $sai->activity ? $sai->activity->activity_name : 'N/A',
-                    'goal' => $sai->goals->first()
+                    'goal' => $sai->goals->first() ? [
+                        'id' => $sai->goals->first()->id,
+                        'target_value' => $sai->goals->first()->target_value,
+                        'year' => $sai->goals->first()->year,
+                        'sai_id' => $sai->goals->first()->sai_id
+                    ] : null
                 ];
             });
 
@@ -560,9 +558,6 @@ class IndicatorController extends Controller
                 'size' => $size,
                 'data' => $response
             ];
-
-            // Armazenar o resultado no cache por 30 minutos
-            Cache::put($cacheKey, $result, now()->addMinutes(30));
 
             return response()->json($result);
         } catch (Exception $exception) {

@@ -156,12 +156,7 @@ export class IndicatorService {
       .set('size', pageSize);
     console.log('params >>', params.toString());
 
-    return this.http.get<any>('/indicators/sai/goals', { params }).pipe(
-      catchError(error => {
-        console.error('Error fetching data:', error);
-        return throwError(() => new Error('Falha ao buscar indicadores c / metas'));
-      })
-    );
+    return this.http.get<any>('/indicators/sai/goals', { params });
   }
 
   storeIndicator(indicator: any): Observable<any> {

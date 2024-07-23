@@ -5,7 +5,7 @@ import { Filter } from '../../../core/models/filter.model';
 import { GoalService } from '../../../core/services/goal/goal.service';
 import { IndicatorService } from '../../../core/services/indicator/indicator.service';
 import { catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, forkJoin } from 'rxjs';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -112,8 +112,11 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
         .subscribe(response => {
           if (pageIndex === 0) {
             this.allGoals = this.mapGoals(response.data);
+            console.log('allGoals >>', this.allGoals);
           } else {
-            this.allGoals = [...this.allGoals, ...this.mapGoals(response.data)];
+            this.allGoals = [...this.allGoals, ...this.mapGoals(response.data).filter(newGoal =>
+              !this.allGoals.some(existingGoal => existingGoal.sai_id === newGoal.sai_id && existingGoal.year === newGoal.year)
+            )];
           }
           this.totalGoals = response.total;
           this.updateDataSource();
@@ -125,13 +128,13 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   mapGoals(data: any[]): Goal[] {
     return data.map(item => {
       const goal = item.goal || {
-        goal_id: null,
+        id: null, // Ajuste aqui para garantir que id seja mapeado corretamente
         target_value: '',
         year: this.filter.year
       };
 
       return {
-        id: goal.goal_id,
+        id: goal.id, // Use o id diretamente aqui
         indicator_name: item.indicator_name,
         target_value: goal.target_value,
         year: goal.year,
@@ -147,19 +150,66 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
   onGoalsImported(goals: any[]): void {
     goals.forEach(goal => {
-      const newGoal: Goal = {
-        id: null,
-        indicator_name: 'Imported Goal', // Placeholder, replace with actual indicator name if available
-        target_value: goal.target_value,
-        year: goal.year,
-        sai_id: goal.sai_id,
-        isInserted: true,
-        isUpdating: false,
-        isEditing: false
-      };
-      this.allGoals.push(newGoal);
+      // Verifique se já existe uma meta com o mesmo ano e sai_id
+      const existingGoal = this.allGoals.find(g => g.sai_id === goal.sai_id && g.year === goal.year);
+
+      if (existingGoal) {
+        // Atualize a meta existente
+        existingGoal.target_value = goal.target_value;
+        existingGoal.isInserted = true;
+      } else {
+        // Adicione uma nova meta
+        const newGoal: Goal = {
+          id: goal.id, // Certifique-se de que o id está sendo mapeado
+          indicator_name: 'Imported Goal', // Placeholder, replace with actual indicator name if available
+          target_value: goal.target_value,
+          year: goal.year,
+          sai_id: goal.sai_id,
+          isInserted: true,
+          isUpdating: false,
+          isEditing: false
+        };
+        this.allGoals.push(newGoal);
+      }
     });
+
     this.updateDataSource();
+    // Envie os dados para o backend
+    this.sendGoalsToBackend(goals);
+  }
+
+  sendGoalsToBackend(goals: Goal[]): void {
+    const requests = goals.map(goal => {
+      const existingGoal = this.allGoals.find(g => g.sai_id === goal.sai_id && g.year === goal.year);
+
+      if (existingGoal && existingGoal.id) {
+        return this.goalService.updateGoal(existingGoal.id, goal).pipe(
+          finalize(() => {
+            goal.isUpdating = false;
+            goal.isEditing = false;
+          })
+        );
+      } else {
+        const newGoal = {
+          ...goal,
+          isUpdating: false
+        };
+        return this.goalService.storeGoal(newGoal).pipe(
+          finalize(() => newGoal.isUpdating = false)
+        );
+      }
+    });
+
+    forkJoin(requests).subscribe(
+      () => {
+        this.setNotification('Metas criadas/atualizadas com sucesso', 'success');
+        // Recarregar metas após as operações de backend para garantir que o cache foi atualizado
+        this.loadGoals(this.currentPage, this.pageSize);
+      },
+      error => {
+        this.setNotification('Erro ao criar/atualizar metas', 'error');
+      }
+    );
   }
 
   exportGoals(): void {

@@ -19,7 +19,7 @@
         <div class="py-1">
           <button (click)="exportRecords()"
             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
-            Exportar Registros
+            <img src="../../../assets/icons/csv.png" height="16" class="inline mr-2" />Exportar Registros
           </button>
           <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
             <app-excel-import #excelImport importType="record" (recordsImported)="onRecordsImported($event)"
