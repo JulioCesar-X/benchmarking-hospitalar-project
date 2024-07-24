@@ -121,7 +121,7 @@
             <app-charts
               *ngIf="!isLoading.recordsAnual; else loading"
               [allowedChartTypes]="['line', 'groupedBar', 'scatter']"
-              graphType="line"
+              graphType="groupedBar"
               graphLabel="Comparação produção acumulada"
               [graphData]="{
                 recordsAnual: graphData.recordsAnual,
@@ -231,7 +231,7 @@
               <app-charts
                 *ngIf="!isLoading.goalsMensal; else loading"
                 [allowedChartTypes]="['line', 'groupedBar', 'scatter']"
-                graphType="groupedBar"
+                graphType="scatter"
                 graphLabel="produção acumulada vs meta mensal"
                 [graphData]="{
                   recordsAnual: graphData.recordsAnual,
@@ -290,7 +290,7 @@
             <app-charts
               *ngIf="!isLoading.goalMes; else loading"
               [allowedChartTypes]="['bar', 'line', 'area']"
-              graphType="bar"
+              graphType="area"
               graphLabel="Meta Mês"
               [graphData]="graphData.goalMes"
               [year]="filter.year ?? 0"
@@ -307,7 +307,7 @@
             <app-charts
               *ngIf="!isLoading.goalAnual; else loading"
               [allowedChartTypes]="['doughnut', 'pie']"
-              graphType="doughnut"
+              graphType="pie"
               graphLabel="Produção Anual vs Meta Anual"
               [graphData]="{
                 goalAnual: graphData.goalAnual,

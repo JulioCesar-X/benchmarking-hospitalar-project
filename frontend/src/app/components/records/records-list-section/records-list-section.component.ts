@@ -312,13 +312,45 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       };
     });
 
-    // Formatação de dados
-    worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber > 6) { // Ajuste para a linha correta dos dados
-        row.eachCell((cell) => {
-          cell.alignment = { vertical: 'middle', horizontal: 'center' };
-        });
+    // Bloquear células específicas
+    const lockedCells = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5', 'C1', 'C2', 'C3', 'C4', 'C5', 'D1', 'D2', 'D3', 'D4', 'D5'];
+
+    lockedCells.forEach((cellAddress) => {
+      const cell = worksheet.getCell(cellAddress);
+      cell.protection = { locked: true };
+    });
+
+    // Bloquear células das colunas ID e Nome do Indicador
+    worksheet.getColumn('A').eachCell((cell, rowNumber) => {
+      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+        cell.protection = { locked: true };
       }
+    });
+
+    worksheet.getColumn('B').eachCell((cell, rowNumber) => {
+      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+        cell.protection = { locked: true };
+      }
+    });
+
+    // Desbloquear as células "Data" e "Valor"
+    worksheet.getColumn('C').eachCell((cell, rowNumber) => {
+      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+        cell.protection = { locked: false };
+      }
+    });
+
+    worksheet.getColumn('D').eachCell((cell, rowNumber) => {
+      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+        cell.protection = { locked: false };
+      }
+    });
+
+    // Proteger a planilha
+    worksheet.protect('atec2024', {
+      selectLockedCells: true,
+      selectUnlockedCells: true,
+      autoFilter: true
     });
 
     workbook.xlsx.writeBuffer().then((buffer) => {

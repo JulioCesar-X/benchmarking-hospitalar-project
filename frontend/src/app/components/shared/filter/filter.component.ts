@@ -39,6 +39,7 @@ export class FilterComponent implements OnInit, OnChanges {
   activitiesList: ActivityForFilter[] = [];
   indicatorsList: IndicatorForFilter[] = [];
   activityCache = new Map<number, Activity>();
+  currentYear: number = new Date().getFullYear();
 
   @Input() selectedServiceId?: number | string = 0;
   @Input() selectedActivityId?: number | undefined = undefined;

@@ -35,7 +35,7 @@
       </div>
 
       <div class="flex items-center gap-1 w-full sm:w-auto year-input-container">
-        <input type="number" id="year" name="year" min="1900" max="2200" step="1"
+        <input type="number" id="year" name="year" min="1900" [max]="currentYear" step="1"
           class="inputContainer--input year-input" [(ngModel)]="filter.year"
           [disabled]="!selectedServiceId || (!selectedIndicatorId && indicatorsInput)" matTooltip="Selecione um ano"
           [matTooltipPosition]="'below'" matTooltipClass="custom">
