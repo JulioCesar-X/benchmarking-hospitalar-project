@@ -18,7 +18,6 @@ import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { forkJoin } from 'rxjs';
 
-
 interface Record {
   record_id: number | null;
   indicator_name: string;
@@ -30,6 +29,7 @@ interface Record {
   isInserted: boolean;
   isUpdating: boolean;
   isEditing: boolean;
+  originalValue?: string; // Adicionada a propriedade originalValue
 }
 
 @Component({
@@ -331,7 +331,8 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
   }
 
   editRecord(record: Record): void {
-    if (record.isInserted && !record.isEditing) {
+    if (!record.isEditing) {
+      record.originalValue = record.value; // Salve o valor original ao iniciar a edição
       record.isEditing = true;
       return;
     }
@@ -368,6 +369,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       this.storeRecord(newRecord);
     }
   }
+
 
   storeRecord(newRecord: any): void {
     this.recordService.storeRecord(newRecord)
@@ -439,6 +441,9 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
   }
 
   cancelEditing(record: Record): void {
+    if (record.originalValue !== undefined) {
+      record.value = record.originalValue; // Restaure o valor original
+    }
     record.isEditing = false;
   }
 }
