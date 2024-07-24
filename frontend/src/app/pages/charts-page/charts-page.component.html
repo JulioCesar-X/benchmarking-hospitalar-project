@@ -79,19 +79,19 @@
               <div class="flex flex-col items-center text-center p-4">
                 <h2 class="text-lg font-medium blueText">Diferença absoluta:</h2>
                 <p class="text-sm text-gray-700" [ngClass]="{
-                  'text-red': graphData.variations?.variation_rate_homologous_abs < 0,
-                  'text-green': graphData.variations?.variation_rate_homologous_abs > 0
+                  'text-red': graphData.variations?.data.variation_rate_homologous_abs < 0,
+                  'text-green': graphData.variations?.data.variation_rate_homologous_abs > 0
                 }">
-                  {{ graphData.variations?.variation_rate_homologous_abs || 'Sem dados atualmente' }}
+                  {{ graphData.variations?.data.variation_rate_homologous_abs || 'Sem dados atualmente' }}
                 </p>
               </div>
               <div class="flex flex-col items-center text-center p-4">
                 <h2 class="text-lg font-medium blueText">Diferença percentual(%):</h2>
                 <p class="text-sm text-gray-700" [ngClass]="{
-                  'text-red': graphData.variations?.variation_rate_homologous < 0,
-                  'text-green': graphData.variations?.variation_rate_homologous > 0
+                  'text-red': graphData.variations?.data.variation_rate_homologous < 0,
+                  'text-green': graphData.variations?.data.variation_rate_homologous > 0
                 }">
-                  {{ graphData.variations?.variation_rate_homologous || 'Sem dados atualmente' }}%
+                  {{ graphData.variations?.data.variation_rate_homologous || 'Sem dados atualmente' }}%
                 </p>
               </div>
             </div>
@@ -128,7 +128,6 @@
         <div class="flex w-full justify-center flex-wrap">
           <div class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md">
             <h1 class="text-xl font-semibold blueText">
-              - {{ serviceName || 'Consulta Externa' }} -
               <span [ngClass]="{'text-red-600': activityName === 'N/A'}">{{ activityName }}</span>
               - {{ indicatorName || 'N/A' }} -
             </h1>
@@ -155,19 +154,19 @@
               <div class="flex flex-col items-center text-center p-4">
                 <h2 class="text-lg font-medium blueText">Diferença absoluta:</h2>
                 <p class="text-sm text-gray-700" [ngClass]="{
-                  'text-red': graphData.variations?.variation_rate_contractual_abs < 0,
-                  'text-green': graphData.variations?.variation_rate_contractual_abs > 0
+                  'text-red': graphData.variations?.data.variation_rate_contractual_abs < 0,
+                  'text-green': graphData.variations?.data.variation_rate_contractual_abs > 0
                 }">
-                  {{ graphData.variations?.variation_rate_contractual_abs || 'Sem dados atualmente' }}
+                  {{ graphData.variations?.data.variation_rate_contractual_abs || 'Sem dados atualmente' }}
                 </p>
               </div>
               <div class="flex flex-col items-center text-center p-4">
                 <h2 class="text-lg font-medium blueText">Diferença percentual(%):</h2>
                 <p class="text-sm text-gray-700" [ngClass]="{
-                  'text-red': graphData.variations?.variation_rate_contractual < 0,
-                  'text-green': graphData.variations?.variation_rate_contractual > 0
+                  'text-red': graphData.variations?.data.variation_rate_contractual < 0,
+                  'text-green': graphData.variations?.data.variation_rate_contractual > 0
                 }">
-                  {{ graphData.variations?.variation_rate_contractual || 'Sem dados atualmente' }}%
+                  {{ graphData.variations?.data.variation_rate_contractual || 'Sem dados atualmente' }}%
                 </p>
               </div>
             </div>

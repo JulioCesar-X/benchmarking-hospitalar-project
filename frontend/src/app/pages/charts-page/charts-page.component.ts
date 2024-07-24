@@ -90,9 +90,9 @@ export class ChartsPageComponent implements OnInit {
       next: (data) => {
         console.log('Data received from API:', data);
         this.graphData = data;
-        this.verifyAndLogGraphData()
+        this.verifyAndLogGraphData();
         this.setLoadingStates(false);
-        // this.loadIndicatorName();
+        this.loadIndicatorName();
       },
       error: (error) => {
         this.setLoadingStates(false);
@@ -113,7 +113,6 @@ export class ChartsPageComponent implements OnInit {
       ...event
     };
     this.loadGraphData();
-    this.loadIndicatorName();
   }
 
   handleActivityInputChange(show: boolean): void {
@@ -163,15 +162,15 @@ export class ChartsPageComponent implements OnInit {
 
   verifyAndLogGraphData(): void {
     console.log('Verifying and logging graph data...');
-    console.log('recordsMensal:', this.graphData.data.recordsMensal);
-    console.log('recordsAnual:', this.graphData.data.recordsAnual);
-    console.log('recordsAnualLastYear:', this.graphData.data.recordsAnualLastYear);
-    console.log('goalsMensal:', this.graphData.data.goalsMensal);
-    console.log('goalMes:', this.graphData.data.goalMes);
-    console.log('goalAnual:', this.graphData.data.goalAnual);
-    console.log('previousYearTotal:', this.graphData.data.previousYearTotal);
-    console.log('currentYearTotal:', this.graphData.data.currentYearTotal);
-    console.log('variations:', this.graphData.data.variations);
+    console.log('recordsMensal:', this.graphData.recordsMensal);
+    console.log('recordsAnual:', this.graphData.recordsAnual);
+    console.log('recordsAnualLastYear:', this.graphData.recordsAnualLastYear);
+    console.log('goalsMensal:', this.graphData.goalsMensal);
+    console.log('goalMes:', this.graphData.goalMes);
+    console.log('goalAnual:', this.graphData.goalAnual);
+    console.log('previousYearTotal:', this.graphData.previousYearTotal);
+    console.log('currentYearTotal:', this.graphData.currentYearTotal);
+    console.log('variations:', this.graphData.variations);
   }
 
   exportToPdf(): void {
@@ -327,19 +326,6 @@ export class ChartsPageComponent implements OnInit {
       mes: '',
       valor: this.graphData.goalAnual?.data ?? 0,
     });
-
-    // Adiciona dados dos últimos cinco anos
-    if (this.graphData.lastFiveYears && this.graphData.lastFiveYears.data) {
-      this.graphData.lastFiveYears.data.forEach((item: any) => {
-        worksheet.addRow({
-          tipo: 'Produção Últimos 5 Anos',
-          departamento: departamento,
-          ano: item.year,
-          mes: '',
-          valor: item.total,
-        });
-      });
-    }
 
     // Adiciona totais de anos anteriores e atuais
     worksheet.addRow({
