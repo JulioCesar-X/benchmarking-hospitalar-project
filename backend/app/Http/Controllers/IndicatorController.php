@@ -74,7 +74,7 @@ class IndicatorController extends Controller
             }
 
             $recordsMensal = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $sai->id)
+            ->where('sai_id', $sai->id)
                 ->whereYear('data', $year)
                 ->pluck('valor_mensal', 'month')
                 ->toArray();
@@ -101,7 +101,7 @@ class IndicatorController extends Controller
             }
 
             $recordsAnual = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $sai->id)
+            ->where('sai_id', $sai->id)
                 ->where('year', $year)
                 ->pluck('valor_acumulado_agregado', 'month')
                 ->toArray();
@@ -128,7 +128,7 @@ class IndicatorController extends Controller
             }
 
             $recordsAnualLastYear = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $sai->id)
+            ->where('sai_id', $sai->id)
                 ->where('year', $year)
                 ->pluck('valor_acumulado_agregado', 'month')
                 ->toArray();
@@ -155,7 +155,7 @@ class IndicatorController extends Controller
             }
 
             $goalMes = DB::table('vw_goals_monthly')
-                ->where('sai_id', $sai->id)
+            ->where('sai_id', $sai->id)
                 ->where('year', $year)
                 ->pluck('monthly_target', 'month')
                 ->map(function ($value) {
@@ -185,7 +185,7 @@ class IndicatorController extends Controller
             }
 
             $goalsMensal = DB::table('vw_goals_monthly')
-                ->where('sai_id', $sai->id)
+            ->where('sai_id', $sai->id)
                 ->where('year', $year)
                 ->pluck('valor_acumulado_mensal', 'month')
                 ->map(function ($value) {
@@ -238,13 +238,12 @@ class IndicatorController extends Controller
             }
 
             $previousYearTotal = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $sai->id)
+            ->where('sai_id', $sai->id)
                 ->whereYear('data', $year)
                 ->sum('valor_mensal');
 
             if (empty($previousYearTotal)) {
                 $previousYearTotal = 0; // Retorna zero se não houver dados
-                return response()->json(['hasData' => false, 'data' => $previousYearTotal], 200);
             }
 
             Cache::put($cacheKey, $previousYearTotal, now()->addMinutes(30));
@@ -267,13 +266,12 @@ class IndicatorController extends Controller
             }
 
             $currentYearTotal = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $sai->id)
+            ->where('sai_id', $sai->id)
                 ->whereYear('data', $year)
                 ->sum('valor_mensal');
 
             if (empty($currentYearTotal)) {
                 $currentYearTotal = 0; // Retorna zero se não houver dados
-                return response()->json(['hasData' => false, 'data' => $currentYearTotal], 200);
             }
 
             Cache::put($cacheKey, $currentYearTotal, now()->addMinutes(30));
@@ -296,7 +294,7 @@ class IndicatorController extends Controller
             }
 
             $variations = DB::table('vw_variation_rate')
-                ->where('sai_id', $sai->id)
+            ->where('sai_id', $sai->id)
                 ->where('year1', $year - 1)
                 ->where('year2', $year)
                 ->where('month', $month)
@@ -308,15 +306,20 @@ class IndicatorController extends Controller
                 ]);
 
             if (empty($variations)) {
-                return response()->json(['hasData' => false, 'data' => null], 200);
+                // Se não houver dados, crie um objeto padrão com valores zero
+                $variations = (object) [
+                    'variation_rate_homologous_abs' => 0,
+                    'variation_rate_homologous' => 0,
+                    'variation_rate_contractual_abs' => 0,
+                    'variation_rate_contractual' => 0,
+                ];
+            } else {
+                $variations->variation_rate_homologous_abs = round($variations->variation_rate_homologous_abs);
+                $variations->variation_rate_homologous = round($variations->variation_rate_homologous);
+                $variations->variation_rate_contractual_abs = round($variations->variation_rate_contractual_abs);
             }
 
-            $variations->variation_rate_homologous_abs = round($variations->variation_rate_homologous_abs);
-            $variations->variation_rate_homologous = round($variations->variation_rate_homologous);
-            $variations->variation_rate_contractual_abs = round($variations->variation_rate_contractual_abs);
-
             Cache::put($cacheKey, $variations, now()->addMinutes(30));
-
             return response()->json(['hasData' => true, 'data' => $variations], 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -325,9 +328,9 @@ class IndicatorController extends Controller
 
     private function fillMissingMonths($data)
     {
-        $filledData = array_fill(1, 12, 0);
-        foreach ($data as $month => $value) {
-            $filledData[$month] = $value;
+        $filledData = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $filledData[$month] = isset($data[$month]) ? $data[$month] : 0;
         }
         return $filledData;
     }

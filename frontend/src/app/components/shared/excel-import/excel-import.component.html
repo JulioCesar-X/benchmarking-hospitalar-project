@@ -6,4 +6,11 @@
         ? 'Registros' : 'Metas' }}
         <mat-progress-bar *ngIf="isImporting" mode="indeterminate"></mat-progress-bar>
     </button>
+    <app-feedback *ngIf="feedbackMessage" [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
+    <div *ngIf="errors.length > 0" class="mt-4 text-red-600">
+        <h3>Erros encontrados:</h3>
+        <ul>
+            <li *ngFor="let error of errors">{{ error }}</li>
+        </ul>
+    </div>
 </div>
