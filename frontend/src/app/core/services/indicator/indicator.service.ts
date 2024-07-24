@@ -140,7 +140,7 @@ export class IndicatorService {
   getIndicatorsGoals(serviceId: number, activityId: number | null, year: number, pageIndex: number, pageSize: number): Observable<any> {
     const params = new HttpParams()
       .set('serviceId', serviceId)
-      .set('activityId', activityId !== null ? activityId : '')
+      .set('activityId', activityId !== null ? activityId.toString() : '')
       .set('year', year)
       .set('page', (pageIndex + 1))
       .set('size', pageSize);

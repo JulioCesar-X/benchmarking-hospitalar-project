@@ -12,7 +12,6 @@ import { Filter } from '../models/filter.model';
 export class RecordsGoalsUpdateResolver implements Resolve<any> {
 
     constructor(
-        private indicatorService: IndicatorService,
         private serviceService: ServiceService
     ) { }
 
@@ -42,7 +41,7 @@ export class RecordsGoalsUpdateResolver implements Resolve<any> {
                         filter.indicatorId = filter.indicatorId !== 1 ? filter.indicatorId : service.sais[0].indicator.id;
                     } else if (service.indicators && service.indicators.length > 0) {
                         filter.indicatorId = filter.indicatorId !== 1 ? filter.indicatorId : service.indicators[0].id;
-                        filter.activityId = filter.activityId !== 1 ? filter.activityId : null;
+                        filter.activityId = filter.activityId !== 1 ? filter.activityId : '';
                     } else {
                         console.error('Service has no activities or indicators:', service);
                         return of({ error: true, message: 'Service has no activities or indicators' });

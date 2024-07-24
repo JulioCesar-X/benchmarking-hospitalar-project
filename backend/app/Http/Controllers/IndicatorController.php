@@ -619,7 +619,7 @@ class IndicatorController extends Controller
                 }
             ])->where('service_id', $serviceId);
 
-            if ($activityId !== null && $activityId !== '') {
+            if ($activityId !== null && $activityId !== '' && is_numeric($activityId)) {
                 $query->where('activity_id', $activityId);
             }
 
