@@ -202,7 +202,14 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       } else {
         const newRecord = {
           ...record,
-          isUpdating: false
+          isInserted: false,
+          isEditing: false,
+          isUpdating: false,
+          originalValue: record.value, // Salva o valor original
+          indicator_name: record.indicator_name || 'Novo Indicador', // Adicione valores padrão
+          service_name: record.service_name || 'N/A', // Adicione valores padrão
+          activity_name: record.activity_name || 'N/A', // Adicione valores padrão
+          record_id: record.record_id || null // Certifique-se de que o record_id seja nulo se não existir
         };
         return this.recordService.storeRecord(newRecord).pipe(
           finalize(() => newRecord.isUpdating = false)
@@ -331,7 +338,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
   }
 
   editRecord(record: Record): void {
-    if (!record.isEditing) {
+    if (!record.isEditing || !record.value) {
       record.originalValue = record.value; // Salve o valor original ao iniciar a edição
       record.isEditing = true;
       return;
@@ -360,18 +367,25 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
           error => this.setNotification(this.getErrorMessage(error), 'error')
         );
     } else {
-      const newRecord = {
+      const newRecord: Record = {
+        record_id: null,
+        indicator_name: record.indicator_name,
+        service_name: record.service_name || 'N/A',
+        activity_name: record.activity_name || 'N/A',
         sai_id: record.sai_id,
         value: record.value,
-        date: record.date
+        date: record.date,
+        isInserted: true,
+        isUpdating: false,
+        isEditing: false,
+        originalValue: record.value // Salve o valor original ao criar um novo registro
       };
       record.isUpdating = true;
       this.storeRecord(newRecord);
     }
   }
 
-
-  storeRecord(newRecord: any): void {
+  storeRecord(newRecord: Record): void {
     this.recordService.storeRecord(newRecord)
       .pipe(finalize(() => newRecord.isUpdating = false))
       .subscribe(
