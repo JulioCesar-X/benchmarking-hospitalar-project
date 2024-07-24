@@ -13,7 +13,8 @@ class CreateVwVariationRateView extends Migration
     public function up()
     {
         DB::statement("
-    CREATE OR REPLACE VIEW vw_variation_rate AS
+CREATE OR REPLACE VIEW vw_variation_rate AS
+
     SELECT
         vf1.sai_id,
         vf1.service_id,
@@ -25,14 +26,14 @@ class CreateVwVariationRateView extends Migration
         vf1.month,
         ROUND(vf1.valor_acumulado_agregado, 2) AS total_accumulated_year1,
         ROUND(vf2.valor_acumulado_agregado, 2) AS total_accumulated_year2,
-        ROUND(vf2.valor_acumulado_agregado - vf1.valor_acumulado_agregado) AS variation_rate_homologous_abs,
+        ROUND(vf2.valor_acumulado_agregado - vf1.valor_acumulado_agregado, 2) AS variation_rate_homologous_abs,
         CASE
             WHEN vf1.valor_acumulado_agregado = 0 THEN NULL
             ELSE ROUND(((vf2.valor_acumulado_agregado - vf1.valor_acumulado_agregado) / vf1.valor_acumulado_agregado) * 100, 2)
         END AS variation_rate_homologous,
         ROUND(gm1.valor_acumulado_mensal, 2) AS monthly_target_year1,
         ROUND(gm2.valor_acumulado_mensal, 2) AS monthly_target_year2,
-        ROUND(vf2.valor_acumulado_agregado - gm2.valor_acumulado_mensal) AS variation_rate_contractual_abs,
+        ROUND(vf2.valor_acumulado_agregado - gm2.valor_acumulado_mensal, 2) AS variation_rate_contractual_abs,
         CASE
             WHEN gm2.valor_acumulado_mensal = 0 THEN NULL
             ELSE ROUND(((vf2.valor_acumulado_agregado - gm2.valor_acumulado_mensal) / gm2.valor_acumulado_mensal) * 100, 2)
