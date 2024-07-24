@@ -35,6 +35,35 @@
     class="dashboardOptionsContainer"
     [ngClass]="{ 'is-open': isMenuOpen, 'is-closed': !isMenuOpen }"
   >
+
+  <!-- Metas -->
+  <div class="dashboardOption" (click)="openManageData()" [ngClass]="{ 'is-open': isManageDataSubMenuOpen }">
+    <div class="plusIcon" [ngClass]="{ 'is-open': isManageDataSubMenuOpen }"></div>
+    <h2>Metricas</h2>
+  </div>
+  <div class="subMenu" [ngClass]="{
+          'is-open': isManageDataSubMenuOpen,
+          'is-closed': !isManageDataSubMenuOpen
+        }">
+    <div class="subMenuItem" *ngIf="
+            getRole() === 'admin' ||
+            getRole() === 'coordenador' ||
+            getRole() === 'root' ||
+            getRole() === 'coordenador'
+          ">
+      <a (click)="goToRecordsGoalsUpdate()" routerLinkActive="Ativo">Inserir dados</a>
+    </div>
+    <div class="subMenuItem" *ngIf="
+            getRole() === 'admin' ||
+            getRole() === 'coordenador' ||
+            getRole() === 'root' ||
+            getRole() === 'coordenador'
+          ">
+      >
+      <a (click)="goToCharts()" routerLinkActive="Ativo">Consultar Métricas</a>
+    </div>
+  </div>
+
     <!-- Utilizador -->
     <div
       class="dashboardOption"
@@ -80,6 +109,29 @@
           [routerLinkActiveOptions]="{ exact: true }"
           >Gerir utilizadores</a
         >
+      </div>
+    </div>
+
+    <!-- Notificações -->
+    <div class="dashboardOption" (click)="openManageNotifications()" *ngIf="
+            getRole() === 'coordenador' ||
+            getRole() === 'admin' ||
+            getRole() === 'root'
+          " [ngClass]="{ 'is-open': isManageNotificationsSubMenuOpen }">
+      <div class="plusIcon" [ngClass]="{ 'is-open': isManageNotificationsSubMenuOpen }"></div>
+      <h2>Notificações</h2>
+    </div>
+    <div class="subMenu" [ngClass]="{
+            'is-open': isManageNotificationsSubMenuOpen,
+            'is-closed': !isManageNotificationsSubMenuOpen
+          }">
+      <div class="subMenuItem">
+        <a routerLink="/notifications/create" routerLinkActive="Ativo" [routerLinkActiveOptions]="{ exact: true }">Criar
+          Mensagem</a>
+      </div>
+      <div class="subMenuItem">
+        <a routerLink="/notifications" routerLinkActive="Ativo" [routerLinkActiveOptions]="{ exact: true }">Consultar
+          Histórico</a>
       </div>
     </div>
 
@@ -214,99 +266,6 @@
           routerLinkActive="Ativo"
           [routerLinkActiveOptions]="{ exact: true }"
           >Gerir Indicadores</a
-        >
-      </div>
-    </div>
-
-    <!-- Metas -->
-    <div
-      class="dashboardOption"
-      (click)="openManageData()"
-      [ngClass]="{ 'is-open': isManageDataSubMenuOpen }"
-    >
-      <div
-        class="plusIcon"
-        [ngClass]="{ 'is-open': isManageDataSubMenuOpen }"
-      ></div>
-      <h2>Metas</h2>
-    </div>
-    <div
-      class="subMenu"
-      [ngClass]="{
-        'is-open': isManageDataSubMenuOpen,
-        'is-closed': !isManageDataSubMenuOpen
-      }"
-    >
-      <div
-        class="subMenuItem"
-        *ngIf="
-          getRole() === 'admin' ||
-          getRole() === 'coordenador' ||
-          getRole() === 'root' ||
-          getRole() === 'coordenador'
-        "
-      >
-        <a
-          routerLink="/RecordGoalsUpdate"
-          routerLinkActive="Ativo"
-          [routerLinkActiveOptions]="{ exact: true }"
-          >Gerir Metas</a
-        >
-      </div>
-      <div
-        class="subMenuItem"
-        *ngIf="
-          getRole() === 'admin' ||
-          getRole() === 'coordenador' ||
-          getRole() === 'root' ||
-          getRole() === 'coordenador'
-        "
-      >
-        >
-        <a (click)="goToCharts()" routerLinkActive="Ativo"
-          >Consultar Métricas</a
-        >
-      </div>
-    </div>
-
-    <!-- Notificações -->
-    <div
-      class="dashboardOption"
-      (click)="openManageNotifications()"
-      *ngIf="
-        getRole() === 'coordenador' ||
-        getRole() === 'admin' ||
-        getRole() === 'root'
-      "
-      [ngClass]="{ 'is-open': isManageNotificationsSubMenuOpen }"
-    >
-      <div
-        class="plusIcon"
-        [ngClass]="{ 'is-open': isManageNotificationsSubMenuOpen }"
-      ></div>
-      <h2>Notificações</h2>
-    </div>
-    <div
-      class="subMenu"
-      [ngClass]="{
-        'is-open': isManageNotificationsSubMenuOpen,
-        'is-closed': !isManageNotificationsSubMenuOpen
-      }"
-    >
-      <div class="subMenuItem">
-        <a
-          routerLink="/notifications/create"
-          routerLinkActive="Ativo"
-          [routerLinkActiveOptions]="{ exact: true }"
-          >Criar Mensagem</a
-        >
-      </div>
-      <div class="subMenuItem">
-        <a
-          routerLink="/notifications"
-          routerLinkActive="Ativo"
-          [routerLinkActiveOptions]="{ exact: true }"
-          >Consultar Histórico</a
         >
       </div>
     </div>

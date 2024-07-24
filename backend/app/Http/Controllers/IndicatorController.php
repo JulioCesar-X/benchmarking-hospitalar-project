@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Indicator;
-use App\Sai;
-use App\Goal;
-use App\Record;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use App\Sai;
+use App\Indicator;
+use Exception;
 
 class IndicatorController extends Controller
 {
@@ -63,45 +61,20 @@ class IndicatorController extends Controller
         }
     }
 
-    public function getIndicatorsPaginated(Request $request)
-    {
-        try {
-            $pageSize = $request->input('size', 15);
-            $pageIndex = $request->input('page', 1);
-            $indicators = Indicator::orderBy('created_at', 'desc')
-                ->paginate($pageSize, ['*'], 'page', $pageIndex);
-            return response()->json($indicators, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
-    }
-
     public function getRecordsMensal(Request $request)
     {
         try {
-            $serviceId = $request->input('serviceId');
-            $activityId = $request->input('activityId');
-            $indicatorId = $request->input('indicatorId');
-            $year = $request->input('year');
+            list($serviceId, $activityId, $indicatorId, $year) = $this->getRequestParameters($request);
+            $sai = $this->getSai($serviceId, $activityId, $indicatorId);
 
-            $sai = Sai::where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->first();
-
-            if (!$sai) {
-                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
-            }
-
-            $saiId = $sai->id;
-            $cacheKey = "records_mensal_{$saiId}_{$year}";
+            $cacheKey = "records_mensal_{$sai->id}_{$year}";
 
             if (Cache::has($cacheKey)) {
                 return response()->json(['hasData' => true, 'data' => Cache::get($cacheKey)], 200);
             }
 
             $recordsMensal = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $saiId)
+                ->where('sai_id', $sai->id)
                 ->whereYear('data', $year)
                 ->pluck('valor_mensal', 'month')
                 ->toArray();
@@ -118,29 +91,17 @@ class IndicatorController extends Controller
     public function getRecordsAnual(Request $request)
     {
         try {
-            $serviceId = $request->input('serviceId');
-            $activityId = $request->input('activityId');
-            $indicatorId = $request->input('indicatorId');
-            $year = $request->input('year');
+            list($serviceId, $activityId, $indicatorId, $year) = $this->getRequestParameters($request);
+            $sai = $this->getSai($serviceId, $activityId, $indicatorId);
 
-            $sai = Sai::where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->first();
-
-            if (!$sai) {
-                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
-            }
-
-            $saiId = $sai->id;
-            $cacheKey = "records_anual_{$saiId}_{$year}";
+            $cacheKey = "records_anual_{$sai->id}_{$year}";
 
             if (Cache::has($cacheKey)) {
                 return response()->json(['hasData' => true, 'data' => Cache::get($cacheKey)], 200);
             }
 
             $recordsAnual = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $saiId)
+                ->where('sai_id', $sai->id)
                 ->where('year', $year)
                 ->pluck('valor_acumulado_agregado', 'month')
                 ->toArray();
@@ -157,29 +118,17 @@ class IndicatorController extends Controller
     public function getRecordsLastYear(Request $request)
     {
         try {
-            $serviceId = $request->input('serviceId');
-            $activityId = $request->input('activityId');
-            $indicatorId = $request->input('indicatorId');
-            $year = $request->input('year') - 1;
+            list($serviceId, $activityId, $indicatorId, $year) = $this->getRequestParameters($request, true);
+            $sai = $this->getSai($serviceId, $activityId, $indicatorId);
 
-            $sai = Sai::where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->first();
-
-            if (!$sai) {
-                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
-            }
-
-            $saiId = $sai->id;
-            $cacheKey = "records_anual_last_year_{$saiId}_{$year}";
+            $cacheKey = "records_anual_last_year_{$sai->id}_{$year}";
 
             if (Cache::has($cacheKey)) {
                 return response()->json(['hasData' => true, 'data' => Cache::get($cacheKey)], 200);
             }
 
             $recordsAnualLastYear = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $saiId)
+                ->where('sai_id', $sai->id)
                 ->where('year', $year)
                 ->pluck('valor_acumulado_agregado', 'month')
                 ->toArray();
@@ -196,29 +145,17 @@ class IndicatorController extends Controller
     public function getGoalMes(Request $request)
     {
         try {
-            $serviceId = $request->input('serviceId');
-            $activityId = $request->input('activityId');
-            $indicatorId = $request->input('indicatorId');
-            $year = $request->input('year');
+            list($serviceId, $activityId, $indicatorId, $year) = $this->getRequestParameters($request);
+            $sai = $this->getSai($serviceId, $activityId, $indicatorId);
 
-            $sai = Sai::where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->first();
-
-            if (!$sai) {
-                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
-            }
-
-            $saiId = $sai->id;
-            $cacheKey = "goal_mes_{$saiId}_{$year}";
+            $cacheKey = "goal_mes_{$sai->id}_{$year}";
 
             if (Cache::has($cacheKey)) {
                 return response()->json(['hasData' => true, 'data' => Cache::get($cacheKey)], 200);
             }
 
             $goalMes = DB::table('vw_goals_monthly')
-                ->where('sai_id', $saiId)
+                ->where('sai_id', $sai->id)
                 ->where('year', $year)
                 ->pluck('monthly_target', 'month')
                 ->map(function ($value) {
@@ -238,29 +175,17 @@ class IndicatorController extends Controller
     public function getGoalsMensal(Request $request)
     {
         try {
-            $serviceId = $request->input('serviceId');
-            $activityId = $request->input('activityId');
-            $indicatorId = $request->input('indicatorId');
-            $year = $request->input('year');
+            list($serviceId, $activityId, $indicatorId, $year) = $this->getRequestParameters($request);
+            $sai = $this->getSai($serviceId, $activityId, $indicatorId);
 
-            $sai = Sai::where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->first();
-
-            if (!$sai) {
-                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
-            }
-
-            $saiId = $sai->id;
-            $cacheKey = "goals_mensal_{$saiId}_{$year}";
+            $cacheKey = "goals_mensal_{$sai->id}_{$year}";
 
             if (Cache::has($cacheKey)) {
                 return response()->json(['hasData' => true, 'data' => Cache::get($cacheKey)], 200);
             }
 
             $goalsMensal = DB::table('vw_goals_monthly')
-                ->where('sai_id', $saiId)
+                ->where('sai_id', $sai->id)
                 ->where('year', $year)
                 ->pluck('valor_acumulado_mensal', 'month')
                 ->map(function ($value) {
@@ -280,24 +205,13 @@ class IndicatorController extends Controller
     public function getGoalAnual(Request $request)
     {
         try {
-            $serviceId = $request->input('serviceId');
-            $activityId = $request->input('activityId');
-            $indicatorId = $request->input('indicatorId');
-            $year = $request->input('year');
+            list($serviceId, $activityId, $indicatorId, $year) = $this->getRequestParameters($request);
+            $sai = $this->getSai($serviceId, $activityId, $indicatorId);
 
-            $cacheKey = "goal_anual_{$serviceId}_{$activityId}_{$indicatorId}_{$year}";
+            $cacheKey = "goal_anual_{$sai->id}_{$year}";
 
             if (Cache::has($cacheKey)) {
                 return response()->json(['hasData' => true, 'data' => Cache::get($cacheKey)], 200);
-            }
-
-            $sai = Sai::where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->first();
-
-            if (!$sai) {
-                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
             }
 
             $goal = $sai->goals()->where('year', $year)->first();
@@ -314,29 +228,17 @@ class IndicatorController extends Controller
     public function getPreviousYearTotal(Request $request)
     {
         try {
-            $serviceId = $request->input('serviceId');
-            $activityId = $request->input('activityId');
-            $indicatorId = $request->input('indicatorId');
-            $year = $request->input('year') - 1;
+            list($serviceId, $activityId, $indicatorId, $year) = $this->getRequestParameters($request, true);
+            $sai = $this->getSai($serviceId, $activityId, $indicatorId);
 
-            $sai = Sai::where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->first();
-
-            if (!$sai) {
-                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
-            }
-
-            $saiId = $sai->id;
-            $cacheKey = "previous_year_total_{$saiId}_{$year}";
+            $cacheKey = "previous_year_total_{$sai->id}_{$year}";
 
             if (Cache::has($cacheKey)) {
                 return response()->json(['hasData' => true, 'data' => Cache::get($cacheKey)], 200);
             }
 
             $previousYearTotal = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $saiId)
+                ->where('sai_id', $sai->id)
                 ->whereYear('data', $year)
                 ->sum('valor_mensal');
 
@@ -355,29 +257,17 @@ class IndicatorController extends Controller
     public function getCurrentYearTotal(Request $request)
     {
         try {
-            $serviceId = $request->input('serviceId');
-            $activityId = $request->input('activityId');
-            $indicatorId = $request->input('indicatorId');
-            $year = $request->input('year');
+            list($serviceId, $activityId, $indicatorId, $year) = $this->getRequestParameters($request);
+            $sai = $this->getSai($serviceId, $activityId, $indicatorId);
 
-            $sai = Sai::where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->first();
-
-            if (!$sai) {
-                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
-            }
-
-            $saiId = $sai->id;
-            $cacheKey = "current_year_total_{$saiId}_{$year}";
+            $cacheKey = "current_year_total_{$sai->id}_{$year}";
 
             if (Cache::has($cacheKey)) {
                 return response()->json(['hasData' => true, 'data' => Cache::get($cacheKey)], 200);
             }
 
             $currentYearTotal = DB::table('vw_indicator_accumulated')
-                ->where('sai_id', $saiId)
+                ->where('sai_id', $sai->id)
                 ->whereYear('data', $year)
                 ->sum('valor_mensal');
 
@@ -396,30 +286,17 @@ class IndicatorController extends Controller
     public function getVariations(Request $request)
     {
         try {
-            $serviceId = $request->input('serviceId');
-            $activityId = $request->input('activityId');
-            $indicatorId = $request->input('indicatorId');
-            $year = $request->input('year');
-            $month = $request->input('month');
+            list($serviceId, $activityId, $indicatorId, $year, $month) = $this->getRequestParameters($request, false, true);
+            $sai = $this->getSai($serviceId, $activityId, $indicatorId);
 
-            $sai = Sai::where('service_id', $serviceId)
-                ->where('activity_id', $activityId)
-                ->where('indicator_id', $indicatorId)
-                ->first();
-
-            if (!$sai) {
-                return response()->json(['error' => 'Service Activity Indicator not found'], 404);
-            }
-
-            $saiId = $sai->id;
-            $cacheKey = "variations_{$saiId}_{$year}_{$month}";
+            $cacheKey = "variations_{$sai->id}_{$year}_{$month}";
 
             if (Cache::has($cacheKey)) {
                 return response()->json(['hasData' => true, 'data' => Cache::get($cacheKey)], 200);
             }
 
             $variations = DB::table('vw_variation_rate')
-            ->where('sai_id', $saiId)
+                ->where('sai_id', $sai->id)
                 ->where('year1', $year - 1)
                 ->where('year2', $year)
                 ->where('month', $month)
@@ -448,18 +325,235 @@ class IndicatorController extends Controller
 
     private function fillMissingMonths($data)
     {
-        $filledData = array_fill(1, 12, 0); // Inicializa com 12 zeros, indexados de 1 a 12
+        $filledData = array_fill(1, 12, 0);
         foreach ($data as $month => $value) {
             $filledData[$month] = $value;
         }
         return $filledData;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    private function getRequestParameters(Request $request, $previousYear = false, $includeMonth = false)
+    {
+        $serviceId = $request->input('serviceId');
+        $activityId = $request->input('activityId');
+        $indicatorId = $request->input('indicatorId');
+        $year = $request->input('year');
+        if ($previousYear) {
+            $year--;
+        }
+        $month = $includeMonth ? $request->input('month') : null;
+        return $includeMonth ? [$serviceId, $activityId, $indicatorId, $year, $month] : [$serviceId, $activityId, $indicatorId, $year];
+    }
+
+    private function getSai($serviceId, $activityId, $indicatorId)
+    {
+        $sai = Sai::where('service_id', $serviceId)
+            ->where('activity_id', $activityId)
+            ->where('indicator_id', $indicatorId)
+            ->first();
+
+        if (!$sai) {
+            throw new Exception('Service Activity Indicator not found');
+        }
+
+        return $sai;
+    }
+
+    public function store(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $existingIndicator = Indicator::where('indicator_name', $request->indicator_name)->first();
+            if ($existingIndicator) {
+                return response()->json(['error' => 'Nome do indicador já existe.'], 400);
+            }
+
+            $indicator = Indicator::create(['indicator_name' => $request->indicator_name]);
+
+            $saiData = [];
+            $existingCombinations = [];
+
+            if (isset($request->associations)) {
+                foreach ($request->associations as $association) {
+                    $combinationKey = $association['service_id'] . '_' . $association['activity_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
+                        ], 400);
+                    }
+
+                    $existingSai = Sai::where('indicator_id', $indicator->id)
+                        ->where('service_id', $association['service_id'])
+                        ->where('activity_id', $association['activity_id'])
+                        ->first();
+
+                    if (!$existingSai) {
+                        $saiData[] = [
+                            'service_id' => $association['service_id'],
+                            'activity_id' => $association['activity_id'],
+                            'indicator_id' => $indicator->id,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    $existingCombinations[] = $combinationKey;
+                }
+
+                if (!empty($saiData)) {
+                    Sai::insert($saiData);
+                }
+            }
+
+            DB::commit();
+
+            // Clear relevant cache
+            Cache::forget('indicators_index');
+            foreach ($saiData as $sai) {
+                Cache::forget("records_mensal_{$sai['service_id']}_{$sai['activity_id']}_{$sai['indicator_id']}");
+                Cache::forget("records_anual_{$sai['service_id']}_{$sai['activity_id']}_{$sai['indicator_id']}");
+            }
+
+            return response()->json($indicator->load('sais'), 201);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return response()->json(['error' => 'Ocorreu um erro ao criar o indicador. Tente novamente mais tarde.'], 500);
+        }
+    }
+
+    public function update(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $indicator = Indicator::find($request->id);
+            if (!$indicator) {
+                return response()->json(['error' => 'Indicador não encontrado.'], 404);
+            }
+
+            $existingIndicator = Indicator::where('indicator_name', $request->indicator_name)
+                ->where('id', '<>', $indicator->id)
+                ->first();
+            if ($existingIndicator) {
+                return response()->json(['error' => 'Nome do indicador já existe.'], 400);
+            }
+
+            $indicator->update(['indicator_name' => $request->indicator_name]);
+
+            if (isset($request->desassociations)) {
+                foreach ($request->desassociations as $desassociation) {
+                    $sai = Sai::find($desassociation['sai_id']);
+                    if ($sai) {
+                        DB::table('goals')->where('sai_id', $sai->id)->delete();
+                        DB::table('records')->where('sai_id', $sai->id)->delete();
+                        $sai->delete();
+                    }
+                }
+            }
+
+            $saiData = [];
+            $existingCombinations = [];
+
+            if (isset($request->associations)) {
+                foreach ($request->associations as $association) {
+                    $combinationKey = $association['service_id'] . '_' . $association['activity_id'];
+
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        DB::rollBack();
+                        return response()->json([
+                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
+                        ], 400);
+                    }
+
+                    $existingSai = Sai::where('indicator_id', $indicator->id)
+                        ->where('service_id', $association['service_id'])
+                        ->where('activity_id', $association['activity_id'])
+                        ->first();
+
+                    if (!$existingSai) {
+                        $saiData[] = [
+                            'indicator_id' => $indicator->id,
+                            'service_id' => $association['service_id'],
+                            'activity_id' => $association['activity_id'],
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    $existingCombinations[] = $combinationKey;
+                }
+
+                if (!empty($saiData)) {
+                    Sai::insert($saiData);
+                }
+            }
+
+            DB::commit();
+
+            // Clear relevant cache
+            Cache::forget('indicators_index');
+            foreach ($saiData as $sai) {
+                Cache::forget("records_mensal_{$sai['service_id']}_{$sai['activity_id']}_{$sai['indicator_id']}");
+                Cache::forget("records_anual_{$sai['service_id']}_{$sai['activity_id']}_{$sai['indicator_id']}");
+            }
+
+            return response()->json($indicator->load('sais'), 200);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return response()->json(['error' => 'Ocorreu um erro ao atualizar o indicador. Tente novamente mais tarde.'], 500);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $indicator = Indicator::find($id);
+            if (!$indicator) {
+                return response()->json(['error' => 'Indicador não encontrado.'], 404);
+            }
+
+            // Deletar SAIs, metas e registros associados
+            foreach ($indicator->sais as $sai) {
+                DB::table('goals')->where('sai_id', $sai->id)->delete();
+                DB::table('records')->where('sai_id', $sai->id)->delete();
+                $sai->delete();
+            }
+
+            $indicator->delete();
+
+            // Clear relevant cache
+            Cache::forget('indicators_index');
+
+            return response()->json(['message' => 'Indicador deletado com sucesso.'], 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => 'Ocorreu um erro ao deletar o indicador. Tente novamente mais tarde.'], 500);
+        }
+    }
+
+    public function show($id)
+    {
+        try {
+            $indicator = Indicator::with(['sais.service', 'sais.activity', 'sais.records'])->findOrFail($id);
+            return response()->json($indicator, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => 'Indicador não encontrado.'], 404);
+        }
+    }
+
+    public function getIndicatorsPaginated(Request $request)
+    {
+        try {
+            $pageSize = $request->input('size', 15);
+            $pageIndex = $request->input('page', 1);
+            $indicators = Indicator::orderBy('created_at', 'desc')
+                ->paginate($pageSize, ['*'], 'page', $pageIndex);
+            return response()->json($indicators, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+
     public function getIndicatorsRecords(Request $request)
     {
         $serviceId = $request->input('serviceId');
@@ -469,16 +563,10 @@ class IndicatorController extends Controller
         $page = $request->input('page', 1);
         $size = $request->input('size', 10);
 
-        $cacheKey = "indicators_records_{$serviceId}_{$activityId}_{$year}_{$month}_{$page}_{$size}";
-
-        if (Cache::has($cacheKey)) {
-            return response()->json(Cache::get($cacheKey), 200);
-        }
-
         try {
-            $query = Sai::with(['indicator:id,indicator_name', 'records' => function ($query) use ($year, $month) {
+            $query = Sai::with(['indicator:id,indicator_name', 'service:id,service_name', 'activity:id,activity_name', 'records' => function ($query) use ($year, $month) {
                 $query->select('id', 'sai_id', 'value', 'date')
-                ->whereYear('date', $year)
+                    ->whereYear('date', $year)
                     ->whereMonth('date', $month);
             }])->where('service_id', $serviceId);
 
@@ -487,7 +575,7 @@ class IndicatorController extends Controller
             }
 
             $total = $query->count();
-            $records = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id']);
+            $records = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id', 'service_id', 'activity_id']);
 
             $response = [
                 'total' => $total,
@@ -495,6 +583,8 @@ class IndicatorController extends Controller
                     return [
                         'sai_id' => $sai->id,
                         'indicator_name' => $sai->indicator->indicator_name,
+                        'service_name' => $sai->service ? $sai->service->service_name : 'N/A',
+                        'activity_name' => $sai->activity ? $sai->activity->activity_name : 'N/A',
                         'records' => $sai->records->map(function ($record) {
                             return [
                                 'record_id' => $record->id,
@@ -506,19 +596,12 @@ class IndicatorController extends Controller
                 })
             ];
 
-            Cache::put($cacheKey, $response, now()->addMinutes(30));
-            
-
             return response()->json($response);
         } catch (Exception $exception) {
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function getIndicatorsGoals(Request $request)
     {
         $serviceId = $request->input('serviceId');
@@ -527,37 +610,34 @@ class IndicatorController extends Controller
         $page = $request->input('page', 1);
         $size = $request->input('size', 10);
 
-        // Gerar uma chave de cache única baseada nos parâmetros de consulta
-        $cacheKey = "indicators_goals_{$serviceId}_{$activityId}_{$year}_{$page}_{$size}";
-
-        if (Cache::has($cacheKey)) {
-            
-            return response()->json(Cache::get($cacheKey), 200);
-        }
-
         try {
             $query = Sai::with([
-                'indicator:id,indicator_name',
+                'indicator:id,indicator_name', 'service:id,service_name', 'activity:id,activity_name',
                 'goals' => function ($query) use ($year) {
                     $query->select('id', 'sai_id', 'target_value', 'year')
-                    ->where('year', $year);
-                },
-                'service:id,service_name',
-                'activity:id,activity_name'
+                        ->where('year', $year);
+                }
             ])->where('service_id', $serviceId);
 
-            if ($activityId !== null && $activityId !== '') {
+            if ($activityId !== null && $activityId !== '' && is_numeric($activityId)) {
                 $query->where('activity_id', $activityId);
             }
 
             $total = $query->count();
-            $sais = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id']);
+            $sais = $query->skip(($page - 1) * $size)->take($size)->get(['id', 'indicator_id', 'service_id', 'activity_id']);
 
             $response = $sais->map(function ($sai) {
                 return [
                     'sai_id' => $sai->id,
                     'indicator_name' => $sai->indicator->indicator_name,
-                    'goal' => $sai->goals->first()
+                    'service_name' => $sai->service ? $sai->service->service_name : 'N/A',
+                    'activity_name' => $sai->activity ? $sai->activity->activity_name : 'N/A',
+                    'goal' => $sai->goals->first() ? [
+                        'id' => $sai->goals->first()->id,
+                        'target_value' => $sai->goals->first()->target_value,
+                        'year' => $sai->goals->first()->year,
+                        'sai_id' => $sai->goals->first()->sai_id
+                    ] : null
                 ];
             });
 
@@ -568,193 +648,12 @@ class IndicatorController extends Controller
                 'data' => $response
             ];
 
-            // Armazenar o resultado no cache por 30 minutos
-            Cache::put($cacheKey, $result, now()->addMinutes(30));
-            
-
             return response()->json($result);
         } catch (Exception $exception) {
-            
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
 
-    public function store(Request $request)
-    {
-        DB::beginTransaction();
-        try {
-            // Verifica se o nome do indicador já existe
-            $existingIndicator = Indicator::where('indicator_name', $request->indicator_name)->first();
-            if ($existingIndicator) {
-                return response()->json(['error' => 'Nome do indicador já existe.'], 400);
-            }
-
-            // Cria o indicador
-            $indicator = Indicator::create(['indicator_name' => $request->indicator_name]);
-
-            $saiData = [];
-            $existingCombinations = [];
-
-            // Processa as novas associações
-            if (isset($request->associations)) {
-                foreach ($request->associations as $association) {
-                    $combinationKey = $association['service_id'] . '_' . $association['activity_id'];
-
-                    if (in_array($combinationKey, $existingCombinations)) {
-                        // Se encontrar duplicações, retorna uma mensagem de erro
-                        DB::rollBack();
-                        return response()->json([
-                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
-                        ], 400);
-                    }
-
-                    $existingSai = Sai::where('indicator_id', $indicator->id)
-                        ->where('service_id', $association['service_id'])
-                        ->where('activity_id', $association['activity_id'])
-                        ->first();
-
-                    if (!$existingSai) {
-                        $saiData[] = [
-                            'service_id' => $association['service_id'],
-                            'activity_id' => $association['activity_id'],
-                            'indicator_id' => $indicator->id,
-                            'created_at' => now(),
-                            'updated_at' => now()
-                        ];
-                    }
-
-                    $existingCombinations[] = $combinationKey;
-                }
-
-                if (!empty($saiData)) {
-                    Sai::insert($saiData);
-                }
-            }
-
-            DB::commit();
-
-            // Limpa o cache
-            Cache::forget('indicators_index');
-
-            return response()->json($indicator->load('sais'), 201);
-        } catch (Exception $exception) {
-            DB::rollBack();
-            return response()->json(['error' => 'Ocorreu um erro ao criar o indicador. Tente novamente mais tarde.'], 500);
-        }
-    }
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $indicator = Indicator::with(['sais.service', 'sais.activity', 'sais.records'])
-            ->findOrFail($id);
-
-        return response()->json($indicator);
-    }
-
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  Indicator  $indicator
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
-    {
-        DB::beginTransaction();
-        try {
-            // Verificar se o indicador existe
-            $indicator = Indicator::find($request->id);
-            if (!$indicator) {
-                return response()->json(['error' => 'Indicador não encontrado.'], 404);
-            }
-
-            // Verifica se o nome do indicador já existe (exceto para o indicador atual)
-            $existingIndicator = Indicator::where('indicator_name', $request->indicator_name)
-                ->where('id', '<>', $indicator->id)
-                ->first();
-            if ($existingIndicator) {
-                return response()->json(['error' => 'Nome do indicador já existe.'], 400);
-            }
-
-            // Atualiza o nome do indicador
-            $indicator->update(['indicator_name' => $request->indicator_name]);
-
-            // Processa as desassociações
-            if (isset($request->desassociations)) {
-                foreach ($request->desassociations as $desassociation) {
-                    $sai = Sai::find($desassociation['sai_id']);
-                    if ($sai) {
-                        // Deletar registros na tabela 'goals' que referenciam este 'sai'
-                        DB::table('goals')->where('sai_id', $sai->id)->delete();
-                        // Deletar registros na tabela 'records' que referenciam este 'sai'
-                        DB::table('records')->where('sai_id', $sai->id)->delete();
-                        // Deleta o próprio sai
-                        $sai->delete();
-                    }
-                }
-            }
-
-            // Prepara os dados para novas inserções
-            $saiData = [];
-            $existingCombinations = [];
-
-            if (isset($request->associations)) {
-                foreach ($request->associations as $association) {
-                    $combinationKey = $association['service_id'] . '_' . $association['activity_id'];
-
-                    if (in_array($combinationKey, $existingCombinations)) {
-                        // Se encontrar duplicações, retorna uma mensagem de erro
-                        DB::rollBack();
-                        return response()->json([
-                            'error' => 'Associação duplicada detectada para service_id: ' . $association['service_id'] . ', activity_id: ' . $association['activity_id']
-                        ], 400);
-                    }
-
-                    $existingSai = Sai::where('indicator_id', $indicator->id)
-                        ->where('service_id', $association['service_id'])
-                        ->where('activity_id', $association['activity_id'])
-                        ->first();
-
-                    if (!$existingSai) {
-                        $saiData[] = [
-                            'indicator_id' => $indicator->id,
-                            'service_id' => $association['service_id'],
-                            'activity_id' => $association['activity_id'],
-                            'created_at' => now(),
-                            'updated_at' => now()
-                        ];
-                    }
-
-                    $existingCombinations[] = $combinationKey;
-                }
-
-                if (!empty($saiData)) {
-                    Sai::insert($saiData);
-                }
-            }
-
-            DB::commit();
-            // Limpa o cache para os dados atualizados
-            Cache::forget('indicators_index');
-
-            return response()->json($indicator->load('sais'), 200);
-        } catch (Exception $exception) {
-            DB::rollBack();
-            return response()->json(['error' => 'Ocorreu um erro ao atualizar o indicador. Tente novamente mais tarde.'], 500);
-        }
-    }
-
-    /**
-     * Search for indica$indicator based on a keyword.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function search(Request $request)
     {
         try {

@@ -5,23 +5,30 @@ import { Filter } from '../../../core/models/filter.model';
 import { GoalService } from '../../../core/services/goal/goal.service';
 import { IndicatorService } from '../../../core/services/indicator/indicator.service';
 import { catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, forkJoin } from 'rxjs';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
+import { ExcelImportComponent } from '../../shared/excel-import/excel-import.component';
+import * as ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 interface Goal {
   id: number | null;
   indicator_name: string;
+  service_name?: string;
+  activity_name?: string;
   target_value: string;
   year: number;
   sai_id: number | null;
   isInserted: boolean;
   isUpdating: boolean;
   isEditing: boolean;
+  originalValue?: string; // Adicionada a propriedade originalValue
 }
 
 @Component({
@@ -34,8 +41,10 @@ interface Goal {
     FormsModule,
     PaginatorComponent,
     LoadingSpinnerComponent,
-    FeedbackComponent, 
-    MatTooltipModule
+    FeedbackComponent,
+    MatTooltipModule,
+    ExcelImportComponent,
+    MatProgressBarModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
@@ -44,6 +53,8 @@ interface Goal {
   styleUrls: ['./goals-list-section.component.scss']
 })
 export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewInit {
+  @ViewChild('excelImport') excelImportComponent!: ExcelImportComponent;
+
   @Input() filter: Filter = {
     indicatorId: 1,
     activityId: 1,
@@ -51,19 +62,22 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear()
   };
+
   @Input() indicators: any[] = [];
   @Input() isLoading: boolean = false;
 
+  dropdownOpen = false;
   isLoadingGoals = true;
   totalGoals = 0;
   pageSize = 10;
   currentPage = 0;
   goals: Goal[] = [];
-  allGoals: Goal[] = []; 
+  allGoals: Goal[] = [];
   loadedPages: Set<number> = new Set();
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
-  pageOptions = [5, 10, 20, 50, 100]; 
+  pageOptions = [5, 10, 20, 50, 100];
+  isImporting: boolean = false;
 
   constructor(
     private goalService: GoalService,
@@ -71,12 +85,12 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   ) { }
 
   ngOnInit(): void {
-    this.loadGoals(0, 30); 
+    this.loadGoals(0, 30);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
-      this.loadGoals(0, 30); 
+      this.loadGoals(0, 30);
     }
   }
 
@@ -87,11 +101,9 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   loadGoals(pageIndex = 0, pageSize = 30): void {
     if (this.filter?.year && this.filter?.serviceId) {
       this.isLoadingGoals = true;
-      const serviceId = Number(this.filter.serviceId);
-      const activityId = this.filter.activityId !== null && this.filter.activityId !== undefined ? Number(this.filter.activityId) : null;
-      const year = this.filter.year;
+      const { serviceId, activityId, year } = this.filter;
 
-      this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, pageIndex, pageSize)
+      this.indicatorService.getIndicatorsGoals(Number(serviceId), Number(activityId), year, pageIndex, pageSize)
         .pipe(
           catchError(error => {
             console.error('Error fetching goals', error);
@@ -100,11 +112,12 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
           finalize(() => this.isLoadingGoals = false)
         )
         .subscribe(response => {
-          if (pageIndex === 0) {
-            this.allGoals = this.mapGoals(response.data);
-          } else {
-            this.allGoals = [...this.allGoals, ...this.mapGoals(response.data)];
-          }
+          this.allGoals = pageIndex === 0 ? this.mapGoals(response.data) : [
+            ...this.allGoals,
+            ...this.mapGoals(response.data).filter(newGoal =>
+              !this.allGoals.some(existingGoal => existingGoal.sai_id === newGoal.sai_id && existingGoal.year === newGoal.year)
+            )
+          ];
           this.totalGoals = response.total;
           this.updateDataSource();
           this.loadedPages.add(pageIndex);
@@ -113,28 +126,174 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   mapGoals(data: any[]): Goal[] {
-    return data.map(item => {
-      const goal = item.goal || {
-        goal_id: null,
-        target_value: '',
-        year: this.filter.year
-      };
+    return data.map(item => ({
+      id: item.goal?.id ?? null,
+      indicator_name: item.indicator_name,
+      target_value: item.goal?.target_value ?? '',
+      year: item.goal?.year ?? this.filter.year,
+      sai_id: item.sai_id,
+      service_name: item.service_name ?? 'N/A',
+      activity_name: item.activity_name ?? 'N/A',
+      isInserted: !!item.goal?.target_value,
+      isUpdating: false,
+      isEditing: false,
+      originalValue: item.goal?.target_value ?? '' // Adicionada a propriedade originalValue
+    }));
+  }
 
-      return {
-        id: goal.goal_id,
-        indicator_name: item.indicator_name,
-        target_value: goal.target_value,
+  onGoalsImported(goals: any[]): void {
+    goals.forEach(goal => {
+      const existingGoal = this.allGoals.find(g => g.sai_id === goal.sai_id && g.year === goal.year);
+
+      if (existingGoal) {
+        existingGoal.target_value = goal.target_value;
+        existingGoal.originalValue = goal.target_value;
+        existingGoal.isInserted = true;
+      } else {
+        this.allGoals.push({
+          ...goal,
+          id: goal.id ?? null,
+          indicator_name: goal.indicator_name ?? 'Imported Goal',
+          service_name: goal.service_name ?? 'N/A',
+          activity_name: goal.activity_name ?? 'N/A',
+          isInserted: true,
+          isUpdating: false,
+          isEditing: false,
+          originalValue: goal.target_value // Adicionada a propriedade originalValue
+        });
+      }
+    });
+
+    this.updateDataSource();
+    this.sendGoalsToBackend(goals);
+  }
+
+  sendGoalsToBackend(goals: Goal[]): void {
+    const requests = goals.map(goal => {
+      const existingGoal = this.allGoals.find(g => g.sai_id === goal.sai_id && g.year === goal.year);
+
+      return existingGoal && existingGoal.id
+        ? this.goalService.updateGoal(existingGoal.id, goal).pipe(finalize(() => this.finalizeUpdate(goal)))
+        : this.goalService.storeGoal(goal).pipe(finalize(() => this.finalizeUpdate(goal)));
+    });
+
+    forkJoin(requests).subscribe(
+      () => {
+        this.setNotification('Metas criadas/atualizadas com sucesso', 'success');
+        this.loadGoals(this.currentPage, this.pageSize);
+      },
+      error => {
+        this.setNotification('Erro ao criar/atualizar metas', 'error');
+      }
+    );
+  }
+
+  finalizeUpdate(goal: Goal): void {
+    goal.isUpdating = false;
+    goal.isEditing = false;
+  }
+
+  onImportStarted(): void {
+    this.isImporting = true;
+  }
+
+  onImportFinished(): void {
+    this.isImporting = false;
+  }
+
+  exportGoals(): void {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Goals');
+
+    worksheet.mergeCells('A1:D1');
+    worksheet.getCell('A1').value = `Metas do Ano ${this.filter.year}`;
+    worksheet.getCell('A1').font = { bold: true };
+
+    const serviceName = this.allGoals.length ? this.allGoals[0].service_name : 'N/A';
+    const activityName = this.allGoals.length ? this.allGoals[0].activity_name : 'N/A';
+
+    worksheet.mergeCells('A2:D2');
+    worksheet.getCell('A2').value = `Serviço: ${serviceName}`;
+    worksheet.getCell('A2').font = { bold: true };
+
+    worksheet.mergeCells('A3:D3');
+    worksheet.getCell('A3').value = `Atividade: ${activityName}`;
+    worksheet.getCell('A3').font = { bold: true };
+
+    const currentDate = new Date();
+    worksheet.mergeCells('A4:D4');
+    worksheet.getCell('A4').value = `Data: ${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
+    worksheet.getCell('A4').font = { bold: true };
+
+    worksheet.mergeCells('A5:D5');
+    worksheet.getCell('A5').value = '(Valores acumulados)';
+    worksheet.getCell('A5').font = { bold: true };
+
+    worksheet.columns = [
+      { header: 'ID', key: 'sai_id', width: 10 },
+      { header: 'Nome do Indicador', key: 'indicator_name', width: 30 },
+      { header: 'Ano', key: 'year', width: 15 },
+      { header: 'Meta Anual', key: 'target_value', width: 15 }
+    ];
+
+    const headerRow = worksheet.addRow({
+      sai_id: 'ID',
+      indicator_name: 'Nome do indicador',
+      year: 'Ano',
+      target_value: 'Meta Anual',
+    });
+
+    this.allGoals.forEach(goal => {
+      worksheet.addRow({
+        sai_id: goal.sai_id,
+        indicator_name: goal.indicator_name,
         year: goal.year,
-        sai_id: item.sai_id,
-        isInserted: goal.target_value !== '',
-        isUpdating: false,
-        isEditing: false
+        target_value: Number(goal.target_value)
+      });
+    });
+
+    worksheet.autoFilter = {
+      from: 'A6',
+      to: 'D6',
+    };
+
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFB6DDE8' }
       };
+    });
+
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber > 6) {
+        row.eachCell((cell) => {
+          cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        });
+      }
+    });
+
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, 'GoalsDataExport.xlsx');
+    }).catch((error) => {
+      console.error('Erro ao gerar o arquivo Excel:', error);
     });
   }
 
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  triggerFileInput(): void {
+    this.excelImportComponent.triggerFileInput();
+  }
+
   editGoal(goal: Goal): void {
-    if (goal.isInserted && !goal.isEditing) {
+    if (!goal.isEditing) {
+      goal.originalValue = goal.target_value; // Salve o valor original ao iniciar a edição
       goal.isEditing = true;
       return;
     }
@@ -178,7 +337,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       .subscribe(
         () => {
           this.setNotification('Meta criada com sucesso', 'success');
-          this.loadGoals(0, this.pageSize * 3); // Recarrega os dados
+          this.loadGoals(0, this.pageSize * 3);
         },
         error => this.setNotification(this.getErrorMessage(error), 'error')
       );
@@ -244,6 +403,9 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   cancelEditing(goal: Goal): void {
+    if (goal.originalValue !== undefined) {
+      goal.target_value = goal.originalValue; // Restaure o valor original
+    }
     goal.isEditing = false;
   }
 }

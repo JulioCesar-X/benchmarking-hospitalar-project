@@ -1,19 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, throwError, of, forkJoin } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Indicator } from '../../models/indicator.model';
 import { Filter } from '../../models/filter.model';
-import { forkJoin } from 'rxjs';
+import { CacheService } from '../cache.service';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class IndicatorService {
-  private cache: Map<string, any> = new Map();
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private cacheService: CacheService) { }
 
   private getHttpParams(filter: Filter): HttpParams {
     return new HttpParams()
@@ -29,44 +26,36 @@ export class IndicatorService {
   }
 
   getAllData(filter: Filter): Observable<any> {
-    const cacheKey = this.getCacheKey(filter);
-    if (this.cache.has(cacheKey)) {
-      return of(this.cache.get(cacheKey));
-    } else {
-      return forkJoin({
-        recordsMensal: this.getRecordsMensal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
-        recordsAnual: this.getRecordsAnual(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
-        recordsAnualLastYear: this.getRecordsLastYear(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
-        goalsMensal: this.getGoalsMensal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
-        goalMes: this.getGoalMes(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
-        goalAnual: this.getGoalAnual(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
-        previousYearTotal: this.getPreviousYearTotal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
-        currentYearTotal: this.getCurrentYearTotal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
-        variations: this.getVariations(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
-      }).pipe(
-        map(data => {
-          this.cache.set(cacheKey, data);
-
-          const processedData = {
-            recordsMensal: data.recordsMensal.hasData ? data.recordsMensal.data : null,
-            recordsAnual: data.recordsAnual.hasData ? data.recordsAnual.data : null,
-            recordsAnualLastYear: data.recordsAnualLastYear.hasData ? data.recordsAnualLastYear.data : null,
-            goalsMensal: data.goalsMensal.hasData ? data.goalsMensal.data : null,
-            goalMes: data.goalMes.hasData ? data.goalMes.data : null,
-            goalAnual: data.goalAnual.hasData ? data.goalAnual.data : null,
-            previousYearTotal: data.previousYearTotal.hasData ? data.previousYearTotal.data : null,
-            currentYearTotal: data.currentYearTotal.hasData ? data.currentYearTotal.data : null,
-            variations: data.variations.hasData ? data.variations.data : null,
-          };
-
-          return processedData;
-        }),
-        catchError(error => {
-          console.error('Error fetching data:', error);
-          return throwError(() => new Error('Failed to fetch data'));
-        })
-      );
-    }
+    return forkJoin({
+      recordsMensal: this.getRecordsMensal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+      recordsAnual: this.getRecordsAnual(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+      recordsAnualLastYear: this.getRecordsLastYear(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+      goalsMensal: this.getGoalsMensal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+      goalMes: this.getGoalMes(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+      goalAnual: this.getGoalAnual(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+      previousYearTotal: this.getPreviousYearTotal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+      currentYearTotal: this.getCurrentYearTotal(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+      variations: this.getVariations(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
+    }).pipe(
+      tap(data => {
+        console.log('API data:', data); // Log para verificação dos dados
+      }),
+      map(data => ({
+        recordsMensal: data.recordsMensal.hasData ? data.recordsMensal.data : null,
+        recordsAnual: data.recordsAnual.hasData ? data.recordsAnual.data : null,
+        recordsAnualLastYear: data.recordsAnualLastYear.hasData ? data.recordsAnualLastYear.data : null,
+        goalsMensal: data.goalsMensal.hasData ? data.goalsMensal.data : null,
+        goalMes: data.goalMes.hasData ? data.goalMes.data : null,
+        goalAnual: data.goalAnual.hasData ? data.goalAnual.data : null,
+        previousYearTotal: data.previousYearTotal.hasData ? data.previousYearTotal.data : null,
+        currentYearTotal: data.currentYearTotal.hasData ? data.currentYearTotal.data : null,
+        variations: data.variations.hasData ? data.variations.data : null,
+      })),
+      catchError(error => {
+        console.error('Error fetching data:', error);
+        return throwError(() => new Error('Failed to fetch data'));
+      })
+    );
   }
 
   getRecordsMensal(filter: Filter): Observable<any> {
@@ -145,29 +134,19 @@ export class IndicatorService {
       .set('size', pageSize.toString());
     console.log('params >>', params.toString());
 
-    return this.http.get<any>('/indicators/sai/records', { params }).pipe(
-      catchError(error => {
-        console.error('Error fetching data:', error);
-        return throwError(() => new Error('Falha ao buscar indicadores com registros'));
-      })
-    );
+    return this.http.get<any>('/indicators/sai/records', { params });
   }
 
   getIndicatorsGoals(serviceId: number, activityId: number | null, year: number, pageIndex: number, pageSize: number): Observable<any> {
     const params = new HttpParams()
       .set('serviceId', serviceId)
-      .set('activityId', activityId !== null ? activityId : '')
+      .set('activityId', activityId !== null ? activityId.toString() : '')
       .set('year', year)
       .set('page', (pageIndex + 1))
       .set('size', pageSize);
     console.log('params >>', params.toString());
 
-    return this.http.get<any>('/indicators/sai/goals', { params }).pipe(
-      catchError(error => {
-        console.error('Error fetching data:', error);
-        return throwError(() => new Error('Falha ao buscar indicadores c / metas'));
-      })
-    );
+    return this.http.get<any>('/indicators/sai/goals', { params });
   }
 
   storeIndicator(indicator: any): Observable<any> {

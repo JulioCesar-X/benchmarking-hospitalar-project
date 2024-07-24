@@ -41,12 +41,17 @@ export class ChartDataResolver implements Resolve<any> {
                     return this.indicatorService.getAllData(filter).pipe(
                         map(data => ({ data, filter })),
                         catchError(error => {
-                            return of({ error: true, message: 'Failed to fetch data' });
+                            console.error('Failed to fetch indicator data:', error);
+                            return of({ error: true, message: 'Failed to fetch indicator data' });
                         })
                     );
                 } else {
                     return of({ error: true, message: 'Service not found' });
                 }
+            }),
+            catchError(error => {
+                console.error('Failed to fetch service data:', error);
+                return of({ error: true, message: 'Failed to fetch service data' });
             })
         );
     }

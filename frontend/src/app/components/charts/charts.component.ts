@@ -64,6 +64,7 @@ export class ChartsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['graphData'] && changes['graphData'].currentValue !== changes['graphData'].previousValue) {
+      console.log('Updating chart with new data:', changes['graphData'].currentValue); // Adicione este log
       this.updateChart(this.graphData);
     }
   }

@@ -29,6 +29,7 @@ import { ServicesUpdatePageComponent } from './pages/services/services-update-pa
 import { NotificationsComponent } from './pages/notifications/notifications-page/notifications.component';
 import { NotificationsCreatePageComponent } from './pages/notifications/notifications-create-page/notifications-create-page.component';
 import { PasswordRecupModalComponent } from './components/auth/password-recup-modal/password-recup-modal.component';
+import { RecordsGoalsUpdateResolver } from './core/resolvers/records-goals-update.resolver';
 
 export const routes: Routes = [
   {
@@ -73,21 +74,22 @@ export const routes: Routes = [
     path: 'charts',
     component: ChartsPageComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { expectedRole: ['root', 'admin', 'coordenador'] },
-    resolve: { chartData: ChartDataResolver }
+    data: { expectedRole: ['root', 'admin', 'coordenador'], reuse: false },
+    resolve: { chartData: ChartDataResolver },
   },
   {
     path: 'user-charts',
     component: ChartsPageComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { expectedRole: ['user'] },
-    resolve: { chartData: ChartDataResolver }
+    data: { expectedRole: ['user'], reuse: false },
+    resolve: { chartData: ChartDataResolver },
   },
   {
-    path: 'RecordGoalsUpdate',
+    path: 'record-goals-update',
     component: RecordsGoalsUpdatePageComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { expectedRole: ['root', 'admin', 'coordenador'] }
+    data: { expectedRole: ['root', 'admin', 'coordenador'] },
+    resolve: { recordGoalsData: RecordsGoalsUpdateResolver }
   },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
 

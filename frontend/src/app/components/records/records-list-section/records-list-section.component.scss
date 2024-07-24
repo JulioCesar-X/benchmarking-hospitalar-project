@@ -1,20 +1,20 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
-.whiteText{
-  color:$fill-white;
+.whiteText {
+  color: $fill-white;
 }
 
-.darkBlueBG{
+.darkBlueBG {
   background-color: $main-blue;
 }
 
-.borderBlue{
+.borderBlue {
   border: $main-blue 10px solid;
   border-radius: 2em;
 }
+
 .headingSection {
-  
   background-color: $fill-white;
   color: $main-blue;
   justify-content: center;
@@ -28,18 +28,16 @@
   }
 }
 
-.forms-container{
+.forms-container {
   box-sizing: border-box;
   background-color: $fill-white;
   border: $main-blue 10px solid;
-/*   height: 100%;
- *//*   border-top-left-radius: 1em;
-  border-top-right-radius: 1em; */
   max-height: 70vh;
 
   &.forms-container__error {
     border: $error-color 10px solid;
   }
+
   @media (max-width: 600px) {
     overflow-y: visible;
     height: auto;
@@ -60,25 +58,30 @@
   padding-inline: 1em;
   border: none;
 
-  &::placeholder{
+  &::placeholder {
     color: $main-blue;
   }
-  &:focus{
+
+  &:focus {
     outline: none;
     border: none;
     caret-color: $main-blue;
   }
-  &:disabled{
-    background-color: darken($lighter-main-blue,10);
+
+  &:disabled {
+    background-color: darken($lighter-main-blue, 10);
     border: none;
   }
-  &.inputContainer--input__error, .inputContainer--input__error:focus{
+
+  &.inputContainer--input__error,
+  .inputContainer--input__error:focus {
     outline: none;
     border: $error-red 2px solid;
     caret-color: $error-red;
     color: $error-red;
   }
-  &.inputContainer--input__error::placeholder{
+
+  &.inputContainer--input__error::placeholder {
     color: $error-red;
   }
 }
@@ -93,24 +96,26 @@
   color: $main-blue;
   border: $main-blue 2px solid;
   text-transform: uppercase;
-  /* use widht or padding-inline??? */
   margin-top: 0;
 }
-.forms-Button.isEditing{
+
+.forms-Button.isEditing {
   background-color: $main-dark-blue;
   border: $main-blue 2px solid;
   color: $fill-white;
-  margin-left: 2.3em; //para ajustar o positionamento do botao para alinhar com os outros que n estao com a classe isEditing
-
+  margin-left: 2.3em;
   animation: scale-animation 1.5s ease-in-out infinite;
 }
 
 @keyframes scale-animation {
-  0%, 100% {
-    transform: scale(1); 
+
+  0%,
+  100% {
+    transform: scale(1);
   }
+
   50% {
-    transform: scale(1.05); 
+    transform: scale(1.05);
   }
 }
 
@@ -130,22 +135,38 @@
   text-align: center;
   font-size: 1.5em;
 
-  th {
-    background-color: $main-dark-blue; // Use a cor desejada
-    color: $fill-white; // Use a cor desejada
-    font-weight: bold;
+  thead {
+    position: sticky;
+    top: 0;
+    background-color: $main-dark-blue;
+    z-index: 1;
+
   }
 
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
+  th {
+    background-color: $main-dark-blue;
+    color: $fill-white;
+    font-weight: bold;
+    padding: 2px;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid $secondary-blue;
   }
 
   tr:hover {
-    background-color: $lighter-main-blue;
+    background-color: lighten($darker-main-blue, 25%);
   }
 }
 
-.blueBtnBorder{
-  border-bottom: solid 2 px $main-dark-blue;
+.blueBtnBorder {
+  border-bottom: solid 2px $main-dark-blue;
 }
 
+.relative .dropdown {
+  z-index: 50;
+  position: absolute;
+  right: 0;
+  top: 100%;
+}

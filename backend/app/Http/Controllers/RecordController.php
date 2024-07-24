@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use App\Record;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use App\Mail\UpdateDataMail;
+use App\Record;
 use App\User;
 use Exception;
-use Illuminate\Support\Facades\Cache;
 
 class RecordController extends Controller
 {
     public function update(Request $request, Record $record)
     {
-        $validator = Validator::make($request->all(), [
-            'value' => 'required|numeric',
-            'date' => 'required|date_format:Y-m-d',
-        ]);
+        $validator = $this->validateRecord($request);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
@@ -26,56 +26,53 @@ class RecordController extends Controller
 
         try {
             $record->update($request->all());
-            $this->invalidateCache($record->sai->service_id, $record->sai->activity_id, $record->sai->indicator_id);
 
             $this->notifyRootIfNotNotified();
+            Cache::forget("record_{$record->id}");
 
             return response()->json($record, 200);
         } catch (Exception $exception) {
+            Log::error('Error updating record: ', ['exception' => $exception]);
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'value' => 'required|numeric',
-            'date' => 'required|date_format:Y-m-d',
-            'sai_id' => 'required|exists:sais,id'
-        ]);
+        $validator = $this->validateRecord($request);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
 
         try {
+            $existingRecord = Record::where('sai_id', $request->sai_id)
+                ->where('date', $request->date)
+                ->first();
+
+            if ($existingRecord) {
+                return response()->json(['error' => 'Record already exists for this date'], 409);
+            }
+
             $record = Record::create($request->all());
-            $this->invalidateCache($record->sai->service_id, $record->sai->activity_id, $record->sai->indicator_id);
 
             $this->notifyRootIfNotNotified();
+            Cache::forget("record_{$record->id}");
 
             return response()->json($record, 201);
         } catch (Exception $exception) {
+            Log::error('Error storing record: ', ['exception' => $exception]);
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
-    private function invalidateCache($serviceId, $activityId, $indicatorId)
+    private function validateRecord($request)
     {
-        $years = range(date('Y') - 5, date('Y'));
-        $months = range(1, 12);
-
-        foreach ($years as $year) {
-            foreach ($months as $month) {
-                Cache::forget("records_mensal_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
-                Cache::forget("records_anual_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
-                Cache::forget("records_last_year_{$serviceId}_{$activityId}_{$indicatorId}");
-                Cache::forget("variations_{$serviceId}_{$activityId}_{$indicatorId}_{$year}_{$month}");
-            }
-        }
-        Cache::forget("last_five_years_{$serviceId}_{$activityId}_{$indicatorId}");
-        Cache::forget("previous_year_total_{$serviceId}_{$activityId}_{$indicatorId}");
-        Cache::forget("current_year_total_{$serviceId}_{$activityId}_{$indicatorId}");
+        return Validator::make($request->all(), [
+            'value' => 'required|numeric',
+            'date' => 'required|date_format:Y-m-d',
+            'sai_id' => 'required|exists:sais,id'
+        ]);
     }
 
     private function notifyRootIfNotNotified()

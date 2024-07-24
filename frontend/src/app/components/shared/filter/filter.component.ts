@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { Service } from '../../../core/models/service.model';
 import { Activity } from '../../../core/models/activity.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 
 interface ActivityForFilter {
@@ -24,7 +25,13 @@ interface IndicatorForFilter {
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MatTooltipModule, FeedbackComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTooltipModule,
+    FeedbackComponent,
+    MatIconModule
+  ]
 })
 export class FilterComponent implements OnInit, OnChanges {
 
@@ -107,6 +114,8 @@ export class FilterComponent implements OnInit, OnChanges {
     const serviceId = Number(target.value);
     if (!isNaN(serviceId)) {
       this.selectedServiceId = serviceId;
+      this.selectedActivityId = undefined; // Reset activity
+      this.selectedIndicatorId = undefined; // Reset indicator
       this.updateActivityAndIndicatorSelections(serviceId);
     }
   }
@@ -127,10 +136,14 @@ export class FilterComponent implements OnInit, OnChanges {
           name: indicator.name
         })) || [];
       } else {
+        if (this.selectedActivityId) {
         this.activityService.showActivity(Number(this.selectedActivityId)).subscribe(activity => {
           this.activityCache.set(Number(this.selectedActivityId), activity);
           this.updateIndicatorSelection(activity);
         });
+        } else {
+          this.updateIndicatorSelection(undefined);
+        }
       }
     }
   }

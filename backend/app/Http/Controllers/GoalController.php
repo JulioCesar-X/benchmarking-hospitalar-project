@@ -10,15 +10,13 @@ use Illuminate\Support\Facades\Cache;
 use App\Goal;
 use App\User;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class GoalController extends Controller
 {
     public function update(Request $request, Goal $goal)
     {
-        $validator = Validator::make($request->all(), [
-            'target_value' => 'required|numeric',
-            'year' => 'required|integer|min:1900|max:2100'
-        ]);
+        $validator = $this->validateGoal($request);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
@@ -26,23 +24,18 @@ class GoalController extends Controller
 
         try {
             $goal->update($request->all());
-            $this->invalidateCache($goal->sai->service_id, $goal->sai->activity_id, $goal->sai->indicator_id);
-
             $this->notifyRootIfNotNotified();
-
+            Cache::forget("goal_{$goal->id}");
             return response()->json($goal, 200);
         } catch (Exception $exception) {
+            Log::error('Error updating goal: ', ['exception' => $exception]);
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'target_value' => 'required|numeric',
-            'year' => 'required|integer|min:1900|max:2100',
-            'sai_id' => 'required|exists:sais,id'
-        ]);
+        $validator = $this->validateGoal($request);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
@@ -50,34 +43,22 @@ class GoalController extends Controller
 
         try {
             $goal = Goal::create($request->all());
-            $this->invalidateCache($goal->sai->service_id, $goal->sai->activity_id, $goal->sai->indicator_id);
-
             $this->notifyRootIfNotNotified();
-
+            Cache::forget("goal_{$goal->id}");
             return response()->json($goal, 201);
         } catch (Exception $exception) {
+            Log::error('Error storing goal: ', ['exception' => $exception]);
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
-    private function invalidateCache($serviceId, $activityId, $indicatorId)
+    private function validateGoal($request)
     {
-        $years = range(date('Y') - 5, date('Y'));
-        $months = range(1, 12);
-
-        foreach ($years as $year) {
-            foreach ($months as $month) {
-                Cache::forget("records_mensal_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
-                Cache::forget("records_anual_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
-                Cache::forget("records_last_year_{$serviceId}_{$activityId}_{$indicatorId}");
-                Cache::forget("goals_mensal_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
-                Cache::forget("goal_anual_{$serviceId}_{$activityId}_{$indicatorId}_{$year}");
-                Cache::forget("variations_{$serviceId}_{$activityId}_{$indicatorId}_{$year}_{$month}");
-            }
-        }
-        Cache::forget("last_five_years_{$serviceId}_{$activityId}_{$indicatorId}");
-        Cache::forget("previous_year_total_{$serviceId}_{$activityId}_{$indicatorId}");
-        Cache::forget("current_year_total_{$serviceId}_{$activityId}_{$indicatorId}");
+        return Validator::make($request->all(), [
+            'target_value' => 'required|numeric',
+            'year' => 'required|integer|min:1900|max:2100',
+            'sai_id' => 'required|exists:sais,id'
+        ]);
     }
 
     private function notifyRootIfNotNotified()
