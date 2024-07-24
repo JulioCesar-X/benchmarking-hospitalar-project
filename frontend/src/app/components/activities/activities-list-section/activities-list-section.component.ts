@@ -1,19 +1,19 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { SelectableListComponent } from '../../shared/selectable-list/selectable-list.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
-import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { Activity } from '../../../core/models/activity.model';
 import { ActivityService } from '../../../core/services/activity/activity.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PaginatorComponent } from '../../shared/paginator/paginator.component';
+import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
 
 @Component({
   selector: 'app-activities-list-section',
@@ -22,15 +22,18 @@ import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
   standalone: true,
   imports: [
     CommonModule,
+    MatPaginatorModule,
     MatDialogModule,
     FormsModule,
     LoadingSpinnerComponent,
     PaginatorComponent,
-    SelectableListComponent,
     DialogContentComponent,
     MatTooltipModule,
     MatSortModule
-  ]
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
+  ],
 })
 export class ActivitiesListSectionComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() activities: Activity[] = [];

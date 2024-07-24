@@ -1,17 +1,23 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { Chart, ChartType, ChartData, ChartOptions, registerables } from 'chart.js';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
-Chart.register(...registerables);
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormsModule } from '@angular/forms';
+import { debounce } from 'lodash';
+
+Chart.register(...registerables);
+
 @Component({
   selector: 'app-charts',
   standalone: true,
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss'],
-  imports: [MatMenuModule, MatIconModule, MatButtonModule, CommonModule, MatTooltipModule]
+  imports: [MatMenuModule, MatIconModule, MatButtonModule, CommonModule, MatTooltipModule, MatCheckboxModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChartsComponent implements OnInit, OnChanges {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -23,9 +29,6 @@ export class ChartsComponent implements OnInit, OnChanges {
   @Input() month?: number;
 
   private chart: Chart | null = null;
-  private tooltipFixed: boolean = false;
-  private fixedTooltipIndex: number | null = null;
-
   private chartTypeMap: { [key: string]: ChartType } = {
     bar: 'bar',
     line: 'line',
@@ -46,28 +49,30 @@ export class ChartsComponent implements OnInit, OnChanges {
     quinary: 'rgb(165, 231, 240)',
     quinaryBg: 'rgba(165, 231, 240, 0.2)',
     octonary: 'rgb(167, 208, 208)',
-    octonaryBg: 'rgba(167, 208, 208, 0.2)'
+    octonaryBg: 'rgba(167, 208, 208, 0.2)',
+    red: 'rgb(218, 65, 103)',
+    redBg: 'rgba(255, 0, 0, 0.2)',
   };
 
-  constructor() { }
+  constructor() {
+    this.changeChartType = debounce(this.changeChartType.bind(this), 300); // Debounce to prevent rapid calls
+  }
 
   ngOnInit() {
     this.initializeChart(this.graphData);
-    if (this.month !== undefined) {
-      this.showFixedTooltip(this.month - 1);
-    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['graphData'] && changes['graphData'].currentValue !== changes['graphData'].previousValue) {
-      this.initializeChart(this.graphData);
-      if (this.month !== undefined) {
-        this.showFixedTooltip(this.month - 1);
-      }
+      console.log('Updating chart with new data:', changes['graphData'].currentValue); // Adicione este log
+      this.updateChart(this.graphData);
     }
   }
 
   initializeChart(data: any) {
+    if (!data) {
+      return;
+    }
     const { chartData, chartOptions } = this.getChartDataAndOptions(data);
     if (this.chart) {
       this.chart.destroy(); // Destroy existing chart instance if exists
@@ -77,32 +82,36 @@ export class ChartsComponent implements OnInit, OnChanges {
       data: chartData,
       options: chartOptions
     });
+  }
 
-    this.canvasRef.nativeElement.addEventListener('click', (event) => {
-      const points = this.chart!.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true);
-      if (points.length) {
-        const point = points[0];
-        if (this.tooltipFixed && this.fixedTooltipIndex === point.index) {
-          this.removeTooltip();
-        } else {
-          this.showFixedTooltip(point.index);
-        }
-      }
-    });
+  updateChart(data: any) {
+    if (!data) {
+      return;
+    }
+    if (this.chart) {
+      const { chartData, chartOptions } = this.getChartDataAndOptions(data);
+      this.chart.data = chartData;
+      this.chart.options = chartOptions;
+      this.chart.update();
+    }
   }
 
   changeChartType(type: string) {
     if (this.allowedChartTypes.includes(type)) {
       this.graphType = type;
-      this.initializeChart(this.graphData);
+      this.initializeChart(this.graphData); // Reinitialize chart to apply new type
     }
   }
 
   getChartDataAndOptions(data: any): { chartData: ChartData, chartOptions: ChartOptions } {
+    const highlightMonth = this.month !== undefined ? this.month - 1 : -1;
     let labels: string[] = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     let datasets: any[] = [];
     let chartOptions: ChartOptions = {
       maintainAspectRatio: false,
+      animation: {
+        duration: 300, // Adjust animation duration for smooth transitions
+      },
       scales: {
         y: {
           beginAtZero: true
@@ -129,52 +138,97 @@ export class ChartsComponent implements OnInit, OnChanges {
       }
     };
 
+    const defaultBackgroundColor = 'rgba(81, 107, 145, 0.5)';
+    const defaultBackgroundColor2Bar1 = 'rgba(81, 107, 145, 0.3)';
+    const defaultBackgroundColor2Bar2 = 'rgba(89, 196, 230, 0.3)';
+    const defaultBackgroundColor2BarRed2 = 'rgba(255, 0, 0, 0.3)';
+    const highlightBackgroundColor = this.chartColors.primary;
+    const highlightBackgroundColor2Bar1 = this.chartColors.primary;
+    const highlightBackgroundColor2Bar2 = this.chartColors.secondary;
+    const highlightBackgroundColorRed = this.chartColors.red;
+
+    const fillDataArray = (dataObj: any) => {
+      const filledArray = Array(12).fill(0);
+      if (dataObj && dataObj.hasData) {
+        Object.entries(dataObj.data).forEach(([month, value]: any) => {
+          filledArray[parseInt(month, 10) - 1] = value;
+        });
+      }
+      return filledArray;
+    };
+
     switch (this.graphType) {
       case 'bar':
         if (this.graphLabel === "Produção Mês") {
-          datasets = [{
-            label: 'Valor mês',
-            data: data || [],
-            backgroundColor: this.chartColors.primary
-          }];
+          datasets = [
+            {
+              label: 'Meta Mensal',
+              type: 'line',
+              data: fillDataArray(data[1]),
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
+            },
+            {
+              label: 'Valor mês',
+              data: fillDataArray(data[0]),
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor : defaultBackgroundColor;
+              }
+            }
+          ];
         } else {
-          datasets = [{
-            label: 'Valor mês',
-            data: data || [],
-            backgroundColor: this.chartColors.primary
-          }];
+          datasets = [
+            {
+              label: 'Valor mês',
+              data: fillDataArray(data),
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColorRed : defaultBackgroundColor2BarRed2;
+              }
+            }
+          ];
         }
         break;
 
       case 'line':
         if (this.graphLabel === "Produção Mês") {
-          datasets = [{
-            label: 'Valor mês',
-            data: data || [],
-            borderColor: this.chartColors.primary,
-            backgroundColor: this.chartColors.primaryBg,
-            fill: false
-          }];
+          datasets = [
+            {
+              label: 'Meta Mensal',
+              type: 'line',
+              data: fillDataArray(data[1]),
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
+            },
+            {
+              label: 'Valor mês',
+              data: fillDataArray(data[0]),
+              borderColor: this.chartColors.primary,
+              backgroundColor: this.chartColors.primaryBg,
+              fill: false
+            }
+          ];
         } else if (this.graphLabel === "Meta Mês") {
           datasets = [{
             label: 'Valor mês',
-            data: data || [],
-            borderColor: this.chartColors.primary,
-            backgroundColor: this.chartColors.primaryBg,
+            data: fillDataArray(data),
+            borderColor: this.chartColors.red,
+            backgroundColor: this.chartColors.redBg,
             fill: false
           }];
         } else if (this.graphLabel === "Comparação produção acumulada") {
           datasets = [
             {
               label: `${this.year}`,
-              data: data?.recordsAnual || [],
+              data: fillDataArray(data.recordsAnual),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: false
             },
             {
               label: `${this.year - 1}`,
-              data: data?.recordsAnualLastYear || [],
+              data: fillDataArray(data.recordsAnualLastYear),
               borderColor: this.chartColors.secondary,
               backgroundColor: this.chartColors.secondaryBg,
               fill: false
@@ -184,16 +238,16 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [
             {
               label: 'Produção',
-              data: data?.recordsAnual || [],
+              data: fillDataArray(data.recordsAnual),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: false
             },
             {
               label: 'Meta',
-              data: data?.goalsMensal || [],
-              borderColor: this.chartColors.secondary,
-              backgroundColor: this.chartColors.secondaryBg,
+              data: fillDataArray(data.goalsMensal),
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
               fill: false
             }
           ];
@@ -202,21 +256,32 @@ export class ChartsComponent implements OnInit, OnChanges {
 
       case 'area':
         if (this.graphLabel === "Produção Mês") {
-          datasets = [{
-            label: 'Valor mês',
-            data: data || [],
-            borderColor: this.chartColors.primary,
-            backgroundColor: this.chartColors.primaryBg,
-            fill: true
-          }];
+          datasets = [
+            {
+              label: 'Meta Mensal',
+              type: 'line',
+              data: fillDataArray(data[1]),
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
+            },
+            {
+              label: 'Valor mês',
+              data: fillDataArray(data[0]),
+              borderColor: this.chartColors.primary,
+              backgroundColor: this.chartColors.primaryBg,
+              fill: true
+            }
+          ];
         } else if (this.graphLabel === "Meta Mês") {
-          datasets = [{
-            label: 'Valor mês',
-            data: data || [],
-            borderColor: this.chartColors.primary,
-            backgroundColor: this.chartColors.primaryBg,
-            fill: true
-          }];
+          datasets = [
+            {
+              label: 'Valor mês',
+              data: fillDataArray(data),
+              borderColor: this.chartColors.red,
+              backgroundColor: this.chartColors.redBg,
+              fill: true
+            }
+          ];
         }
         break;
 
@@ -226,15 +291,21 @@ export class ChartsComponent implements OnInit, OnChanges {
           labels = [`Produção ${this.year}`, `Meta ${this.year}`];
           datasets = [
             {
-              data: [data?.currentYearTotal || 0, data?.goalAnual || 0],
-              backgroundColor: [this.chartColors.primary, this.chartColors.secondary]
+              data: [
+                data.currentYearTotal && data.currentYearTotal.hasData ? data.currentYearTotal.data : 0,
+                data.goalAnual && data.goalAnual.hasData ? data.goalAnual.data : 0
+              ],
+              backgroundColor: [this.chartColors.primary, this.chartColors.red]
             }
           ];
         } else if (this.graphLabel === "Comparação produção Total") {
           labels = [`Produção ${this.year}`, `Produção ${this.year - 1}`];
           datasets = [
             {
-              data: [data?.currentYearTotal || 0, data?.previousYearTotal || 0],
+              data: [
+                data.currentYearTotal && data.currentYearTotal.hasData ? data.currentYearTotal.data : 0,
+                data.previousYearTotal && data.previousYearTotal.hasData ? data.previousYearTotal.data : 0
+              ],
               backgroundColor: [this.chartColors.primary, this.chartColors.secondary]
             }
           ];
@@ -246,26 +317,38 @@ export class ChartsComponent implements OnInit, OnChanges {
           datasets = [
             {
               label: 'Produção',
-              data: data?.recordsAnual || [],
-              backgroundColor: this.chartColors.primary
+              data: fillDataArray(data.recordsAnual),
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor2Bar1;
+              }
             },
             {
               label: 'Metas',
-              data: data?.goalsMensal || [],
-              backgroundColor: this.chartColors.secondary
+              data: fillDataArray(data.goalsMensal),
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColorRed : defaultBackgroundColor2BarRed2;
+              }
             }
           ];
         } else if (this.graphLabel === "Comparação produção acumulada") {
           datasets = [
             {
               label: `${this.year}`,
-              data: data?.recordsAnual || [],
-              backgroundColor: this.chartColors.primary,
+              data: fillDataArray(data.recordsAnual),
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar1 : defaultBackgroundColor2Bar1;
+              }
             },
             {
               label: `${this.year - 1}`,
-              data: data?.recordsAnualLastYear || [],
-              backgroundColor: this.chartColors.secondary,
+              data: fillDataArray(data.recordsAnualLastYear),
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor2Bar2;
+              }
             }
           ];
         }
@@ -277,7 +360,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               type: 'line',
               label: `${this.year}`,
-              data: data?.recordsAnual || [],
+              data: fillDataArray(data.recordsAnual),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: false
@@ -285,9 +368,12 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               type: 'bar',
               label: `${this.year - 1}`,
-              data: data?.recordsAnualLastYear || [],
+              data: fillDataArray(data.recordsAnualLastYear),
               borderColor: this.chartColors.secondaryBg,
-              backgroundColor: this.chartColors.secondary,
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColor2Bar2 : defaultBackgroundColor2Bar2;
+              },
               fill: false
             }
           ];
@@ -296,7 +382,7 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               type: 'line',
               label: 'Produção',
-              data: data?.recordsAnual || [],
+              data: fillDataArray(data.recordsAnual),
               borderColor: this.chartColors.primary,
               backgroundColor: this.chartColors.primaryBg,
               fill: false
@@ -304,9 +390,12 @@ export class ChartsComponent implements OnInit, OnChanges {
             {
               type: 'bar',
               label: 'Meta',
-              data: data?.goalsMensal || [],
+              data: fillDataArray(data.goalsMensal),
               borderColor: this.chartColors.secondaryBg,
-              backgroundColor: this.chartColors.secondary,
+              backgroundColor: (ctx: any) => {
+                const index = ctx.dataIndex;
+                return index === highlightMonth ? highlightBackgroundColorRed : defaultBackgroundColor2BarRed2;
+              },
               fill: false
             }
           ];
@@ -339,36 +428,12 @@ export class ChartsComponent implements OnInit, OnChanges {
     return names[type] || type;
   }
 
-  showFixedTooltip(monthIndex: number) {
-    if (this.chart && this.chart.tooltip) {
-      const datasetIndex = 0;
-      const meta = this.chart.getDatasetMeta(datasetIndex);
-      const point = meta.data[monthIndex];
-
-      if (point) {
-        const eventPosition = {
-          x: point.x,
-          y: point.y
-        };
-
-        // Set the active elements and the event position for the tooltip
-        this.chart.tooltip.setActiveElements([{ datasetIndex, index: monthIndex }], eventPosition);
-
-        // Manually update the tooltip
-        this.chart.update();
-
-        this.tooltipFixed = true;
-        this.fixedTooltipIndex = monthIndex;
-      }
-    }
-  }
-
-  removeTooltip() {
-    if (this.chart && this.chart.tooltip) {
-      this.chart.tooltip.setActiveElements([], { x: 0, y: 0 });
-      this.chart.update();
-      this.tooltipFixed = false;
-      this.fixedTooltipIndex = null;
+  toggleMetaMensal(show: boolean) {
+    if (this.graphLabel !== 'Produção Mês') return; // Ensure this only applies to "Produção Mês"
+    const metaDataset = this.chart?.data.datasets.find(dataset => dataset.label === 'Meta Mensal');
+    if (metaDataset) {
+      metaDataset.hidden = !show;
+      this.chart?.update();
     }
   }
 }

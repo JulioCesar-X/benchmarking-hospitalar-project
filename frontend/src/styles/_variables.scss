@@ -7,7 +7,7 @@ $main-dark-blue: #283044;
 $secondary-blue: #EBF5EE;
 $khaki: #BFA89E;
 $cinereous: #8B786D;
-
+$lighter-main-blue: lighten($darker-main-blue, 25%);
 
 $error-red: #FE557D;
 $main-red: #FF5A5F;

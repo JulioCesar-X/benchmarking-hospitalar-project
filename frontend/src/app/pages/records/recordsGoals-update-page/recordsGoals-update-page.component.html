@@ -1,37 +1,21 @@
-<div>
-  <app-menu></app-menu>
+<div class="sticky-menu">
+  <app-menu [isManageDataSubMenuOpen]="true"></app-menu>
 </div>
 
-<div class="sm:mx-1 w-full flex flex-col gap-2 relative">
-  <app-filter
-    [showMonthInput]="selectedTab === 'Records'"
-    [indicatorsInput]="false"
-    [dataInsertedCheckbox]="true"
-    [showServiceInput]="true"
-    [showActivityInput]="true"
-    (filterEvent)="handleFilterData($event)"
-    (activityInputChange)="handleActivityInputChange($event)"
-  >
+<div class="sm:mx-1 w-full flex flex-col relative">
+  <app-filter [showMonthInput]="selectedTab === 'Records'" [indicatorsInput]="false" [dataInsertedCheckbox]="true"
+    [showServiceInput]="true" [showActivityInput]="true" (filterEvent)="handleFilterData($event)"
+    (activityInputChange)="handleActivityInputChange($event)">
   </app-filter>
 
-  <div
-    class="flex flex-col flex-1 gap-4 mt-2 mx-auto w-[100%] pb-4 shadow-md graphicsContainer"
-  >
+  <div class="flex flex-col flex-1 gap-4 mt-2 mx-auto w-[100%] pb-4 shadow-md graphicsContainer">
     <div class="tab-headers-wrapper">
       <div id="tabHead" class="flex items-center justify-between pr-2">
         <div id="tabHeaders" class="flex w-[30%]">
-          <button
-            class="tab-link"
-            [class.active]="selectedTab === 'Records'"
-            (click)="selectTab('Records')"
-          >
-            Records
+          <button class="tab-link" [class.active]="selectedTab === 'Records'" (click)="selectTab('Records')">
+            Registos
           </button>
-          <button
-            class="tab-link"
-            [class.active]="selectedTab === 'Metas'"
-            (click)="selectTab('Metas')"
-          >
+          <button class="tab-link" [class.active]="selectedTab === 'Metas'" (click)="selectTab('Metas')">
             Metas
           </button>
         </div>
@@ -39,18 +23,12 @@
     </div>
 
     <div class="flex-1" *ngIf="selectedTab === 'Records'">
-      <app-records-list-section
-        [indicators]="currentIndicators"
-        [isLoading]="isLoading"
-        [filter]="filter"
-      ></app-records-list-section>
+      <app-records-list-section [indicators]="currentIndicators" [isLoading]="isLoading"
+        [filter]="filter"></app-records-list-section>
     </div>
     <div class="flex-1" *ngIf="selectedTab === 'Metas'">
-      <app-goals-list-section
-        [indicators]="currentIndicators"
-        [isLoading]="isLoading"
-        [filter]="filter"
-      ></app-goals-list-section>
+      <app-goals-list-section [indicators]="currentIndicators" [isLoading]="isLoading"
+        [filter]="filter"></app-goals-list-section>
     </div>
   </div>
 </div>

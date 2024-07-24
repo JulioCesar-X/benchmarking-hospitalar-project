@@ -1,9 +1,54 @@
 <section class="timeline relative lightBlueBG" #timeline>
   <ul>
-    <li *ngFor="let item of timelineItems" [ngClass]="{'in-view': isElementInView(item)}">
-      <div>
-        <time>{{ item.title }}</time> {{ item.detail }}
+    <li *ngFor="let item of notifications" [id]="'notification-' + item.id" [ngClass]="{
+        'in-view': isElementInView(item),
+        'unread': !item.is_read,
+        'expanded': item.expanded,
+        'sent': item.type === 'sent',
+        'received': item.type === 'received',
+        'highlight': item.highlighted
+      }">
+      <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{
+          'expanded': item.expanded,
+          'sent-item': item.type === 'sent',
+          'received-item': item.type === 'received'
+        }">
+        <lord-icon *ngIf="item.response" class="icon" src="https://cdn.lordicon.com/lomfljuq.json" trigger="loop"
+          delay="1500" state="in-check" colors="primary:#FFFFFF" style="width:30px;height:30px">
+        </lord-icon>
+        <time>{{ item.created_at | date:'dd/MM/yyyy' }}</time>
+        <p class="text-base" *ngIf="item.type === 'received'">De: {{ item.sender }}</p>
+        <p class="text-base" *ngIf="item.type === 'sent'">Para: {{ item.receiver }}</p>
+        <p class="text-base" *ngIf="item.type === 'received'">Email: {{ item.sender_email }}</p>
+        <p class="text-base" *ngIf="item.type === 'sent'">Email: {{ item.receiver_email }}</p>
+        <p class="text-base">Assunto: {{ item.title }}</p>
+        <p class="text-base">Mensagem: {{ item.message }}</p>
+        <div *ngIf="item.expanded" class="notification-details">
+          <div class="notification-body">
+            <h3 class="text-base" >Resposta</h3>
+            <p *ngIf="item.response; else noResponse">{{ item.response }}</p>
+            <ng-template #noResponse  class="text-base"  >Sem resposta ainda.</ng-template>
+          </div>
+          <p *ngIf="item.updated_at" class="response-date tex-base ">respondido: {{ item.updated_at | date:'dd/MM/yyyy' }}</p>
+          <div *ngIf="!item.response && item.type === 'received'">
+            <textarea class="text-base" [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."
+              (click)="$event.stopPropagation()"></textarea>
+            <button class="text-base" *ngIf="!isLoading || item.id !== loadingItemId" class="send-button"
+              (click)="sendResponse(item, $event)">
+              Enviar Resposta
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                fill="#FFFFFF">
+                <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
+              </svg>
+            </button>
+            <div *ngIf="isLoading && item.id === loadingItemId" class="loading-circle">
+              <div class="spinner spinner_updateRecord-special"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </li>
   </ul>
+  <h2 class="text-center text-2xl font-bold blueTxt" *ngIf="notifications.length === 0">Sem notificações para mostrar</h2>
+  <app-feedback *ngIf="feedbackMessage" [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
 </section>

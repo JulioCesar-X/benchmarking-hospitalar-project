@@ -14,7 +14,26 @@
 }
 
 .modal-container {
-  @include forms-container();
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1em;
+  margin: 0 auto;
+  margin-block: 7em;
+  box-sizing: border-box;
+  padding: 2em;
+
+  border-radius: 1em;
+  border: $secondary-blue 7px solid;
+
+  background-color: $main-blue;
+
+
+  &.forms-container__error{
+    border: $error-color 7px solid;
+  }
+  
+
   align-items: start;
   width: 60%;
   max-width: 800px;
@@ -35,7 +54,6 @@
 .close-button {
 
   background-color: $main-red;
-  border: none;
   color: $fill-white;
   border-radius: 50%;
   font-size: 24px;
@@ -46,12 +64,16 @@
   justify-content: center;
   cursor: pointer;
   z-index: 99999;
-  margin-right: -7%;
-  margin-top: -15%;
+  margin-right: -4%;
+  margin-top: -7%;
   position: relative;
+  border:none;
 
   &:hover {
     background-color: darken($main-red, 10%);
+  }
+  &:focus, .active{
+    border:none;
   }
 }
 
@@ -61,4 +83,13 @@
 
 .forms-Button {
   @include forms-Button();
+}
+
+.custom-button {
+  background-color: $darker-main-blue !important;
+  color: $fill-white !important;
+  border-color: $main-dark-blue !important;
+  &:hover {
+    background-color: darken($darker-main-blue, 10%) !important;
+  }
 }

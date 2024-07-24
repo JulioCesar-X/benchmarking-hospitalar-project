@@ -1,44 +1,19 @@
-
-@import '../../../../styles/_variables.scss';
-@import 'tailwindcss/base';
+@import "../../../../styles/_variables.scss";
+@import "tailwindcss/base";
 
 .logo {
   height: 50px;
 }
-
-.content{
-  padding-right: 1em;
-  padding-left: 4em;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 1em;
-
-  background-color: $main-blue;
+.txtWhite {
   color: $fill-white;
-  clip-path: polygon(0 100%, 10% 0, 100% 0, 100% 100%);
-
-  span{
-    font-size: 1em;
-    text-align: end;
-  }
 }
 
-.background-svg {
+.customBackground-svg {
   fill: $main-blue;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; 
-}
-
-@media (max-width: 600px){
-  .content{
-    padding-left: 2em;
-    span{
-      font-size: 0.5em;
-    }
-  }
+  z-index: -1;
 }

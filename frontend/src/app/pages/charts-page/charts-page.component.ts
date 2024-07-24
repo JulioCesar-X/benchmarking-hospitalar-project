@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IndicatorService } from '../../core/services/indicator/indicator.service';
@@ -18,7 +18,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MenuComponent } from '../../components/shared/menu/menu.component';
 
-
 @Component({
   selector: 'app-charts-page',
   standalone: true,
@@ -29,10 +28,9 @@ import { MenuComponent } from '../../components/shared/menu/menu.component';
     ChartsComponent,
     MatMenuModule,
     LoadingSpinnerComponent,
-    MatMenuModule,
     MatIconModule,
     MatButtonModule,
-    MenuComponent
+    MenuComponent, 
   ],
   templateUrl: './charts-page.component.html',
   styleUrls: ['./charts-page.component.scss']
@@ -59,35 +57,49 @@ export class ChartsPageComponent implements OnInit {
   constructor(
     private indicatorService: IndicatorService,
     private authService: AuthService,
-    private route: ActivatedRoute
-  ) { }
+    private route: ActivatedRoute){ }
 
   ngOnInit(): void {
     const role = this.authService.getRole();
     this.isAdminOrCoordinator = role === 'admin' || role === 'coordenador';
 
+    // Access the resolved data
+    const resolvedData = this.route.snapshot.data['chartData'];
+    if (resolvedData) {
+      this.graphData = resolvedData.data;
+      this.filter = resolvedData.filter;
+    }
+
     this.route.params.subscribe(params => {
-      this.filter.serviceId = +params['serviceId'] || this.filter.serviceId;
-      this.loadGraphData();
+      const serviceId = +params['serviceId'];
+      if (serviceId) {
+        this.filter.serviceId = serviceId;
+        this.loadGraphData();
+      }
     });
 
     this.filterSubject.pipe(
       debounceTime(300),
       switchMap(filter => {
         this.setLoadingStates(true);
+        console.log('Loading data with filter:', { ...this.filter, ...filter }); // Adicionando log
         return this.indicatorService.getAllData({ ...this.filter, ...filter });
       })
     ).subscribe({
       next: (data) => {
+        console.log('Data received from API:', data);
         this.graphData = data;
-        console.log('Dados do gráfico:', this.graphData);
+        this.verifyAndLogGraphData();
         this.setLoadingStates(false);
         this.loadIndicatorName();
       },
       error: (error) => {
         this.setLoadingStates(false);
+        console.error('Error loading graph data:', error);
       }
     });
+
+    this.loadIndicatorName(); // Initial load
   }
 
   loadGraphData(): void {
@@ -113,7 +125,7 @@ export class ChartsPageComponent implements OnInit {
   getRole() {
     return this.authService.getRole();
   }
-  
+
   numberToMonth(monthNumber: number | undefined): string {
     const months = [
       "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -147,11 +159,26 @@ export class ChartsPageComponent implements OnInit {
     }
   }
 
+  verifyAndLogGraphData(): void {
+    console.log('Verifying and logging graph data...');
+    console.log('recordsMensal:', this.graphData.recordsMensal);
+    console.log('recordsAnual:', this.graphData.recordsAnual);
+    console.log('recordsAnualLastYear:', this.graphData.recordsAnualLastYear);
+    console.log('goalsMensal:', this.graphData.goalsMensal);
+    console.log('goalMes:', this.graphData.goalMes);
+    console.log('goalAnual:', this.graphData.goalAnual);
+    console.log('previousYearTotal:', this.graphData.previousYearTotal);
+    console.log('currentYearTotal:', this.graphData.currentYearTotal);
+    console.log('variations:', this.graphData.variations);
+  }
+
   exportToPdf(): void {
     const element = document.querySelector('.graphicsContainer') as HTMLElement;
     if (element) {
       console.log('Elemento .graphicsContainer encontrado.');
-      html2canvas(element).then(canvas => {
+
+      // Ajustar a escala para melhorar a qualidade da imagem
+      html2canvas(element, { scale: 2 }).then(canvas => {
         console.log('Canvas gerado com sucesso.');
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
@@ -160,26 +187,32 @@ export class ChartsPageComponent implements OnInit {
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
 
-        // Variables to track the current height on the PDF and the current position on the canvas
-        let currentPdfHeight = 80; // Start after the header
+        let currentPdfHeight = 10;
+        const pageMargin = 10;
         let srcY = 0;
 
-        // Add header information only on the first page
+        // Adicionar texto ao PDF
         pdf.setFontSize(11);
-        pdf.text('Benchmarking Hospitais - Desempenho Assistencial', pdfWidth / 2, 10, { align: 'center' });
+        pdf.text('Benchmarking Hospitais - Desempenho Assistencial', pdfWidth / 2, currentPdfHeight, { align: 'center' });
+        currentPdfHeight += 10; // Ajustar altura após o texto
         pdf.setFontSize(9);
-        pdf.text(`Serviço: ${this.serviceName || 'N/A'}`, 10, 20);
-        pdf.text(`Atividade: ${this.activityName || 'N/A'}`, 10, 30);
-        pdf.text(`Indicador: ${this.indicatorName || 'N/A'}`, 10, 40);
-        pdf.text(`Tempo: ${this.filter.year}${(this.filter.month ?? 0).toString().padStart(2, '0')}`, 10, 50);
-        pdf.text('Dados publicados a:', 10, 60);
-        pdf.text(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 10, 70);
+        pdf.text(`Serviço: ${this.serviceName || 'N/A'}`, pageMargin, currentPdfHeight);
+        currentPdfHeight += 10;
+        pdf.text(`Atividade: ${this.activityName || 'N/A'}`, pageMargin, currentPdfHeight);
+        currentPdfHeight += 10;
+        pdf.text(`Indicador: ${this.indicatorName || 'N/A'}`, pageMargin, currentPdfHeight);
+        currentPdfHeight += 10;
+        pdf.text(`Tempo: ${this.filter.year}${(this.filter.month ?? 0).toString().padStart(2, '0')}`, pageMargin, currentPdfHeight);
+        currentPdfHeight += 10;
+        pdf.text('Dados publicados a:', pageMargin, currentPdfHeight);
+        pdf.text(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, pageMargin, currentPdfHeight + 10);
+        currentPdfHeight += 20;
 
+        // Adicionar imagem ao PDF
         const remainingHeight = canvasHeight - srcY;
-        const pdfRemainingHeight = pdfHeight - currentPdfHeight;
+        const pdfRemainingHeight = pdfHeight - currentPdfHeight - pageMargin;
         const srcHeight = Math.min(remainingHeight, (pdfRemainingHeight * canvasWidth) / pdfWidth);
-        pdf.addImage(imgData, 'PNG', 0, currentPdfHeight, pdfWidth, (srcHeight * pdfWidth) / canvasWidth, undefined, 'FAST', 0);
-
+        pdf.addImage(imgData, 'PNG', 0, currentPdfHeight, pdfWidth, (srcHeight * pdfWidth) / canvasWidth, undefined, 'SLOW', 0);
 
         console.log('Imagem adicionada ao PDF.');
         pdf.save('graficos.pdf');
@@ -192,7 +225,6 @@ export class ChartsPageComponent implements OnInit {
     }
   }
 
-
   exportToExcel(): void {
     if (this.filter.year === undefined || this.filter.month === undefined) {
       console.error('Ano ou mês não está definido.');
@@ -202,7 +234,7 @@ export class ChartsPageComponent implements OnInit {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('DadosGraficos');
 
-    //Adicionar cabeçalhos e subtítulos
+    // Adicionar cabeçalhos e subtítulos
     worksheet.mergeCells('A1:F1');
     worksheet.getCell('A1').value = `Dados publicados a ${this.filter.year}${(this.filter.month ?? 0).toString()}`;
     worksheet.getCell('A1').font = { bold: true };
@@ -219,10 +251,13 @@ export class ChartsPageComponent implements OnInit {
     worksheet.getCell('A4').value = `Indicador: ${this.indicatorName}`;
     worksheet.getCell('A4').font = { bold: true };
 
-    worksheet.mergeCells('A5:F5');
-    worksheet.getCell('A5').value = `Tempo: ${this.filter.year}${(this.filter.month ?? 0).toString().padStart(2, '0')}`;
-    worksheet.getCell('A5').font = { bold: true };
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const formattedTime = currentDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
+    worksheet.mergeCells('A5:F5');
+    worksheet.getCell('A5').value = `Data: ${formattedDate} ${formattedTime}`;
+    worksheet.getCell('A5').font = { bold: true };
     worksheet.mergeCells('A6:F6');
     worksheet.getCell('A6').value = '(Valores acumulados)';
     worksheet.getCell('A6').font = { bold: true };
@@ -237,7 +272,7 @@ export class ChartsPageComponent implements OnInit {
     ];
 
     // Adiciona uma linha para os cabeçalhos das colunas
-    worksheet.addRow({
+    const headerRow = worksheet.addRow({
       tipo: 'Tipo de Dado',
       departamento: 'Departamento',
       ano: 'Ano',
@@ -245,43 +280,69 @@ export class ChartsPageComponent implements OnInit {
       valor: 'Valor',
     });
 
-    // Exemplo de dados para Departamento
+    // Adiciona filtro aos cabeçalhos
+    worksheet.autoFilter = {
+      from: 'A7',
+      to: 'E7',
+    };
+
     const departamento = 'Departamento de Psiquiatria';
 
+    console.log('Dados do gráfico:', this.graphData);
+
+    // Função para adicionar dados ao worksheet
+    const addDataToWorksheet = (dataObj: any, tipo: string, ano: number, departamento: string) => {
+      if (dataObj && dataObj.data) {
+        Object.keys(dataObj.data).forEach((key) => {
+          worksheet.addRow({
+            tipo: tipo,
+            departamento: departamento,
+            ano: ano,
+            mes: key,
+            valor: dataObj.data[key],
+          });
+        });
+      }
+    };
+
     // Adiciona dados de produção mensal
-    (this.graphData.recordsMensal || []).forEach((value: number, index: number) => {
-      worksheet.addRow({ tipo: 'Produção Mês', departamento, ano: this.filter.year, mes: index + 1, valor: value, indice: 1 });
-    });
+    addDataToWorksheet(this.graphData.recordsMensal, 'Produção Mês', this.filter.year, departamento);
 
     // Adiciona dados de produção anual
-    (this.graphData.recordsAnual || []).forEach((value: number, index: number) => {
-      worksheet.addRow({ tipo: 'Produção Acumulada', departamento, ano: this.filter.year, mes: index + 1, valor: value, indice: 1 });
-    });
+    addDataToWorksheet(this.graphData.recordsAnual, 'Produção Acumulada', this.filter.year, departamento);
 
     // Adiciona dados de produção do ano anterior
-    (this.graphData.recordsAnualLastYear || []).forEach((value: number, index: number) => {
-      worksheet.addRow({ tipo: 'Produção Acumulada (Ano Anterior)', departamento, ano: (this.filter.year ?? 0) - 1, mes: index + 1, valor: value, indice: 1 });
-    });
+    addDataToWorksheet(this.graphData.recordsAnualLastYear, 'Produção Acumulada (Ano Anterior)', this.filter.year - 1, departamento);
 
     // Adiciona metas mensais
-    (this.graphData.goalsMensal || []).forEach((value: number, index: number) => {
-      worksheet.addRow({ tipo: 'Meta Mês', departamento, ano: this.filter.year, mes: index + 1, valor: value, indice: 1 });
-    });
+    addDataToWorksheet(this.graphData.goalsMensal, 'Meta Mês', this.filter.year, departamento);
 
     // Adiciona meta anual
-    worksheet.addRow({ tipo: 'Meta Ano', departamento, ano: this.filter.year, mes: '', valor: this.graphData.goalAnual ?? 0, indice: 1 });
-
-    // Adiciona dados dos últimos cinco anos
-    (this.graphData.lastFiveYears || []).forEach((item: any) => {
-      worksheet.addRow({ tipo: 'Produção Últimos 5 Anos', departamento, ano: item.year, mes: '', valor: item.total, indice: 1 });
+    worksheet.addRow({
+      tipo: 'Meta Ano',
+      departamento: departamento,
+      ano: this.filter.year,
+      mes: '',
+      valor: this.graphData.goalAnual?.data ?? 0,
     });
 
     // Adiciona totais de anos anteriores e atuais
-    worksheet.addRow({ tipo: 'Total Ano Anterior', departamento, ano: (this.filter.year ?? 0) - 1, mes: '', valor: this.graphData.previousYearTotal ?? 0, indice: 1 });
-    worksheet.addRow({ tipo: 'Total Ano Atual', departamento, ano: this.filter.year, mes: '', valor: this.graphData.currentYearTotal ?? 0, indice: 1 });
+    worksheet.addRow({
+      tipo: 'Total Ano Anterior',
+      departamento: departamento,
+      ano: this.filter.year - 1,
+      mes: '',
+      valor: this.graphData.previousYearTotal?.data ?? 0,
+    });
+    worksheet.addRow({
+      tipo: 'Total Ano Atual',
+      departamento: departamento,
+      ano: this.filter.year,
+      mes: '',
+      valor: this.graphData.currentYearTotal?.data ?? 0,
+    });
 
     // Formatação de cabeçalhos
-    const headerRow = worksheet.getRow(7);
     headerRow.eachCell((cell) => {
       cell.font = { bold: true };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -308,7 +369,7 @@ export class ChartsPageComponent implements OnInit {
       a.href = url;
       a.download = 'dados_graficos.xlsx';
       a.click();
-      // window.URL.revokeObjectURL(url);
+      window.location.href = window.location.href; // Redireciona para a mesma página
     }).catch((error) => {
       console.error('Erro ao gerar o arquivo Excel:', error);
     });

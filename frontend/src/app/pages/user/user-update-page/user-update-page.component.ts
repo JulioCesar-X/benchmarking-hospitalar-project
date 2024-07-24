@@ -21,6 +21,7 @@ export class UserUpdatePageComponent implements OnInit {
     name: '',
     email: '',
     password: '',
+    nif: '',
     role_id: 0,
     roles: []
   };

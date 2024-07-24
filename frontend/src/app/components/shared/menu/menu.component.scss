@@ -1,5 +1,6 @@
 @import "../../../../styles/_variables.scss";
 
+
 .icon-login {
   transform: scale(2);
 }
@@ -66,12 +67,12 @@
   margin-top: 1em;
   display: flex;
   flex-direction: column;
-
   gap: 0.5em;
 }
 
 .dashboardOptionsContainer.is-open {
-  animation: showOptions 200ms ease-in forwards;
+  max-width: 20px;
+  animation: showOptions 200ms ease-in forwards 200ms;
 }
 .dashboardOptionsContainer.is-closed {
   animation: hideOptions 200ms ease-in forwards;
@@ -89,19 +90,25 @@
   }
   @keyframes showOptions {
     from {
+      max-width: 20px;
+
       opacity: 0;
     }
     to {
       opacity: 1;
+      max-width: 190px;
     }
   }
 
 .titleSection.is-open {
-  animation: showOptions 200ms ease-in forwards;
+  max-width: 20px;
+
+  animation: showOptions 200ms ease-in forwards 200ms;
 }
 .titleSection.is-closed {
   animation: hideOptions 200ms ease-in forwards;
 }
+
 
 .dashboardHeader {
   display: flex;
@@ -123,7 +130,7 @@
 }
 
 .dashboardOption {
-  font-size: 1.1em;
+  font-size: 1.4em;
 
 
   cursor: pointer;
@@ -144,7 +151,7 @@
 }
 .dashboardOption.is-open,
 .dashboardOption:hover {
-  background-color: $secondary-blue;
+  background-color: $lighter-main-blue;
   color: $main-blue;
 
   .plusIcon::before,
@@ -156,7 +163,7 @@
 .subMenu {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 0);
   margin-top: -0.3em;
-  background-color: $secondary-blue;
+  background-color: $lighter-main-blue;
   flex-direction: column;
   padding-block: 1em;
   padding-right: 2em;
@@ -172,9 +179,8 @@
 
   a {
     cursor: pointer;
-    text-decoration: none;
     color: $main-blue;
-    font-size: 0.85em;
+    font-size: 1.20em;
   }
   a:hover {
     text-decoration: underline;
@@ -258,3 +264,40 @@
         display: block;
     }
 } */
+
+.Ativo{
+  font-weight: bold;
+  font-style: italic;
+  text-decoration: underline;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1200;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.107);
+}
+
+.modal.show {
+  display: block;
+}
+
+.forms-container {
+  box-sizing: border-box;
+  background-color: $main-blue;
+  border: $secondary-blue 7px solid;
+
+  &.forms-container__error {
+    border: $error-color 7px solid;
+  }
+
+  @media (max-width: 640px) {
+    margin-block: 2em;
+    width: 90%;
+  }
+}

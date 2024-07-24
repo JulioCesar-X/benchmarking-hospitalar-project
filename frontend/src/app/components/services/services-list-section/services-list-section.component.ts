@@ -1,18 +1,18 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { PageEvent } from '@angular/material/paginator';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
-import { MatDialogModule } from '@angular/material/dialog';
-import { SelectableListComponent } from '../../shared/selectable-list/selectable-list.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
-import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CardComponent } from '../../shared/card/card.component';
 import { Service } from '../../../core/models/service.model';
 import { ServiceService } from '../../../core/services/service/service.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PaginatorComponent } from '../../shared/paginator/paginator.component';
+import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
 
 @Component({
   selector: 'app-services-list-section',
@@ -21,15 +21,19 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   standalone: true,
   imports: [
     CommonModule,
+    MatPaginatorModule,
     MatDialogModule,
     FormsModule,
     LoadingSpinnerComponent,
     PaginatorComponent,
-    SelectableListComponent,
     DialogContentComponent,
     CardComponent,
-    MatTooltipModule
-  ]
+    MatTooltipModule, 
+    FeedbackComponent
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
+  ],
 })
 export class ServicesListSectionComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() services: Service[] = [];
@@ -40,6 +44,9 @@ export class ServicesListSectionComponent implements OnInit, OnChanges, AfterVie
   totalLength = 0;
   allServices: Service[] = []; // Armazena todos os dados carregados
   loadedPages: Set<number> = new Set();
+
+  notificationMessage: string = '';
+  notificationType: 'success' | 'error' = 'success';
 
   constructor(
     private serviceService: ServiceService,
@@ -80,6 +87,7 @@ export class ServicesListSectionComponent implements OnInit, OnChanges, AfterVie
         this.isLoading = false;
       },
       error: (error) => {
+        this.setNotification('Error loading paginated services', 'error');
         console.error('Error loading paginated services:', error);
         this.isLoading = false;
       }
@@ -108,12 +116,18 @@ export class ServicesListSectionComponent implements OnInit, OnChanges, AfterVie
   }
 
   deleteService(serviceId: number): void {
+    this.isLoading = true;
     this.serviceService.destroyService(serviceId).subscribe({
       next: (data) => {
+        this.setNotification('Serviço excluído com sucesso', 'success');
         this.loadServices(this.currentPage, this.pageSize);
       },
       error: (error) => {
+        this.setNotification('Erro ao excluir serviço', 'error');
         console.error("Error deleting service:", error);
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
@@ -135,5 +149,13 @@ export class ServicesListSectionComponent implements OnInit, OnChanges, AfterVie
     const startIndex = this.currentPage * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.services = this.allServices.slice(startIndex, endIndex);
+  }
+
+  setNotification(message: string, type: 'success' | 'error') {
+    this.notificationMessage = message;
+    this.notificationType = type;
+    setTimeout(() => {
+      this.notificationMessage = '';
+    }, 2000);
   }
 }

@@ -16,6 +16,7 @@ class RoleSeeder extends Seeder
             ['role_name' => 'Admin', 'created_at' => now(), 'updated_at' => now()],
             ['role_name' => 'Coordenador', 'created_at' => now(), 'updated_at' => now()],
             ['role_name' => 'User', 'created_at' => now(), 'updated_at' => now()],
+            ['role_name' => 'Root', 'created_at' => now(), 'updated_at' => now()]
         ]);
     }
 }

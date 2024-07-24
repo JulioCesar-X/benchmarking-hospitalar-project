@@ -9,4 +9,8 @@ export interface Indicator {
   activity_ids?: number[];
   service_ids?: number[];
   sais?: Sai[];
+  associations?: { service_id: number, activity_id: number }[];
+  desassociations?: { sai_id: number }[];
 }
+
+export type CreateIndicator = Omit<Indicator, 'id'>;

@@ -2,26 +2,79 @@
 
 :host {
   position: relative;
-    flex: 1;
-    display: flex;
-  } @media(max-width:600px){
-    :host{
-        flex-direction: column;
-        gap:0.5em;
-    }
-  
-    .sticky-menu {
-      position: -webkit-sticky; 
-      position: sticky;
-      top: 60px; 
-    }
+  flex: 1;
+  display: flex;
+}
+
+@media(max-width: 600px) {
+  :host {
+    flex-direction: column;
+    gap: 0.5em;
   }
 
-  .blueBG {
-    background-color: $main-blue;
+  .sticky-menu {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 60px;
   }
-.whiteTxt{
-    color: $fill-white;
-    font-size: 3em;
-    text-align: center;
 }
+
+.blueBG {
+  background-color: $main-blue;
+}
+
+.whiteTxt {
+  color: $fill-white;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.tab-headers-wrapper{
+  background-color: $darker-main-blue;
+  font-size: 1em;
+}
+.tab-headers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
+
+
+} @media(max-width:600px){
+  .tab-headers{
+      width: 50%;
+      margin-left: 4em;
+  }
+}
+
+.tab-link {
+  color: $lighter-main-blue;
+  width: 100%;
+  border: 2px solid $lighter-main-blue;
+  background-color: $darker-main-blue;
+  outline: none;
+  cursor: pointer;
+  padding: 0.5em;
+  transition: 0.3s;
+
+}
+
+.tab-link:hover, .tab-link.active:hover {
+  background-color: darken($main-blue, 10);
+}
+
+.tab-link.active {
+  background-color: $main-blue;
+}
+
+// Custom tooltip styles
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
+  font-size: 1em !important;
+}
+::ng-deep .custom div{
+  padding: 1em;
+  background-color: $main-dark-blue !important;
+}
+::ng-deep .custom div div{
+  font-size: 2em;
+} 

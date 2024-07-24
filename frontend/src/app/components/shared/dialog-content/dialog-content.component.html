@@ -1,11 +1,13 @@
 <div class="modal" [ngClass]="{'show': true}" (click)="closeModal()">
   <div class="modal-container" (click)="$event.stopPropagation()">
-    <div class="modalHeader">
-      <h2>{{ message }}</h2>
+    <div class="modalHeader" *ngIf="!isLoading" >
+      <h2  class="text-base">{{ message }}</h2>
       <button class="close-button" (click)="closeModal()">&times;</button>
     </div>
-    <button (click)="confirmAction()" type="submit" class="forms-Button" [disabled]="isLoading">Confirmar</button>
-    <app-loading-spinner *ngIf="isLoading" [message]="loadingMessage"></app-loading-spinner>
+
+    <button *ngIf="!isLoading" mat-raised-button (click)="confirmAction()" type="submit" class="custom-button"> Confirmar
+    </button>
+    <app-loading-spinner class="mx-auto" *ngIf="isLoading" [message]="loadingMessage" [isForBlueBG]="true"></app-loading-spinner>
     <app-feedback *ngIf="feedbackMessage" [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
   </div>
 </div>

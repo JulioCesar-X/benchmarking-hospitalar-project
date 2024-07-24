@@ -2,11 +2,12 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild, AfterVie
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PaginatorComponent } from '../../shared/paginator/paginator.component';
+import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
 import { UserService } from '../../../core/services/user/user.service';
 import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
-import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,6 +21,7 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./users-list-section.component.scss'],
   standalone: true,
   imports: [
+    MatPaginatorModule,
     CommonModule,
     FormsModule,
     LoadingSpinnerComponent,
@@ -29,6 +31,9 @@ import { MatTableDataSource } from '@angular/material/table';
     MatTooltipModule,
     MatIconModule,
     MatSortModule,
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
   ],
 })
 export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewInit {
@@ -58,6 +63,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
       this.allUsers = this.users.slice();
       this.updateDataSource();
     }
+    
   }
 
   ngOnChanges(changes: SimpleChanges): void {

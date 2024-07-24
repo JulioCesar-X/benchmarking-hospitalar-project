@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-
 Route::group(['middleware' => 'throttle:10000,1'], function () {
+    Route::post('/verify-reset-token', 'AuthController@verifyResetToken');
     Route::post('/login', 'AuthController@login');
     Route::post('/forgot-password', 'AuthController@forgotPassword');
     Route::post('/reset-password', 'AuthController@resetPassword')->name('password.reset');
@@ -13,14 +13,19 @@ Route::group(['middleware' => 'throttle:10000,1'], function () {
     Route::get('services/search', 'ServiceController@search');
     Route::get('services/{id}', 'ServiceController@show');
 
-    
     Route::get('indicators', 'IndicatorController@index');
 });
 
 Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
-    Route::post('/register', 'AuthController@register');
+
+    Route::get('notifications/unread', 'NotificationController@getUnreadNotifications');
+    Route::patch('notifications/{id}/mark-as-read', 'NotificationController@markAsRead');
+    Route::patch('notifications/{id}/respond', 'NotificationController@respondToNotification');
+    Route::get('notifications/sent', 'NotificationController@getAllNotificationSent');
+    Route::get('notifications/received', 'NotificationController@getAllNotificationReceived');
+    Route::apiResource('notifications', 'NotificationController');
+
     Route::post('/logout', 'AuthController@logout');
-    Route::get('activities/search', 'ActivityController@search');
 
     Route::get('indicators/sai/records-mensal', 'IndicatorController@getRecordsMensal');
     Route::get('indicators/sai/records-anual', 'IndicatorController@getRecordsAnual');
@@ -37,11 +42,12 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::get('indicators/paginated', 'IndicatorController@getIndicatorsPaginated');
     Route::get('indicators/{id}', 'IndicatorController@show');
 
-    
+    Route::get('activities/search', 'ActivityController@search');
     Route::get('activities/paginated', 'ActivityController@getActivitiesPaginated');
     Route::apiResource('activities', 'ActivityController');
 
     Route::apiResource('goals', 'GoalController');
+    Route::apiResource('records', 'RecordController');
 
     Route::get('/indicators/sai/records', 'IndicatorController@getIndicatorsRecords');
     Route::get('/indicators/sai/goals', 'IndicatorController@getIndicatorsGoals');
@@ -50,17 +56,16 @@ Route::middleware(['auth:sanctum', 'throttle:10000,1'])->group(function () {
     Route::put('indicators/{id}', 'IndicatorController@update');
     Route::delete('indicators/{id}', 'IndicatorController@destroy');
 
-    Route::get('notifications/received', 'NotificationController@getAllNotificationReceived');
-    Route::apiResource('notifications', 'NotificationController');
-    Route::apiResource('records', 'RecordController');
-
     Route::post('services', 'ServiceController@store');
+    Route::get('services/first-valid', 'ServiceController@getFirstValidService');
+    Route::post('services/update-order', 'ServiceController@updateOrder');
     Route::put('services/{id}', 'ServiceController@update');
     Route::delete('services/{id}', 'ServiceController@destroy');
 
+    Route::patch('users/{id}/update-role-user', 'UserController@updateRoleUser');
     Route::get('users/paginated', 'UserController@getUsersPaginated');
+    Route::get('users/current', 'UserController@showCurrentUser');
+    Route::post('users/{id}/reset-password-default', 'UserController@resetPassword');
     Route::get('users/search', 'UserController@search');
     Route::apiResource('users', 'UserController');
-    
-
 });

@@ -1,19 +1,47 @@
 <div class="w-full relative">
-  <div class="headingSection">
-    <h1 class="headingTitle">Departamento Psiquiatria</h1>
+  <div class="w-full headingSection">
+    <h1 class="w-[30%] ml-5 headingTitle">Departamento Psiquiatria</h1>
   </div>
-  <div class="homepageCardsSections">
-    <div class="card" *ngFor="let service of displayedServices" (click)="goToDescription(service.id)">
-      <div class="cardImg">
-        <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
+  <div class="homepageCardsSections" (mouseleave)="showNavButtons = true" (mouseenter)="showNavButtons = false" cdkDropList (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let service of displayedServices" cdkDrag >
+      <div *ngIf="userRole === 'admin' || userRole === 'root'; else noDrag">
+        <div class="card" (click)="goToDescription(service.id)">
+          <div class="cardImg">
+            <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
+          </div>
+          <div class="card__content">
+            <div class="card__content-inner">
+              <div class="cardText text-xl">
+                <p class="card__title">{{ service.service_name }}</p>
+              </div>
+              <div class="p-5" *ngIf="loadingServiceId === service.id">
+                <lord-icon src="https://cdn.lordicon.com/lqxfrxad.json" trigger="loop" colors="primary:#ffffff" style="width:150px;height:150px;"></lord-icon>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="cardText">
-        <p>{{ service.service_name }}</p>
-      </div>
+      <ng-template #noDrag>
+        <div class="card" (click)="goToDescription(service.id)">
+          <div class="cardImg">
+            <img [src]="service.image_url" class="imgSize" alt="{{ service.service_name }}">
+          </div>
+          <div class="card__content">
+            <div class="card__content-inner">
+              <div class="cardText text-xl">
+                <p class="card__title">{{ service.service_name }}</p>
+              </div>
+              <div class="p-5" *ngIf="loadingServiceId === service.id">
+                <lord-icon src="https://cdn.lordicon.com/lqxfrxad.json" trigger="loop" colors="primary:#ffffff" style="width:150px;height:150px;"></lord-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
     </div>
   </div>
 
-  <div *ngIf="isLoading || !displayedServices.length" class="random-demo">
+  <div *ngIf="isLoading && displayedServices.length <= 0" class="random-demo">
     <div class="el"></div>
     <div class="el"></div>
     <div class="el"></div>
@@ -21,15 +49,12 @@
   </div>
 
   <!-- Botão para carregar serviços anteriores -->
-  <button *ngIf="!isLoading" (click)="loadPreviousServices()" class="navigation-button previous-button" mat-icon-button
-    aria-label="Previous">
-    <mat-icon class="arrowIcon">keyboard_arrow_left</mat-icon>
+  <button *ngIf=" showNavButtons && !isLoading && page > 1" (click)="loadPreviousServices()" [ngClass]="{'btnVisible': page > 1, 'btnHidden': page <= 1}" class="navigation-button previous-button">
+    <lord-icon src="https://cdn.lordicon.com/whtfgdfm.json" trigger="hover" state="hover-ternd-flat-6" colors="primary:#ffffff" style="width:30px;height:48px; transform: rotate(180deg);"></lord-icon>
   </button>
-
+  
   <!-- Botão para carregar serviços seguintes -->
-  <button *ngIf="!isLoading" (click)="loadNextServices()" class="navigation-button next-button" mat-icon-button
-    aria-label="Next">
-    <mat-icon>keyboard_arrow_right</mat-icon>
+  <button *ngIf="showNavButtons && !isLoading && page * pageSize < totalServices" (click)="loadNextServices()" [ngClass]="{'btnVisible': page * pageSize < totalServices, 'btnHidden': page * pageSize >= totalServices}" class="navigation-button next-button">
+    <lord-icon src="https://cdn.lordicon.com/whtfgdfm.json" trigger="hover" state="hover-ternd-flat-6" colors="primary:#ffffff" style="width:30px;height:48px;"></lord-icon>
   </button>
-
 </div>

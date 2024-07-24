@@ -3,7 +3,7 @@
 :host {
     flex: 1;
     display: flex;
-  }
+}
 
 .whiteTxt{
     color:$fill-white;
@@ -11,6 +11,9 @@
 ._whiteBG{
     background-color: $fill-white;
 }
+.blueText{
+    color: $main-dark-blue;
+  }
 
 ._blueTxt{
     margin:0;
@@ -28,6 +31,7 @@
 
 .tab-headers-wrapper{
     background-color: $darker-main-blue;
+    font-size: 1.4em;
 }
 .tab-headers {
     display: flex;
@@ -82,7 +86,7 @@
     bottom: -50px;
 }
 .text-red {
-    color: $main-red;
+    color: darken($main-red,30%);
     font-size: large;
     font-weight: bold;
 }

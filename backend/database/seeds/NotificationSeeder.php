@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Faker\Factory as Faker;
 
 class NotificationSeeder extends Seeder
 {
@@ -12,170 +13,28 @@ class NotificationSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('notifications')->insert([
-            // 10 mensagens de João para David
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Janeiro',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Fevereiro',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Março',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Abril',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Maio',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Junho',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Julho',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Agosto',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Setembro',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 1,
-                'receiver_id' => 2,
-                'title' => 'Lembrete',
-                'message' => 'Inserir dados Outubro',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
+        $faker = Faker::create();
+        $userIds = range(1, 5);
 
-            // 10 mensagens de David para João
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Janeiro?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Fevereiro?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Março?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Abril?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Maio?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Junho?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Julho?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Agosto?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Setembro?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'sender_id' => 2,
-                'receiver_id' => 1,
-                'title' => 'Dúvida',
-                'message' => 'Quando inserir dados de Outubro?',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]
-        ]);
+        $notifications = [];
+
+        for ($i = 0; $i < 60; $i++) { // Criar 60 notificações aleatórias
+            $senderId = $faker->randomElement($userIds);
+            $receiverId = $faker->randomElement(array_diff($userIds, [$senderId]));
+            $hasResponse = $faker->boolean(10); // 10% de chance de ter uma resposta
+
+            $notifications[] = [
+                'sender_id' => $senderId,
+                'receiver_id' => $receiverId,
+                'title' => $faker->sentence,
+                'message' => $faker->paragraph,
+                'created_at' => $faker->dateTimeBetween('-1 year', 'now'),
+                'updated_at' => $hasResponse ? now() : null,
+                'response' => $hasResponse ? $faker->paragraph : null, // Resposta ou null
+                'is_read' => $hasResponse ? true : $faker->boolean(10) // Se tiver resposta, está lida, caso contrário, 70% de chance de ser lida
+            ];
+        }
+
+        DB::table('notifications')->insert($notifications);
     }
 }

@@ -1,9 +1,6 @@
-
-<div>
-    <app-menu></app-menu>
+<div class="sticky-menu"> 
+  <app-menu [isManageServicesSubMenuOpen]="true"></app-menu>
 </div>
 <div class="sm:mx-0 md:mx-1 lg:mx-2 w-full">
-  <app-services-upsert-form formsAction="create"></app-services-upsert-form>
+  <app-services-upsert-form formsAction="create" ></app-services-upsert-form>
   </div>
-
-

@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  color: $main-blue;
+  color: $main-dark-blue !important;
 }
 
 .spinner {
@@ -25,6 +25,15 @@
 .spinner.forBlueBG {
   border: 8px solid $secondary-blue;
   border-top: 8px solid $main-dark-blue; 
+}
+.spinner.isSmallIcon {
+  width: 30px;
+  height: 30px;
+}
+
+.spinner_updateRecord-special {
+  width: 25px;
+  height: 25px;
 }
 
 @keyframes spin {

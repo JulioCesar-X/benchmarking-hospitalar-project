@@ -11,8 +11,6 @@
  }
 
  ::ng-deep .div.mat-mdc-select-panel {
-   border: 1px solid red;
-   color: red;
    background-color: $main-blue;
  }
 
@@ -21,9 +19,9 @@
   background-color: $main-blue;
 }
 
- ::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted {
+/*  ::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted {
    color: $fill-white;
- }
+ } */
 
  ::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted.mat-mdc-option-active {
    background-color: $secondary-blue;
@@ -37,3 +35,11 @@
    cursor: default !important;
 
  }
+
+ /* svg nbfPages arrow global */
+/*  ::ng-deep .mat-mdc-select-arrow svg{
+  fill: $fill-white !important;
+ } */
+
+
+

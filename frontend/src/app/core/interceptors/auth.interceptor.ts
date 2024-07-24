@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
-import { catchError, retryWhen, delay, take, concatMap } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/env';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -20,9 +20,9 @@ export class AuthInterceptor implements HttpInterceptor {
     });
 
     return next.handle(apiReq).pipe(
-      catchError((error) => {
+      catchError((error: HttpErrorResponse) => {
         console.error('Error during HTTP request:', error);
-        return throwError(() => new Error('HTTP request error'));
+        return throwError(error); // Preserve the original error
       })
     );
   }

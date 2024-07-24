@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent,  } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-paginator',

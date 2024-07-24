@@ -1,25 +1,41 @@
-<div *ngIf="getRole() === 'admin' || getRole() === 'coordenador'">
-  <app-menu></app-menu>
+<div
+  *ngIf="
+    getRole() === 'admin' || getRole() === 'coordenador' || getRole() === 'root'
+  "
+>
+  <app-menu
+    [isLoadingCharts]="true"
+    [isManageDataSubMenuOpen]="true"
+  ></app-menu>
 </div>
+
 <div class="mx-0 sm:ml-1 w-full h-full">
+  <div class="w-full">
+  <app-filter [initialFilter]="filter" (filterEvent)="handleFilterData($event)"
+    (activityInputChange)="handleActivityInputChange($event)" [indicatorsInput]="true" [showServiceInput]="true"
+    [showActivityInput]="showActivityInput" [showMonthInput]="true"></app-filter>
 
-<div class="m-2 w-full">
-  <app-filter [indicatorsInput]="true" [dataInsertedCheckbox]="false" [showServiceInput]="isAdminOrCoordinator"
-    [showActivityInput]="showActivityInput" [selectedServiceId]="filter.serviceId"
-    (filterEvent)="handleFilterData($event)" (activityInputChange)="handleActivityInputChange($event)">
-  </app-filter>
-
-  <div class="flex flex-col gap-4 mt-2 mx-auto w-[90%] pb-4 shadow-md graphicsContainer2 graphicsContainer">
-    <div class="tab-headers-wrapper">
-      <div id="tabHead" class="flex items-center justify-between pr-2">
-        <div id="tabHeaders" class="flex w-[30%]">
-          <button class="tab-link" [class.active]="selectedTab === 'Producao'" (click)="selectTab('Producao')">
-            Produção
-          </button>
-          <button class="tab-link" [class.active]="selectedTab === 'Metas'" (click)="selectTab('Metas')">
-            Metas
-          </button>
-        </div>
+    <div
+      class="flex flex-col gap-4 mt-2 mx-auto w-[100%] pb-4 shadow-md graphicsContainer2 graphicsContainer"
+    >
+      <div class="tab-headers-wrapper">
+        <div id="tabHead" class="flex items-center justify-between pr-2">
+          <div id="tabHeaders" class="flex w-[30%]">
+            <button
+              class="tab-link"
+              [class.active]="selectedTab === 'Producao'"
+              (click)="selectTab('Producao')"
+            >
+              Produção
+            </button>
+            <button
+              class="tab-link"
+              [class.active]="selectedTab === 'Metas'"
+              (click)="selectTab('Metas')"
+            >
+              Metas
+            </button>
+          </div>
 
           <div
             id="exportMenu"
@@ -88,148 +104,226 @@
         </div>
       </div>
 
-    <div class="px-4 z-5" *ngIf="selectedTab === 'Producao'">
-      <h1 class="whiteTxt text-lg">{{ numberToMonth(filter.month) }}, {{ filter.year }}</h1>
-      <div class="flex w-full justify-around flex-wrap">
-        <div class="w-full sm:w-[100%] py-2 ratio">
-          <app-charts *ngIf="!isLoading.recordsMensal; else loading" [allowedChartTypes]="['bar', 'line', 'area']"
-            graphType="bar" graphLabel="Produção Mês" [graphData]="graphData.recordsMensal" [year]="filter.year ?? 0"
-            [month]="filter.month ?? 0">
-          </app-charts>
-          <ng-template #loading>
-            <app-loading-spinner></app-loading-spinner>
-          </ng-template>
-        </div>
-      </div>
-
-      <div>
+      <div class="px-4 z-5" *ngIf="selectedTab === 'Producao'">
         <div class="flex w-full justify-center flex-wrap">
-          <div class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md">
-            <h1 class="text-xl font-semibold text-blue-600">Variação de produção do período homólogo</h1>
+          <div
+            class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md"
+          >
+            <h1 class="text-xl font-semibold blueText">
+              <span [ngClass]="{ 'text-red-600': activityName === 'N/A' }">{{
+                activityName
+              }}</span>
+              - {{ indicatorName || "N/A" }} -
+            </h1>
           </div>
-          <div class="flex flex-col items-center w-full pt-4 pb-4 mt-2 bg-white rounded-lg shadow-md">
-            <h2 class="text-lg font-medium text-blue-600">
-              {{ numberToMonth(filter.month) }}, {{ filter.year }}/{{ filter.year ? filter.year - 1 : '' }}
+
+          <div class="w-full lg:w-[100%] py-2">
+            <app-charts
+              *ngIf="!isLoading.recordsAnual; else loading"
+              [allowedChartTypes]="['line', 'groupedBar', 'scatter']"
+              graphType="line"
+              graphLabel="Comparação produção acumulada"
+              [graphData]="{
+                recordsAnual: graphData.recordsAnual,
+                recordsAnualLastYear: graphData.recordsAnualLastYear
+              }"
+              [year]="filter.year ?? 0"
+              [month]="filter.month ?? 0"
+            >
+            </app-charts>
+            <ng-template #loading>
+              <div class="min-h-[69vh] rounded-lg _whiteBG flex items-center justify-center">
+                <app-loading-spinner [isForBlueBG]="true"></app-loading-spinner>
+              </div>
+            </ng-template>
+          </div>
+
+          <div
+            class="flex flex-col items-center w-full pt-4 pb-4 mt-2 bg-white rounded-lg shadow-md"
+          >
+            <h1 class="text-xl font-semibold blueText">
+              Variação de produção do período homólogo
+            </h1>
+            <h2 class="text-lg font-medium blueText">
+              {{ numberToMonth(filter.month) }}, {{ filter.year }}/{{
+                filter.year ? filter.year - 1 : ""
+              }}
             </h2>
-            <div class="flex flex-col sm:flex-row justify-around w-full lg:w-3/4 pt-4 pb-4">
+            <div
+              class="flex flex-col sm:flex-row justify-around w-full lg:w-3/4 pt-4 pb-4"
+            >
               <div class="flex flex-col items-center text-center p-4">
-                <h3 class="text-md font-medium text-blue-600">Diferença absoluta:</h3>
+                <h2 class="text-lg font-medium blueText">Diferença absoluta:</h2>
                 <p class="text-sm text-gray-700" [ngClass]="{
-                  'text-red': graphData.variations?.variation_rate_homologous_abs < 0,
-                  'text-green': graphData.variations?.variation_rate_homologous_abs > 0
+                  'text-red': graphData.variations?.data.variation_rate_homologous_abs < 0,
+                  'text-green': graphData.variations?.data.variation_rate_homologous_abs > 0
                 }">
-                  {{ graphData.variations?.variation_rate_homologous_abs || 'Sem dados atualmente' }}
+                  {{ graphData.variations?.data.variation_rate_homologous_abs || 'Sem dados atualmente' }}
                 </p>
               </div>
+
               <div class="flex flex-col items-center text-center p-4">
-                <h3 class="text-md font-medium text-blue-600">Diferença percentual(%):</h3>
+                <h2 class="text-lg font-medium blueText">Diferença percentual(%):</h2>
                 <p class="text-sm text-gray-700" [ngClass]="{
-                  'text-red': graphData.variations?.variation_rate_homologous < 0,
-                  'text-green': graphData.variations?.variation_rate_homologous > 0
+                  'text-red': graphData.variations?.data.variation_rate_homologous < 0,
+                  'text-green': graphData.variations?.data.variation_rate_homologous > 0
                 }">
-                  {{ graphData.variations?.variation_rate_homologous || 'Sem dados atualmente' }}%
+                  {{ graphData.variations?.data.variation_rate_homologous || 'Sem dados atualmente' }}%
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="flex w-full justify-around p-4 flex-wrap">
-          <div class="w-full lg:w-1/2">
-            <app-charts *ngIf="!isLoading.recordsAnual; else loading"
-              [allowedChartTypes]="['line', 'groupedBar', 'scatter']" graphType="line"
-              graphLabel="Comparação produção acumulada"
-              [graphData]="{ recordsAnual: graphData.recordsAnual, recordsAnualLastYear: graphData.recordsAnualLastYear }"
-              [year]="filter.year ?? 0" [month]="filter.month ?? 0">
+        <div class="flex w-full justify-between flex-wrap">
+          <div class="w-full lg:w-[49.9%] py-2 ratio">
+            <app-charts
+              *ngIf="!isLoading.recordsMensal; else loading"
+              [allowedChartTypes]="['bar', 'line', 'area']"
+              graphType="area"
+              graphLabel="Produção Mês"
+              [graphData]="[graphData.recordsMensal, graphData.goalMes]"
+              [year]="filter.year ?? 0"
+              [month]="filter.month ?? 0"
+            >
             </app-charts>
             <ng-template #loading>
-              <app-loading-spinner></app-loading-spinner>
+              <div class="min-h-[69vh] rounded-lg _whiteBG flex items-center justify-center">
+                <app-loading-spinner [isForBlueBG]="true"></app-loading-spinner>
+              </div>
             </ng-template>
           </div>
-          <div class="w-full lg:w-1/2">
-            <app-charts *ngIf="!isLoading.recordsAnual; else loading" [allowedChartTypes]="['doughnut', 'pie']"
-              graphType="pie" graphLabel="Comparação produção Total"
-              [graphData]="{ previousYearTotal: graphData.previousYearTotal, currentYearTotal: graphData.currentYearTotal }"
-              [year]="filter.year ?? 0">
+          <div class="w-full lg:w-[49.9%] py-2">
+            <app-charts
+              *ngIf="!isLoading.recordsAnual; else loading"
+              [allowedChartTypes]="['doughnut', 'pie']"
+              graphType="pie"
+              graphLabel="Comparação produção Total"
+              [graphData]="{
+                previousYearTotal: graphData.previousYearTotal,
+                currentYearTotal: graphData.currentYearTotal
+              }"
+              [year]="filter.year ?? 0"
+            >
             </app-charts>
             <ng-template #loading>
-              <app-loading-spinner></app-loading-spinner>
+              <div class="min-h-[69vh] rounded-lg _whiteBG flex items-center justify-center">
+                <app-loading-spinner [isForBlueBG]="true"></app-loading-spinner>
+              </div>
             </ng-template>
           </div>
         </div>
       </div>
-    </div>
-    <div class="px-4" *ngIf="selectedTab === 'Metas'">
-      <div class="flex w-full justify-around flex-wrap">
-        <div class="w-full sm:w-[100%] py-2 ratio">
-          <app-charts *ngIf="!isLoading.goalMes; else loading" [allowedChartTypes]="['bar', 'line', 'area']"
-            graphType="area" graphLabel="Meta Mês" [graphData]="graphData.goalMes" [year]="filter.year ?? 0"
-            [month]="filter.month ?? 0">
-          </app-charts>
-          <ng-template #loading>
-            <app-loading-spinner></app-loading-spinner>
-          </ng-template>
-        </div>
-      </div>
-      <div class="flex w-full justify-center flex-wrap">
-        <div class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md">
-          <h1 class="text-xl font-semibold text-blue-600">
-            Variação conctratualizada do período homólogo
-          </h1>
-        </div>
-      </div>
-      <div class="flex flex-col items-center w-full pt-2 pb-2 mt-2 bg-white rounded-lg shadow-md">
-        <h2 class="text-lg font-medium text-blue-600">
-          {{ numberToMonth(filter.month) }}, {{ filter.year }}/{{ filter.year ? filter.year - 1 : '' }}
-        </h2>
-        <div class="flex justify-around w-full lg:w-1/2 pt-2 pb-2">
-          <div class="flex flex-col items-center text-center p-4">
-            <h3 class="text-md font-medium text-blue-600">Diferença absoluta:</h3>
-            <p class="text-sm text-gray-700" [ngClass]="{
-              'text-red': graphData.variations?.variation_rate_contractual_abs < 0,
-              'text-green': graphData.variations?.variation_rate_contractual_abs > 0
-            }">
-              {{ graphData.variations?.variation_rate_contractual_abs }}
-            </p>
+
+      <div class="px-4" *ngIf="selectedTab === 'Metas'">
+        <div class="flex w-full justify-center flex-wrap">
+          <div
+            class="flex justify-center w-full pt-2 pb-2 bg-white rounded-lg shadow-md"
+          >
+            <h1 class="text-xl font-semibold blueText">
+              <span [ngClass]="{'text-red-600': activityName === 'N/A'}">{{ activityName }}</span>
+              - {{ indicatorName || 'N/A' }} -
+            </h1>
           </div>
-          <div class="flex flex-col items-center text-center p-4">
-            <h3 class="text-md font-medium text-blue-600">Diferença percentual(%):</h3>
-            <p class="text-sm text-gray-700" [ngClass]="{
-              'text-red': graphData.variations?.variation_rate_contractual < 0,
-              'text-green': graphData.variations?.variation_rate_contractual > 0
-            }">
-              {{ graphData.variations?.variation_rate_contractual }}%
-            </p>
+
+          <div class="flex w-full justify-around flex-wrap">
+            <div class="w-full lg:w-[100%] py-2">
+              <app-charts
+                *ngIf="!isLoading.goalsMensal; else loading"
+                [allowedChartTypes]="['line', 'groupedBar', 'scatter']"
+                graphType="groupedBar"
+                graphLabel="produção acumulada vs meta mensal"
+                [graphData]="{
+                  recordsAnual: graphData.recordsAnual,
+                  goalsMensal: graphData.goalsMensal
+                }"
+                [year]="filter.year ?? 0"
+                [month]="filter.month ?? 0"
+              >
+              </app-charts>
+              <ng-template #loading>
+                <div class="min-h-[69vh] rounded-lg _whiteBG flex items-center justify-center">
+                  <app-loading-spinner [isForBlueBG]="true"></app-loading-spinner>
+                </div>
+                >
+              </ng-template>
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col items-center w-full pt-4 pb-4 mt-2 bg-white rounded-lg shadow-md"
+          >
+            <h1 class="text-xl font-semibold blueText">
+              Variação contratualizada do período homólogo
+            </h1>
+            <h2 class="text-lg font-medium blueText">
+              {{ numberToMonth(filter.month) }}, {{ filter.year }}/{{
+                filter.year ? filter.year - 1 : ""
+              }}
+            </h2>
+            <div
+              class="flex flex-col sm:flex-row justify-around w-full lg:w-3/4 pt-4 pb-4"
+            >
+              <div class="flex flex-col items-center text-center p-4">
+                <h2 class="text-lg font-medium blueText">Diferença absoluta:</h2>
+                <p class="text-sm text-gray-700" [ngClass]="{
+                  'text-red': graphData.variations?.data.variation_rate_contractual_abs < 0,
+                  'text-green': graphData.variations?.data.variation_rate_contractual_abs > 0
+                }">
+                  {{ graphData.variations?.data.variation_rate_contractual_abs || 'Sem dados atualmente' }}
+                </p>
+              </div>
+              <div class="flex flex-col items-center text-center p-4">
+                <h2 class="text-lg font-medium blueText">Diferença percentual(%):</h2>
+                <p class="text-sm text-gray-700" [ngClass]="{
+                  'text-red': graphData.variations?.data.variation_rate_contractual < 0,
+                  'text-green': graphData.variations?.data.variation_rate_contractual > 0
+                }">
+                  {{ graphData.variations?.data.variation_rate_contractual || 'Sem dados atualmente' }}%
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="flex w-full justify-around flex-wrap">
-        <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.goalsMensal; else loading"
-            [allowedChartTypes]="['line', 'groupedBar', 'scatter']" graphType="groupedBar"
-            graphLabel="produção acumulada vs meta mensal"
-            [graphData]="{ recordsAnual: graphData.recordsAnual, goalsMensal: graphData.goalsMensal }"
-            [year]="filter.year ?? 0" [month]="filter.month ?? 0">
-          </app-charts>
-          <ng-template #loading>
-            <app-loading-spinner></app-loading-spinner>
-          </ng-template>
-        </div>
-        <div class="w-full lg:w-1/2 py-2">
-          <app-charts *ngIf="!isLoading.goalAnual; else loading" [allowedChartTypes]="['doughnut', 'pie']"
-            graphType="pie" graphLabel="Produção Anual vs Meta Anual"
-            [graphData]="{ goalAnual: graphData.goalAnual, currentYearTotal: graphData.currentYearTotal }"
-            [year]="filter.year ?? 0">
-          </app-charts>
-          <ng-template #loading>
-            <app-loading-spinner></app-loading-spinner>
-          </ng-template>
+        <div class="flex w-full justify-between flex-wrap">
+          <div class="w-full sm:w-[49.9%] py-2 ratio">
+            <app-charts
+              *ngIf="!isLoading.goalMes; else loading"
+              [allowedChartTypes]="['bar', 'line', 'area']"
+              graphType="bar"
+              graphLabel="Meta Mês"
+              [graphData]="graphData.goalMes"
+              [year]="filter.year ?? 0"
+              [month]="filter.month ?? 0"
+            >
+            </app-charts>
+            <ng-template #loading>
+              <div class="min-h-[69vh] rounded-lg _whiteBG flex items-center justify-center">
+                <app-loading-spinner [isForBlueBG]="true"></app-loading-spinner>
+              </div>
+            </ng-template>
+          </div>
+          <div class="w-full lg:w-[49.9%] py-2">
+            <app-charts
+              *ngIf="!isLoading.goalAnual; else loading"
+              [allowedChartTypes]="['doughnut', 'pie']"
+              graphType="doughnut"
+              graphLabel="Produção Anual vs Meta Anual"
+              [graphData]="{
+                goalAnual: graphData.goalAnual,
+                currentYearTotal: graphData.currentYearTotal
+              }"
+              [year]="filter.year ?? 0"
+            >
+            </app-charts>
+            <ng-template #loading>
+              <div class="min-h-[69vh] rounded-lg _whiteBG flex items-center justify-center">
+                <app-loading-spinner [isForBlueBG]="true"></app-loading-spinner>
+              </div>
+            </ng-template>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-
-
-

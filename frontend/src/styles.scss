@@ -30,10 +30,10 @@ body {
 
 /* Estiliza a trilha da scrollbar (parte por trás da barra de rolagem) */
 ::-webkit-scrollbar-track {
-background: $main-blue;
+background: transparent;
 /*   background: #f0f0f0a0; */
   /* Cor de fundo da trilha */
-  border-radius: 10px;
+
   /* Borda arredondada */
 }
 
@@ -78,3 +78,5 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   letter-spacing: normal;
   outline: 0;
 }
+
+

@@ -1,8 +1,7 @@
-<div>
-  <app-menu></app-menu>
+<div class="sticky-menu"> 
+  <app-menu [isManageServicesSubMenuOpen]="true"></app-menu>
 </div>
 <div class="sm:mx-0 md:mx-1 lg:mx-2 w-full">
-  <app-loading-spinner *ngIf="isLoading" message="Carregando serviço..."></app-loading-spinner>
-  <app-services-upsert-form *ngIf="!isLoading" [formsAction]="'edit'"
+  <app-services-upsert-form [formsAction]="'edit'" [isLoading]="isLoading"
     [selectedService]="selectedService"></app-services-upsert-form>
 </div>

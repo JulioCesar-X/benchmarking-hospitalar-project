@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { CommonModule } from '@angular/common';
 import { FilterComponent } from '../../../components/shared/filter/filter.component';
@@ -23,6 +24,7 @@ import { GoalsListSectionComponent } from '../../../components/goals/goals-list-
 export class RecordsGoalsUpdatePageComponent implements OnInit {
   currentIndicators: any[] = [];
   isLoading = false;
+  resolvedData: any;
 
   filter: Filter = {
     indicatorId: 1,
@@ -33,20 +35,40 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
   };
 
   selectedTab: string = 'Records';
+  initialActivities: any[] = [];
+  initialIndicators: any[] = [];
+  allServices: any[] = [];
+  showActivityInput: boolean = false;
 
-  constructor(private indicatorService: IndicatorService) { }
+  constructor(
+    private indicatorService: IndicatorService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
-    this.loadRecords(); // Carregar registros ao iniciar
+    this.resolvedData = this.route.snapshot.data?.['recordGoalsData'];
+    console.log('Resolved Data:', this.resolvedData);
+    if (this.resolvedData && !this.resolvedData.error) {
+      this.currentIndicators = this.resolvedData.data ?? [];
+      this.filter = this.resolvedData.filter ?? this.filter;
+      this.initialActivities = this.resolvedData.activities ?? [];
+      this.initialIndicators = this.resolvedData.indicators ?? [];
+      this.allServices = this.resolvedData.allServices ?? [];
+    } else {
+      console.error(this.resolvedData?.message ?? 'Error resolving data');
+    }
   }
 
   selectTab(tab: string): void {
     this.selectedTab = tab;
     if (tab === 'Metas') {
-      this.loadGoals(); // Carregar metas ao selecionar a aba
+      this.filter.month = 1; // Garantir que o mês seja 1 para Metas
+      this.loadGoals();
     } else {
-      this.loadRecords(); // Carregar registros ao selecionar a aba
+      this.filter.month = new Date().getMonth() + 1; // Garantir que o mês atual seja usado para Registros
+      this.loadRecords();
     }
+    this.ensureValidMonth();
   }
 
   handleFilterData(event: Filter): void {
@@ -56,6 +78,8 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
       ...event
     };
 
+    this.ensureValidMonth();
+
     if (this.selectedTab === 'Records') {
       this.loadRecords();
     } else {
@@ -63,8 +87,14 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
     }
   }
 
+  ensureValidMonth(): void {
+    if (this.filter.month == null || this.filter.month < 1 || this.filter.month > 12) {
+      this.filter.month = new Date().getMonth() + 1;
+    }
+  }
+
   handleActivityInputChange(show: boolean): void {
-    // Placeholder function to handle activity input changes
+    this.showActivityInput = show;
   }
 
   loadRecords(): void {
@@ -77,7 +107,7 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
     this.indicatorService.getIndicatorsRecords(serviceId, activityId, year, month, 0, 10).subscribe(
       data => {
         console.log('Records data', data);
-        this.currentIndicators = data;
+        this.currentIndicators = data ?? [];
         this.isLoading = false;
       },
       error => {
@@ -96,7 +126,7 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
     this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, 0, 10).subscribe(
       data => {
         console.log('Goals data', data);
-        this.currentIndicators = data;
+        this.currentIndicators = data ?? [];
         this.isLoading = false;
       },
       error => {

@@ -10,17 +10,18 @@ class Notification extends Model
         'sender_id',
         'receiver_id',
         'title',
-        'message'
+        'message',
+        'response',
+        'is_read'
     ];
-    // Relacionamento com o usuário remetente
+
     public function sender()
     {
-        return $this->belongsTo('App\User', 'sender_id');
+        return $this->belongsTo(User::class, 'sender_id');
     }
 
-    // Relacionamento com o usuário destinatário
     public function receiver()
     {
-        return $this->belongsTo('App\User', 'receiver_id');
+        return $this->belongsTo(User::class, 'receiver_id');
     }
 }

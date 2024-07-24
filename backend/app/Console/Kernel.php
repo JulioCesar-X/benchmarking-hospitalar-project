@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\Cleanner::class,
+        \App\Console\Commands\RouteCacheRefresh::class,
     ];
 
     /**
@@ -24,6 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('route:cache-refresh')->daily();
         // $schedule->command('inspire')->hourly();
     }
 

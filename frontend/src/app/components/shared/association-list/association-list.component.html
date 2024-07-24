@@ -1,0 +1,18 @@
+<!-- 
+<div class="association-container">
+    <div class="column">
+        <h3 class="title">{{ columnTitle }}</h3>
+        <mat-chip-listbox multiple class="mat-mdc-chip-set-stacked">
+            <mat-chip-option *ngFor="let item of items" [selected]="isSelected(item)" (click)="toggleSelection(item)">
+                {{ getDisplayText(item) }}
+            </mat-chip-option>
+        </mat-chip-listbox>
+    </div>
+</div> -->
+<h2 class="text-lg font-bold whiteTxt">{{componentTitle}}:</h2>
+<div *ngFor="let item of items" class="flex items-center gap-2">
+    <mat-checkbox
+    [checked]="isSelected(item)" (click)="toggleSelection(item)">
+    </mat-checkbox>
+    <label class="whiteTxt text-lg">{{ getDisplayText(item) }}</label>
+</div>

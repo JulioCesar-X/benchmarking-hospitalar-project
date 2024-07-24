@@ -8,12 +8,13 @@ use Illuminate\Support\Facades\Password;
 use App\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
-use App\Role;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use App\Mail\ResetPasswordMailConfirmation;
 use Exception;
 
 class AuthController extends Controller
 {
+
     public function login(Request $request)
     {
         $request->validate([
@@ -34,52 +35,24 @@ class AuthController extends Controller
             return response()->json(['message' => 'The provided credentials are incorrect.'], 401);
         }
 
-        $token = $user->createToken('access_token')->plainTextToken;
+        // Set token expiration to 4 hours
+        $token = $user->createToken('access_token', ['*'], now()->addHours(4))->plainTextToken;
+
+        $firstLogin = $user->first_login;
+
+        if ($firstLogin) {
+            // Update the first_login status
+            $user->first_login = false;
+            $user->save();
+        }
 
         return response()->json([
             'role' => $user->roles()->first()->role_name,
             'name' => $user->name,
-            'email' => $user->email,
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'first_login' => $firstLogin
         ]);
-    }
-
-    /**
-     * Register a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function register(Request $request)
-    {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|max:10',
-                'role_id' => 'required|exists:roles,id'
-            ]);
-
-            $hashedPassword = password_hash($request->password, PASSWORD_BCRYPT);
-
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => $hashedPassword,
-                'email_verified_at' => now(),
-            ]);
-
-            $role = Role::find($request->role_id);
-            $user->roles()->attach($role);
-
-            // Clear the cache
-            Cache::forget('users_index');
-
-            return response()->json(['message' => 'Registration successful'], 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
-        }
     }
 
     public function logout(Request $request)
@@ -88,46 +61,80 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out'], 200);
     }
 
+
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $user = User::where('email', $request->email)->first();
 
-        if ($status === Password::RESET_LINK_SENT) {
-            $user = User::where('email', $request->email)->first();
-            $token = app('auth.password.broker')->createToken($user);
-
-            Mail::to($request->email)->send(new ResetPasswordMail($token));
-
-            return response()->json(['message' => __($status)], 200);
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
         }
 
-        return response()->json(['email' => __($status)], 400);
+        $token = app('auth.password.broker')->createToken($user);
+
+        Mail::to($request->email)->send(new ResetPasswordMail($token, $request->email));
+
+        return response()->json(['message' => 'Link de redefinição de senha enviado!'], 200);
     }
+
+
 
     public function resetPassword(Request $request)
     {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:3',
+            'password' => 'required|min:6|confirmed',
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'token'),
-            function ($user, $password) {
-                $user->password = Hash::make($password);
-                $user->save();
+        $tokenData = DB::table('password_resets')
+        ->where('email', $request->email)
+        ->first();
+
+        if ($tokenData && Hash::check($request->token, $tokenData->token)) {
+            $status = Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user, $password) {
+                    $user->password = bcrypt($password);
+                    $user->save();
+                }
+            );
+
+            if ($status == Password::PASSWORD_RESET) {
+                // Excluir o token de redefinição de senha
+                DB::table('password_resets')->where('email', $request->email)->delete();
+
+                Mail::to($request->email)->send(new ResetPasswordMailConfirmation($request->email));
+
+                return response()->json(['message' => 'Senha redefinida com sucesso!'], 200);
             }
-        );
 
-        if ($status == Password::PASSWORD_RESET) {
-            return response()->json(['message' => __($status)], 200);
+            return response()->json(['email' => [__($status)]], 400);
+        } else {
+            return response()->json(['message' => 'Token inválido ou expirado'], 400);
         }
+    }
 
-        return response()->json(['email' => [__($status)]], 400);
+    public function verifyResetToken(Request $request)
+    {
+        $request->validate(['token' => 'required', 'email' => 'required|email']);
+
+        try {
+            $tokenData = DB::table('password_resets')
+            ->where('email', $request->email)
+                ->first();
+
+            if ($tokenData && Hash::check($request->token, $tokenData->token)) {
+                return response()->json(['message' => 'Token válido'], 200);
+            } else {
+    
+                return response()->json(['message' => 'Token inválido ou expirado'], 400);
+            }
+        } catch (Exception $e) {
+
+            return response()->json(['message' => 'Erro ao verificar o token de redefinição de senha'], 500);
+        }
     }
 }
