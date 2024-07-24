@@ -35,7 +35,6 @@ export class RecordsGoalsUpdateResolver implements Resolve<any> {
 
         return this.serviceService.showService(serviceId).pipe(
             switchMap((service: any) => {
-                
                 if (service && service.id) {
                     console.log('Service data retrieved:', service);
                     if (service.sais && service.sais.length > 0) {
@@ -49,18 +48,18 @@ export class RecordsGoalsUpdateResolver implements Resolve<any> {
                         return of({ error: true, message: 'Service has no activities or indicators' });
                     }
 
-                    const activities = service.sais.map((sai: any) => ({
+                    const activities = service.sais?.map((sai: any) => ({
                         id: sai.activity.id,
                         name: sai.activity.activity_name
-                    })).filter((value: any, index: any, self: any) => self.findIndex((v: any) => v.id === value.id) === index);
+                    })).filter((value: any, index: any, self: any) => self.findIndex((v: any) => v.id === value.id) === index) ?? [];
 
-                    const indicators = service.sais.map((sai: any) => ({
+                    const indicators = service.sais?.map((sai: any) => ({
                         id: sai.indicator.id,
                         name: sai.indicator.indicator_name
-                    })).filter((value: any, index: any, self: any) => self.findIndex((v: any) => v.id === value.id) === index);
+                    })).filter((value: any, index: any, self: any) => self.findIndex((v: any) => v.id === value.id) === index) ?? [];
 
                     return this.serviceService.indexServices().pipe(
-                        map((allServices: any) => ({ data: service, filter, activities, indicators, allServices })),
+                        map((allServices: any) => ({ data: service, filter, activities, indicators, allServices: allServices ?? [] })),
                         catchError(error => {
                             console.error('Failed to fetch all services:', error);
                             return of({ error: true, message: 'Failed to fetch all services' });

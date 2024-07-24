@@ -28,6 +28,7 @@ interface Goal {
   isInserted: boolean;
   isUpdating: boolean;
   isEditing: boolean;
+  originalValue?: string; // Adicionada a propriedade originalValue
 }
 
 @Component({
@@ -78,8 +79,6 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   pageOptions = [5, 10, 20, 50, 100];
   isImporting: boolean = false;
 
-
-
   constructor(
     private goalService: GoalService,
     private indicatorService: IndicatorService
@@ -102,11 +101,9 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   loadGoals(pageIndex = 0, pageSize = 30): void {
     if (this.filter?.year && this.filter?.serviceId) {
       this.isLoadingGoals = true;
-      const serviceId = Number(this.filter.serviceId);
-      const activityId = this.filter.activityId !== null && this.filter.activityId !== undefined ? Number(this.filter.activityId) : null;
-      const year = this.filter.year;
+      const { serviceId, activityId, year } = this.filter;
 
-      this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, pageIndex, pageSize)
+      this.indicatorService.getIndicatorsGoals(Number(serviceId), Number(activityId), year, pageIndex, pageSize)
         .pipe(
           catchError(error => {
             console.error('Error fetching goals', error);
@@ -115,14 +112,12 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
           finalize(() => this.isLoadingGoals = false)
         )
         .subscribe(response => {
-          if (pageIndex === 0) {
-            this.allGoals = this.mapGoals(response.data);
-            console.log('allGoals >>', this.allGoals);
-          } else {
-            this.allGoals = [...this.allGoals, ...this.mapGoals(response.data).filter(newGoal =>
+          this.allGoals = pageIndex === 0 ? this.mapGoals(response.data) : [
+            ...this.allGoals,
+            ...this.mapGoals(response.data).filter(newGoal =>
               !this.allGoals.some(existingGoal => existingGoal.sai_id === newGoal.sai_id && existingGoal.year === newGoal.year)
-            )];
-          }
+            )
+          ];
           this.totalGoals = response.total;
           this.updateDataSource();
           this.loadedPages.add(pageIndex);
@@ -131,55 +126,45 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   mapGoals(data: any[]): Goal[] {
-    return data.map(item => {
-      const goal = item.goal || {
-        id: null, // Ajuste aqui para garantir que id seja mapeado corretamente
-        target_value: '',
-        year: this.filter.year
-      };
-
-      return {
-        id: goal.id, // Use o id diretamente aqui
-        indicator_name: item.indicator_name,
-        target_value: goal.target_value,
-        year: goal.year,
-        sai_id: item.sai_id,
-        service_name: item.service_name, // Garantir que está preenchendo corretamente
-        activity_name: item.activity_name, // Garantir que está preenchendo corretamente
-        isInserted: goal.target_value !== '',
-        isUpdating: false,
-        isEditing: false
-      };
-    });
+    return data.map(item => ({
+      id: item.goal?.id ?? null,
+      indicator_name: item.indicator_name,
+      target_value: item.goal?.target_value ?? '',
+      year: item.goal?.year ?? this.filter.year,
+      sai_id: item.sai_id,
+      service_name: item.service_name ?? 'N/A',
+      activity_name: item.activity_name ?? 'N/A',
+      isInserted: !!item.goal?.target_value,
+      isUpdating: false,
+      isEditing: false,
+      originalValue: item.goal?.target_value ?? '' // Adicionada a propriedade originalValue
+    }));
   }
 
   onGoalsImported(goals: any[]): void {
     goals.forEach(goal => {
-      // Verifique se já existe uma meta com o mesmo ano e sai_id
       const existingGoal = this.allGoals.find(g => g.sai_id === goal.sai_id && g.year === goal.year);
 
       if (existingGoal) {
-        // Atualize a meta existente
         existingGoal.target_value = goal.target_value;
+        existingGoal.originalValue = goal.target_value;
         existingGoal.isInserted = true;
       } else {
-        // Adicione uma nova meta
-        const newGoal: Goal = {
-          id: goal.id, // Certifique-se de que o id está sendo mapeado
-          indicator_name: 'Imported Goal', // Placeholder, replace with actual indicator name if available
-          target_value: goal.target_value,
-          year: goal.year,
-          sai_id: goal.sai_id,
+        this.allGoals.push({
+          ...goal,
+          id: goal.id ?? null,
+          indicator_name: goal.indicator_name ?? 'Imported Goal',
+          service_name: goal.service_name ?? 'N/A',
+          activity_name: goal.activity_name ?? 'N/A',
           isInserted: true,
           isUpdating: false,
-          isEditing: false
-        };
-        this.allGoals.push(newGoal);
+          isEditing: false,
+          originalValue: goal.target_value // Adicionada a propriedade originalValue
+        });
       }
     });
 
     this.updateDataSource();
-    // Envie os dados para o backend
     this.sendGoalsToBackend(goals);
   }
 
@@ -187,34 +172,25 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     const requests = goals.map(goal => {
       const existingGoal = this.allGoals.find(g => g.sai_id === goal.sai_id && g.year === goal.year);
 
-      if (existingGoal && existingGoal.id) {
-        return this.goalService.updateGoal(existingGoal.id, goal).pipe(
-          finalize(() => {
-            goal.isUpdating = false;
-            goal.isEditing = false;
-          })
-        );
-      } else {
-        const newGoal = {
-          ...goal,
-          isUpdating: false
-        };
-        return this.goalService.storeGoal(newGoal).pipe(
-          finalize(() => newGoal.isUpdating = false)
-        );
-      }
+      return existingGoal && existingGoal.id
+        ? this.goalService.updateGoal(existingGoal.id, goal).pipe(finalize(() => this.finalizeUpdate(goal)))
+        : this.goalService.storeGoal(goal).pipe(finalize(() => this.finalizeUpdate(goal)));
     });
 
     forkJoin(requests).subscribe(
       () => {
         this.setNotification('Metas criadas/atualizadas com sucesso', 'success');
-        // Recarregar metas após as operações de backend para garantir que o cache foi atualizado
         this.loadGoals(this.currentPage, this.pageSize);
       },
       error => {
         this.setNotification('Erro ao criar/atualizar metas', 'error');
       }
     );
+  }
+
+  finalizeUpdate(goal: Goal): void {
+    goal.isUpdating = false;
+    goal.isEditing = false;
   }
 
   onImportStarted(): void {
@@ -229,13 +205,12 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Goals');
 
-    // Adicionar cabeçalhos e subtítulos
     worksheet.mergeCells('A1:D1');
     worksheet.getCell('A1').value = `Metas do Ano ${this.filter.year}`;
     worksheet.getCell('A1').font = { bold: true };
 
-    const serviceName = this.allGoals.length > 0 && this.allGoals[0].service_name ? this.allGoals[0].service_name : 'N/A';
-    const activityName = this.allGoals.length > 0 && this.allGoals[0].activity_name ? this.allGoals[0].activity_name : 'N/A';
+    const serviceName = this.allGoals.length ? this.allGoals[0].service_name : 'N/A';
+    const activityName = this.allGoals.length ? this.allGoals[0].activity_name : 'N/A';
 
     worksheet.mergeCells('A2:D2');
     worksheet.getCell('A2').value = `Serviço: ${serviceName}`;
@@ -246,18 +221,14 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     worksheet.getCell('A3').font = { bold: true };
 
     const currentDate = new Date();
-    const formattedDate = currentDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const formattedTime = currentDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
     worksheet.mergeCells('A4:D4');
-    worksheet.getCell('A4').value = `Data: ${formattedDate} ${formattedTime}`;
+    worksheet.getCell('A4').value = `Data: ${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
     worksheet.getCell('A4').font = { bold: true };
 
     worksheet.mergeCells('A5:D5');
     worksheet.getCell('A5').value = '(Valores acumulados)';
     worksheet.getCell('A5').font = { bold: true };
 
-    // Configurar colunas
     worksheet.columns = [
       { header: 'ID', key: 'sai_id', width: 10 },
       { header: 'Nome do Indicador', key: 'indicator_name', width: 30 },
@@ -265,7 +236,6 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       { header: 'Meta Anual', key: 'target_value', width: 15 }
     ];
 
-    // Adicionar a linha dos cabeçalhos das colunas
     const headerRow = worksheet.addRow({
       sai_id: 'ID',
       indicator_name: 'Nome do indicador',
@@ -273,23 +243,20 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       target_value: 'Meta Anual',
     });
 
-    // Adicionar os dados
     this.allGoals.forEach(goal => {
       worksheet.addRow({
         sai_id: goal.sai_id,
         indicator_name: goal.indicator_name,
         year: goal.year,
-        target_value: Number(goal.target_value) // Garantir que o valor seja numérico
+        target_value: Number(goal.target_value)
       });
     });
 
-    // Adicionar filtro aos cabeçalhos
     worksheet.autoFilter = {
       from: 'A6',
       to: 'D6',
     };
 
-    // Formatação de cabeçalhos
     headerRow.eachCell((cell) => {
       cell.font = { bold: true };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -300,9 +267,8 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       };
     });
 
-    // Formatação de dados
     worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber > 6) { // Ajuste para a linha correta dos dados
+      if (rowNumber > 6) {
         row.eachCell((cell) => {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
         });
@@ -326,7 +292,8 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   editGoal(goal: Goal): void {
-    if (goal.isInserted && !goal.isEditing) {
+    if (!goal.isEditing) {
+      goal.originalValue = goal.target_value; // Salve o valor original ao iniciar a edição
       goal.isEditing = true;
       return;
     }
@@ -370,7 +337,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       .subscribe(
         () => {
           this.setNotification('Meta criada com sucesso', 'success');
-          this.loadGoals(0, this.pageSize * 3); // Recarrega os dados
+          this.loadGoals(0, this.pageSize * 3);
         },
         error => this.setNotification(this.getErrorMessage(error), 'error')
       );
@@ -436,6 +403,9 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   cancelEditing(goal: Goal): void {
+    if (goal.originalValue !== undefined) {
+      goal.target_value = goal.originalValue; // Restaure o valor original
+    }
     goal.isEditing = false;
   }
 }

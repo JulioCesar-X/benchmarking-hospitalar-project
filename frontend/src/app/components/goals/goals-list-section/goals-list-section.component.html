@@ -17,13 +17,13 @@
       <div *ngIf="dropdownOpen"
         class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
         <div class="py-1">
-          <button (click)="exportGoals()" 
-          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
-          <img src="../../../assets/icons/csv.png" height="16" class="inline mr-2" />Exportar Metas
+          <button (click)="exportGoals()"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+            <img src="../../../assets/icons/csv.png" height="16" class="inline mr-2" />Exportar Metas
           </button>
           <app-excel-import #excelImport importType="goal" (recordsImported)="onGoalsImported($event)"
             (importStarted)="onImportStarted()" (importFinished)="onImportFinished()"></app-excel-import>
-            <mat-progress-bar *ngIf="isImporting" mode="indeterminate"></mat-progress-bar>
+          <mat-progress-bar *ngIf="isImporting" mode="indeterminate"></mat-progress-bar>
         </div>
       </div>
     </div>
@@ -48,7 +48,7 @@
             <tr *ngFor="let goal of goals; trackBy: trackByIndex">
               <td class="p-2">{{ goal.indicator_name }}</td>
               <td class="p-2">
-                <input [disabled]="goal.isInserted && !goal.isEditing"
+                <input [disabled]="!goal.isEditing"
                   class="inputContainer--input w-full p-2 border border-gray-300 rounded"
                   [(ngModel)]="goal.target_value" (ngModelChange)="onValueChange(goal)" type="number" min="1" />
               </td>

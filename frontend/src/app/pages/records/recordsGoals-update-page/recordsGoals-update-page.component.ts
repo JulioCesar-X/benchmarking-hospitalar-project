@@ -38,7 +38,7 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
   initialActivities: any[] = [];
   initialIndicators: any[] = [];
   allServices: any[] = [];
-  showActivityInput: boolean = false; // Adicione esta linha
+  showActivityInput: boolean = false;
 
   constructor(
     private indicatorService: IndicatorService,
@@ -46,26 +46,29 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.resolvedData = this.route.snapshot.data['recordGoalsData'];
+    this.resolvedData = this.route.snapshot.data?.['recordGoalsData'];
     console.log('Resolved Data:', this.resolvedData);
     if (this.resolvedData && !this.resolvedData.error) {
-      this.currentIndicators = this.resolvedData.data;
-      this.filter = this.resolvedData.filter;
-      this.initialActivities = this.resolvedData.activities;
-      this.initialIndicators = this.resolvedData.indicators;
-      this.allServices = this.resolvedData.allServices;
+      this.currentIndicators = this.resolvedData.data ?? [];
+      this.filter = this.resolvedData.filter ?? this.filter;
+      this.initialActivities = this.resolvedData.activities ?? [];
+      this.initialIndicators = this.resolvedData.indicators ?? [];
+      this.allServices = this.resolvedData.allServices ?? [];
     } else {
-      console.error(this.resolvedData?.message || 'Error resolving data');
+      console.error(this.resolvedData?.message ?? 'Error resolving data');
     }
   }
 
   selectTab(tab: string): void {
     this.selectedTab = tab;
     if (tab === 'Metas') {
-      this.loadGoals(); // Carregar metas ao selecionar a aba
+      this.filter.month = 1; // Garantir que o mês seja 1 para Metas
+      this.loadGoals();
     } else {
-      this.loadRecords(); // Carregar registros ao selecionar a aba
+      this.filter.month = new Date().getMonth() + 1; // Garantir que o mês atual seja usado para Registros
+      this.loadRecords();
     }
+    this.ensureValidMonth();
   }
 
   handleFilterData(event: Filter): void {
@@ -75,10 +78,18 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
       ...event
     };
 
+    this.ensureValidMonth();
+
     if (this.selectedTab === 'Records') {
       this.loadRecords();
     } else {
       this.loadGoals();
+    }
+  }
+
+  ensureValidMonth(): void {
+    if (this.filter.month == null || this.filter.month < 1 || this.filter.month > 12) {
+      this.filter.month = new Date().getMonth() + 1;
     }
   }
 
@@ -93,10 +104,10 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
     const year = Number(this.filter.year) || new Date().getFullYear();
     const month = Number(this.filter.month) || new Date().getMonth() + 1;
 
-    this.indicatorService.getIndicatorsRecords(serviceId, activityId ?? 0, year ?? new Date().getFullYear(), month ?? (new Date().getMonth() + 1), 0, 10).subscribe(
+    this.indicatorService.getIndicatorsRecords(serviceId, activityId, year, month, 0, 10).subscribe(
       data => {
         console.log('Records data', data);
-        this.currentIndicators = data;
+        this.currentIndicators = data ?? [];
         this.isLoading = false;
       },
       error => {
@@ -112,10 +123,10 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
     const activityId = this.filter.activityId !== null && this.filter.activityId !== undefined ? Number(this.filter.activityId) : 0;
     const year = Number(this.filter.year) || new Date().getFullYear();
 
-    this.indicatorService.getIndicatorsGoals(serviceId, activityId ?? 0, year ?? new Date().getFullYear(), 0, 10).subscribe(
+    this.indicatorService.getIndicatorsGoals(serviceId, activityId, year, 0, 10).subscribe(
       data => {
         console.log('Goals data', data);
-        this.currentIndicators = data;
+        this.currentIndicators = data ?? [];
         this.isLoading = false;
       },
       error => {
