@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IndicatorService } from '../../core/services/indicator/indicator.service';
@@ -72,26 +72,31 @@ export class ChartsPageComponent implements OnInit {
     }
 
     this.route.params.subscribe(params => {
-      this.filter.serviceId = +params['serviceId'] || this.filter.serviceId;
-      this.loadGraphData();
+      const serviceId = +params['serviceId'];
+      if (serviceId) {
+        this.filter.serviceId = serviceId;
+        this.loadGraphData();
+      }
     });
 
     this.filterSubject.pipe(
       debounceTime(300),
       switchMap(filter => {
         this.setLoadingStates(true);
+        console.log('Loading data with filter:', { ...this.filter, ...filter }); // Adicionando log
         return this.indicatorService.getAllData({ ...this.filter, ...filter });
       })
     ).subscribe({
       next: (data) => {
+        console.log('Data received from API:', data);
         this.graphData = data;
-        console.log('Dados do gráfico:', this.graphData);
+        this.verifyAndLogGraphData()
         this.setLoadingStates(false);
-        this.loadIndicatorName();
+        // this.loadIndicatorName();
       },
       error: (error) => {
         this.setLoadingStates(false);
-        console.error('Erro ao carregar os dados do gráfico:', error);
+        console.error('Error loading graph data:', error);
       }
     });
 
@@ -156,11 +161,24 @@ export class ChartsPageComponent implements OnInit {
     }
   }
 
+  verifyAndLogGraphData(): void {
+    console.log('Verifying and logging graph data...');
+    console.log('recordsMensal:', this.graphData.data.recordsMensal);
+    console.log('recordsAnual:', this.graphData.data.recordsAnual);
+    console.log('recordsAnualLastYear:', this.graphData.data.recordsAnualLastYear);
+    console.log('goalsMensal:', this.graphData.data.goalsMensal);
+    console.log('goalMes:', this.graphData.data.goalMes);
+    console.log('goalAnual:', this.graphData.data.goalAnual);
+    console.log('previousYearTotal:', this.graphData.data.previousYearTotal);
+    console.log('currentYearTotal:', this.graphData.data.currentYearTotal);
+    console.log('variations:', this.graphData.data.variations);
+  }
+
   exportToPdf(): void {
     const element = document.querySelector('.graphicsContainer') as HTMLElement;
     if (element) {
       console.log('Elemento .graphicsContainer encontrado.');
-     
+
       // Ajustar a escala para melhorar a qualidade da imagem
       html2canvas(element, { scale: 2 }).then(canvas => {
         console.log('Canvas gerado com sucesso.');
@@ -171,11 +189,10 @@ export class ChartsPageComponent implements OnInit {
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
 
-
         let currentPdfHeight = 10;
-        const pageMargin = 10; 
+        const pageMargin = 10;
         let srcY = 0;
-   
+
         // Adicionar texto ao PDF
         pdf.setFontSize(11);
         pdf.text('Benchmarking Hospitais - Desempenho Assistencial', pdfWidth / 2, currentPdfHeight, { align: 'center' });
@@ -192,13 +209,13 @@ export class ChartsPageComponent implements OnInit {
         pdf.text('Dados publicados a:', pageMargin, currentPdfHeight);
         pdf.text(`${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, pageMargin, currentPdfHeight + 10);
         currentPdfHeight += 20;
-   
+
         // Adicionar imagem ao PDF
         const remainingHeight = canvasHeight - srcY;
         const pdfRemainingHeight = pdfHeight - currentPdfHeight - pageMargin;
         const srcHeight = Math.min(remainingHeight, (pdfRemainingHeight * canvasWidth) / pdfWidth);
         pdf.addImage(imgData, 'PNG', 0, currentPdfHeight, pdfWidth, (srcHeight * pdfWidth) / canvasWidth, undefined, 'SLOW', 0);
-   
+
         console.log('Imagem adicionada ao PDF.');
         pdf.save('graficos.pdf');
         console.log('PDF salvo como graficos.pdf.');

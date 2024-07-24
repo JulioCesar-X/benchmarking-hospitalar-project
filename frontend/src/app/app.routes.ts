@@ -74,15 +74,15 @@ export const routes: Routes = [
     path: 'charts',
     component: ChartsPageComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { expectedRole: ['root', 'admin', 'coordenador'] },
-    resolve: { chartData: ChartDataResolver }
+    data: { expectedRole: ['root', 'admin', 'coordenador'], reuse: false },
+    resolve: { chartData: ChartDataResolver },
   },
   {
     path: 'user-charts',
     component: ChartsPageComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { expectedRole: ['user'] },
-    resolve: { chartData: ChartDataResolver }
+    data: { expectedRole: ['user'], reuse: false },
+    resolve: { chartData: ChartDataResolver },
   },
   {
     path: 'record-goals-update',

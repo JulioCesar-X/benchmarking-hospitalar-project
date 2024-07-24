@@ -35,9 +35,9 @@ export class RecordsGoalsUpdateResolver implements Resolve<any> {
 
         return this.serviceService.showService(serviceId).pipe(
             switchMap((service: any) => {
+                
                 if (service && service.id) {
                     console.log('Service data retrieved:', service);
-
                     if (service.sais && service.sais.length > 0) {
                         filter.activityId = filter.activityId !== 1 ? filter.activityId : service.sais[0].activity.id;
                         filter.indicatorId = filter.indicatorId !== 1 ? filter.indicatorId : service.sais[0].indicator.id;

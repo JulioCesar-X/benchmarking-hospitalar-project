@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ServiceService } from '../../core/services/service/service.service';
@@ -8,6 +8,7 @@ import { Service } from '../../core/models/service.model';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
 import anime from 'animejs/lib/anime.es.js';
+
 
 @Component({
   selector: 'app-homepage',
@@ -113,12 +114,14 @@ export class HomepageComponent implements OnInit, OnDestroy {
   goToDescription(serviceId: number) {
     this.loadingServiceId = serviceId;
     const role = this.authService.getRole();
+    const navigationExtras: NavigationExtras = { queryParamsHandling: 'merge' };
+
     if (role === 'admin' || role === 'coordenador' || role === 'root') {
-      this.router.navigate(['/charts', { serviceId }]);
+      this.router.navigate(['/charts', { serviceId }], navigationExtras);
     } else if (role === 'user') {
-      this.router.navigate(['/user-charts', { serviceId }]);
+      this.router.navigate(['/user-charts', { serviceId }], navigationExtras);
     } else {
-      this.router.navigate([`/description/${serviceId}`]);
+      this.router.navigate([`/description/${serviceId}`], navigationExtras);
     }
   }
 
