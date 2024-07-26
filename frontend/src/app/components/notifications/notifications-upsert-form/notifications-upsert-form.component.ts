@@ -88,33 +88,30 @@ export class NotificationsCreateFormComponent implements OnInit {
     this.validateSubject();
     this.validateMessage();
 
-    if (this.subjectError || this.messageError) {
-      this.showFeedback('Corrija os erros antes de enviar.', 'error');
+    if (this.subjectError || this.messageError || !this.selectedUser || !this.subject || !this.message) {
       return;
     }
 
-    if (this.selectedUser && this.subject && this.message) {
-      this.isLoading = true;
-      const newNotification = {
-        userId: this.selectedUser,
-        title: this.subject,
-        message: this.message
-      };
+    this.isLoading = true; // Inicie o estado de carregamento
+    const newNotification = {
+      userId: this.selectedUser,
+      title: this.subject,
+      message: this.message
+    };
 
-      this.notificationService.storeNotification(newNotification).subscribe(
-        () => {
-          this.showFeedback('Mensagem enviada com sucesso!', 'success');
-          console.log('Notification sent successfully');
-          this.resetForm();
-        },
-        (error) => {
-          this.showFeedback('Falha ao enviar mensagem, tente novamente!', 'error');
-          console.error('Failed to send notification', error);
-        }
-      ).add(() => {
-        this.isLoading = false;
-      });
-    }
+    this.notificationService.storeNotification(newNotification).subscribe(
+      () => {
+        this.showFeedback('Mensagem enviada com sucesso!', 'success');
+        console.log('Notification sent successfully');
+        this.resetForm();
+      },
+      (error) => {
+        this.showFeedback('Falha ao enviar mensagem, tente novamente!', 'error');
+        console.error('Failed to send notification', error);
+      }
+    ).add(() => {
+      this.isLoading = false; // Finalize o estado de carregamento
+    });
   }
 
   showFeedback(message: string, type: 'success' | 'error') {
@@ -126,5 +123,7 @@ export class NotificationsCreateFormComponent implements OnInit {
     this.selectedUser = null;
     this.subject = '';
     this.message = '';
+    this.subjectError = '';
+    this.messageError = '';
   }
 }

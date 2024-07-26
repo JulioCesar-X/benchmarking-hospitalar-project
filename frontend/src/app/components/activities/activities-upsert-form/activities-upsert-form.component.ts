@@ -7,24 +7,28 @@ import { ServiceService } from '../../../core/services/service/service.service';
 import { ActivityService } from '../../../core/services/activity/activity.service';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { DesassociationListComponent } from '../../../components/shared/desassociation-list/desassociation-list.component';
 import { AssociationListComponent } from '../../../components/shared/association-list/association-list.component';
 import { Activity, CreateActivity } from '../../../core/models/activity.model';
-import { MatFormField, MatLabel, } from '@angular/material/form-field';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-activities-upsert-form',
   standalone: true,
   imports: [
-    CommonModule, MatFormField, MatLabel, MatInput, MatButtonModule,
+    CommonModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatButtonModule,
     FormsModule,
     FeedbackComponent,
     LoadingSpinnerComponent,
     DesassociationListComponent,
-    AssociationListComponent, 
+    AssociationListComponent,
     MatTooltipModule
   ],
   templateUrl: './activities-upsert-form.component.html',
@@ -38,15 +42,16 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
   };
 
   loadingCircleMessage = 'A carregar atividade';
-  notificationMessage: string = '';
+  notificationMessage = '';
   Type: 'success' | 'error' = 'success';
+  activityNameError = '';
 
-  isLoadingServices: boolean = true;
-  isLoadingIndicators: boolean = true;
-  @Input()isLoading: boolean = false;
-  isLoadingDesassociacao: boolean = false;
-  isLoadingAssociacao: boolean = false;
-  isError: boolean = false;
+  isLoadingServices = true;
+  isLoadingIndicators = true;
+  @Input() isLoading = false;
+  isLoadingDesassociacao = false;
+  isLoadingAssociacao = false;
+  isError = false;
 
   servicesList: any[] = [];
   indicatorsList: any[] = [];
@@ -231,26 +236,33 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
       (this.associations.length > 0 || this.desassociations.length > 0);
   }
 
+  validateActivityName() {
+    if (this.selectedActivity.activity_name.length > 80) {
+      this.activityNameError = 'O nome da atividade não pode ter mais de 80 caracteres.';
+    } else {
+      this.activityNameError = '';
+    }
+  }
+
   formSubmited(): void {
-    if (!this.formValid()) {
-      this.setNotification('Por favor, preencha todos os campos obrigatórios e selecione pelo menos um serviço e um indicador.', 'error');
+    if (!this.formValid() || this.activityNameError) {
+      this.setNotification('Por favor, preencha todos os campos obrigatórios e corrija os erros.', 'error');
       return;
     }
 
     if (this.formsAction === 'create') {
-      this.loadingCircleMessage = "A criar atividade"
+      this.loadingCircleMessage = "A criar atividade";
       this.createActivity();
     } else if (this.formsAction === 'edit') {
-      this.loadingCircleMessage = "A editar atividade"
+      this.loadingCircleMessage = "A editar atividade";
       this.editActivity();
     }
   }
-  
+
   setNotification(message: string, type: 'success' | 'error'): void {
     this.notificationMessage = message;
     this.Type = type;
   }
-
 
   editActivity() {
     this.isLoading = true;
@@ -271,7 +283,6 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
       },
       (error: any) => {
         this.isLoading = false;
-
         const errorMessage = this.getErrorMessage(error);
         this.setNotification(errorMessage, 'error');
       }
@@ -283,7 +294,6 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
     const createdActivity: CreateActivity = {
       activity_name: this.selectedActivity.activity_name,
       associations: this.associations,
-      // s
     };
 
     this.activityService.storeActivity(createdActivity).subscribe(
@@ -296,7 +306,6 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
       },
       (error: any) => {
         this.isLoading = false;
-
         const errorMessage = this.getErrorMessage(error);
         this.setNotification(errorMessage, 'error');
       }

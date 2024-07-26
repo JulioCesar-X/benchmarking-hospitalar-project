@@ -26,60 +26,59 @@
     </h2>
 
     <app-loading-spinner *ngIf="isLoading" [isForBlueBG]="true" [message]="loadingCircleMessage"></app-loading-spinner>
-    <form (ngSubmit)="formSubmited()" #activityForm="ngForm">
-      <div *ngIf="!isLoading">
-        <mat-form-field class="w-full mb-4 blueBG">
-          <mat-label class="blueTxt">Nome da atividade:</mat-label>
-          <input matInput [(ngModel)]="selectedActivity.activity_name" id="name" name="name"
-            (blur)="validateActivityName()" />
-          <span *ngIf="activityNameError" class="errorSpan">{{ activityNameError }}</span>
-        </mat-form-field>
 
-        <!-- tabs -->
-        <div class="tab-headers-wrapper mt-5">
-          <div id="tabHead" class="flex items-center justify-between pr-2">
-            <div id="tabHeaders" class="flex w-[30%]">
-              <button matTooltip="Desassociar serviços e indicadores à atividade." [matTooltipPosition]="'above'"
-                matTooltipClass="custom" type="button" class="tab-link" [class.active]="activeTab === 'Desassociação'"
-                (click)="selectTab('Desassociação')">
-                Desassociação
-              </button>
-              <button matTooltip="Associar serviços e indicadores à atividade." [matTooltipPosition]="'above'"
-                matTooltipClass="custom" type="button" class="tab-link" [class.active]="activeTab === 'Associação'"
-                (click)="selectTab('Associação')">
-                Associação
-              </button>
-            </div>
-          </div>
+    <form *ngIf="!isLoading" (ngSubmit)="formSubmited()" #activityForm="ngForm">
+      <mat-form-field class="w-full mb-4 blueBG">
+        <mat-label class="blueTxt">Nome do atividade:</mat-label>
+        <input matInput [(ngModel)]="selectedActivity.activity_name" id="name" name="name"
+          (blur)="validateActivityName()" />
+        <span *ngIf="activityNameError" class="errorSpan">{{ activityNameError }}</span>
+      </mat-form-field>
 
-          <div *ngIf="activeTab === 'Desassociação'" class="checkboxContainer">
-            <app-loading-spinner *ngIf="isLoadingDesassociacao" message="A carregar SAIs..."></app-loading-spinner>
-            <app-desassociation-list [items]="saisList" [displayProperties]="['service_name', 'indicator_name']"
-              [preSelectedItems]="selectedSaisIDs" (selectionChange)="onSaisSelectionChange($event)">
-            </app-desassociation-list>
-          </div>
-
-          <div *ngIf="activeTab === 'Associação'" class="checkboxContainer">
-            <app-loading-spinner *ngIf="isLoadingAssociacao" message="A carregar Associações..."></app-loading-spinner>
-            <div class="association-container">
-              <app-association-list [componentTitle]="'Serviços'" [items]="servicesList"
-                [displayProperties]="['service_name']" [preSelectedItems]="selectedServicesIDs"
-                [columnTitle]="'Serviços'" (selectionChange)="onServicesSelectionChange($event)">
-              </app-association-list>
-
-              <app-association-list [componentTitle]="'Indicadores'" [items]="indicatorsList"
-                [displayProperties]="['indicator_name']" [preSelectedItems]="selectedIndicatorsIDs"
-                [columnTitle]="'Indicadores'" (selectionChange)="onIndicatorsSelectionChange($event)">
-              </app-association-list>
-            </div>
+      <!-- tabs -->
+      <div class="tab-headers-wrapper mt-5">
+        <div id="tabHead" class="flex items-center justify-between pr-2">
+          <div id="tabHeaders" class="flex w-[30%]">
+            <button matTooltip="Desassociar serviços e indicadores á atividade." [matTooltipPosition]="'above'"
+              matTooltipClass="custom" type="button" class="tab-link" [class.active]="activeTab === 'Desassociação'"
+              (click)="selectTab('Desassociação')">
+              Desassociação
+            </button>
+            <button matTooltip="Associar serviços e indicadores á atividade." [matTooltipPosition]="'above'"
+              matTooltipClass="custom" type="button" class="tab-link" [class.active]="activeTab === 'Associação'"
+              (click)="selectTab('Associação')">
+              Associação
+            </button>
           </div>
         </div>
 
-        <button *ngIf="!isLoading" mat-raised-button type="submit" class="mt-2 custom-button"
-          [disabled]="!formValid() || activityNameError">
-          {{ formsAction === "create" ? "Adicionar" : "Atualizar" }}
-        </button>
+        <div *ngIf="activeTab === 'Desassociação'" class="checkboxContainer">
+          <app-loading-spinner *ngIf="isLoadingDesassociacao" message="A carregar SAIs..."></app-loading-spinner>
+          <app-desassociation-list [items]="saisList" [displayProperties]="['service_name', 'indicator_name']"
+            [preSelectedItems]="selectedSaisIDs" (selectionChange)="onSaisSelectionChange($event)">
+          </app-desassociation-list>
+        </div>
+
+        <div *ngIf="activeTab === 'Associação'" class="checkboxContainer">
+          <app-loading-spinner *ngIf="isLoadingAssociacao" message="A carregar Associações..."></app-loading-spinner>
+          <div class="association-container">
+            <app-association-list [componentTitle]="'Serviços'" [items]="servicesList"
+              [displayProperties]="['service_name']" [preSelectedItems]="selectedServicesIDs" [columnTitle]="'Serviços'"
+              (selectionChange)="onServicesSelectionChange($event)">
+            </app-association-list>
+
+            <app-association-list [componentTitle]="'Indicadores'" [items]="indicatorsList"
+              [displayProperties]="['indicator_name']" [preSelectedItems]="selectedIndicatorsIDs"
+              [columnTitle]="'Indicadores'" (selectionChange)="onIndicatorsSelectionChange($event)">
+            </app-association-list>
+          </div>
+        </div>
       </div>
+
+      <button *ngIf="!isLoading" mat-raised-button type="submit" class="mt-2 custom-button"
+        [disabled]="!formValid() || activityNameError">
+        {{ formsAction === "create" ? "Adicionar" : "Atualizar" }}
+      </button>
     </form>
   </div>
 </div>
