@@ -109,12 +109,12 @@ class SaiSeeder extends Seeder
             // Associações para Consulta Especializada em Saúde
             ['service_id' => 9, 'activity_id' => 8, 'indicator_id' => 40, 'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 9, 'activity_id' => 8, 'indicator_id' => 41, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 9, 'activity_id' => 7, 'indicator_id' => 42, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 9, 'activity_id' => 7, 'indicator_id' => 43, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 9, 'activity_id' => 9, 'indicator_id' => 42, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 9, 'activity_id' => 9, 'indicator_id' => 43, 'created_at' => $timestamp, 'updated_at' => $timestamp],
 
             // Associações para Formação e Educação Continuada
             ['service_id' => 10, 'activity_id' => 8, 'indicator_id' => 44, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 10, 'activity_id' => 7, 'indicator_id' => 39, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 10, 'activity_id' => 9, 'indicator_id' => 39, 'created_at' => $timestamp, 'updated_at' => $timestamp],
 
             // Associações para Recursos de Saúde Digital
             ['service_id' => 11, 'activity_id' => 9, 'indicator_id' => 40, 'created_at' => $timestamp, 'updated_at' => $timestamp],
