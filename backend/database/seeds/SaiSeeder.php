@@ -15,7 +15,6 @@ class SaiSeeder extends Seeder
     {
         $timestamp = Carbon::now();
         $sais = $this->generateInitialSais($timestamp);
-        $sais = array_merge($sais, $this->generateAdditionalSais($timestamp));
 
         DB::transaction(function () use ($sais) {
             DB::table('sais')->insert($sais);
@@ -32,17 +31,6 @@ class SaiSeeder extends Seeder
     {
         return [
             // Consulta Externa e Psiquiatria Adultos
-            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 1, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 2, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 3, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 37, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 4,  'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 5,  'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 6,  'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 7,  'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 8,  'created_at' => $timestamp, 'updated_at' => $timestamp],
-
-            // Consulta Externa e Psiquiatria Infância e Adolescência
             ['service_id' => 1, 'activity_id' => 2, 'indicator_id' => 1, 'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 1, 'activity_id' => 2, 'indicator_id' => 2, 'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 1, 'activity_id' => 2, 'indicator_id' => 3, 'created_at' => $timestamp, 'updated_at' => $timestamp],
@@ -52,6 +40,17 @@ class SaiSeeder extends Seeder
             ['service_id' => 1, 'activity_id' => 2, 'indicator_id' => 6,  'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 1, 'activity_id' => 2, 'indicator_id' => 7,  'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 1, 'activity_id' => 2, 'indicator_id' => 8,  'created_at' => $timestamp, 'updated_at' => $timestamp],
+
+            // Consulta Externa e Psiquiatria Infância e Adolescência
+            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 1, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 2, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 3, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 37, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 4,  'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 5,  'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 6,  'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 7,  'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 1, 'activity_id' => 1, 'indicator_id' => 8,  'created_at' => $timestamp, 'updated_at' => $timestamp],
 
             // Consulta Externa e Quadro Resumo
             ['service_id' => 1, 'activity_id' => 3, 'indicator_id' => 9, 'created_at' => $timestamp, 'updated_at' => $timestamp],
@@ -95,6 +94,7 @@ class SaiSeeder extends Seeder
             ['service_id' => 6, 'activity_id' => null, 'indicator_id' => 35, 'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 6, 'activity_id' => null, 'indicator_id' => 6,  'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 6, 'activity_id' => null, 'indicator_id' => 36,  'created_at' => $timestamp, 'updated_at' => $timestamp],
+
             // Associações para Análise e Diagnóstico Avançado
             ['service_id' => 7, 'activity_id' => 4, 'indicator_id' => 39, 'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 7, 'activity_id' => 4, 'indicator_id' => 40, 'created_at' => $timestamp, 'updated_at' => $timestamp],
@@ -109,42 +109,17 @@ class SaiSeeder extends Seeder
             // Associações para Consulta Especializada em Saúde
             ['service_id' => 9, 'activity_id' => 8, 'indicator_id' => 40, 'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 9, 'activity_id' => 8, 'indicator_id' => 41, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 9, 'activity_id' => 9, 'indicator_id' => 42, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 9, 'activity_id' => 9, 'indicator_id' => 43, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 9, 'activity_id' => 7, 'indicator_id' => 42, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 9, 'activity_id' => 7, 'indicator_id' => 43, 'created_at' => $timestamp, 'updated_at' => $timestamp],
 
             // Associações para Formação e Educação Continuada
             ['service_id' => 10, 'activity_id' => 8, 'indicator_id' => 44, 'created_at' => $timestamp, 'updated_at' => $timestamp],
-            ['service_id' => 10, 'activity_id' => 9, 'indicator_id' => 39, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 10, 'activity_id' => 7, 'indicator_id' => 39, 'created_at' => $timestamp, 'updated_at' => $timestamp],
 
             // Associações para Recursos de Saúde Digital
             ['service_id' => 11, 'activity_id' => 9, 'indicator_id' => 40, 'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 11, 'activity_id' => 8, 'indicator_id' => 41, 'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 11, 'activity_id' => 9, 'indicator_id' => 42, 'created_at' => $timestamp, 'updated_at' => $timestamp],
         ];
-    }
-
-    /**
-     * Gera os dados adicionais dinâmicos para a inserção.
-     *
-     * @param \Carbon\Carbon $timestamp
-     * @return array
-     */
-    private function generateAdditionalSais($timestamp)
-    {
-        $additionalSais = [];
-        for ($service_id = 7; $service_id <= 11; $service_id++) {
-            for ($activity_id = 4; $activity_id <= 9; $activity_id++) {
-                for ($indicator_id = 39; $indicator_id <= 44; $indicator_id++) {
-                    $additionalSais[] = [
-                        'service_id' => $service_id,
-                        'activity_id' => $activity_id,
-                        'indicator_id' => $indicator_id,
-                        'created_at' => $timestamp,
-                        'updated_at' => $timestamp
-                    ];
-                }
-            }
-        }
-        return $additionalSais;
     }
 }
