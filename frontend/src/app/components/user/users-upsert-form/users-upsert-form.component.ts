@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../core/services/user/user.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -18,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { User } from '../../../core/models/user.model';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-users-upsert-form',
@@ -65,8 +65,13 @@ export class UsersUpsertFormComponent {
   nifErrorMessage: string = '';
   roleErrorMessage: string = '';
 
-  constructor(private userService: UserService, private authService: AuthService,
-    private router: Router, private route: ActivatedRoute) { }
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private loggingService: LoggingService
+  ) { }
 
   formSubmited() {
     this.notificationMessage = '';
@@ -169,6 +174,7 @@ export class UsersUpsertFormComponent {
     } else {
       this.setNotification('Ocorreu um erro, tente novamente mais tarde!', 'error');
     }
+    this.loggingService.error('Error in user operation:', error);
   }
 
   translateErrorMessage(message: string): string {
@@ -186,7 +192,7 @@ export class UsersUpsertFormComponent {
       case 'The role_id field is required.':
         return 'O campo role é obrigatório.';
       default:
-        return message; // Retorna a mensagem original se não houver tradução
+        return message;
     }
   }
 
@@ -236,7 +242,6 @@ export class UsersUpsertFormComponent {
       this.emailErrorMessage = '';
     }
   }
-
 
   validateNIF() {
     const nifPattern = /^\d{9}$/;

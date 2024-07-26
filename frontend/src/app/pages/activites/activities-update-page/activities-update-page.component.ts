@@ -8,6 +8,7 @@ import { Activity } from '../../../core/models/activity.model';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-activities-update-page',
@@ -28,7 +29,8 @@ export class ActivitiesUpdatePageComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -50,11 +52,10 @@ export class ActivitiesUpdatePageComponent implements OnInit, OnDestroy {
     this.activityService.showActivity(activityId).subscribe({
       next: (data) => {
         this.selectedActivity = data;
-        console.log('Activity loaded>>>', this.selectedActivity);
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading activity', error);
+        this.loggingService.error('Error loading activity', error);
         this.isLoading = false;
       }
     });

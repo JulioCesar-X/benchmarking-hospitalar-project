@@ -5,12 +5,17 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { Indicator } from '../../models/indicator.model';
 import { Filter } from '../../models/filter.model';
 import { CacheService } from '../cache.service';
+import { LoggingService } from '../logging.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IndicatorService {
-  constructor(private http: HttpClient, private cacheService: CacheService) { }
+  constructor(
+    private http: HttpClient,
+    private cacheService: CacheService,
+    private loggingService: LoggingService
+  ) { }
 
   private getHttpParams(filter: Filter): HttpParams {
     return new HttpParams()
@@ -38,7 +43,7 @@ export class IndicatorService {
       variations: this.getVariations(filter).pipe(map(data => ({ hasData: true, data })), catchError(() => of({ hasData: false, data: [] }))),
     }).pipe(
       tap(data => {
-        console.log('API data:', data); // Log para verificação dos dados
+        this.loggingService.info('API data:', data);
       }),
       map(data => ({
         recordsMensal: data.recordsMensal.hasData ? data.recordsMensal.data : null,
@@ -52,7 +57,7 @@ export class IndicatorService {
         variations: data.variations.hasData ? data.variations.data : null,
       })),
       catchError(error => {
-        console.error('Error fetching data:', error);
+        this.loggingService.error('Error fetching data:', error);
         return throwError(() => new Error('Failed to fetch data'));
       })
     );
@@ -118,7 +123,7 @@ export class IndicatorService {
   getSAIPaginated(pageIndex: number, pageSize: number): Observable<any[]> {
     return this.http.get<any>(`/indicators/sai/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
       catchError(error => {
-        console.error('Error fetching service activity indicators:', error);
+        this.loggingService.error('Error fetching service activity indicators:', error);
         return throwError(() => new Error('Failed to fetch service activity indicators'));
       })
     );
@@ -132,7 +137,7 @@ export class IndicatorService {
       .set('month', month.toString())
       .set('page', (pageIndex + 1).toString())
       .set('size', pageSize.toString());
-    console.log('params >>', params.toString());
+    this.loggingService.info('params >>', params.toString());
 
     return this.http.get<any>('/indicators/sai/records', { params });
   }
@@ -144,7 +149,7 @@ export class IndicatorService {
       .set('year', year)
       .set('page', (pageIndex + 1))
       .set('size', pageSize);
-    console.log('params >>', params.toString());
+    this.loggingService.info('params >>', params.toString());
 
     return this.http.get<any>('/indicators/sai/goals', { params });
   }

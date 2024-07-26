@@ -8,6 +8,7 @@ import { Service } from '../../../core/models/service.model';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-services-update-page',
@@ -29,7 +30,7 @@ export class ServicesUpdatePageComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private serviceService: ServiceService,
-    private router: Router
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -50,11 +51,12 @@ export class ServicesUpdatePageComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.serviceService.showService(serviceId).subscribe({
       next: (data) => {
+        this.loggingService.log('Service loaded:', data);
         this.selectedService = data;
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading service', error);
+        this.loggingService.error('Error loading service', error);
         this.isLoading = false;
       }
     });

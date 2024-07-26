@@ -8,6 +8,7 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-password-recup-modal',
@@ -27,7 +28,11 @@ export class PasswordRecupModalComponent {
   feedbackMessage: string = '';
   feedbackType: 'success' | 'error' = 'success';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private loggingService: LoggingService
+  ) { }
 
   close() {
     this.isVisible = false;
@@ -64,7 +69,7 @@ export class PasswordRecupModalComponent {
 
     this.authService.forgotPassword(this.email).subscribe({
       next: (response) => {
-        console.log('Email de recuperação enviado:', response);
+        this.loggingService.log('Email de recuperação enviado:', response);
         this.feedbackMessage = 'Email de recuperação enviado com sucesso!';
         this.feedbackType = 'success';
         this.isError = false;
@@ -77,7 +82,7 @@ export class PasswordRecupModalComponent {
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('Erro ao enviar email de recuperação:', error);
+        this.loggingService.error('Erro ao enviar email de recuperação:', error);
 
         if (error.error.message === 'User not found.') {
           this.emailErrorMessage = 'Email não registrado na aplicação. Contacte o coordenador responsável.';

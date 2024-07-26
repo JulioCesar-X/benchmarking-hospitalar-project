@@ -4,12 +4,17 @@ import { Observable, throwError, of } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { Service } from '../../models/service.model';
 import { CacheService } from '../cache.service';
+import { LoggingService } from '../logging.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ServiceService {
-  constructor(private http: HttpClient, private cacheService: CacheService) { }
+  constructor(
+    private http: HttpClient,
+    private cacheService: CacheService,
+    private loggingService: LoggingService
+  ) { }
 
   private getCacheKey(id: number | string): string {
     return `service-${id}`;
@@ -27,7 +32,7 @@ export class ServiceService {
           }
         }),
         catchError(error => {
-          console.error('Failed to fetch services:', error);
+          this.loggingService.error('Failed to fetch services:', error);
           return throwError(() => new Error('Failed to fetch services'));
         })
       );
@@ -47,7 +52,7 @@ export class ServiceService {
           }
         }),
         catchError(error => {
-          console.error('Failed to fetch first valid service:', error);
+          this.loggingService.error('Failed to fetch first valid service:', error);
           return of(null);
         })
       );
@@ -66,7 +71,7 @@ export class ServiceService {
           }
         }),
         catchError(error => {
-          console.error('Failed to fetch paginated services:', error);
+          this.loggingService.error('Failed to fetch paginated services:', error);
           return throwError(() => new Error('Failed to fetch paginated services'));
         })
       );
@@ -75,9 +80,9 @@ export class ServiceService {
 
   updateServiceOrder(services: Service[]): Observable<any> {
     return this.http.post<any>('/services/update-order', { services }).pipe(
-      tap(() => this.cacheService.clear()), // Limpa o cache ao atualizar a ordem dos serviços
+      tap(() => this.cacheService.clear()),
       catchError(error => {
-        console.error('Failed to update service order:', error);
+        this.loggingService.error('Failed to update service order:', error);
         return throwError(() => new Error('Failed to update service order'));
       })
     );
@@ -95,7 +100,7 @@ export class ServiceService {
           }
         }),
         catchError(error => {
-          console.error('Failed to fetch service:', error);
+          this.loggingService.error('Failed to fetch service:', error);
           return throwError(() => new Error('Failed to fetch service'));
         })
       );
@@ -106,11 +111,11 @@ export class ServiceService {
     return this.http.post<any>('/services', service).pipe(
       tap(response => {
         if (response !== null && response !== undefined) {
-          this.cacheService.clear(); // Limpa o cache ao adicionar um novo serviço
+          this.cacheService.clear();
         }
       }),
       catchError(error => {
-        console.error('Failed to store service:', error);
+        this.loggingService.error('Failed to store service:', error);
         return throwError(() => new Error('Failed to store service'));
       })
     );
@@ -120,12 +125,12 @@ export class ServiceService {
     return this.http.put<any>(`/services/${id}`, service).pipe(
       tap(response => {
         if (response !== null && response !== undefined) {
-          this.cacheService.set(this.getCacheKey(id), response); // Atualiza o cache com a resposta
-          this.cacheService.clear(); // Limpa todo o cache para garantir dados atualizados
+          this.cacheService.set(this.getCacheKey(id), response);
+          this.cacheService.clear();
         }
       }),
       catchError(error => {
-        console.error('Failed to update service:', error);
+        this.loggingService.error('Failed to update service:', error);
         return throwError(() => new Error('Failed to update service'));
       })
     );
@@ -135,11 +140,11 @@ export class ServiceService {
     return this.http.delete(`/services/${id}`).pipe(
       tap(response => {
         if (response !== null && response !== undefined) {
-          this.cacheService.clear(); // Limpa o cache ao deletar um serviço
+          this.cacheService.clear();
         }
       }),
       catchError(error => {
-        console.error('Failed to delete service:', error);
+        this.loggingService.error('Failed to delete service:', error);
         return throwError(() => new Error('Failed to delete service'));
       })
     );

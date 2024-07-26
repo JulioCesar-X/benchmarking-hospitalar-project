@@ -4,12 +4,17 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
 import { Notification } from '../../models/notification.model';
+import { LoggingService } from '../logging.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private loggingService: LoggingService
+  ) { }
 
   indexNotifications(): Observable<any> {
     return this.http.get('/notifications', {
@@ -18,7 +23,7 @@ export class NotificationService {
       }),
       withCredentials: true
     }).pipe(
-      catchError(this.handleError)
+      catchError(error => this.handleError(error))
     );
   }
 
@@ -29,7 +34,7 @@ export class NotificationService {
       }),
       withCredentials: true
     }).pipe(
-      catchError(this.handleError)
+      catchError(error => this.handleError(error))
     );
   }
 
@@ -40,7 +45,7 @@ export class NotificationService {
       }),
       withCredentials: true
     }).pipe(
-      catchError(this.handleError)
+      catchError(error => this.handleError(error))
     );
   }
 
@@ -50,11 +55,11 @@ export class NotificationService {
     });
 
     return this.http.post<any>('/notifications', {
-      receiver_id: notification.userId, 
+      receiver_id: notification.userId,
       title: notification.title,
       message: notification.message
     }, { headers }).pipe(
-      catchError(this.handleError)
+      catchError(error => this.handleError(error))
     );
   }
 
@@ -70,10 +75,10 @@ export class NotificationService {
       }),
       withCredentials: true
     }).pipe(
-      catchError(this.handleError)
+      catchError(error => this.handleError(error))
     );
   }
-  
+
   getNotificationsSent(page: number, perPage: number): Observable<any> {
     const params = new HttpParams()
       .set('page', page.toString())
@@ -86,16 +91,19 @@ export class NotificationService {
       }),
       withCredentials: true
     }).pipe(
-      catchError(this.handleError)
+      catchError(error => this.handleError(error))
     );
   }
 
   respondToNotification(id: number, response: { response: string }): Observable<Notification> {
-    return this.http.patch<Notification>(`/notifications/${id}/respond`, response);
+    return this.http.patch<Notification>(`/notifications/${id}/respond`, response)
+      .pipe(
+        catchError(error => this.handleError(error))
+      );
   }
 
   private handleError(error: any) {
-    console.error('An error occurred', error);
+    this.loggingService.error('An error occurred', error);
     return throwError(error);
   }
 }

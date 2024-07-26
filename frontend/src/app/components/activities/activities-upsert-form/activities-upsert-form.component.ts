@@ -14,6 +14,7 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-activities-upsert-form',
@@ -69,7 +70,8 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
     private activityService: ActivityService,
     private serviceService: ServiceService,
     private indicatorService: IndicatorService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -89,7 +91,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
       this.isLoading = false;
       this.cdr.detectChanges();
     } catch (error) {
-      console.error('Error loading initial data', error);
+      this.loggingService.error('Error loading initial data', error);
       this.isLoading = false;
       this.cdr.detectChanges();
     }
@@ -124,7 +126,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading activity', error);
+        this.loggingService.error('Error loading activity', error);
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
         this.isLoading = false;
@@ -143,7 +145,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
           resolve();
         },
         error: (error) => {
-          console.error('Error obtaining services', error);
+          this.loggingService.error('Error obtaining services', error);
           reject(error);
         },
         complete: () => {
@@ -165,7 +167,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
           resolve();
         },
         error: (error) => {
-          console.error('Error obtaining indicators', error);
+          this.loggingService.error('Error obtaining indicators', error);
           reject(error);
         },
         complete: () => {
@@ -191,7 +193,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
     this.selectedServicesIDs = event.selected.map(service => service.id);
 
-    console.log('Associations:', this.associations);
+    this.loggingService.log('Associations:', this.associations);
     this.cdr.detectChanges();
   }
 
@@ -210,7 +212,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
     this.selectedIndicatorsIDs = event.selected.map(indicator => indicator.id);
 
-    console.log('Associations:', this.associations);
+    this.loggingService.log('Associations:', this.associations);
     this.cdr.detectChanges();
   }
 
@@ -227,7 +229,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
     this.selectedSaisIDs = event.selected.map(sai => sai.sai_id);
 
-    console.log('Desassociations:', this.desassociations);
+    this.loggingService.log('Desassociations:', this.desassociations);
     this.cdr.detectChanges();
   }
 

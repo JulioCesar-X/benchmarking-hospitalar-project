@@ -92,8 +92,6 @@ export const routes: Routes = [
     resolve: { recordGoalsData: RecordsGoalsUpdateResolver }
   },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-
-  //Rotas notificações
   {
     path: 'notifications',
     children: [

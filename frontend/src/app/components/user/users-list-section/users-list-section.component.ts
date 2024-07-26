@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild, AfterVie
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
 import { UserService } from '../../../core/services/user/user.service';
@@ -14,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-users-list-section',
@@ -44,26 +45,26 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
   currentPage = 0;
   totalLength = 0;
   dataSource = new MatTableDataSource<any>([]);
-  allUsers: any[] = []; // Armazena todos os dados carregados
-  loadedPages: Set<number> = new Set(); // Acompanhamento de páginas carregadas
+  allUsers: any[] = [];
+  loadedPages: Set<number> = new Set();
 
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private userService: UserService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
     if (!this.users.length) {
-      this.loadUsers(0, 30); // Carregar mais dados inicialmente
+      this.loadUsers(0, 30);
     } else {
       this.isLoading = false;
       this.allUsers = this.users.slice();
       this.updateDataSource();
     }
-    
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -97,7 +98,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
         this.isLoading = false;
       },
       error: (error) => {
-        console.error("Error loading paginated users:", error);
+        this.loggingService.error("Error loading paginated users:", error);
         this.isLoading = false;
       }
     });
@@ -131,7 +132,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
         this.updateDataSource();
       },
       error: (error) => {
-        console.error("Error deleting user:", error);
+        this.loggingService.error("Error deleting user:", error);
       }
     });
   }
@@ -143,7 +144,7 @@ export class UsersListSectionComponent implements OnInit, OnChanges, AfterViewIn
     const endIndex = startIndex + this.pageSize;
 
     if (!this.loadedPages.has(this.currentPage)) {
-      this.loadUsers(this.currentPage, this.pageSize * 3); // Carregar mais dados quando necessário
+      this.loadUsers(this.currentPage, this.pageSize * 3);
     } else {
       this.dataSource.data = this.allUsers.slice(startIndex, endIndex);
     }

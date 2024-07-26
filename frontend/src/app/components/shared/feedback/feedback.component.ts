@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-feedback',
@@ -13,8 +14,11 @@ export class FeedbackComponent implements OnInit {
   @Input() type: 'success' | 'error' = 'success';
   leaving: boolean = false;
 
+  constructor(private loggingService: LoggingService) { }
+
   ngOnInit() {
     if (this.message) {
+      this.loggingService.info(`Feedback message displayed: ${this.message}`, this.type);
       setTimeout(() => {
         this.close();
       }, 2000);
@@ -24,6 +28,7 @@ export class FeedbackComponent implements OnInit {
   close() {
     this.leaving = true;
     setTimeout(() => {
+      this.loggingService.info(`Feedback message closed: ${this.message}`, this.type);
       this.message = '';
       this.leaving = false;
     }, 500);

@@ -9,6 +9,7 @@ import { Activity } from '../../../core/models/activity.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+import { LoggingService } from '../../../core/services/logging.service';
 
 interface ActivityForFilter {
   id: number | null;
@@ -58,12 +59,16 @@ export class FilterComponent implements OnInit, OnChanges {
   feedbackMessage: string = '';
   feedbackType: 'success' | 'error' = 'error';
 
-  constructor(private serviceService: ServiceService, private activityService: ActivityService) { }
+  constructor(
+    private serviceService: ServiceService,
+    private activityService: ActivityService,
+    private loggingService: LoggingService
+  ) { }
 
   ngOnInit() {
     this.loadInitialData();
     if (this.initialFilter) {
-      console.log('Initial filter:', this.initialFilter);
+      this.loggingService.info('Initial filter:', this.initialFilter);
       this.applyInitialFilter();
     }
   }
@@ -98,9 +103,9 @@ export class FilterComponent implements OnInit, OnChanges {
       this.selectedServiceId = this.initialFilter.serviceId;
       this.selectedActivityId = this.initialFilter.activityId ? Number(this.initialFilter.activityId) : undefined;
       this.selectedIndicatorId = this.initialFilter.indicatorId ? Number(this.initialFilter.indicatorId) : undefined;
-      console.log('Initial indicator:', this.selectedIndicatorId);
-      console.log('Initial activity:', this.selectedActivityId);
-      console.log('Initial service:', this.selectedServiceId);
+      this.loggingService.info('Initial indicator:', this.selectedIndicatorId);
+      this.loggingService.info('Initial activity:', this.selectedActivityId);
+      this.loggingService.info('Initial service:', this.selectedServiceId);
       this.filter.month = this.initialFilter.month;
       this.filter.year = this.initialFilter.year;
 
@@ -115,8 +120,8 @@ export class FilterComponent implements OnInit, OnChanges {
     const serviceId = Number(target.value);
     if (!isNaN(serviceId)) {
       this.selectedServiceId = serviceId;
-      this.selectedActivityId = undefined; // Reset activity
-      this.selectedIndicatorId = undefined; // Reset indicator
+      this.selectedActivityId = undefined;
+      this.selectedIndicatorId = undefined;
       this.updateActivityAndIndicatorSelections(serviceId);
     }
   }
@@ -138,10 +143,10 @@ export class FilterComponent implements OnInit, OnChanges {
         })) || [];
       } else {
         if (this.selectedActivityId) {
-        this.activityService.showActivity(Number(this.selectedActivityId)).subscribe(activity => {
-          this.activityCache.set(Number(this.selectedActivityId), activity);
-          this.updateIndicatorSelection(activity);
-        });
+          this.activityService.showActivity(Number(this.selectedActivityId)).subscribe(activity => {
+            this.activityCache.set(Number(this.selectedActivityId), activity);
+            this.updateIndicatorSelection(activity);
+          });
         } else {
           this.updateIndicatorSelection(undefined);
         }
@@ -227,7 +232,7 @@ export class FilterComponent implements OnInit, OnChanges {
     this.feedbackType = type;
     setTimeout(() => {
       this.feedbackMessage = '';
-    }, 3000); // Clear the message after 3 seconds
+    }, 3000);
   }
 
   trackByServiceId(index: number, service: any): number {

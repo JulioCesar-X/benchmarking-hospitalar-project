@@ -10,9 +10,10 @@ import { Service } from '../../../core/models/service.model';
 import { ServiceService } from '../../../core/services/service/service.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
-import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-services-list-section',
@@ -28,7 +29,7 @@ import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginato
     PaginatorComponent,
     DialogContentComponent,
     CardComponent,
-    MatTooltipModule, 
+    MatTooltipModule,
     FeedbackComponent
   ],
   providers: [
@@ -42,20 +43,20 @@ export class ServicesListSectionComponent implements OnInit, OnChanges, AfterVie
   pageSizeOptions: number[] = [5, 10, 20, 50, 100];
   currentPage = 0;
   totalLength = 0;
-  allServices: Service[] = []; // Armazena todos os dados carregados
+  allServices: Service[] = [];
   loadedPages: Set<number> = new Set();
-
   notificationMessage: string = '';
   notificationType: 'success' | 'error' = 'success';
 
   constructor(
     private serviceService: ServiceService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
-    this.loadServices(0, 30); // Carrega um conjunto maior de dados inicialmente
+    this.loadServices(0, 30);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -88,7 +89,7 @@ export class ServicesListSectionComponent implements OnInit, OnChanges, AfterVie
       },
       error: (error) => {
         this.setNotification('Error loading paginated services', 'error');
-        console.error('Error loading paginated services:', error);
+        this.loggingService.error('Error loading paginated services:', error);
         this.isLoading = false;
       }
     });
@@ -124,7 +125,7 @@ export class ServicesListSectionComponent implements OnInit, OnChanges, AfterVie
       },
       error: (error) => {
         this.setNotification('Erro ao excluir serviço', 'error');
-        console.error("Error deleting service:", error);
+        this.loggingService.error('Error deleting service:', error);
       },
       complete: () => {
         this.isLoading = false;

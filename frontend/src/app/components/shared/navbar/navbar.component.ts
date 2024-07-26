@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink, Router } from '@angular/router'; // Import ActivatedRoute
+import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { UserService } from '../../../core/services/user/user.service';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { NotificationCommunicationService } from '../../../core/services/notifications/notification-communication/notification-communication.service';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-navbar',
@@ -32,15 +33,14 @@ import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.comp
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-
-  isNavbarOpen: boolean = false;
-  isDropdownOpen: boolean = false;
-  isLoginOut: boolean = false;
-  isNotificationsOpen: boolean = false;
-  unreadNotifications: number = 0;
+  isNavbarOpen = false;
+  isDropdownOpen = false;
+  isLoginOut = false;
+  isNotificationsOpen = false;
+  unreadNotifications = 0;
   allNotifications: Notification[] = [];
   currentUser: User | null = null;
-  hasNewNotifications: boolean = false;
+  hasNewNotifications = false;
 
   private communicationSubscription: Subscription | undefined;
   private notificationSubscription: Subscription | undefined;
@@ -52,7 +52,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private userService: UserService,
     private router: Router,
-    private notificationCommunicationService: NotificationCommunicationService
+    private notificationCommunicationService: NotificationCommunicationService,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -75,15 +76,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.notificationSubscription) {
-      this.notificationSubscription.unsubscribe();
-    }
-    if (this.communicationSubscription) {
-      this.communicationSubscription.unsubscribe();
-    }
-    if (this.loginSubscription) {
-      this.loginSubscription.unsubscribe();
-    }
+    this.notificationSubscription?.unsubscribe();
+    this.communicationSubscription?.unsubscribe();
+    this.loginSubscription?.unsubscribe();
   }
 
   isLoggedIn(): boolean {
@@ -102,12 +97,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.isLoginOut = true;
     try {
       this.authService.logout();
-      if (this.notificationSubscription) {
-        this.notificationSubscription.unsubscribe();
-      }
-      this.clearNotifications(); // Clear notifications on logout
+      this.notificationSubscription?.unsubscribe();
+      this.clearNotifications();
     } catch (error) {
-      console.error('Error during logout:', error);
+      this.loggingService.error('Error during logout:', error);
     } finally {
       this.isLoginOut = false;
     }
@@ -121,7 +114,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.checkUnreadNotifications();
         },
         error: (error) => {
-          console.error('Error fetching notifications', error);
+          this.loggingService.error('Error fetching notifications', error);
         }
       });
     }
@@ -139,7 +132,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.navigateToNotification(notification.id, tab);
         },
         error: (error) => {
-          console.error('Error marking notification as read', error);
+          this.loggingService.error('Error marking notification as read', error);
         }
       });
     }
@@ -150,7 +143,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.unreadNotifications = this.allNotifications.length;
     this.hasNewNotifications = this.unreadNotifications > 0;
     if (this.unreadNotifications > previousCount) {
-      setTimeout(() => this.hasNewNotifications = false, 3000); // Remove animation after 3 seconds
+      setTimeout(() => (this.hasNewNotifications = false), 3000);
     }
   }
 
@@ -173,7 +166,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
           width: '500px',
           data: { user: user }
         });
-        console.log('Opened profile user:', user);
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
@@ -204,8 +196,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.router.navigate(['/notifications'], { queryParams: { id: notificationId, tab: tab } });
   }
 
-  openNotifications()
-  {
+  openNotifications() {
     this.router.navigate(['/notifications']);
   }
 }

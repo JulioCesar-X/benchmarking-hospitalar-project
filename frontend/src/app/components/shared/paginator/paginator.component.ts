@@ -29,8 +29,8 @@ export class PaginatorComponent {
     this.length = e.length;
     this.pageSize = e.pageSize;
     this.pageIndex = e.pageIndex;
-    this.page.emit(e); // quando isso esta aqui o problema acontece
-    console.log("pageEvent", e);
+    this.page.emit(e);
+  
   }
 
   setPageSizeOptions(setPageSizeOptionsInput: string) {
@@ -40,7 +40,6 @@ export class PaginatorComponent {
   }
   
   onPageChange(event: PageEvent): void {
-    console.log("fff>>>", event);
     this.page.emit(event);
 
   }

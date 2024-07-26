@@ -7,6 +7,7 @@ import { Filter } from '../../../core/models/filter.model';
 import { IndicatorService } from '../../../core/services/indicator/indicator.service';
 import { RecordsListSectionComponent } from '../../../components/records/records-list-section/records-list-section.component';
 import { GoalsListSectionComponent } from '../../../components/goals/goals-list-section/goals-list-section.component';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-recordsGoals-update-page',
@@ -42,7 +43,8 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
 
   constructor(
     private indicatorService: IndicatorService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private loggingService: LoggingService // Inject LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -55,7 +57,7 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
       this.initialIndicators = this.resolvedData.indicators ?? [];
       this.allServices = this.resolvedData.allServices ?? [];
     } else {
-      console.error(this.resolvedData?.message ?? 'Error resolving data');
+      this.loggingService.error(this.resolvedData?.message ?? 'Error resolving data');
     }
   }
 
@@ -111,7 +113,7 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
         this.isLoading = false;
       },
       error => {
-        console.error('Error loading records', error);
+        this.loggingService.error('Error loading records', error);
         this.isLoading = false;
       }
     );
@@ -130,7 +132,7 @@ export class RecordsGoalsUpdatePageComponent implements OnInit {
         this.isLoading = false;
       },
       error => {
-        console.error('Error loading goals', error);
+        this.loggingService.error('Error loading goals', error);
         this.isLoading = false;
       }
     );

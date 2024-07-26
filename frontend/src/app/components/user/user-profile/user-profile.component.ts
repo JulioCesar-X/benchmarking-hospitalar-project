@@ -15,6 +15,7 @@ import { User } from '../../../core/models/user.model';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -57,11 +58,12 @@ export class UserProfileComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private loggingService: LoggingService,
     public dialogRef: MatDialogRef<UserProfileComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.user = data.user;
-    console.log('User:', this.user);
+    this.loggingService.info('User:', this.user);
   }
 
   ngOnInit(): void { }
@@ -155,7 +157,7 @@ export class UserProfileComponent implements OnInit {
 
     this.userService.updateUser(this.user.id, data).subscribe(
       (response: any) => {
-        console.log('Profile updated:', response);
+        this.loggingService.info('Profile updated:', response);
         this.setNotification('Perfil atualizado com sucesso!', 'success');
         this.isLoading = false;
         setTimeout(() => this.dialogRef.close(), 2000);
@@ -187,7 +189,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   togglePasswordVisibility(type: 'current' | 'new', event: MouseEvent) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
     if (type === 'current') {
       this.hideCurrentPassword = !this.hideCurrentPassword;
     } else {

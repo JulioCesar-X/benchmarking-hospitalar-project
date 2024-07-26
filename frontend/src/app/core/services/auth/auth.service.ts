@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { LoginResponse } from '../../models/login-response.model';
+import { LoggingService } from '../logging.service';
 import * as CryptoJS from 'crypto-js';
 
 @Injectable({
@@ -13,10 +14,15 @@ import * as CryptoJS from 'crypto-js';
 export class AuthService {
   private encryptionKey = 'atec-2024-project';
   private cookieExpirationMinutes = 4 * 60;
-  private loginEvent = new BehaviorSubject<boolean>(false); // Mudança aqui
+  private loginEvent = new BehaviorSubject<boolean>(false);
   loginEvent$ = this.loginEvent.asObservable();
 
-  constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) { }
+  constructor(
+    private http: HttpClient,
+    private cookieService: CookieService,
+    private router: Router,
+    private loggingService: LoggingService
+  ) { }
 
   private encrypt(value: string): string {
     return CryptoJS.AES.encrypt(value, this.encryptionKey).toString();
@@ -51,7 +57,7 @@ export class AuthService {
     return this.http.post<LoginResponse>('/login', { email, password }, { withCredentials: true })
       .pipe(
         map(response => {
-          console.log('Login successful:', response);
+          this.loggingService.log('Login successful:', response);
           const expirationDate = new Date();
           expirationDate.setTime(expirationDate.getTime() + (this.cookieExpirationMinutes * 60 * 1000));
           this.cookieService.set('access_token', response.access_token, { secure: true, sameSite: 'Strict', expires: expirationDate });
@@ -61,19 +67,17 @@ export class AuthService {
           return response;
         }),
         catchError(error => {
-          console.error('Login failed:', error);
+          this.loggingService.error('Login failed:', error);
           return throwError(error);
         })
       );
   }
 
-  
-
   logout(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const token = this.getToken();
       if (!token) {
-        console.error('No token found');
+        this.loggingService.error('No token found');
         this.router.navigate(['/login']);
         reject('No token found');
         return;
@@ -85,12 +89,12 @@ export class AuthService {
             this.cookieService.delete('access_token', '/');
             this.cookieService.delete('role', '/');
             this.cookieService.delete('name', '/');
-            console.log('Logout successful');
+            this.loggingService.log('Logout successful');
             this.router.navigate(['/login']);
             resolve(true);
           },
           error => {
-            console.error('Logout failed', error);
+            this.loggingService.error('Logout failed', error);
             reject(error);
           }
         );

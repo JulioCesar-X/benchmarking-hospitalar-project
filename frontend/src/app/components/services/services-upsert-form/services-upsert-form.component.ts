@@ -11,9 +11,10 @@ import { DesassociationListComponent } from '../../../components/shared/desassoc
 import { AssociationListComponent } from '../../../components/shared/association-list/association-list.component';
 import { Service, CreateService } from '../../../core/models/service.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatFormField, MatLabel, } from '@angular/material/form-field';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-services-upsert-form',
@@ -71,7 +72,8 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
     private serviceService: ServiceService,
     private activityService: ActivityService,
     private indicatorService: IndicatorService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -91,7 +93,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
       this.isLoading = false;
       this.cdr.detectChanges();
     } catch (error) {
-      console.error('Error loading initial data', error);
+      this.loggingService.error('Error loading initial data', error);
       this.isLoading = false;
       this.cdr.detectChanges();
     }
@@ -126,7 +128,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading service', error);
+        this.loggingService.error('Error loading service', error);
         this.isLoadingDesassociacao = false;
         this.cdr.detectChanges();
         this.isLoading = false;
@@ -145,7 +147,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
           resolve();
         },
         error: (error) => {
-          console.error('Error obtaining activities', error);
+          this.loggingService.error('Error obtaining activities', error);
           reject(error);
         },
         complete: () => {
@@ -167,7 +169,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
           resolve();
         },
         error: (error) => {
-          console.error('Error obtaining indicators', error);
+          this.loggingService.error('Error obtaining indicators', error);
           reject(error);
         },
         complete: () => {
@@ -192,8 +194,6 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
     });
 
     this.selectedActivitiesIDs = event.selected.map(activity => activity.id);
-
-    console.log('Associations:', this.associations);
     this.cdr.detectChanges();
   }
 
@@ -211,8 +211,6 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
     });
 
     this.selectedIndicatorsIDs = event.selected.map(indicator => indicator.id);
-
-    console.log('Associations:', this.associations);
     this.cdr.detectChanges();
   }
 
@@ -228,8 +226,6 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
     });
 
     this.selectedSaisIDs = event.selected.map(sai => sai.sai_id);
-
-    console.log('Desassociations:', this.desassociations);
     this.cdr.detectChanges();
   }
 
@@ -242,7 +238,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      if (file.size > 5242880) { // 5MB in bytes
+      if (file.size > 5242880) {
         this.setNotification('O arquivo não pode exceder 5MB.', 'error');
         return;
       }
@@ -363,7 +359,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
   }
 
   validateServiceName(): void {
-    const namePattern = /^[a-zA-ZÀ-ÿ\s]*$/; // Permitindo letras, incluindo acentos, e espaços
+    const namePattern = /^[a-zA-ZÀ-ÿ\s]*$/;
     if (!this.selectedService.service_name || !namePattern.test(this.selectedService.service_name)) {
       this.serviceNameError = 'O nome do serviço não deve conter números ou caracteres especiais.';
     } else if (this.selectedService.service_name.length > 80) {

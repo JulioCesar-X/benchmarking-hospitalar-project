@@ -3,6 +3,7 @@ import { Component, ViewChild, ElementRef, Output, EventEmitter, Input } from '@
 import * as ExcelJS from 'exceljs';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FeedbackComponent } from '../feedback/feedback.component';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-excel-import',
@@ -22,6 +23,8 @@ export class ExcelImportComponent {
   feedbackMessage: string = '';
   feedbackType: 'success' | 'error' = 'success';
 
+  constructor(private loggingService: LoggingService) { }
+
   triggerFileInput() {
     this.fileInput.nativeElement.click();
   }
@@ -34,57 +37,64 @@ export class ExcelImportComponent {
   }
 
   async importExcel(file: File) {
+    this.loggingService.log('Iniciando importação do Excel...');
     this.importStarted.emit();
     this.isImporting = true;
     this.errors = [];
 
-    const arrayBuffer = await file.arrayBuffer();
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(arrayBuffer);
-    const worksheet = workbook.getWorksheet(1);
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(arrayBuffer);
+      const worksheet = workbook.getWorksheet(1);
 
-    if (!worksheet) {
-      this.addError('Nenhuma planilha encontrada');
-      this.finishImport();
-      return;
-    }
-
-    // Verificação do cabeçalho
-    const headerRow = worksheet.getRow(6);
-    const expectedHeaders = this.importType === 'record'
-      ? ['ID', 'Nome do Indicador', 'Data', 'Valor']
-      : ['ID', 'Nome do Indicador', 'Ano', 'Meta Anual'];
-
-    if (!this.validateHeaders(headerRow, expectedHeaders)) {
-      this.addError('O cabeçalho da planilha não está no formato esperado. Exporte uma planilha de exemplo e tente novamente.');
-      this.finishImport();
-      return;
-    }
-
-    const records: any[] = [];
-    worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber > 6) { // Ajuste para a linha correta dos dados
-        const record = this.importType === 'record' ? this.parseRecord(row, rowNumber) : this.parseGoal(row, rowNumber);
-        if (record) { // Só adicionar se a validação passar
-          records.push(record);
-        }
+      if (!worksheet) {
+        this.addError('Nenhuma planilha encontrada');
+        this.finishImport();
+        return;
       }
-    });
 
-    if (this.errors.length === 0) {
-      this.recordsImported.emit(records);
-      this.setFeedback('Importação bem-sucedida', 'success');
-    } else {
-      this.setFeedback('Erros encontrados durante a importação', 'error');
+      // Verificação do cabeçalho
+      const headerRow = worksheet.getRow(6);
+      const expectedHeaders = this.importType === 'record'
+        ? ['ID', 'Nome do Indicador', 'Data', 'Valor']
+        : ['ID', 'Nome do Indicador', 'Ano', 'Meta Anual'];
+
+      if (!this.validateHeaders(headerRow, expectedHeaders)) {
+        this.addError('O cabeçalho da planilha não está no formato esperado. Exporte uma planilha de exemplo e tente novamente.');
+        this.finishImport();
+        return;
+      }
+
+      const records: any[] = [];
+      worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber > 6) { // Ajuste para a linha correta dos dados
+          const record = this.importType === 'record' ? this.parseRecord(row, rowNumber) : this.parseGoal(row, rowNumber);
+          if (record) { // Só adicionar se a validação passar
+            records.push(record);
+          }
+        }
+      });
+
+      if (this.errors.length === 0) {
+        this.recordsImported.emit(records);
+        this.setFeedback('Importação bem-sucedida', 'success');
+      } else {
+        this.setFeedback('Erros encontrados durante a importação', 'error');
+      }
+    } catch (error) {
+      this.loggingService.error('Erro ao importar o Excel:', error);
+      this.setFeedback('Erro ao importar o arquivo Excel. Verifique o arquivo e tente novamente.', 'error');
+    } finally {
+      this.finishImport();
     }
-    this.finishImport();
   }
 
   validateHeaders(headerRow: ExcelJS.Row, expectedHeaders: string[]): boolean {
     for (let i = 1; i <= expectedHeaders.length; i++) {
       const actualHeader = headerRow.getCell(i).value;
       if (typeof actualHeader !== 'string' || actualHeader.toLowerCase() !== expectedHeaders[i - 1].toLowerCase()) {
-        console.error(`Erro no cabeçalho: esperado ${expectedHeaders[i - 1]}, mas encontrado ${actualHeader}`);
+        this.loggingService.error(`Erro no cabeçalho: esperado ${expectedHeaders[i - 1]}, mas encontrado ${actualHeader}`);
         return false;
       }
     }
@@ -179,15 +189,18 @@ export class ExcelImportComponent {
 
   addError(message: string): void {
     this.errors.push(message);
+    this.loggingService.warn(message);
   }
 
   setFeedback(message: string, type: 'success' | 'error'): void {
     this.feedbackMessage = message;
     this.feedbackType = type;
+    this.loggingService.info(message);
   }
 
   finishImport(): void {
     this.importFinished.emit();
     this.isImporting = false;
+    this.loggingService.log('Importação finalizada.');
   }
 }

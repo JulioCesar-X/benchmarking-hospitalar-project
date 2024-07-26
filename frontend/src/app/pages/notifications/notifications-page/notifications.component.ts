@@ -3,10 +3,10 @@ import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { NotificationsListSectionComponent } from '../../../components/notifications/notifications-list-section/notifications-list-section.component';
 import { NotificationService } from '../../../core/services/notifications/notification.service';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router'; // Import Router
+import { ActivatedRoute, Router } from '@angular/router';
 import { TimelineItem } from '../../../core/models/timeline-item.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-notifications',
@@ -32,7 +32,8 @@ export class NotificationsComponent implements OnInit {
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute, // Inject ActivatedRoute
-    private router: Router // Inject Router
+    private router: Router, // Inject Router
+    private loggingService: LoggingService // Inject LoggingService
   ) { }
 
   ngOnInit() {
@@ -57,29 +58,34 @@ export class NotificationsComponent implements OnInit {
   private async loadNotifications(): Promise<void> {
     this.isLoading = true;
 
-    if (this.selectedTab === 'received') {
-      const response = await this.notificationService.getNotificationsReceived(1, 10).toPromise();
-      this.receivedNotifications = response.data.map((notification: any) => ({
-        ...notification,
-        detail: notification.message,
-        expanded: false,
-        type: 'received',
-        sender: notification.sender,
-        sender_email: notification.sender_email
-      }));
-    } else {
-      const response = await this.notificationService.getNotificationsSent(1, 10).toPromise();
-      this.sentNotifications = response.data.map((notification: any) => ({
-        ...notification,
-        detail: notification.message,
-        expanded: false,
-        type: 'sent',
-        receiver: notification.receiver,
-        receiver_email: notification.receiver_email
-      }));
+    try {
+      if (this.selectedTab === 'received') {
+        const response = await this.notificationService.getNotificationsReceived(1, 10).toPromise();
+        this.receivedNotifications = response.data.map((notification: any) => ({
+          ...notification,
+          detail: notification.message,
+          expanded: false,
+          type: 'received',
+          sender: notification.sender,
+          sender_email: notification.sender_email
+        }));
+      } else {
+        const response = await this.notificationService.getNotificationsSent(1, 10).toPromise();
+        this.sentNotifications = response.data.map((notification: any) => ({
+          ...notification,
+          detail: notification.message,
+          expanded: false,
+          type: 'sent',
+          receiver: notification.receiver,
+          receiver_email: notification.receiver_email
+        }));
+      }
+    } catch (error) {
+      this.loggingService.error('Error loading notifications', error);
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
     }
-    this.isLoading = false;
-    this.cdr.detectChanges();
   }
 
   highlightNotification(notificationId: number) {

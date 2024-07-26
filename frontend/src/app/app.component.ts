@@ -1,11 +1,10 @@
-import { Component, HostListener, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef   } from '@angular/core';
+import { Component, HostListener, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from './components/shared/navbar/navbar.component';
 import { FooterComponent } from './components/shared/footer/footer.component';
 import { CommonModule } from '@angular/common';
-
-
+import { LoggingService } from './core/services/logging.service';
 
 @Component({
   selector: 'app-root',
@@ -20,11 +19,11 @@ import { CommonModule } from '@angular/common';
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA] 
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppComponent {
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef, private loggingService: LoggingService) { }
 
   toTopBtnVisible = false;
 
@@ -34,11 +33,11 @@ export class AppComponent {
     this.toTopBtnVisible = window.scrollY > threshold;
     this.cdr.detectChanges();
 
-    console.log(this.toTopBtnVisible)
-    console.log("t:", threshold,"w", window.scrollY)
+    this.loggingService.log('Scroll position:', window.scrollY, 'Button visible:', this.toTopBtnVisible);
   }
 
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.loggingService.log('Scroll to top initiated');
   }
 }

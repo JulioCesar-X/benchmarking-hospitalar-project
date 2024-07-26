@@ -4,8 +4,9 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { MatIconModule } from '@angular/material/icon';
 import { ServiceService } from '../../../core/services/service/service.service';
-import { FeedbackComponent } from '../feedback/feedback.component'; // Import FeedbackComponent
+import { FeedbackComponent } from '../feedback/feedback.component';
 import { LoadingSpinnerComponent } from '../loading-spinner/loading-spinner.component';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-menu',
@@ -32,12 +33,16 @@ export class MenuComponent implements OnInit {
   @Input() isMenuOpen = true;
   @Input() isLoadingCharts = false;
 
-  loading = false;  // Adicionando a propriedade loading
-  //loadingCharts = false;
+  loading = false;
   feedbackMessage = '';
   feedbackType: 'success' | 'error' = 'success';
 
-  constructor(private authService: AuthService, private router: Router, private serviceService: ServiceService) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private serviceService: ServiceService,
+    private loggingService: LoggingService
+  ) { }
 
   ngOnInit() {
     this.isLoadingCharts = false;
@@ -71,6 +76,7 @@ export class MenuComponent implements OnInit {
     this.isManageNotificationsSubMenuOpen = !this.isManageNotificationsSubMenuOpen;
     this.closeOtherSubMenus('notifications');
   }
+
   openManageData() {
     this.isManageDataSubMenuOpen = !this.isManageDataSubMenuOpen;
     this.closeOtherSubMenus('data');
@@ -109,6 +115,7 @@ export class MenuComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
+        this.loggingService.error('Erro ao carregar o serviço:', error);
         this.feedbackMessage = error.message;
         this.feedbackType = 'error';
         this.loading = false;
@@ -121,20 +128,18 @@ export class MenuComponent implements OnInit {
     this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {
-          // this.loadingCharts = true;
-          this.router.navigate(['/charts', { serviceId: service.id }], {
-            //state: { preLoad: true }
-          });
+          this.router.navigate(['/charts', { serviceId: service.id }]);
         } else {
           this.feedbackMessage = 'Nenhum serviço válido encontrado';
           this.feedbackType = 'error';
-          this.isLoadingCharts = false; // Stop loading
+          this.isLoadingCharts = false;
         }
       },
       error: (error) => {
+        this.loggingService.error('Erro ao carregar o serviço:', error);
         this.feedbackMessage = error.message;
         this.feedbackType = 'error';
-        this.isLoadingCharts = false; // Stop loading
+        this.isLoadingCharts = false;
       }
     });
   }

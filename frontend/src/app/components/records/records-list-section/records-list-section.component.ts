@@ -17,6 +17,7 @@ import { ExcelImportComponent } from '../../shared/excel-import/excel-import.com
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { forkJoin } from 'rxjs';
+import { LoggingService } from '../../../core/services/logging.service';
 
 interface Record {
   record_id: number | null;
@@ -29,7 +30,7 @@ interface Record {
   isInserted: boolean;
   isUpdating: boolean;
   isEditing: boolean;
-  originalValue?: string; // Adicionada a propriedade originalValue
+  originalValue?: string;
 }
 
 @Component({
@@ -83,7 +84,8 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
 
   constructor(
     private recordService: RecordService,
-    private indicatorService: IndicatorService
+    private indicatorService: IndicatorService,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -111,7 +113,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       this.indicatorService.getIndicatorsRecords(serviceId, activityId as number, year, month, pageIndex, pageSize)
         .pipe(
           catchError(error => {
-            console.error('Error fetching records', error);
+            this.loggingService.error('Error fetching records', error);
             return of({ total: 0, data: [] });
           }),
           finalize(() => this.isLoadingRecords = false)
@@ -158,23 +160,20 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
 
   onRecordsImported(records: any[]): void {
     const newRecords: Record[] = records.map(record => {
-      // Verifique se já existe um registro com a mesma data e sai_id
       const existingRecord = this.allRecords.find(r => r.sai_id === record.sai_id && r.date === record.date);
 
       if (existingRecord) {
-        // Atualize o valor do registro existente
         existingRecord.value = record.value;
         return existingRecord;
       } else {
-        // Adicione um novo registro
         return {
-          record_id: record.record_id || null, // Certifique-se de que o record_id seja nulo se não existir
+          record_id: record.record_id || null,
           indicator_name: record.indicator_name,
           service_name: record.service_name || 'N/A',
           activity_name: record.activity_name || 'N/A',
           sai_id: record.sai_id,
           value: record.value,
-          date: record.date, // Data já formatada
+          date: record.date,
           isInserted: true,
           isUpdating: false,
           isEditing: false
@@ -182,9 +181,8 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       }
     });
 
-    this.allRecords.push(...newRecords.filter(record => !record.record_id)); // Apenas novos registros sem record_id
+    this.allRecords.push(...newRecords.filter(record => !record.record_id));
 
-    // Aqui vamos enviar os dados para o backend
     this.sendRecordsToBackend(newRecords);
 
     this.updateDataSource();
@@ -205,11 +203,11 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
           isInserted: false,
           isEditing: false,
           isUpdating: false,
-          originalValue: record.value, // Salva o valor original
-          indicator_name: record.indicator_name || 'Novo Indicador', // Adicione valores padrão
-          service_name: record.service_name || 'N/A', // Adicione valores padrão
-          activity_name: record.activity_name || 'N/A', // Adicione valores padrão
-          record_id: record.record_id || null // Certifique-se de que o record_id seja nulo se não existir
+          originalValue: record.value,
+          indicator_name: record.indicator_name || 'Novo Indicador',
+          service_name: record.service_name || 'N/A',
+          activity_name: record.activity_name || 'N/A',
+          record_id: record.record_id || null
         };
         return this.recordService.storeRecord(newRecord).pipe(
           finalize(() => newRecord.isUpdating = false)
@@ -220,7 +218,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
     forkJoin(requests).subscribe(
       () => {
         this.setNotification('Registros criados/atualizados com sucesso', 'success');
-        // Recarregar registros após as operações de backend para garantir que o cache foi atualizado
         this.loadRecords(this.currentPage, this.pageSize);
       },
       error => {
@@ -241,7 +238,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Records');
 
-    // Adicionar cabeçalhos e subtítulos
     worksheet.mergeCells('A1:D1');
     worksheet.getCell('A1').value = `Dados publicados em ${this.filter.year}-${this.filter.month}`;
     worksheet.getCell('A1').font = { bold: true };
@@ -269,7 +265,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
     worksheet.getCell('A5').value = '(Valores acumulados)';
     worksheet.getCell('A5').font = { bold: true };
 
-    // Configurar colunas
     worksheet.columns = [
       { header: 'ID', key: 'sai_id', width: 20 },
       { header: 'Nome do Indicador', key: 'indicator_name', width: 30 },
@@ -277,7 +272,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       { header: 'Valor', key: 'value', width: 15 }
     ];
 
-    // Adicionar a linha dos cabeçalhos das colunas
     const headerRow = worksheet.addRow({
       sai_id: 'ID',
       indicator_name: 'Nome do indicador',
@@ -285,7 +279,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       value: 'Valor',
     });
 
-    // Adicionar os dados
     this.allRecords.forEach(record => {
       worksheet.addRow({
         sai_id: record.sai_id,
@@ -295,13 +288,11 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       });
     });
 
-    // Adicionar filtro aos cabeçalhos
     worksheet.autoFilter = {
       from: 'A6',
       to: 'D6',
     };
 
-    // Formatação de cabeçalhos
     headerRow.eachCell((cell) => {
       cell.font = { bold: true };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -312,7 +303,6 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       };
     });
 
-    // Bloquear células específicas
     const lockedCells = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5', 'C1', 'C2', 'C3', 'C4', 'C5', 'D1', 'D2', 'D3', 'D4', 'D5'];
 
     lockedCells.forEach((cellAddress) => {
@@ -320,33 +310,30 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       cell.protection = { locked: true };
     });
 
-    // Bloquear células das colunas ID e Nome do Indicador
     worksheet.getColumn('A').eachCell((cell, rowNumber) => {
-      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+      if (rowNumber > 5) {
         cell.protection = { locked: true };
       }
     });
 
     worksheet.getColumn('B').eachCell((cell, rowNumber) => {
-      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+      if (rowNumber > 5) {
         cell.protection = { locked: true };
       }
     });
 
-    // Desbloquear as células "Data" e "Valor"
     worksheet.getColumn('C').eachCell((cell, rowNumber) => {
-      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+      if (rowNumber > 5) {
         cell.protection = { locked: false };
       }
     });
 
     worksheet.getColumn('D').eachCell((cell, rowNumber) => {
-      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+      if (rowNumber > 5) {
         cell.protection = { locked: false };
       }
     });
 
-    // Proteger a planilha
     worksheet.protect('atec2024', {
       selectLockedCells: true,
       selectUnlockedCells: true,
@@ -357,7 +344,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       saveAs(blob, 'RecordsDataExport.xlsx');
     }).catch((error) => {
-      console.error('Erro ao gerar o arquivo Excel:', error);
+      this.loggingService.error('Erro ao gerar o arquivo Excel:', error);
     });
   }
 
@@ -371,7 +358,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
 
   editRecord(record: Record): void {
     if (!record.isEditing || !record.value) {
-      record.originalValue = record.value; // Salve o valor original ao iniciar a edição
+      record.originalValue = record.value;
       record.isEditing = true;
       return;
     }
@@ -410,7 +397,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
         isInserted: true,
         isUpdating: false,
         isEditing: false,
-        originalValue: record.value // Salve o valor original ao criar um novo registro
+        originalValue: record.value
       };
       record.isUpdating = true;
       this.storeRecord(newRecord);
@@ -488,7 +475,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
 
   cancelEditing(record: Record): void {
     if (record.originalValue !== undefined) {
-      record.value = record.originalValue; // Restaure o valor original
+      record.value = record.originalValue;
     }
     record.isEditing = false;
   }

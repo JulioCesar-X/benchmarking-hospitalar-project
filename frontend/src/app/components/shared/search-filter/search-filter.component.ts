@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, Output, OnInit, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import { Component, EventEmitter, Input, Output, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { catchError, throwError } from 'rxjs';
 import { SearchService } from '../../../core/services/search/search.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-search-filter',
@@ -10,25 +11,24 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   imports: [ReactiveFormsModule, MatTooltipModule],
   templateUrl: './search-filter.component.html',
   styleUrls: ['./search-filter.component.scss'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]  // to accept lordIcon element in the component
-
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class SearchFilterComponent implements OnInit {
+export class SearchFilterComponent {
   @Input() type!: 'activities' | 'indicators' | 'services' | 'users';
   @Output() search = new EventEmitter<any[]>();
   @Output() searchStarted = new EventEmitter<void>();
-  @Output() reset = new EventEmitter<void>();  // Novo evento para resetar a busca
+  @Output() reset = new EventEmitter<void>();
 
   filterForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private searchService: SearchService) {
+  constructor(
+    private fb: FormBuilder,
+    private searchService: SearchService,
+    private loggingService: LoggingService
+  ) {
     this.filterForm = this.fb.group({
       searchTerm: ['']
     });
-  }
-
-  ngOnInit(): void {
-    // Optional initialization logic
   }
 
   onSearch(): void {
@@ -37,15 +37,15 @@ export class SearchFilterComponent implements OnInit {
       this.searchStarted.emit();
       this.searchService.search(this.type, term).pipe(
         catchError(err => {
-          console.error('Error during search:', err);
+          this.loggingService.error('Error during search:', err);
           return throwError(() => new Error('Search failed'));
         })
       ).subscribe(results => {
-        console.log(results)
+        this.loggingService.info('Search results:', results);
         this.search.emit(results);
       });
     } else {
-      this.reset.emit();  // Emite o evento de reset quando o campo de busca estiver vazio
+      this.reset.emit();
     }
   }
 }

@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { signal } from '@angular/core';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-reset-password-form',
@@ -42,7 +43,11 @@ export class ResetPasswordFormComponent implements OnInit {
   passwordConfirmationError: string = '';
   passwordFeedback: string[] = [];
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private loggingService: LoggingService
+  ) { }
 
   ngOnInit() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -105,7 +110,7 @@ export class ResetPasswordFormComponent implements OnInit {
 
     this.authService.resetPassword(email, token, this.password, this.passwordConfirmation).subscribe({
       next: (response) => {
-        console.log('Password has been successfully reset:', response);
+        this.loggingService.log('Password has been successfully reset:', response);
         this.isLoading = false;
         this.feedbackMessage = 'A senha foi redefinida com sucesso';
         this.feedbackType = 'success';
@@ -116,7 +121,7 @@ export class ResetPasswordFormComponent implements OnInit {
         }, 3000);
       },
       error: (error) => {
-        console.error('Failed to reset password:', error);
+        this.loggingService.error('Failed to reset password:', error);
         this.isError = true;
         if (error.error.email) {
           this.emailError = error.error.email[0];

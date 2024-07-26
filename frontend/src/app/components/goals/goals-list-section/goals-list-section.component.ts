@@ -16,6 +16,7 @@ import { ExcelImportComponent } from '../../shared/excel-import/excel-import.com
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { LoggingService } from '../../../core/services/logging.service';
 
 interface Goal {
   id: number | null;
@@ -28,7 +29,7 @@ interface Goal {
   isInserted: boolean;
   isUpdating: boolean;
   isEditing: boolean;
-  originalValue?: string; // Adicionada a propriedade originalValue
+  originalValue?: string;
 }
 
 @Component({
@@ -81,7 +82,8 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
   constructor(
     private goalService: GoalService,
-    private indicatorService: IndicatorService
+    private indicatorService: IndicatorService,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -106,7 +108,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       this.indicatorService.getIndicatorsGoals(Number(serviceId), Number(activityId), year, pageIndex, pageSize)
         .pipe(
           catchError(error => {
-            console.error('Error fetching goals', error);
+            this.loggingService.error('Error fetching goals', error);
             return of({ total: 0, data: [] });
           }),
           finalize(() => this.isLoadingGoals = false)
@@ -137,7 +139,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       isInserted: !!item.goal?.target_value,
       isUpdating: false,
       isEditing: false,
-      originalValue: item.goal?.target_value ?? '' // Adicionada a propriedade originalValue
+      originalValue: item.goal?.target_value ?? ''
     }));
   }
 
@@ -159,7 +161,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
           isInserted: true,
           isUpdating: false,
           isEditing: false,
-          originalValue: goal.target_value // Adicionada a propriedade originalValue
+          originalValue: goal.target_value
         });
       }
     });
@@ -267,7 +269,6 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       };
     });
 
-    // Bloquear células específicas (cabeçalhos e subtítulos)
     const lockedCells = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5', 'C1', 'C2', 'C3', 'C4', 'C5', 'D1', 'D2', 'D3', 'D4', 'D5'];
 
     lockedCells.forEach((cellAddress) => {
@@ -275,33 +276,30 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       cell.protection = { locked: true };
     });
 
-    // Bloquear células das colunas ID e Nome do Indicador
     worksheet.getColumn('A').eachCell((cell, rowNumber) => {
-      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+      if (rowNumber > 5) {
         cell.protection = { locked: true };
       }
     });
 
     worksheet.getColumn('B').eachCell((cell, rowNumber) => {
-      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+      if (rowNumber > 5) {
         cell.protection = { locked: true };
       }
     });
 
-    // Desbloquear as células "Ano" e "Meta Anual"
     worksheet.getColumn('C').eachCell((cell, rowNumber) => {
-      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+      if (rowNumber > 5) {
         cell.protection = { locked: false };
       }
     });
 
     worksheet.getColumn('D').eachCell((cell, rowNumber) => {
-      if (rowNumber > 5) { // Ignorar cabeçalho e subtítulos
+      if (rowNumber > 5) {
         cell.protection = { locked: false };
       }
     });
 
-    // Proteger a planilha
     worksheet.protect('atec2024', {
       selectLockedCells: true,
       selectUnlockedCells: true,
@@ -312,7 +310,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       saveAs(blob, 'GoalsDataExport.xlsx');
     }).catch((error) => {
-      console.error('Erro ao gerar o arquivo Excel:', error);
+      this.loggingService.error('Erro ao gerar o arquivo Excel:', error);
     });
   }
 
@@ -326,7 +324,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
   editGoal(goal: Goal): void {
     if (!goal.isEditing) {
-      goal.originalValue = goal.target_value; // Salve o valor original ao iniciar a edição
+      goal.originalValue = goal.target_value;
       goal.isEditing = true;
       return;
     }
@@ -437,7 +435,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
   cancelEditing(goal: Goal): void {
     if (goal.originalValue !== undefined) {
-      goal.target_value = goal.originalValue; // Restaure o valor original
+      goal.target_value = goal.originalValue;
     }
     goal.isEditing = false;
   }

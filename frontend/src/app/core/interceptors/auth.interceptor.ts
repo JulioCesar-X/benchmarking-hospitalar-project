@@ -4,10 +4,14 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/env';
 import { CookieService } from 'ngx-cookie-service';
+import { LoggingService } from '../services/logging.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private cookieService: CookieService) { }
+  constructor(
+    private cookieService: CookieService,
+    private loggingService: LoggingService
+  ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.cookieService.get('access_token');
@@ -21,8 +25,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(apiReq).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.error('Error during HTTP request:', error);
-        return throwError(error); // Preserve the original error
+        this.loggingService.error('Error during HTTP request:', error);
+        return throwError(error);
       })
     );
   }

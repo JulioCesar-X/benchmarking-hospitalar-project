@@ -4,12 +4,17 @@ import { Observable, throwError, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Activity } from '../../models/activity.model';
 import { CacheService } from '../cache.service';
+import { LoggingService } from '../logging.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ActivityService {
-  constructor(private http: HttpClient, private cacheService: CacheService) { }
+  constructor(
+    private http: HttpClient,
+    private cacheService: CacheService,
+    private loggingService: LoggingService
+  ) { }
 
   private getCacheKey(id: number): string {
     return `activity-${id}`;
@@ -18,16 +23,18 @@ export class ActivityService {
   indexActivities(): Observable<Activity[]> {
     const cacheKey = 'activities-index';
     if (this.cacheService.has(cacheKey)) {
+      this.loggingService.log('Fetching activities from cache');
       return of(this.cacheService.get(cacheKey));
     } else {
       return this.http.get<Activity[]>('/activities').pipe(
         tap(response => {
           if (response !== null && response !== undefined) {
+            this.loggingService.log('Caching activities response');
             this.cacheService.set(cacheKey, response);
           }
         }),
         catchError(error => {
-          console.error('Failed to fetch activities:', error);
+          this.loggingService.error('Failed to fetch activities:', error);
           return throwError(() => new Error('Failed to fetch activities'));
         })
       );
@@ -37,16 +44,18 @@ export class ActivityService {
   getActivitiesPaginated(pageIndex: number, pageSize: number): Observable<any> {
     const cacheKey = `activities-paginated-${pageIndex}-${pageSize}`;
     if (this.cacheService.has(cacheKey)) {
+      this.loggingService.log('Fetching paginated activities from cache');
       return of(this.cacheService.get(cacheKey));
     } else {
       return this.http.get<any>(`/activities/paginated?page=${pageIndex}&size=${pageSize}`).pipe(
         tap(response => {
           if (response !== null && response !== undefined) {
+            this.loggingService.log('Caching paginated activities response');
             this.cacheService.set(cacheKey, response);
           }
         }),
         catchError(error => {
-          console.error('Failed to fetch paginated activities:', error);
+          this.loggingService.error('Failed to fetch paginated activities:', error);
           return throwError(() => new Error('Failed to fetch paginated activities'));
         })
       );
@@ -56,16 +65,18 @@ export class ActivityService {
   showActivity(id: number): Observable<Activity> {
     const cacheKey = this.getCacheKey(id);
     if (this.cacheService.has(cacheKey)) {
+      this.loggingService.log(`Fetching activity with id ${id} from cache`);
       return of(this.cacheService.get(cacheKey));
     } else {
       return this.http.get<Activity>(`/activities/${id}`).pipe(
         tap(response => {
           if (response !== null && response !== undefined) {
+            this.loggingService.log(`Caching activity response with id ${id}`);
             this.cacheService.set(cacheKey, response);
           }
         }),
         catchError(error => {
-          console.error('Failed to fetch activity:', error);
+          this.loggingService.error(`Failed to fetch activity with id ${id}:`, error);
           return throwError(() => new Error('Failed to fetch activity'));
         })
       );
@@ -76,11 +87,12 @@ export class ActivityService {
     return this.http.post<any>('/activities', activity).pipe(
       tap(response => {
         if (response !== null && response !== undefined) {
-          this.cacheService.clear(); // Limpa o cache ao adicionar uma nova atividade
+          this.loggingService.log('Clearing cache after storing activity');
+          this.cacheService.clear();
         }
       }),
       catchError(error => {
-        console.error('Failed to store activity:', error);
+        this.loggingService.error('Failed to store activity:', error);
         return throwError(() => new Error('Failed to store activity'));
       })
     );
@@ -90,12 +102,14 @@ export class ActivityService {
     return this.http.put<any>(`/activities/${id}`, activity).pipe(
       tap(response => {
         if (response !== null && response !== undefined) {
-          this.cacheService.set(this.getCacheKey(id), response); // Atualiza o cache com a resposta
-          this.cacheService.clear(); // Limpa todo o cache para garantir dados atualizados
+          this.loggingService.log(`Updating cache for activity with id ${id}`);
+          this.cacheService.set(this.getCacheKey(id), response);
+          this.loggingService.log('Clearing cache after updating activity');
+          this.cacheService.clear();
         }
       }),
       catchError(error => {
-        console.error('Failed to update activity:', error);
+        this.loggingService.error(`Failed to update activity with id ${id}:`, error);
         return throwError(() => new Error('Failed to update activity'));
       })
     );
@@ -105,11 +119,12 @@ export class ActivityService {
     return this.http.delete(`/activities/${id}`).pipe(
       tap(response => {
         if (response !== null && response !== undefined) {
-          this.cacheService.clear(); // Limpa o cache ao deletar uma atividade
+          this.loggingService.log(`Clearing cache after deleting activity with id ${id}`);
+          this.cacheService.clear();
         }
       }),
       catchError(error => {
-        console.error('Failed to delete activity:', error);
+        this.loggingService.error(`Failed to delete activity with id ${id}:`, error);
         return throwError(() => new Error('Failed to delete activity'));
       })
     );

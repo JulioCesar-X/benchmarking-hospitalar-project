@@ -4,6 +4,7 @@ import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { IndicatorsListSectionComponent } from '../../../components/indicators/indicators-list-section/indicators-list-section.component';
 import { SearchFilterComponent } from '../../../components/shared/search-filter/search-filter.component';
 import { IndicatorService } from '../../../core/services/indicator/indicator.service';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-indicators-page',
@@ -21,7 +22,10 @@ export class IndicatorsPageComponent {
   filteredIndicators: any[] = [];
   isLoadingSearch = false;
 
-  constructor(private indicatorService: IndicatorService) { }
+  constructor(
+    private indicatorService: IndicatorService,
+    private loggingService: LoggingService
+  ) { }
 
   onSearch(results: any[]): void {
     this.filteredIndicators = results;
@@ -40,7 +44,7 @@ export class IndicatorsPageComponent {
         this.isLoadingSearch = false;
       },
       error: (error) => {
-        console.error('Error loading indicators:', error);
+        this.loggingService.error('Error loading indicators:', error);
         this.isLoadingSearch = false;
       }
     });

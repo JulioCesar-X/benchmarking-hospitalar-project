@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ServiceService } from '../../../core/services/service/service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-services-description-page',
@@ -21,7 +22,8 @@ export class ServicesDescriptionPageComponent implements OnInit {
   constructor(
     private serviceService: ServiceService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -34,11 +36,11 @@ export class ServicesDescriptionPageComponent implements OnInit {
     this.isLoading = true;
     this.serviceService.showService(serviceId).subscribe({
       next: (data) => {
-        console.log(data)
+        this.loggingService.log('Service loaded successfully', data);
         this.service = data;
       },
       error: (err) => {
-        console.error('Error loading the service:', err);
+        this.loggingService.error('Error loading the service:', err);
       },
       complete: () => {
         this.isLoading = false;
@@ -49,5 +51,4 @@ export class ServicesDescriptionPageComponent implements OnInit {
   goToHomepage(): void {
     this.router.navigate(['/']);
   }
-
 }

@@ -7,8 +7,8 @@ import { ServiceService } from '../../core/services/service/service.service';
 import { Service } from '../../core/models/service.model';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
+import { LoggingService } from '../../core/services/logging.service';
 import anime from 'animejs/lib/anime.es.js';
-
 
 @Component({
   selector: 'app-homepage',
@@ -34,19 +34,20 @@ export class HomepageComponent implements OnInit, OnDestroy {
   totalServices: number = 0;
   loadedPages: Set<number> = new Set();
   showNavButtons: boolean = true;
-  userRole: string | null = null; // Propriedade para armazenar a função do usuário
+  userRole: string | null = null;
 
   constructor(
     private serviceService: ServiceService,
     private router: Router,
     private authService: AuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
     this.loadServices();
     this.startLoadingAnimation();
-    this.userRole = this.authService.getRole(); // Inicializa a função do usuário
+    this.userRole = this.authService.getRole();
   }
 
   ngOnDestroy(): void {
@@ -62,14 +63,14 @@ export class HomepageComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.serviceService.getServicesPaginated(this.page, this.pageSize).subscribe({
       next: (data: any) => {
-        this.services = this.services.concat(data.data); // Concatenate new services
+        this.services = this.services.concat(data.data);
         this.totalServices = data.total;
         this.updateDisplayedServices();
         this.loadedPages.add(this.page);
       },
       error: (err) => {
         this.isLoading = false;
-        console.error('Erro ao carregar serviços', err);
+        this.loggingService.error('Erro ao carregar serviços', err);
       },
       complete: () => {
         this.isLoading = false;
@@ -130,21 +131,20 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   drop(event: CdkDragDrop<Service[]>) {
-    console.log('Item moved from', event.previousIndex, 'to', event.currentIndex);
+    this.loggingService.log('Item moved from', event.previousIndex, 'to', event.currentIndex);
     moveItemInArray(this.displayedServices, event.previousIndex, event.currentIndex);
     this.saveOrder();
   }
 
   saveOrder() {
-    console.log('Saving order', this.displayedServices);
+    this.loggingService.log('Saving order', this.displayedServices);
     this.serviceService.updateServiceOrder(this.displayedServices).subscribe({
       next: () => {
-        console.log('Ordem dos serviços atualizada com sucesso.');
+        this.loggingService.log('Ordem dos serviços atualizada com sucesso.');
       },
       error: (err) => {
-        console.error('Erro ao atualizar a ordem dos serviços.', err);
+        this.loggingService.error('Erro ao atualizar a ordem dos serviços.', err);
       }
     });
   }
-
 }

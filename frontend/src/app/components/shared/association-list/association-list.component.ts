@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, Chang
 import { CommonModule } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-association-list',
@@ -12,7 +13,7 @@ import { MatCheckbox } from '@angular/material/checkbox';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssociationListComponent implements OnChanges {
-  @Input({ required: true}) componentTitle = 'Title';
+  @Input({ required: true }) componentTitle = 'Title';
   @Input() items: any[] = [];
   @Input() displayProperties: string[] = [];
   @Input() preSelectedItems: any[] = [];
@@ -21,6 +22,8 @@ export class AssociationListComponent implements OnChanges {
 
   selectedItems: any[] = [];
   deselectedItems: any[] = [];
+
+  constructor(private loggingService: LoggingService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['preSelectedItems'] || changes['items']) {
@@ -31,8 +34,8 @@ export class AssociationListComponent implements OnChanges {
   updateSelectionState() {
     this.selectedItems = this.items.filter(item => this.preSelectedItems.includes(item.id));
     this.deselectedItems = this.items.filter(item => !this.preSelectedItems.includes(item.id));
-    console.log('updateSelectionState -> selectedItems:', this.selectedItems);
-    console.log('updateSelectionState -> deselectedItems:', this.deselectedItems);
+    this.loggingService.info('updateSelectionState -> selectedItems:', this.selectedItems);
+    this.loggingService.info('updateSelectionState -> deselectedItems:', this.deselectedItems);
   }
 
   isSelected(item: any): boolean {
@@ -48,8 +51,8 @@ export class AssociationListComponent implements OnChanges {
       this.selectedItems.push(item);
     }
     this.selectionChange.emit({ selected: this.selectedItems, deselected: this.deselectedItems });
-    console.log('toggleSelection -> selectedItems:', this.selectedItems);
-    console.log('toggleSelection -> deselectedItems:', this.deselectedItems);
+    this.loggingService.info('toggleSelection -> selectedItems:', this.selectedItems);
+    this.loggingService.info('toggleSelection -> deselectedItems:', this.deselectedItems);
   }
 
   getDisplayText(item: any): string {

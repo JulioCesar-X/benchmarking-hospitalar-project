@@ -3,13 +3,18 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { CacheService } from '../cache.service';
+import { LoggingService } from '../logging.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecordService {
 
-  constructor(private http: HttpClient, private cacheService: CacheService) { }
+  constructor(
+    private http: HttpClient,
+    private cacheService: CacheService,
+    private loggingService: LoggingService
+  ) { }
 
   private getCacheKey(id: number): string {
     return `record-${id}`;
@@ -20,11 +25,11 @@ export class RecordService {
       tap(response => {
         const cacheKey = this.getCacheKey(id);
         if (response !== null && response !== undefined) {
-          this.cacheService.set(cacheKey, response); // Atualiza o cache com a resposta
+          this.cacheService.set(cacheKey, response);
         }
       }),
       catchError(error => {
-        console.error('Error updating record:', error);
+        this.loggingService.error('Error updating record:', error);
         return throwError(() => new Error('Failed to update record'));
       })
     );
@@ -33,7 +38,7 @@ export class RecordService {
   storeRecord(record: any): Observable<any> {
     return this.http.post('/records', record).pipe(
       catchError(error => {
-        console.error('Error storing record:', error);
+        this.loggingService.error('Error storing record:', error);
         return throwError(() => new Error('Failed to store record'));
       })
     );
@@ -47,11 +52,11 @@ export class RecordService {
       return this.http.get(`/records/${id}`).pipe(
         tap(response => {
           if (response !== null && response !== undefined) {
-            this.cacheService.set(cacheKey, response); // Armazena a resposta no cache
+            this.cacheService.set(cacheKey, response);
           }
         }),
         catchError(error => {
-          console.error('Error fetching record:', error);
+          this.loggingService.error('Error fetching record:', error);
           return throwError(() => new Error('Failed to fetch record'));
         })
       );

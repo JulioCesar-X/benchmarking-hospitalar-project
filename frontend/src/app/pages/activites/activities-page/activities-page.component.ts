@@ -4,6 +4,7 @@ import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { ActivitiesListSectionComponent } from '../../../components/activities/activities-list-section/activities-list-section.component';
 import { SearchFilterComponent } from '../../../components/shared/search-filter/search-filter.component';
 import { ActivityService } from '../../../core/services/activity/activity.service';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-activities-page',
@@ -16,7 +17,10 @@ export class ActivitiesPageComponent {
   filteredActivities: any[] = [];
   isLoadingSearch = false;
 
-  constructor(private activityService: ActivityService) { }
+  constructor(
+    private activityService: ActivityService,
+    private loggingService: LoggingService
+  ) { }
 
   onSearch(results: any[]): void {
     this.filteredActivities = results;
@@ -35,7 +39,7 @@ export class ActivitiesPageComponent {
         this.isLoadingSearch = false;
       },
       error: (error) => {
-        console.error('Error loading activities:', error);
+        this.loggingService.error('Error loading activities:', error);
         this.isLoadingSearch = false;
       }
     });

@@ -11,9 +11,10 @@ import { DialogContentComponent } from '../../shared/dialog-content/dialog-conte
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
-import { PageEvent, MatPaginatorModule, MatPaginatorIntl  } from '@angular/material/paginator';
+import { PageEvent, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-indicators-list-section',
@@ -51,7 +52,8 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges, AfterV
   constructor(
     private indicatorService: IndicatorService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -95,7 +97,7 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges, AfterV
         this.isLoading = false;
       },
       error: (error) => {
-        console.error("Error loading paginated indicators:", error);
+        this.loggingService.error("Error loading paginated indicators:", error);
         this.isLoading = false;
       }
     });
@@ -129,7 +131,7 @@ export class IndicatorsListSectionComponent implements OnInit, OnChanges, AfterV
         this.updateDataSource();
       },
       error: (error) => {
-        console.error("Error deleting indicator:", error);
+        this.loggingService.error("Error deleting indicator:", error);
       }
     });
   }

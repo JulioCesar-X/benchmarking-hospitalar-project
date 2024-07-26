@@ -8,6 +8,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { debounce } from 'lodash';
+import { LoggingService } from '../../core/services/logging.service';
 
 Chart.register(...registerables);
 
@@ -54,7 +55,7 @@ export class ChartsComponent implements OnInit, OnChanges {
     redBg: 'rgba(255, 0, 0, 0.2)',
   };
 
-  constructor() {
+  constructor(private loggingService: LoggingService) {
     this.changeChartType = debounce(this.changeChartType.bind(this), 300); // Debounce to prevent rapid calls
   }
 
@@ -64,7 +65,7 @@ export class ChartsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['graphData'] && changes['graphData'].currentValue !== changes['graphData'].previousValue) {
-      console.log('Updating chart with new data:', changes['graphData'].currentValue); // Adicione este log
+      this.loggingService.log('Updating chart with new data:', changes['graphData'].currentValue); // Adicione este log
       this.updateChart(this.graphData);
     }
   }

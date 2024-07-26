@@ -5,7 +5,7 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-desassociation-list',
@@ -30,6 +30,8 @@ export class DesassociationListComponent implements OnChanges {
   selectedItems: any[] = [];
   deselectedItems: any[] = [];
 
+  constructor(private loggingService: LoggingService) { }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['items']) {
       this.dataSource.data = this.items;
@@ -48,8 +50,8 @@ export class DesassociationListComponent implements OnChanges {
     this.deselectedItems = this.items.filter(item => desassociatedIds.has(item.sai_id));
     this.selection.clear();
     this.selectedItems.forEach(item => this.selection.select(item));
-    console.log('updateSelectionState -> selectedItems:', this.selectedItems);
-    console.log('updateSelectionState -> deselectedItems:', this.deselectedItems);
+    this.loggingService.info('updateSelectionState -> selectedItems:', this.selectedItems);
+    this.loggingService.info('updateSelectionState -> deselectedItems:', this.deselectedItems);
   }
 
   isSelected(item: any): boolean {
@@ -65,8 +67,8 @@ export class DesassociationListComponent implements OnChanges {
       this.selectedItems.push(item);
     }
     this.selectionChange.emit({ selected: this.selectedItems, deselected: this.desassociations });
-    console.log('toggleSelection -> selectedItems:', this.selectedItems);
-    console.log('toggleSelection -> desassociations:', this.desassociations);
+    this.loggingService.info('toggleSelection -> selectedItems:', this.selectedItems);
+    this.loggingService.info('toggleSelection -> desassociations:', this.desassociations);
   }
 
   toggleAllRows() {
@@ -96,6 +98,6 @@ export class DesassociationListComponent implements OnChanges {
   }
 
   trackByFn(index: number, item: any): any {
-    return item.sai_id; // or any unique property from the item object
+    return item.sai_id;
   }
 }

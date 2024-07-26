@@ -5,6 +5,7 @@ import { catchError, switchMap, map } from 'rxjs/operators';
 import { IndicatorService } from '../services/indicator/indicator.service';
 import { ServiceService } from '../services/service/service.service';
 import { Filter } from '../models/filter.model';
+import { LoggingService } from '../services/logging.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +14,8 @@ export class ChartDataResolver implements Resolve<any> {
 
     constructor(
         private indicatorService: IndicatorService,
-        private serviceService: ServiceService
+        private serviceService: ServiceService,
+        private loggingService: LoggingService
     ) { }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
@@ -41,7 +43,7 @@ export class ChartDataResolver implements Resolve<any> {
                     return this.indicatorService.getAllData(filter).pipe(
                         map(data => ({ data, filter })),
                         catchError(error => {
-                            console.error('Failed to fetch indicator data:', error);
+                            this.loggingService.error('Failed to fetch indicator data:', error);
                             return of({ error: true, message: 'Failed to fetch indicator data' });
                         })
                     );
@@ -50,7 +52,7 @@ export class ChartDataResolver implements Resolve<any> {
                 }
             }),
             catchError(error => {
-                console.error('Failed to fetch service data:', error);
+                this.loggingService.error('Failed to fetch service data:', error);
                 return of({ error: true, message: 'Failed to fetch service data' });
             })
         );

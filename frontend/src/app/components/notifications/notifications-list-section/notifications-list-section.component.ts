@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -13,6 +13,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NotificationService } from '../../../core/services/notifications/notification.service';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { TimelineItem } from '../../../core/models/timeline-item.model';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-notifications-list-section',
@@ -34,7 +35,7 @@ import { TimelineItem } from '../../../core/models/timeline-item.model';
   styleUrls: ['./notifications-list-section.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class NotificationsListSectionComponent implements OnInit {
+export class NotificationsListSectionComponent {
   @Input() notifications: TimelineItem[] = [];
   @Input() isLoading: boolean = false;
   @Input() type: 'received' | 'sent' = 'received';
@@ -48,12 +49,10 @@ export class NotificationsListSectionComponent implements OnInit {
 
   constructor(
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private loggingService: LoggingService
   ) { }
 
-  ngOnInit() {
-    // Initial load logic if necessary
-  }
 
   @HostListener('window:scroll', ['$event'])
   onScroll() {
@@ -62,7 +61,7 @@ export class NotificationsListSectionComponent implements OnInit {
     const height = document.body.offsetHeight;
 
     if (position > height - threshold) {
-      // Implement pagination logic if necessary
+
     }
   }
 
@@ -119,7 +118,8 @@ export class NotificationsListSectionComponent implements OnInit {
         this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (error) => {
+        this.loggingService.error('Error sending response', error);
         this.feedbackMessage = 'Erro ao enviar resposta. Tente novamente.';
         this.feedbackType = 'error';
         this.isLoading = false;

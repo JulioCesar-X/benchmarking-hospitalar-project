@@ -16,6 +16,7 @@ import { NotificationService } from './../../../core/services/notifications/noti
 import { User } from '../../../core/models/user.model';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-notifications-create-form',
@@ -50,7 +51,11 @@ export class NotificationsCreateFormComponent implements OnInit {
   subjectError: string = '';
   messageError: string = '';
 
-  constructor(private userService: UserService, private notificationService: NotificationService) { }
+  constructor(
+    private userService: UserService,
+    private notificationService: NotificationService,
+    private loggingService: LoggingService
+  ) { }
 
   ngOnInit() {
     this.fetchUsers();
@@ -63,7 +68,7 @@ export class NotificationsCreateFormComponent implements OnInit {
       },
       (error) => {
         this.showFeedback('Failed to fetch users', 'error');
-        console.error('Failed to fetch users', error);
+        this.loggingService.error('Failed to fetch users', error);
       }
     );
   }
@@ -102,12 +107,12 @@ export class NotificationsCreateFormComponent implements OnInit {
     this.notificationService.storeNotification(newNotification).subscribe(
       () => {
         this.showFeedback('Mensagem enviada com sucesso!', 'success');
-        console.log('Notification sent successfully');
+        this.loggingService.log('Notification sent successfully');
         this.resetForm();
       },
       (error) => {
         this.showFeedback('Falha ao enviar mensagem, tente novamente!', 'error');
-        console.error('Failed to send notification', error);
+        this.loggingService.error('Failed to send notification', error);
       }
     ).add(() => {
       this.isLoading = false; // Finalize o estado de carregamento

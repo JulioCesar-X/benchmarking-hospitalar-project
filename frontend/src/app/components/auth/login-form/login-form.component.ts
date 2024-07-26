@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { signal } from '@angular/core';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-login-form',
@@ -39,7 +40,11 @@ export class LoginFormComponent {
   passwordErrorMessage: string = '';
   hidePassword = signal(true);
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private loggingService: LoggingService
+  ) { }
 
   @Output() loginEvent = new EventEmitter<{ email: string, password: string }>();
 
@@ -57,7 +62,7 @@ export class LoginFormComponent {
       (response: any) => {
         this.isLoading = false;
         if (response) {
-          console.log('Login successful:', response);
+          this.loggingService.log('Login successful:', response);
           this.emailErrorMessage = '';
           this.passwordErrorMessage = '';
           this.router.navigate(['/home']);
@@ -67,7 +72,7 @@ export class LoginFormComponent {
       },
       error => {
         this.isLoading = false;
-        console.log('Login failed', error);
+        this.loggingService.error('Login failed', error);
 
         if (error.error && error.error.message === 'The provided credentials are incorrect.') {
           this.passwordErrorMessage = 'Senha inválida. Por favor, tente novamente.';

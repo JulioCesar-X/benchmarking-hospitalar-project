@@ -12,6 +12,11 @@ import { environment } from '../environments/env';
 
 if (environment.production) {
   enableProdMode();
+  
+  window.console.log = () => { };
+  window.console.warn = () => { };
+  window.console.error = () => { };
+  window.console.info = () => { };
 }
 console.log('Environment:', environment);
 bootstrapApplication(AppComponent, {

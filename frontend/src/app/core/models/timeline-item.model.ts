@@ -13,5 +13,5 @@ export interface TimelineItem {
     newResponse?: string;
     expanded: boolean;
     type: 'received' | 'sent';
-    highlighted?: boolean;  // Adicione esta linha
+    highlighted?: boolean;
 }

@@ -6,6 +6,7 @@ import { IndicatorsUpsertFormComponent } from '../../../components/indicators/in
 import { IndicatorService } from '../../../core/services/indicator/indicator.service';
 import { Indicator } from '../../../core/models/indicator.model';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
+import { LoggingService } from '../../../core/services/logging.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -31,7 +32,8 @@ export class IndicatorsUpdatePageComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private indicatorService: IndicatorService
+    private indicatorService: IndicatorService,
+    private loggingService: LoggingService
   ) { }
 
   ngOnInit(): void {
@@ -57,7 +59,7 @@ export class IndicatorsUpdatePageComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading indicator', error);
+        this.loggingService.error('Error loading indicator', error);
         this.isLoading = false;
       }
     });
