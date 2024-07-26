@@ -14,6 +14,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormField, MatLabel, } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
 
 @Component({
   selector: 'app-services-upsert-form',
@@ -59,15 +61,16 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
   selectedSaisIDs: number[] = [];
   desassociations: { sai_id: number }[] = [];
   associations: { activity_id: number, indicator_id: number }[] = [];
-
-  activeTab: 'Desassociação' | 'Associação' = 'Desassociação';
-
+  
+  activeTab: 'Associação' | 'Desassociação' = 'Associação';
+  
   constructor(
     private router: Router,
     private serviceService: ServiceService,
     private activityService: ActivityService,
     private indicatorService: IndicatorService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private dialog:MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -357,4 +360,19 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
     }
     this.cdr.detectChanges();
   }
+  openDialog(event: { selected: any[], deselected: any[] }): void {
+
+    const dialogRef = this.dialog.open(DialogContentComponent, {
+      data: {
+        message: `Tem certeza que deseja continuar com essa operação? Desassociar implica a perda de dados relacionados!`,
+        loadingMessage: 'Removendo ligação...'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.onSaisSelectionChange(event);
+      }
+    });
+}
 }

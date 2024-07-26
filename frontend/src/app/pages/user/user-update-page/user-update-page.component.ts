@@ -36,6 +36,8 @@ export class UserUpdatePageComponent implements OnInit {
         this.loadUser(userId);
       }
     });
+    localStorage.removeItem('activeLink');
+
   }
 
   loadUser(userId: number): void {
