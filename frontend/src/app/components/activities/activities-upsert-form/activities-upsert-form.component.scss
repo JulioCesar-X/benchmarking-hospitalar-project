@@ -1,179 +1,162 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
-
-.forms-container--inputContainer{
-    @include forms-container--inputContainer();
+.whiteTxt {
+  color: $fill-white;
+}
+.blueText{
+  color: $main-blue;
+}
+.whiteBG{
+  background-color: $fill-white;
 }
 
-.inputContainer--input{
-    @include inputContainer--input();
-}
-
-.selectOptionContainer--option{
-    @include selectOptionContainer--option();
-}
-
-.forms-Button{
-    @include forms-Button();
-    margin-top: 0;
-}
-
-.icon{
-    @include icon();
-}
-
-.__remove-paragraphMB{
-    p{
-        margin-bottom: 0;
-    }
-}
-
-
-.selectContainer{
-    color: $fill-white;
-
-    label{
-        margin-right: 0.2em;
-    }
-    select{
-        color: $main-blue;
-        border-radius: 0.5em;
-        padding-block: 0.2em;
-        padding-inline: 0.5em;
-        border: none;
-        outline: $main-blue;
-    }
-}
-
-
-
-.forms-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1em;
-  width: 80%;
-  margin: 0 auto;
-  margin-block: 2em;
-  padding: 2em;
-  box-sizing: border-box;
-  border: $secondary-blue 7px solid;
-  border-radius: 1em;
-  background-color: $main-blue;
-
-  &.forms-container__error {
-    border: $error-color 7px solid;
+.custom-button {
+  background-color: $darker-main-blue !important;
+  color: $fill-white !important;
+  border-color: $main-dark-blue !important;
+  transition: background-color 0.3s, border-color 0.3s;
+  
+  &:hover {
+    background-color: darken($darker-main-blue, 10%) !important;
   }
 }
 
-.forms-container--title {
-  color: $fill-white;
-  margin: 0;
+/* image input styles */
+input[type="file"] {
+  display: none;
+}
+.image-preview-img {
+  aspect-ratio: 10/8;
 }
 
-.forms-container--inputContainer {
-  @include forms-container--inputContainer();
-}
-
-.inputContainer--input {
-  @include inputContainer--input();
-}
-
-.tab-buttons {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 1em;
-
-  button {
-    background-color: $main-blue;
-    color: $fill-white;
-    border: none;
-    padding: 0.5em 1em;
-    cursor: pointer;
-
-    &.active {
-      background-color: $secondary-blue;
-    }
-  }
-}
-
-.selectContainer,
-.checkboxContainer {
-  color: $fill-white;
-}
-
-.selectContainer label,
-.checkboxContainer-title {
-  margin-right: 0.2em;
-  margin-bottom: 0.5em;
-}
-
-select {
-  color: $main-blue;
-  border-radius: 0.5em;
-  padding-block: 0.2em;
-  padding-inline: 0.5em;
-  border: none;
-  outline: $main-blue;
-}
-
-/* checkbox section */
-.checkboxContainer {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  color: $main-blue;
-  min-height: 50px;
-  max-height: 300px;
+.blueScrollBar{
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: $main-blue $fill-white;
-  box-sizing: border-box;
-  padding-inline: 1em;
-  background-color: $fill-white;
-  border-radius: 1em;
 }
 
-.checkboxContainer-title {
-  margin-block: 0.5em;
-  color: $main-blue;
+/* tabHeaders */
+.tab-headers-wrapper{
+  background-color: $darker-main-blue;
+  font-size: 1.4em;
+}
+.tab-headers {
+  display: flex;
+  align-items: center;
+  width: 30%;
+
+
+} @media(max-width:600px){
+  .tab-headers{
+      width: 50%;
+      margin-left: 4em;
+  }
 }
 
-/* Custom checkboxes */
-.styled-checkbox {
-  width: 15px;
-  height: 15px;
-  appearance: none;
-  background-color: transparent;
-  border: 2px solid $main-blue;
-  border-radius: 4px;
+.tab-link {
+  color: $fill-white;
+  width: 100%;
+  border: 2px solid $fill-white;
+  background-color: $darker-main-blue;
+  outline: none;
   cursor: pointer;
-  position: relative;
+  padding: 1em;
+  transition: 0.3s;
+
 }
 
-.styled-checkbox:checked {
+.tab-link:hover, .tab-link.active:hover {
+  background-color: darken($main-blue, 10);
+}
+
+.tab-link.active {
   background-color: $main-blue;
 }
 
-.styled-checkbox:checked::after {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 5px;
-  width: 3px;
-  height: 7px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+
+.blueBG {
+  background-color: $main-blue;
+}
+.blueTxt {
+  color: $main-blue;
+}
+.whiteTxt {
+  color: $fill-white;
 }
 
-.checkboxContainer--option {
+.errorSpanMessage {
+  color: $error-color;
+  margin-left: auto;
+}
+
+/* estilos para dar override do componente do angular material  */
+input {
+  color: $main-blue !important;
+  caret-color: $main-blue !important;
+}
+textarea {
+  color: $main-blue !important;
+  caret-color: $main-blue !important;
+}
+::ng-deep .mat-mdc-form-field-flex {
+  background-color: $fill-white !important;
+}
+::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--filled {
+  background-color: $fill-white !important;
+}
+::ng-deep
+  .mdc-text-field--filled:not(.mdc-text-field--disabled)
+  .mdc-line-ripple::after {
+  border-color: $main-dark-blue !important;
+}
+
+::ng-deep .mat-mdc-select-min-line {
+  color: $main-blue !important;
+}
+::ng-deep .mat-mdc-select-panel {
+  background-color: $darker-main-blue !important;
+}
+.mat-mdc-option {
+  background-color: $darker-main-blue !important;
+}
+.mat-mdc-option-active {
+  color: $fill-white !important;
+}
+.mat-mdc-option:hover {
+  background-color: $main-blue !important;
+}
+::ng-deep
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled)
+  .mdc-list-item__primary-text {
+  color: $main-dark-blue !important;
+}
+::ng-deep .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+  color: $main-dark-blue !important;
+}
+::ng-deep svg {
+  color: $main-blue !important;
+}
+
+// Custom tooltip styles
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
+  font-size: 1em !important;
+}
+::ng-deep .custom div{
+  padding: 1em;
+  background-color: $main-dark-blue !important;
+}
+::ng-deep .custom div div{
+  font-size: 2em;
+} 
+
+.association-container {
+  padding:1em;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1em;
-  color: $main-blue;
-  border-bottom: solid 1px $main-blue;
-  margin-block: 1em;
+  justify-content: space-between;
+  background-color: $main-dark-blue;
+}
+.checkboxContainer{
+  max-height: 40vh;
+  overflow-y: scroll;
 }

@@ -53,7 +53,7 @@ class IndicatorSeeder extends Seeder
         ];
 
         
-        for ($i = 39; $i <= 58; $i++) {
+        for ($i = 39; $i <= 44; $i++) {
             $indicators[] = [
                 'id' => $i,
                 'indicator_name' => 'indicator' . $i,

@@ -1,76 +1,54 @@
-<!-- <div class="bg-white p-4 rounded shadow-md">
-  <h2 class="text-xl font-semibold mb-4 blueTxt">Histórico de Notificações</h2>
-  <table mat-table [dataSource]="dataSource" class="w-full border-collapse">
-    <ng-container matColumnDef="nome">
-      <th mat-header-cell *matHeaderCellDef class="border p-2 blueBG blueTxt">Nome</th>
-      <td mat-cell *matCellDef="let element" class="border p-2 blueTxt">{{element.nome}}</td>
-    </ng-container>
-    <ng-container matColumnDef="assunto">
-      <th mat-header-cell *matHeaderCellDef class="border p-2 blueBG blueTxt">Assunto</th>
-      <td mat-cell *matCellDef="let element" class="border p-2 blueTxt">{{element.assunto}}</td>
-    </ng-container>
-    <ng-container matColumnDef="mensagem">
-      <th mat-header-cell *matHeaderCellDef class="border p-2 blueBG blueTxt">Mensagem</th>
-      <td mat-cell *matCellDef="let element" class="border p-2 blueTxt">{{element.mensagem}}</td>
-    </ng-container>
-    <ng-container matColumnDef="data">
-      <th mat-header-cell *matHeaderCellDef class="border p-2 blueBG blueTxt">Data</th>
-      <td mat-cell *matCellDef="let element" class="border p-2 blueTxt">{{element.data}}</td>
-    </ng-container>
-    <ng-container matColumnDef="respondido">
-      <th mat-header-cell *matHeaderCellDef class="border p-2 blueBG blueTxt">Respondido</th>
-      <td mat-cell *matCellDef="let element" class="border p-2 text-center blueTxt">{{element.respondido}}</td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-</div>-->
-<!-- 
-<div class="main-content text-center">
-  <div class="header">
-    <h3 class="title text-2xl mb-5">Timeline</h3>
-  </div>
-  <div class="row flex justify-center">
-    <div class="col-md-12 w-full">
-      <div class="card card-timeline card-plain">
-        <div class="card-body relative">
-          <div class="timeline absolute left-1/2 transform -translate-x-1/2 h-full w-px bg-gray-300"></div>
-          <ul class="timeline list-none p-0">
-            <li *ngFor="let item of timelineItems; let i = index"
-                class="timeline-item mb-12 flex {{i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}} items-center w-full">
-              <div class="relative w-1/2 flex justify-center">
-                <div class="timeline-badge w-12 h-12 flex items-center justify-center text-white text-lg rounded-full absolute top-0 transform -translate-y-1/2"
-                     [ngClass]="item.badgeClass">
-                  <i [class]="item.iconClass"></i>
-                </div>
-              </div>
-              <div class="timeline-panel relative w-1/2 p-5 border border-gray-300 bg-white rounded shadow-sm">
-                <div class="timeline-heading">
-                  <span class="badge badge-pill" [ngClass]="item.badgeClass">{{item.title}}</span>
-                </div>
-                <div class="timeline-body" *ngIf="item.body">
-                  <p *ngFor="let paragraph of item.body" class="mb-0">{{paragraph}}</p>
-                </div>
-                <div class="timeline-footer" *ngIf="item.footer">
-                  <h6 class="mt-0"><i class="fa fa-clock-o"></i> {{item.footer}}</h6>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->
-
-
-<section class="timeline" #timeline>
-  <h2 class="my-5 ml-5 blueTxt">Lista de Notificações</h2>
+<section class="timeline relative lightBlueBG" #timeline>
   <ul>
-    <li *ngFor="let item of timelineItems" [ngClass]="{'in-view': isElementInView(item)}">
-      <div>
-        <time>{{ item.title }}</time> {{ item.detail }}
+    <li *ngFor="let item of notifications" [id]="'notification-' + item.id" [ngClass]="{
+        'in-view': isElementInView(item),
+        'unread': !item.is_read,
+        'expanded': item.expanded,
+        'sent': item.type === 'sent',
+        'received': item.type === 'received',
+        'highlight': item.highlighted
+      }">
+      <div class="timeline-item" (click)="toggleExpand(item)" [ngClass]="{
+          'expanded': item.expanded,
+          'sent-item': item.type === 'sent',
+          'received-item': item.type === 'received'
+        }">
+        <lord-icon *ngIf="item.response" class="icon" src="https://cdn.lordicon.com/lomfljuq.json" trigger="loop"
+          delay="1500" state="in-check" colors="primary:#FFFFFF" style="width:30px;height:30px">
+        </lord-icon>
+        <time>{{ item.created_at | date:'dd/MM/yyyy' }}</time>
+        <p class="text-base" *ngIf="item.type === 'received'">De: {{ item.sender }}</p>
+        <p class="text-base" *ngIf="item.type === 'sent'">Para: {{ item.receiver }}</p>
+        <p class="text-base" *ngIf="item.type === 'received'">Email: {{ item.sender_email }}</p>
+        <p class="text-base" *ngIf="item.type === 'sent'">Email: {{ item.receiver_email }}</p>
+        <p class="text-base">Assunto: {{ item.title }}</p>
+        <p class="text-base">Mensagem: {{ item.message }}</p>
+        <div *ngIf="item.expanded" class="notification-details">
+          <div class="notification-body">
+            <h3 class="text-base" >Resposta</h3>
+            <p *ngIf="item.response; else noResponse">{{ item.response }}</p>
+            <ng-template #noResponse  class="text-base"  >Sem resposta ainda.</ng-template>
+          </div>
+          <p *ngIf="item.updated_at" class="response-date tex-base ">respondido: {{ item.updated_at | date:'dd/MM/yyyy' }}</p>
+          <div *ngIf="!item.response && item.type === 'received'">
+            <textarea class="text-base" [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."
+              (click)="$event.stopPropagation()"></textarea>
+            <button class="text-base" *ngIf="!isLoading || item.id !== loadingItemId" class="send-button"
+              (click)="sendResponse(item, $event)">
+              Enviar Resposta
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                fill="#FFFFFF">
+                <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
+              </svg>
+            </button>
+            <div *ngIf="isLoading && item.id === loadingItemId" class="loading-circle">
+              <div class="spinner spinner_updateRecord-special"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </li>
   </ul>
+  <h2 class="text-center text-2xl font-bold blueTxt" *ngIf="notifications.length === 0">Sem notificações para mostrar</h2>
+  <app-feedback *ngIf="feedbackMessage" [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
 </section>

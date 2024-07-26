@@ -2,16 +2,26 @@
 @import '../../../../styles/_mixins.scss';
 
 .notification {
+  
   position: fixed;
-  top: 4em;
-  right: 2em;
-  padding: 1em;
+  bottom: 6em;
+  right: 3em;
+  padding: 2.5em;
   z-index: 1000;
   border-radius: 0.5em;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-size: 13px;
+
+  &.enter {
+    animation: notification-slide-in 0.5s forwards;
+  }
+
+  &.leave {
+    animation: notification-slide-out 0.5s forwards;
+  }
 
   &.success {
     background-color: $success-color;
@@ -29,5 +39,29 @@
     color: inherit;
     cursor: pointer;
     margin-left: 1em;
+  }
+}
+
+@keyframes notification-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes notification-slide-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
   }
 }

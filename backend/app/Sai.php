@@ -10,7 +10,6 @@ class Sai extends Model
         'service_id',
         'activity_id',
         'indicator_id',
-        'type',
     ];
 
     public function goals()

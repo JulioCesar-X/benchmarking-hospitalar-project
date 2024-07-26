@@ -1,44 +1,52 @@
-<section class="forms-container">
-  <div class="forms-container--inputContainer">
-    <div class="special">
-      <div class="selectContainer">
-        <label for="serviceId">Serviços:</label>
-        <select [(ngModel)]="selectedServiceId" (change)="onServiceSelect($event)">
-          <option *ngFor="let service of servicesList" [value]="service.id">{{ service.name }}</option>
+<section class="mx-auto p-4 forms-container">
+  <app-feedback [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
+  <div class="min-w-full gap-2 text-left whiteTxt">
+    <div class="flex flex-col sm:flex-row gap-2 items-center">
+      <div class="selectContainer flex-grow" *ngIf="showServiceInput">
+        <select class="w-full" [(ngModel)]="selectedServiceId" (change)="onServiceSelect($event)"
+          matTooltip="Selecione um serviço" [matTooltipPosition]="'below'" matTooltipClass="custom">
+          <option [ngValue]="0" disabled>Selecione um serviço</option>
+          <option *ngFor="let service of servicesList" [value]="service.id">{{ service.service_name }}</option>
         </select>
       </div>
-      <div class="selectContainer" *ngIf="activitiesList.length > 1">
-        <label for="activityId">Atividade:</label>
-        <select [(ngModel)]="selectedActivityId" (change)="onActivitySelect($event)" [disabled]="!selectedServiceId">
+
+      <div class="selectContainer flex-grow" *ngIf="showActivityInput && activitiesList.length > 0">
+        <select class="w-full" [(ngModel)]="selectedActivityId" (change)="onActivitySelect($event)"
+          [disabled]="!selectedServiceId" matTooltip="Selecione uma atividade" [matTooltipPosition]="'below'"
+          matTooltipClass="custom">
+          <option [ngValue]="undefined" disabled>Selecione uma atividade</option>
           <option *ngFor="let activity of activitiesList" [value]="activity.id">{{ activity.name }}</option>
         </select>
       </div>
+
+      <div class="relative selectContainer flex-grow" *ngIf="indicatorsInput">
+        <select class="w-full" [(ngModel)]="selectedIndicatorId" matTooltip="Selecione um indicador"
+          [matTooltipPosition]="'below'" matTooltipClass="custom"
+          [disabled]="!selectedServiceId || (showActivityInput && !selectedActivityId)">
+          <option [ngValue]="undefined" disabled selected>Selecione um indicador</option>
+          <option *ngFor="let indicator of indicatorsList" [value]="indicator.id">{{ indicator.name }}</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-1 w-full sm:w-auto month-input-container" *ngIf="showMonthInput">
+        <input type="number" id="month" name="month" min="1" max="12" step="1" class="inputContainer--input month-input"
+          [(ngModel)]="filter.month" [disabled]="!selectedServiceId || (!selectedIndicatorId && indicatorsInput)"
+          matTooltip="Selecione um mês" [matTooltipPosition]="'below'" matTooltipClass="custom">
+      </div>
+
+      <div class="flex items-center gap-1 w-full sm:w-auto year-input-container">
+        <input type="number" id="year" name="year" min="1900" [max]="currentYear" step="1"
+          class="inputContainer--input year-input" [(ngModel)]="filter.year"
+          [disabled]="!selectedServiceId || (!selectedIndicatorId && indicatorsInput)" matTooltip="Selecione um ano"
+          [matTooltipPosition]="'below'" matTooltipClass="custom">
+      </div>
+
+      <div class="flex items-center gap-1 w-full sm:w-auto button-container">
+        <button (click)="sendFilter()"
+          class="w-full sm:w-auto bg-transparent py-1.5 cursor-pointer forms-Button search-button">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
     </div>
-    <div class="selectContainer" *ngIf="indicatorsInput">
-      <label for="indicatorId">Indicadores:</label>
-      <select [(ngModel)]="selectedIndicatorId"
-        [disabled]="!selectedServiceId || (!selectedActivityId && selectedActivityId !== null)">
-        <option *ngFor="let indicator of indicatorsList" [value]="indicator.id">{{ indicator.name }}</option>
-      </select>
-    </div>
-  </div>
-  <div class="forms-container--inputContainer">
-    <div *ngIf="showMonthInput">
-      <label for="month">Mês:</label>
-      <input type="number" id="month" name="month" min="1" max="12" step="1" class="inputContainer--input"
-        [(ngModel)]="filter.month" [disabled]="!selectedServiceId || (!selectedIndicatorId && indicatorsInput)">
-    </div>
-    <div>
-      <label for="year">Ano:</label>
-      <input type="number" id="year" name="year" min="1900" max="2200" step="1" class="inputContainer--input"
-        [(ngModel)]="filter.year" [disabled]="!selectedServiceId || (!selectedIndicatorId && indicatorsInput)">
-    </div>
-    <button (click)="sendFilter()" class="forms-Button">
-      Procurar
-    </button>
-  </div>
-  <div *ngIf="dataInsertedCheckbox" class="forms-container--inputContainer">
-    <input type="checkbox" [disabled]="!selectedServiceId">
-    <label>Mostrar indicadores com dados não inseridos</label>
   </div>
 </section>

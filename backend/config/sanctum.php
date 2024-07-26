@@ -60,4 +60,6 @@ return [
         'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
     ],
 
+    'expiration' => 240, // Token expiration in minutes (4 hours)
+
 ];

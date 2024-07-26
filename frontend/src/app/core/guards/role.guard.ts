@@ -23,7 +23,7 @@ export class RoleGuard implements CanActivate {
       return this.router.createUrlTree(['/login']);
     }
 
-    if (!expectedRoles.includes(role)) {
+    if (!expectedRoles.includes(role) && role !== 'root') {
       console.warn(`RoleGuard: User role (${role}) not authorized, redirecting to home page.`);
       return this.router.createUrlTree(['/home']);
     }

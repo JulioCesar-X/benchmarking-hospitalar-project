@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
@@ -6,6 +6,8 @@ import { IndicatorsUpsertFormComponent } from '../../../components/indicators/in
 import { IndicatorService } from '../../../core/services/indicator/indicator.service';
 import { Indicator } from '../../../core/models/indicator.model';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-indicators-update-page',
@@ -19,15 +21,13 @@ import { LoadingSpinnerComponent } from '../../../components/shared/loading-spin
   templateUrl: './indicators-update-page.component.html',
   styleUrls: ['./indicators-update-page.component.scss']
 })
-export class IndicatorsUpdatePageComponent implements OnInit {
+export class IndicatorsUpdatePageComponent implements OnInit, OnDestroy {
   selectedIndicator: Indicator = {
-    id: undefined,
+    id: -1,
     indicator_name: '',
-    service_ids: [],
-    activity_ids: [],
-    sais: []
   };
   isLoading = true;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -35,12 +35,17 @@ export class IndicatorsUpdatePageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const indicatorId = params['id'];
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const indicatorId = +params['id'];
       if (indicatorId) {
         this.loadIndicator(indicatorId);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadIndicator(indicatorId: number): void {

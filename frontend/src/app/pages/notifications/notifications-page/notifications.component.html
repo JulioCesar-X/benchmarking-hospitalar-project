@@ -1,6 +1,48 @@
-<div class="sticky-menu"> 
-<!--     <app-menu></app-menu> -->
- </div>
- <div class="sm:mx-1 w-full flex flex-col">
-    <app-notifications-list-section></app-notifications-list-section>
- </div>
+<div class="z-30 sticky-menu">
+  <app-menu [isManageNotificationsSubMenuOpen]="true"></app-menu>
+</div>
+
+<div class="pt-2 pb-1 w-[100vw] fixed z-20 whiteTxt blueBG">
+  <h2 class="text-4xl">Lista de Notificações</h2>
+    <div id="tabHead" class="flex items-center justify-center">
+      <div id="tabHeaders" class="flex justify-center w-[30%] mt-2">
+        <button
+        matTooltip="Consultar notificações recebidas" [matTooltipPosition]="'below'"
+      matTooltipClass="custom"
+          type="button"
+          class="tab-link"
+          [class.active]="selectedTab === 'received'"
+          (click)="selectTab('received')"
+        >
+        Recebidas
+        </button>
+        <button
+        matTooltip="Consultar notificaçoes enviadas" [matTooltipPosition]="'below'"
+      matTooltipClass="custom"
+          type="button"
+          class="tab-link"
+          [class.active]="selectedTab === 'sent'"
+          (click)="selectTab('sent')"
+        >
+        Enviadas
+        </button>
+      </div>
+    </div>
+</div>
+
+<div class="sm:mx-1 w-full flex flex-col">
+  <div class="flex-1" *ngIf="selectedTab === 'received'">
+    <app-notifications-list-section
+      [notifications]="receivedNotifications"
+      [isLoading]="isLoading"
+      [type]="'received'"
+    ></app-notifications-list-section>
+  </div>
+  <div class="flex-1" *ngIf="selectedTab === 'sent'">
+    <app-notifications-list-section
+      [notifications]="sentNotifications"
+      [isLoading]="isLoading"
+      [type]="'sent'"
+    ></app-notifications-list-section>
+  </div>
+</div>

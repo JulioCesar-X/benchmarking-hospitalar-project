@@ -1,14 +1,8 @@
-@component('mail::message')
-# Redefinição de Senha
+@extends('emails.layouts.email')
 
-Você solicitou a redefinição de sua senha. Clique no botão abaixo para redefini-la:
-
-@component('mail::button', ['url' => $url])
-Redefinir Senha
-@endcomponent
-
-Se você não solicitou a redefinição de senha, nenhuma ação é necessária.
-
-Obrigado,<br>
-{{ config('app.name') }}
-@endcomponent
+@section('content')
+<h2>Redefinição de Senha</h2>
+<p>Você solicitou a redefinição de sua senha. Clique no botão abaixo para redefini-la:</p>
+<a href="{{ $url }}" class="button">Redefinir Senha</a>
+<p>Se você não solicitou a redefinição de senha, nenhuma ação é necessária.</p>
+@endsection

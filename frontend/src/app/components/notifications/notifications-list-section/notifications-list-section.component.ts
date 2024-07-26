@@ -1,6 +1,6 @@
-import { Component, OnInit, HostListener,  ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { NgModule } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Component, Input, OnInit, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -9,51 +9,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { CommonModule } from '@angular/common';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NotificationService } from '../../../core/services/notifications/notification.service';
+import { FeedbackComponent } from '../../shared/feedback/feedback.component';
+import { TimelineItem } from '../../../core/models/timeline-item.model';
 
 
-// export interface Notificacao {
-//   nome: string;
-//   assunto: string;
-//   mensagem: string;
-//   data: string;
-//   respondido: boolean;
-// }
-
-// const ELEMENT_DATA: Notificacao[] = [
-//   { nome: 'João', assunto: 'Assunto 1', mensagem: 'Mensagem de exemplo', data: '04/07/2024', respondido: false },
-// ];
-
-
-// @Component({
-//   selector: 'app-notifications-list-section',
-//   standalone: true,
-//   imports: [
-//     CommonModule,
-//     MatSidenavModule,
-//     MatIconModule,
-//     MatListModule,
-//     MatInputModule,
-//     MatButtonModule,
-//     MatTableModule,
-//     MatCheckboxModule,
-//     MatFormFieldModule],
-//   templateUrl: './notifications-list-section.component.html',
-//   styleUrl: './notifications-list-section.component.scss'
-// })
-
-// export class NotificationsListSectionComponent {
-//   displayedColumns: string[] = ['nome', 'assunto', 'mensagem', 'data', 'respondido'];
-//   dataSource = ELEMENT_DATA;
-// }
-
-
-
-interface TimelineItem {
-  title: string;
-  detail: string; 
-}
- 
 @Component({
   selector: 'app-notifications-list-section',
   standalone: true,
@@ -66,78 +27,104 @@ interface TimelineItem {
     MatButtonModule,
     MatTableModule,
     MatCheckboxModule,
-    MatFormFieldModule],
+    MatFormFieldModule,
+    FormsModule,
+    FeedbackComponent
+  ],
   templateUrl: './notifications-list-section.component.html',
-  styleUrls: ['./notifications-list-section.component.scss']
+  styleUrls: ['./notifications-list-section.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class NotificationsListSectionComponent implements OnInit, AfterViewInit {
+export class NotificationsListSectionComponent implements OnInit {
+  @Input() notifications: TimelineItem[] = [];
+  @Input() isLoading: boolean = false;
+  @Input() type: 'received' | 'sent' = 'received';
+
   @ViewChild('timeline', { static: false }) timeline: ElementRef | undefined;
 
-  timelineItems: TimelineItem[] = [
-    { title: '1934', detail: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium' },
-    { title: '1937', detail: 'Proin quam velit, efficitur vel neque vitae, rhoncus commodo mi.' },
-    { title: '1940', detail: 'Proin iaculis, nibh eget efficitur varius, libero tellus porta dolor.' },
-    { title: '1943', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '1946', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '1956', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '1957', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '1967', detail: 'Aenean condimentum odio a bibendum rhoncus.' },
-    { title: '1977', detail: 'Vestibulum porttitor lorem sed pharetra dignissim.' },
-    { title: '1985', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '2000', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' },
-    { title: '2005', detail: 'In mattis elit vitae odio posuere, nec maximus massa varius.' }
-  ];
+  feedbackMessage = '';
+  feedbackType: 'success' | 'error' = 'success';
+  loadingItemId: number | null = null;
 
-  constructor(private cdr: ChangeDetectorRef) { }
-
-  ngAfterViewInit() {
-    this.checkElementsInView(); // Chama a verificação após a inicialização da view
-    this.cdr.detectChanges(); // Detecta mudanças explicitamente
-  }
-  
+  constructor(
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
-    //this.checkElementsInView(); // Chama a verificação após a inicialização da view
+    // Initial load logic if necessary
   }
 
   @HostListener('window:scroll', ['$event'])
   onScroll() {
-    this.checkElementsInView(); // Reavalia a visibilidade dos elementos ao rolar a página
+    const threshold = 300;
+    const position = window.innerHeight + window.scrollY;
+    const height = document.body.offsetHeight;
+
+    if (position > height - threshold) {
+      // Implement pagination logic if necessary
+    }
   }
 
-  private checkElementsInView() {
-    if (!this.timeline) return; // Retorna se a referência para a timeline não estiver definida
-
-    const timelineItems = this.timeline.nativeElement.querySelectorAll('.timeline ul li');
-    timelineItems.forEach((item: HTMLElement) => {
-      const bounding = item.getBoundingClientRect();
-      if (
-        bounding.top >= 0 &&
-        bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-      ) {
-        item.classList.add('in-view');
+  toggleExpand(item: TimelineItem) {
+    item.expanded = !item.expanded;
+    this.cdr.detectChanges();
+    const liElement = document.getElementById(`notification-${item.id}`);
+    if (liElement) {
+      if (item.expanded) {
+        liElement.classList.add('expanded');
       } else {
-        item.classList.remove('in-view');
+        liElement.classList.remove('expanded');
       }
-    });
+    }
   }
 
   isElementInView(item: TimelineItem): boolean {
-    const elements = document.querySelectorAll('.timeline ul li div');
-    let elementInView = false;
+    const element = document.getElementById(`notification-${item.id}`);
+    if (element) {
+      const bounding = element.getBoundingClientRect();
+      return bounding.top >= 0 && bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight);
+    }
+    return false;
+  }
 
-    elements.forEach((element) => {
-      if (element.textContent?.includes(item.title)) {
-        const bounding = element.getBoundingClientRect();
-        if (
-          bounding.top >= 0 &&
-          bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-        ) {
-          elementInView = true;
-        }
+  sendResponse(item: TimelineItem, event: Event) {
+    event.stopPropagation();
+    if (!item.newResponse) return;
+
+    this.clearFeedback();
+
+    this.isLoading = true;
+    this.loadingItemId = item.id;
+    const response = {
+      response: item.newResponse
+    };
+
+    this.notificationService.respondToNotification(item.id, response).subscribe({
+      next: (updatedNotification) => {
+        item.response = updatedNotification.response;
+        item.newResponse = '';
+        this.feedbackMessage = 'Resposta enviada com sucesso!';
+        this.feedbackType = 'success';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.feedbackMessage = 'Erro ao enviar resposta. Tente novamente.';
+        this.feedbackType = 'error';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      complete: () => {
+        this.loadingItemId = null;
+        this.cdr.detectChanges();
       }
     });
-
-    return elementInView;
   }
+
+  clearFeedback() {
+    this.feedbackMessage = '';
+    this.feedbackType = 'success';
+  }
+  
 }

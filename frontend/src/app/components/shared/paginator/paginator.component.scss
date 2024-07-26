@@ -2,30 +2,28 @@
 @import '../../../../styles/_mixins.scss';
 
  //styles for the paginators
+ //the classes below are meant to override the angular material's paginator styles
  mat-paginator {
    background-color: $main-blue;
-   /* Example: customizing button background color */
    color: $fill-white;
-   border-radius: 1em;
+/*    border-bottom-left-radius: 1em;
+   border-bottom-right-radius: 1em; */
  }
 
  ::ng-deep .div.mat-mdc-select-panel {
-   border: 1px solid red;
-   color: red;
    background-color: $main-blue;
  }
 
- ::ng-deep .cdk-overlay-pane:not(.mat-mdc-select-panel-above) div.mat-mdc-select-panel {
-   border: 1px solid $main-dark-blue;
-   background-color: $main-blue;
- }
+ ::ng-deep .cdk-overlay-pane div.mat-mdc-select-panel {
+  border: 1px solid $main-dark-blue;
+  background-color: $main-blue;
+}
 
- ::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted {
+/*  ::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted {
    color: $fill-white;
- }
+ } */
 
  ::ng-deep .mat-mdc-option.mdc-list-item.ng-tns-c1771602899-1.ng-star-inserted.mat-mdc-option-active {
-
    background-color: $secondary-blue;
  }
 
@@ -37,3 +35,11 @@
    cursor: default !important;
 
  }
+
+ /* svg nbfPages arrow global */
+/*  ::ng-deep .mat-mdc-select-arrow svg{
+  fill: $fill-white !important;
+ } */
+
+
+

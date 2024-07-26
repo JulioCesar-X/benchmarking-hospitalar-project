@@ -19,7 +19,7 @@ class ActivitySeeder extends Seeder
         ];
 
         
-        for ($i = 4; $i <= 23; $i++) {
+        for ($i = 4; $i <= 9; $i++) {
             $activities[] = [
                 'activity_name' => 'activity' . $i,
                 'created_at' => now(),

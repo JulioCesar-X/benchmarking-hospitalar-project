@@ -1,13 +1,50 @@
 @import '../../../styles/_variables.scss';
 @import '../../../styles/_mixins.scss';
 
-.chartTitle{
-    color: $fill-white;
-    margin-bottom: 0;
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface {
+  font-size: 1em !important;
 }
 
-.chart{
-    background-color: $fill-white;
-    border-radius: 1em;
-    padding: 0.5em;
+::ng-deep .custom div {
+  padding: 1em;
+  background-color: $main-dark-blue !important; // Custom background color
+}
+
+::ng-deep .custom div div {
+  font-size: 2em; // Custom font size
+}
+
+.chartTitle {
+  color: $fill-white;
+  margin-bottom: 0;
+}
+
+.chart {
+  background-color: $fill-white;
+  color: $main-dark-blue;
+  padding: 0.5em;
+  min-height: 400px;
+  height: 100%;
+}
+
+.no-data-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1.2em;
+  color: #666;
+}
+
+:host {
+  display: block;
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+canvas {
+  width: 100% !important;
+  height: 400px !important;
 }

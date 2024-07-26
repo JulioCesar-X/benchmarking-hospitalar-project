@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
-import { NotificationsCreateFormComponent } from '../../../components/notifications/notifications-create-form/notifications-create-form.component';
+import { NotificationsCreateFormComponent } from '../../../components/notifications/notifications-upsert-form/notifications-upsert-form.component';
 
 @Component({
   selector: 'app-notifications-create-page',

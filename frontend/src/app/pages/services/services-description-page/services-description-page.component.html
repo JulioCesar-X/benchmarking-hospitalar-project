@@ -1,8 +1,16 @@
-<div class="descriptionBox mx-2 w-full">
-  <button class="close-button" (click)="goToHomepage()">X</button>
-  <app-loading-spinner *ngIf="isLoading" [message]="'Carregando...'"></app-loading-spinner>
-  <div *ngIf="!isLoading">
-    <h2>{{ service?.service_name }}</h2>
-    <p>{{ service?.description }}</p>
+<div class="card p-6 bg-white rounded-lg shadow-lg flex flex-col lg:flex-row items-center">
+  <div class="cardText flex-1 mt-6 lg:mt-0 lg:mr-6 px-4 lg:px-0">
+    <h1 class="text-4xl font-bold leading-tight text-main-dark-blue">{{ service.service_name }}</h1>
+    <h2 class="text-2xl font-medium text-cinereous mt-4">Encontre mais informação no nosso site oficial</h2>
+    <p class="text-lg mt-2 text-text-color">{{ service.description }}</p>
+    <div class="mt-4 flex space-x-2">
+      <button class="button-custom" (click)="goToHomepage()" >Atrás</button>
+      <button class="button-secondary"><a href="{{service.more_info}}" target="_blank">Mais Info</a></button>
+    </div>
+  </div>
+  <div class="cardImg-container flex-none w-full lg:w-1/2 flex justify-center items-center bg-main-blue p-4 rounded-lg">
+    <div class="image-wrapper w-full h-full flex justify-center items-center">
+      <img [src]="service.image_url" class="imgSize max-w-full h-auto rounded-lg" alt="{{ service.service_name }}">
+    </div>
   </div>
 </div>

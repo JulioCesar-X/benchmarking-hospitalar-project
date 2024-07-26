@@ -2,9 +2,23 @@
   <app-navbar></app-navbar>
 
   <main>
-    <router-outlet></router-outlet>
+    <router-outlet>
 
+    </router-outlet>
   </main>
-
   <app-footer></app-footer>
+  
+  <button (click)="scrollToTop()" [ngClass]="{'toTopBtnVisible': toTopBtnVisible, 'toTopBtnHidden': !toTopBtnVisible}"
+  class="fixed z-50000 w-[50px] h-[50px] focus:outline-none toTopBtn">
+    <lord-icon
+      
+    src="https://cdn.lordicon.com/ternnbni.json"
+    trigger="hover"
+    style="width:50px;height:50px"
+    id="toTopIcon">
+  </lord-icon>
+  </button>
+
+
+
 </div>

@@ -1,8 +1,8 @@
-<div>
-  <app-menu></app-menu>
+<div class="sticky-menu"> 
+  <app-menu [isManageServicesSubMenuOpen]="true"></app-menu>
 </div>
-<div class="sm:mx-0 md:mx-1 lg:mx-2 w-full">
-  <app-search-filter (search)="onSearch($event)" (searchStarted)="onSearchStarted()" (reset)="onReset()"
+<div class="sm:mx-1 w-full flex flex-col gap-2 relative">
+  <app-search-filter class="absolute top-[15px] right-[20px]" (search)="onSearch($event)" (searchStarted)="onSearchStarted()" (reset)="onReset()"
     type="services"></app-search-filter>
-  <app-services-list-section [services]="filteredServices" [isLoading]="isLoadingSearch"></app-services-list-section>
+  <app-services-list-section class="flex-1 " [services]="filteredServices" [isLoading]="isLoadingSearch"></app-services-list-section>
 </div>

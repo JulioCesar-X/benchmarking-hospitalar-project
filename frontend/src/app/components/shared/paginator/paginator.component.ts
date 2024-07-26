@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent,  } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-paginator',
@@ -21,17 +22,15 @@ export class PaginatorComponent {
   showPageSizeOptions = true;
   showFirstLastButtons = true;
   disabled = false;
-  pageEvent: PageEvent | undefined;
+  pageEvent: any;
 
   handlePageEvent(e: PageEvent) {
     this.pageEvent = e;
     this.length = e.length;
     this.pageSize = e.pageSize;
     this.pageIndex = e.pageIndex;
-
-    console.log("fff>>>", e);
-
-    console.log(this.pageIndex + 1, this.pageSize);
+    this.page.emit(e); // quando isso esta aqui o problema acontece
+    console.log("pageEvent", e);
   }
 
   setPageSizeOptions(setPageSizeOptionsInput: string) {
@@ -39,15 +38,10 @@ export class PaginatorComponent {
       this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
     }
   }
-
+  
   onPageChange(event: PageEvent): void {
-
+    console.log("fff>>>", event);
     this.page.emit(event);
 
   }
 }
-
-
-
-
-

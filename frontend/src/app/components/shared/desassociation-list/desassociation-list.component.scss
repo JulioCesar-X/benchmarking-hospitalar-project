@@ -1,0 +1,65 @@
+@import '../../../../styles/variables';
+
+/* .title {
+    text-align: center;
+    margin-bottom: 1em;
+    font-weight: bold;
+    font-size: 1.5em;
+    color: $fill-white;
+} */
+
+table {
+    width: 100%;
+}
+
+.mat-elevation-z8 {
+    box-shadow: none;
+    background: transparent;
+}
+
+.custom-table {
+    background-color: $main-dark-blue;
+    overflow: hidden;
+    box-shadow: 0 3px 3px -2px rgba(0, 0, 0, .2), 0 3px 4px 0 rgba(0, 0, 0, .14), 0 1px 8px 0 rgba(0, 0, 0, .12);
+}
+
+.mat-header-cell {
+    background-color: $main-blue;
+    font-weight: bold;
+    text-align: left;
+    color: black !important;
+}
+
+.mat-cell,
+.mat-header-cell {
+    padding: 8px;
+    text-align: left;
+    color: black !important;
+}
+
+.mat-column-select {
+    width: 50px;
+    text-align: center;
+}
+
+.mat-column-service,
+.mat-column-activity {
+    text-align: left;
+}
+
+.mat-checkbox-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
+    font-size: 1em !important;
+  }
+  ::ng-deep .custom div{
+    padding: 1em;
+    background-color: $main-dark-blue !important;
+  }
+  ::ng-deep .custom div div{
+    font-size: 2em;
+  } 

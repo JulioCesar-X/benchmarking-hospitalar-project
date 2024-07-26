@@ -1,14 +1,17 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { catchError, throwError } from 'rxjs';
 import { SearchService } from '../../../core/services/search/search.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-search-filter',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatTooltipModule],
   templateUrl: './search-filter.component.html',
-  styleUrls: ['./search-filter.component.scss']
+  styleUrls: ['./search-filter.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]  // to accept lordIcon element in the component
+
 })
 export class SearchFilterComponent implements OnInit {
   @Input() type!: 'activities' | 'indicators' | 'services' | 'users';

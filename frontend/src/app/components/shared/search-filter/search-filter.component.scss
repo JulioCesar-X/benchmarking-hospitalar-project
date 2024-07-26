@@ -1,14 +1,17 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
+.searchBtn{
+  cursor: pointer;
+  background-color: $fill-white;
+}
+.searchBtn:hover{
+  background-color: $secondary-blue;
+}
 
-.forms-container {
-  background-color: $main-blue;
-/*   border: $secondary-blue 7px solid; */
-
-  &.forms-container__error{
-    border: $error-color 7px solid;
-  }
+#searchIcon {
+  box-sizing: border-box;
+  --lord-icon-primary: var(--main-blue);
 }
 
 .txtWhite{
@@ -19,15 +22,17 @@
   box-sizing: border-box;
   color: $main-blue;
   background-color: $fill-white;
-  border: none;
+  border:none;
+  outline: none;
 
   &::placeholder{
     color: $main-blue;
   }
   &:focus{
     outline: none;
-    border: none;
+    border:none;
     caret-color: $main-blue;
+
   }
   &:disabled{
     background-color: $secondary-blue;
@@ -35,7 +40,6 @@
   }
   &.inputContainer--input__error, .inputContainer--input__error:focus{
     outline: none;
-    border: $error-red 2px solid;
     caret-color: $error-red;
     color: $error-red;
   }

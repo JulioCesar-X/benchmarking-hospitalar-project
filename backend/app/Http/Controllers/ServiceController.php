@@ -3,183 +3,204 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Service;
-use Exception;
-use App\Sai;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use App\Service;
+use App\Sai;
+use Exception;
 
 class ServiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         try {
-            // Carregar todos os serviços com os relacionamentos sais
-            $services = Service::with(['sais.activity', 'sais.indicator'])->get();
+            $cacheKey = 'services_index';
+
+            if (Cache::has($cacheKey)) {
+                return response()->json(Cache::get($cacheKey), 200);
+            }
+
+            $services = Service::with([
+                'sais' => function ($query) {
+                    $query->select('id', 'activity_id', 'indicator_id', 'service_id');
+                },
+                'sais.activity:id,activity_name',
+                'sais.indicator:id,indicator_name'
+            ])
+                ->select('id', 'service_name', 'image_url')
+                ->get();
 
             if ($services->isEmpty()) {
-                return response()->json(['message' => 'No services found'], 200);
+                return response()->json([], 200);
             }
 
             $services = $services->map(function ($service) {
-                // Transformar os dados para incluir atividades e indicadores associados
                 $activities = $service->sais->map(function ($sai) {
-                    if (isset($sai->activity) && !is_null($sai->activity)) {
-                        return [
-                            'id' => $sai->activity->id,
-                            'name' => $sai->activity->activity_name
-                        ];
-                    }
-                    return null;
+                    return $sai->activity ? [
+                        'id' => $sai->activity->id,
+                        'name' => $sai->activity->activity_name
+                    ] : null;
                 })->filter()->unique('id')->values();
 
                 $indicators = $service->sais->map(function ($sai) {
-                    if (isset($sai->indicator) && !is_null($sai->indicator)) {
-                        return [
-                            'id' => $sai->indicator->id,
-                            'name' => $sai->indicator->indicator_name
-                        ];
-                    }
-                    return null;
+                    return $sai->indicator ? [
+                        'id' => $sai->indicator->id,
+                        'name' => $sai->indicator->indicator_name
+                    ] : null;
                 })->filter()->unique('id')->values();
 
                 return [
                     'id' => $service->id,
-                    'name' => $service->service_name,
+                    'service_name' => $service->service_name,
                     'image_url' => $service->image_url,
                     'activities' => $activities,
                     'indicators' => $indicators
                 ];
             });
 
-            return response()->json(['data' => $services], 200);
+            Cache::put($cacheKey, $services, now()->addMinutes(30));
+
+            return response()->json($services, 200);
         } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
+            Log::error('Error fetching services: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
+    }
+
+    public function getFirstValidService()
+    {
+        try {
+            $service = Service::orderBy('order', 'asc')->first();
+            return response()->json($service, 200);
+        } catch (Exception $exception) {
+            Log::error('Error fetching first valid service: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
 
     public function getServicesPaginated(Request $request)
     {
         try {
-            $pageSize = $request->input('size');
-            $pageIndex = $request->input('page');
+            $pageSize = $request->input('size', 15);
+            $pageIndex = $request->input('page', 1);
 
-            $services = Service::query()
-                ->orderBy('created_at', 'desc')
+            $services = Service::orderBy('order', 'asc')
                 ->paginate($pageSize, ['*'], 'page', $pageIndex);
 
             return response()->json($services, 200);
         } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
+            Log::error('Error fetching paginated services: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    public function updateOrder(Request $request)
+    {
+        try {
+            $services = $request->input('services');
+
+            foreach ($services as $index => $service) {
+                Service::where('id', $service['id'])->update(['order' => $index]);
+            }
+
+            return response()->json(['message' => 'Ordem dos serviços atualizada com sucesso.'], 200);
+        } catch (Exception $exception) {
+            Log::error('Error updating service order: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         DB::beginTransaction();
         try {
-            $service = Service::create([
-                'service_name' => $request->service_name,
-                'description' => $request->description,
-                'image_url' => $request->image_url
-            ]);
+            $existingService = Service::where('service_name', $request->service_name)->first();
+            if ($existingService) {
+                return response()->json(['error' => 'Nome do serviço já existe.'], 400);
+            }
 
-            foreach ($request->activity_ids as $activityId) {
-                foreach ($request->indicator_ids as $indicatorId) {
-                    Sai::create([
-                        'activity_id' => $activityId,
-                        'service_id' => $service->id,
-                        'indicator_id' => $indicatorId,
-                        'type' => 'default'
-                    ]);
-                }
+            $service = Service::create($request->only(['service_name', 'description', 'image_url', 'more_info']));
+
+            $saiData = $this->prepareSaiData($service->id, $request->associations);
+            if (!empty($saiData)) {
+                Sai::insert($saiData);
             }
 
             DB::commit();
-            return response()->json($service->load('sais'), 201);
+            Cache::forget('services_index');
+
+            return response()->json($service->load('sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'), 201);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
+            Log::error('Erro ao criar o serviço: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
         }
     }
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         try {
-            $service = Service::with(['sais.activity', 'sais.indicator'])
-            ->findOrFail($id);
+            $service = Service::with(['sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'])
+                ->select('id', 'service_name', 'description', 'image_url', 'more_info')
+                ->findOrFail($id);
             return response()->json($service, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Service $service)
+    public function update(Request $request)
     {
         DB::beginTransaction();
         try {
-            $service->update([
-                'service_name' => $request->service_name,
-                'description' => $request->description,
-                'image_url' => $request->image_url
-            ]);
+            $service = Service::find($request->id);
+            if (!$service) {
+                return response()->json(['error' => 'Serviço não encontrado.'], 404);
+            }
 
-            // Create new SAIs
-            foreach ($request->activity_ids as $activityId) {
-                foreach ($request->indicator_ids as $indicatorId) {
-                    Sai::create([
-                        'activity_id' => $activityId,
-                        'service_id' => $service->id,
-                        'indicator_id' => $indicatorId,
-                        'type' => 'default'
-                    ]);
-                }
+            $existingService = Service::where('service_name', $request->service_name)
+                ->where('id', '<>', $service->id)
+                ->first();
+            if ($existingService) {
+                return response()->json(['error' => 'Nome do serviço já existe.'], 400);
+            }
+
+            $service->update($request->only(['service_name', 'description', 'image_url', 'more_info']));
+
+            $this->processDesassociations($request->desassociations);
+            $saiData = $this->prepareSaiData($service->id, $request->associations);
+            if (!empty($saiData)) {
+                Sai::insert($saiData);
             }
 
             DB::commit();
-            return response()->json($service->load('sais'), 200);
+            Cache::forget('services_index');
+
+            return response()->json($service->load('sais.activity:id,activity_name', 'sais.indicator:id,indicator_name'), 200);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['error' => $exception->getMessage()], 500);
+            Log::error('Erro ao atualizar o serviço: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Erro interno do servidor'], 500);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
+        DB::beginTransaction();
         try {
             $service = Service::findOrFail($id);
+
+            $this->deleteServiceAssociations($service);
+
             $service->delete();
-            return response()->json(['message' => 'Deleted'], 205);
+
+            DB::commit();
+            Cache::forget('services_index');
+
+            return response()->json(['message' => 'Deleted'], 200);
         } catch (Exception $exception) {
+            DB::rollBack();
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
@@ -188,12 +209,74 @@ class ServiceController extends Controller
     {
         try {
             $query = $request->query('q');
-            $service = Service::where('service_name', 'LIKE', '%' . $query . '%')
+            $services = Service::whereRaw('LOWER(service_name) LIKE ?', ['%' . strtolower($query) . '%'])
                 ->orderBy('updated_at', 'desc')
                 ->get();
-            return response()->json($service, 200);
+
+            return response()->json($services, 200);
         } catch (Exception $exception) {
-            return response()->json(['error' => $exception->getMessage()], 500);
+            Log::error('Error searching services: ', ['exception' => $exception]);
+            return response()->json(['error' => 'Internal Server Error'], 500);
+        }
+    }
+
+    private function prepareSaiData($serviceId, $associations)
+    {
+        $saiData = [];
+        $existingCombinations = [];
+
+        if ($associations) {
+            foreach ($associations as $association) {
+                $combinationKey = $association['activity_id'] . '_' . $association['indicator_id'];
+
+                if (in_array($combinationKey, $existingCombinations)) {
+                    throw new Exception('Associação duplicada detectada para activity_id: ' . $association['activity_id'] . ', indicator_id: ' . $association['indicator_id']);
+                }
+
+                $existingSai = Sai::where('service_id', $serviceId)
+                    ->where('activity_id', $association['activity_id'])
+                    ->where('indicator_id', $association['indicator_id'])
+                    ->first();
+
+                if (!$existingSai) {
+                    $saiData[] = [
+                        'service_id' => $serviceId,
+                        'activity_id' => $association['activity_id'],
+                        'indicator_id' => $association['indicator_id'],
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+
+                $existingCombinations[] = $combinationKey;
+            }
+        }
+
+        return $saiData;
+    }
+
+    private function processDesassociations($desassociations)
+    {
+        if ($desassociations) {
+            foreach ($desassociations as $desassociation) {
+                $sai = Sai::find($desassociation['sai_id']);
+                if ($sai) {
+                    DB::table('goals')->where('sai_id', $sai->id)->delete();
+                    DB::table('records')->where('sai_id', $sai->id)->delete();
+                    $sai->delete();
+                }
+            }
+        }
+    }
+
+    private function deleteServiceAssociations($service)
+    {
+        $sais = $service->sais;
+
+        foreach ($sais as $sai) {
+            DB::table('goals')->where('sai_id', $sai->id)->delete();
+            DB::table('records')->where('sai_id', $sai->id)->delete();
+            $sai->delete();
         }
     }
     

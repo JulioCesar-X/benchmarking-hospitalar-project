@@ -4,8 +4,13 @@ module.exports = {
   theme: {
     extend: {
        colors: {
-        'main-blue': '#1e3a8a', // Use a cor desejada
-        'fill-white': '#ffffff', // Use a cor desejada
+        'main-blue': '#5b8ead',
+        'main-blue': '#5b8ead',
+        'main-dark-blue': '#283044',
+        'fill-white': '#fff',
+        'darker-main-blue': '#88B8CA',
+        'khaki': '#BFA89E',
+        'cinereous': '#8B786D',
       },
     },
   },

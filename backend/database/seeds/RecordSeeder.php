@@ -18,7 +18,7 @@ class RecordSeeder extends Seeder
     private function insertRecords()
     {
         $sais = Sai::with(['service', 'activity', 'indicator'])->get();
-        $currentYears = [2020, 2021, 2022, 2023, 2024];
+        $currentYears = [2019,2020,2021,2022,2023,2024];
 
         foreach ($currentYears as $year) {
             foreach ($sais as $sai) {
@@ -49,10 +49,10 @@ class RecordSeeder extends Seeder
     {
         // Definição de intervalos de valores baseados no nome do indicador
         $ranges = [
-            'Nº Consultas Total' => ['min' => 200, 'max' => 1000],
-            'Primeiras Consultas' => ['min' => 50, 'max' => 300],
-            'Consultas Subsequentes' => ['min' => 100, 'max' => 800],
-            'default' => ['min' => 150, 'max' => 1000] // Valor padrão
+            'Nº Consultas Total' => ['min' => 500, 'max' => 3000],
+            'Primeiras Consultas' => ['min' => 500, 'max' => 2000],
+            'Consultas Subsequentes' => ['min' => 200, 'max' => 3000],
+            'default' => ['min' => 100, 'max' => 5000] // Valor padrão
         ];
         $range = $ranges[$indicatorName] ?? $ranges['default'];
         return rand($range['min'], $range['max']);

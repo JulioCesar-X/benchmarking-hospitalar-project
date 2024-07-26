@@ -1,44 +1,44 @@
 @import '../../../styles/_variables.scss';
 
-
 :host {
     flex: 1;
     display: flex;
-  }
-
-.graphicsContainer{
-    background-color: $main-blue;
-    margin: auto;
-    gap: 1em;
-
-    box-sizing: border-box;
-    border-radius: 1em;
-    margin-block: 0;
-    border: none;
-    max-width: 90%;
-    display: flex;
-    padding: 1em;
-    justify-content: space-around;
 }
 
+.whiteTxt{
+    color:$fill-white;
+}
 ._whiteBG{
     background-color: $fill-white;
 }
+.blueText{
+    color: $main-dark-blue;
+  }
 
 ._blueTxt{
     margin:0;
     color: $main-blue;
 }
+.borderColorBlue{
+    border-color: $main-blue;
+}
 
-  //tabs styles UPDATED VERSION
+.graphicsContainer2{
+    background-color: $main-blue;
+    box-sizing: border-box;
+    border: none;
+}
+
+.tab-headers-wrapper{
+    background-color: $darker-main-blue;
+    font-size: 1.4em;
+}
 .tab-headers {
     display: flex;
+    align-items: center;
     width: 30%;
-    margin-left: 8em;
-    margin-top: 1em;
-    overflow: hidden;
-    border-top-left-radius: 1em;
-    border-top-right-radius: 1em;
+
+
 } @media(max-width:600px){
     .tab-headers{
         width: 50%;
@@ -49,8 +49,8 @@
 .tab-link {
     color: $fill-white;
     width: 100%;
-    background-color: $secondary-blue;
-    border: none;
+    border: 2px solid $main-blue;
+    background-color: $darker-main-blue;
     outline: none;
     cursor: pointer;
     padding: 1em;
@@ -59,12 +59,39 @@
 }
 
 .tab-link:hover, .tab-link.active:hover {
-    background-color: $darker-main-blue;
+    background-color: darken($main-blue, 10);
 }
 
 .tab-link.active {
     background-color: $main-blue;
 }
 
+/* To top button styles */
+#toTopIcon {
+    --lord-icon-primary: var(--main-dark-blue); 
+  }
 
+.toTopBtn {
+    cursor: pointer;
+    right: 50%; 
+    bottom: -50px;
+    transition: bottom 0.5s ease-in-out; 
+}
 
+.toTopBtnVisible {
+    bottom: 30px; 
+}
+
+.toTopBtnHidden {
+    bottom: -50px;
+}
+.text-red {
+    color: darken($main-red,30%);
+    font-size: large;
+    font-weight: bold;
+}
+.text-green {
+    color: #2dcb2d;
+    font-size: large;
+    font-weight: bold;
+}

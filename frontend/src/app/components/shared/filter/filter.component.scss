@@ -1,47 +1,112 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
+  font-size: 1em !important;
+}
+::ng-deep .custom div{
+  padding: 1em;
+  background-color: $main-dark-blue !important; // Custom background color
+}
+::ng-deep .custom div div{
+  font-size: 2em;// Custom background color
+}
 
 .forms-container{
-    @include forms-container();
+  box-sizing: border-box;
+  border: none;
+  background-color: $main-blue;
 
-    margin-block: 0;
-    border: none;
-    width: 100%;
+    &.forms-container__error{
+    border: $error-color 7px solid;
+  }
+}
+
+.whiteTxt{
+  color: $fill-white;
 }
 
 
 .selectContainer{
-    color: $fill-white;
+  color: $fill-white;
 
     label{
         margin-right: 0.2em;
     }
     select{
-        color: $main-blue;
-        border-radius: 0.5em;
-        padding-block: 0.2em;
-        padding-inline: 0.5em;
-        border: none;
-        outline: $main-blue;
-    }
-}
+    color: $main-blue;
+        padding-block: 0.8em;
+        padding-inline: 1em;
+    border: none;
+    outline: $main-blue;
+        font-size: 1.3em;
+  }
 
-.forms-container--inputContainer{
-    @include forms-container--inputContainer();
-    gap: 1em;
-
-    div{
-        display: flex;
-        align-items: center;
-    }
+  option {
+    font-size: 1em;
+  }
 }
 
 .inputContainer--input{
-    @include inputContainer--input();
+  box-sizing: border-box;
+  color: $main-blue;
+  background-color: $fill-white;
+  border: none;
+  padding: 0.7em 1em;
+  width: 100%;
+
+    &::placeholder{
+    color: $main-blue;
+  }
+    &:focus{
+    outline: none;
+    border: none;
+    caret-color: $main-blue;
+  }
+    &:disabled{
+    background-color: $secondary-blue;
+    border: none;
+  }
+    &.inputContainer--input__error, .inputContainer--input__error:focus{
+    outline: none;
+    border: $error-red 2px solid;
+    caret-color: $error-red;
+    color: $error-red;
+  }
+    &.inputContainer--input__error::placeholder{
+    color: $error-red;
+  }
 }
 
 .forms-Button{
-    @include forms-Button();
+    color:  $fill-white;
+  border: $fill-white 2px solid;
+  text-transform: uppercase;
+
+    &:active{
+    background-color: $fill-white;
+      color:  $main-blue;
+    border: $fill-white 2px solid;
+  }
     margin-top: 0;
+}
+
+
+.search-button {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+}
+
+@media (max-width: 640px) {
+
+  .selectContainer,
+  .inputContainer--input,
+  .forms-Button {
+    width: 100%;
+  }
 }

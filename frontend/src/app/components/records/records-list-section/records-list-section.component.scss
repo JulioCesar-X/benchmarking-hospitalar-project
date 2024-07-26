@@ -1,9 +1,25 @@
 @import '../../../../styles/_variables.scss';
 @import '../../../../styles/_mixins.scss';
 
+.whiteText {
+  color: $fill-white;
+}
+
+.darkBlueBG {
+  background-color: $main-blue;
+}
+
+.borderBlue {
+  border: $main-blue 10px solid;
+  border-radius: 2em;
+}
+
 .headingSection {
-  display: flex;
+  background-color: $fill-white;
   color: $main-blue;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.8em;
 
   img {
     width: 25px;
@@ -13,12 +29,19 @@
 }
 
 .forms-container {
-  @include forms-container();
-  padding: 0;
-  margin-block: 0em;
-  border: 10px solid $main-blue;
+  box-sizing: border-box;
   background-color: $fill-white;
-  width: 100%;
+  border: $main-blue 10px solid;
+  max-height: 70vh;
+
+  &.forms-container__error {
+    border: $error-color 10px solid;
+  }
+
+  @media (max-width: 600px) {
+    overflow-y: visible;
+    height: auto;
+  }
 }
 
 .forms-container--inputContainer {
@@ -26,8 +49,41 @@
 }
 
 .inputContainer--input {
-  @include inputContainer--input();
-  width: 50%;
+  width: 100%;
+  box-sizing: border-box;
+  color: black;
+  background-color: $fill-white;
+  border-radius: 0.5em;
+  padding-block: 0.5em;
+  padding-inline: 1em;
+  border: none;
+
+  &::placeholder {
+    color: $main-blue;
+  }
+
+  &:focus {
+    outline: none;
+    border: none;
+    caret-color: $main-blue;
+  }
+
+  &:disabled {
+    background-color: darken($lighter-main-blue, 10);
+    border: none;
+  }
+
+  &.inputContainer--input__error,
+  .inputContainer--input__error:focus {
+    outline: none;
+    border: $error-red 2px solid;
+    caret-color: $error-red;
+    color: $error-red;
+  }
+
+  &.inputContainer--input__error::placeholder {
+    color: $error-red;
+  }
 }
 
 .selectOptionContainer--option {
@@ -40,9 +96,27 @@
   color: $main-blue;
   border: $main-blue 2px solid;
   text-transform: uppercase;
-  width: 20%;
-  /* use widht or padding-inline??? */
   margin-top: 0;
+}
+
+.forms-Button.isEditing {
+  background-color: $main-dark-blue;
+  border: $main-blue 2px solid;
+  color: $fill-white;
+  margin-left: 2.3em;
+  animation: scale-animation 1.5s ease-in-out infinite;
+}
+
+@keyframes scale-animation {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .icon {
@@ -59,52 +133,40 @@
   width: 100%;
   border-collapse: collapse;
   text-align: center;
+  font-size: 1.5em;
 
-  th {
-    background-color: $main-blue; // Use a cor desejada
-    color: $fill-white; // Use a cor desejada
-    font-weight: bold;
+  thead {
+    position: sticky;
+    top: 0;
+    background-color: $main-dark-blue;
+    z-index: 1;
+
   }
 
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
+  th {
+    background-color: $main-dark-blue;
+    color: $fill-white;
+    font-weight: bold;
+    padding: 2px;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid $secondary-blue;
   }
 
   tr:hover {
-    background-color: $secondary-blue;
+    background-color: lighten($darker-main-blue, 25%);
   }
 }
 
-/* Loading circle styles */
-.loading-circle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 0;
-  color: $main-blue;
-  margin-block: 1em;
+.blueBtnBorder {
+  border-bottom: solid 2px $main-dark-blue;
 }
 
-.spinner {
-  border: 8px solid $secondary-blue;
-  border-top: 8px solid $main-blue; 
-  border-radius: 50%;
-  width: 50px; 
-  height: 50px;
-  animation: spin 2s linear infinite;
-}
-
-.spinner_updateRecord-special{
-  width: 25px; 
-  height: 25px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.relative .dropdown {
+  z-index: 50;
+  position: absolute;
+  right: 0;
+  top: 100%;
 }

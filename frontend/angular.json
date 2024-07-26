@@ -38,22 +38,23 @@
             "scripts": [
               "node_modules/animejs/lib/anime.min.js",
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/paginationjs/dist/pagination.min.js"          ]
+              "node_modules/paginationjs/dist/pagination.min.js"
+            ]
           },
           "configurations": {
             "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "2.5mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "10kb",
-                  "maximumError": "15kb"
-                }
-              ],
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "2mb",
+                "maximumError": "5mb"
+              },
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "10kb",
+                "maximumError": "15kb"
+              }
+            ],
               "outputHashing": "all",
               "fileReplacements": [
                 {

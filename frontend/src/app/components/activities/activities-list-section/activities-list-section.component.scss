@@ -1,54 +1,87 @@
-@import '../../../../styles/_variables.scss';
-@import '../../../../styles/_mixins.scss';
+@import "../../../../styles/_variables.scss";
+@import "../../../../styles/_mixins.scss";
 
-.headingSection {
-  display: flex;
-  color: $main-blue;
-  justify-content: space-between;
-  align-items: center;
+.forms-container{
+  box-sizing: border-box;
+  background-color: $fill-white;
+  border: $main-blue 10px solid;
+
+  &.forms-container__error {
+    border: $error-color 10px solid;
+  }
+  @media (max-width: 600px) {
+    overflow-y: visible;
+    height: auto;
+  }
 }
 
-.table-container {
-  @include forms-container();
-  margin-block: 0.5em;
-  border: 10px solid $main-blue;
-  background-color: $fill-white;
-  width: 100%;
-  overflow-x: auto; // Permite rolagem horizontal se necessário
+// Custom tooltip styles
+ ::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface{
+  font-size: 1em !important;
+}
+::ng-deep .custom div{
+  padding: 1em;
+  background-color: $main-dark-blue !important;
+}
+::ng-deep .custom div div{
+  font-size: 2em;
+} 
+
+.blueBG{
+  background-color: $main-blue;
+}
+
+.whiteTxt{
+  color: $fill-white;
+}
+
+.icon-large{
+ transform: scale(1.3);
+}
+
+.scale{
+  transition: transform 0.5ms ease-in-out;
+
+}
+.scale:hover{
+  transform: scale(1.1);
 }
 
 .user-table {
   width: 100%;
   border-collapse: collapse;
   text-align: center;
-
-  th {
-    background-color: $main-blue;
-    color: $fill-white;
-    padding: 12px;
-    font-weight: bold;
+  font-size: 1.5em;
+  thead {
+    position: sticky;
+    top: 0;
+    background-color: $main-dark-blue;
+    z-index: 1;
+    
   }
-
+  th {
+    background-color: $main-dark-blue;
+    color: $fill-white;
+    font-weight: bold;
+    padding: 2px;
+  }
   td {
     padding: 12px;
     border-bottom: 1px solid $secondary-blue;
   }
-  
   tr:hover {
-    background-color: $secondary-blue;
+    background-color: lighten($darker-main-blue, 25%);
   }
+}
 
- .edit-button,
- .delete-button {
-   padding: 4px 8px;
-   margin-right: 10px;
-   border: none;
-   background-color: transparent;
-   cursor: pointer;
+.scale{
+  transition: transform 0.5ms ease-in-out;
 
-   .icon {
-     height: 20px; // Ajuste conforme necessário
-     width: auto;
-   }
- }
+}
+.scale:hover{
+  transform: scale(1.1);
+}
+
+.centro{
+  margin-top: 25vh !important ; 
 }

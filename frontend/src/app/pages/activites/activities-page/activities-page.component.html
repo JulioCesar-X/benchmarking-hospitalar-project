@@ -1,9 +1,9 @@
-<div>
-  <app-menu></app-menu>
+<div class="sticky-menu"> 
+  <app-menu [isManageActivitiesSubMenuOpen]="true"></app-menu>
 </div>
-<div class="sm:mx-0 md:mx-1 lg:mx-2 w-full">
-  <app-search-filter (search)="onSearch($event)" (searchStarted)="onSearchStarted()" (reset)="onReset()"
+<div class="sm:mx-1 w-full flex flex-col gap-2 relative">
+  <app-search-filter class="absolute top-[15px] right-[20px]" (search)="onSearch($event)" (searchStarted)="onSearchStarted()" (reset)="onReset()"
     type="activities"></app-search-filter>
-  <app-activities-list-section [activities]="filteredActivities"
+  <app-activities-list-section class="flex-1" [activities]="filteredActivities"
     [isLoading]="isLoadingSearch"></app-activities-list-section>
 </div>

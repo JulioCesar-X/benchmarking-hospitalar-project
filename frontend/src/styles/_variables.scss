@@ -1,12 +1,27 @@
-// Cores
-$main-blue: #9CCCDE;
+// Cores SCSS
+$main-blue: #5b8ead;
+//#608fad
+//5b8ead
 $darker-main-blue: #88B8CA;
-$main-dark-blue: #131D47;
-$secondary-blue: #D2E8ED;
+$main-dark-blue: #283044;
+$secondary-blue: #EBF5EE;
+$khaki: #BFA89E;
+$cinereous: #8B786D;
+$lighter-main-blue: lighten($darker-main-blue, 25%);
+
 $error-red: #FE557D;
 $main-red: #FF5A5F;
 $fill-white: #fff;
 $darker-main-red:#b02529;
+
+/* below we assign the global colors to css variables, this way we can expand in the way we use them,
+for example to customize colors in lordIcons icons */
+:root{
+    --main-blue: #{$main-blue};
+    --main-dark-blue: #{$main-dark-blue};
+    --fill-white: #($fill-white);
+}
+
 
 $primary-color: #70c6d6;
 $secondary-color: #f5f5f5;
@@ -39,3 +54,17 @@ $card-height: 150px;
 //Mensagens de erro e sucess user
 $success-color: #28a745; // Cor verde para mensagens de sucesso
 $error-color: #dc3545; // Cor vermelha para mensagens de erro
+
+
+//graficos
+
+$primary: rgb(81, 107, 145);
+$primaryBg: rgba(81, 107, 145, 0.2);
+$secondary: rgb(89, 196, 230);
+$secondaryBg: rgba(89, 196, 230, 0.2);
+$quaternary: rgb(147, 183, 227);
+$quaternaryBg: rgba(147, 183, 227, 0.2);
+$quinary: rgb(165, 231, 240);
+$quinaryBg: rgba(165, 231, 240, 0.2);
+$octonary: rgb(167, 208, 208);
+$octonaryBg: rgba(167, 208, 208, 0.2);
