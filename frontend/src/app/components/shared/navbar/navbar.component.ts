@@ -190,7 +190,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   startNotificationPolling() {
     if (this.isLoggedIn()) {
-      this.notificationSubscription = interval(1000000).subscribe(() => this.getNotifications());
+      this.notificationSubscription = interval(10000).subscribe(() => this.getNotifications());
     }
   }
 

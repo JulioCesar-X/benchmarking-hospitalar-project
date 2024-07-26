@@ -50,18 +50,13 @@ class IndicatorSeeder extends Seeder
             ['id' => 36, 'indicator_name' => 'Encargos / Visita', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 37, 'indicator_name' => 'Consultas Marcadas e não Realizadas', 'created_at' => now(), 'updated_at' => now()],
             ['id' => 38, 'indicator_name' => 'Ocupação', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 39, 'indicator_name' => 'Nº de Intervenções em Crise', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 40, 'indicator_name' => 'Taxa de Adesão ao Tratamento', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 41, 'indicator_name' => 'Satisfação do Paciente com o Atendimento', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 42, 'indicator_name' => 'Tempo Médio de Espera por Consulta', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 43, 'indicator_name' => 'Índice de Efetividade do Tratamento', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 44, 'indicator_name' => 'Taxa de Recidiva', 'created_at' => now(), 'updated_at' => now()]
         ];
-
-        
-        for ($i = 39; $i <= 44; $i++) {
-            $indicators[] = [
-                'id' => $i,
-                'indicator_name' => 'indicator' . $i,
-                'created_at' => now(),
-                'updated_at' => now()
-            ];
-        }
-
         DB::table('indicators')->insert($indicators);
     }
 }

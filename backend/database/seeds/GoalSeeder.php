@@ -41,6 +41,6 @@ class GoalSeeder extends Seeder
 
     private function generateRandomTarget()
     {
-        return rand(10000, 15000); // Gera metas entre 10.000 e 50.000
+        return rand(25000, 50000);
     }
 }

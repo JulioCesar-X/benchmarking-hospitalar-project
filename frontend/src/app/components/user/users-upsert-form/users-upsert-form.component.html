@@ -47,9 +47,9 @@
       <mat-label class="blueTxt">Role do utilizador:</mat-label>
       <mat-select id="rolePanel" [(ngModel)]="user.role_id" name="role_id" required (blur)="validateRoleOnBlur()">
         <mat-option [value]="3">Utilizador</mat-option>
-        <mat-option *ngIf="getRole() === 'admin'" [value]="2">Coordenador</mat-option>
+        <mat-option *ngIf="(getRole() === 'admin' || getRole() === 'root')" [value]="2">Coordenador</mat-option>
         <mat-option *ngIf="getRole() === 'root'" [value]="1">Admin</mat-option>
-        <mat-option *ngIf="getRole() === 'root'" [value]="4">Root</mat-option>
+
       </mat-select>
       <span *ngIf="roleErrorMessage" class="errorSpan">{{ roleErrorMessage }}</span>
     </mat-form-field>

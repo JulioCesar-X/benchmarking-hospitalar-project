@@ -95,6 +95,31 @@ class SaiSeeder extends Seeder
             ['service_id' => 6, 'activity_id' => null, 'indicator_id' => 35, 'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 6, 'activity_id' => null, 'indicator_id' => 6,  'created_at' => $timestamp, 'updated_at' => $timestamp],
             ['service_id' => 6, 'activity_id' => null, 'indicator_id' => 36,  'created_at' => $timestamp, 'updated_at' => $timestamp],
+            // Associações para Análise e Diagnóstico Avançado
+            ['service_id' => 7, 'activity_id' => 4, 'indicator_id' => 39, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 7, 'activity_id' => 4, 'indicator_id' => 40, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 7, 'activity_id' => 5, 'indicator_id' => 41, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 7, 'activity_id' => 5, 'indicator_id' => 42, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+
+            // Associações para Cuidado Compassivo ao Paciente
+            ['service_id' => 8, 'activity_id' => 6, 'indicator_id' => 43, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 8, 'activity_id' => 6, 'indicator_id' => 44, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 8, 'activity_id' => 7, 'indicator_id' => 39, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+
+            // Associações para Consulta Especializada em Saúde
+            ['service_id' => 9, 'activity_id' => 8, 'indicator_id' => 40, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 9, 'activity_id' => 8, 'indicator_id' => 41, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 9, 'activity_id' => 9, 'indicator_id' => 42, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 9, 'activity_id' => 9, 'indicator_id' => 43, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+
+            // Associações para Formação e Educação Continuada
+            ['service_id' => 10, 'activity_id' => 8, 'indicator_id' => 44, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 10, 'activity_id' => 9, 'indicator_id' => 39, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+
+            // Associações para Recursos de Saúde Digital
+            ['service_id' => 11, 'activity_id' => 9, 'indicator_id' => 40, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 11, 'activity_id' => 8, 'indicator_id' => 41, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['service_id' => 11, 'activity_id' => 9, 'indicator_id' => 42, 'created_at' => $timestamp, 'updated_at' => $timestamp],
         ];
     }
 

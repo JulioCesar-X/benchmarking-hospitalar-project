@@ -97,7 +97,7 @@
             @yield('content')
         </div>
         <div class="footer">
-            <p>Cumprimentos,<br>Equipe HospMetrics</p>
+            <p>Cumprimentos,<br>Equipa HospMetrics</p>
         </div>
     </div>
 </body>

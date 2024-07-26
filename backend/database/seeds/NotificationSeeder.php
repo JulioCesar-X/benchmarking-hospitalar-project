@@ -13,28 +13,28 @@ class NotificationSeeder extends Seeder
      */
     public function run()
     {
-        $faker = Faker::create();
-        $userIds = range(1, 5);
+        // $faker = Faker::create();
+        // $userIds = range(1, 5);
 
-        $notifications = [];
+        // $notifications = [];
 
-        for ($i = 0; $i < 60; $i++) { // Criar 60 notificações aleatórias
-            $senderId = $faker->randomElement($userIds);
-            $receiverId = $faker->randomElement(array_diff($userIds, [$senderId]));
-            $hasResponse = $faker->boolean(10); // 10% de chance de ter uma resposta
+        // for ($i = 0; $i < 60; $i++) { // Criar 60 notificações aleatórias
+        //     $senderId = $faker->randomElement($userIds);
+        //     $receiverId = $faker->randomElement(array_diff($userIds, [$senderId]));
+        //     $hasResponse = $faker->boolean(10); // 10% de chance de ter uma resposta
 
-            $notifications[] = [
-                'sender_id' => $senderId,
-                'receiver_id' => $receiverId,
-                'title' => $faker->sentence,
-                'message' => $faker->paragraph,
-                'created_at' => $faker->dateTimeBetween('-1 year', 'now'),
-                'updated_at' => $hasResponse ? now() : null,
-                'response' => $hasResponse ? $faker->paragraph : null, // Resposta ou null
-                'is_read' => $hasResponse ? true : $faker->boolean(10) // Se tiver resposta, está lida, caso contrário, 70% de chance de ser lida
-            ];
-        }
+        //     $notifications[] = [
+        //         'sender_id' => $senderId,
+        //         'receiver_id' => $receiverId,
+        //         'title' => $faker->sentence,
+        //         'message' => $faker->paragraph,
+        //         'created_at' => $faker->dateTimeBetween('-1 year', 'now'),
+        //         'updated_at' => $hasResponse ? now() : null,
+        //         'response' => $hasResponse ? $faker->paragraph : null, // Resposta ou null
+        //         'is_read' => $hasResponse ? true : $faker->boolean(10) // Se tiver resposta, está lida, caso contrário, 70% de chance de ser lida
+        //     ];
+        // }
 
-        DB::table('notifications')->insert($notifications);
+        // DB::table('notifications')->insert($notifications);
     }
 }

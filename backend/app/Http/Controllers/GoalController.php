@@ -68,7 +68,8 @@ class GoalController extends Controller
 
         if (!Cache::has($cacheKey)) {
             $root = User::whereHas('roles', function ($query) {
-                $query->where('role_name', 'Root');
+                // $query->where('role_name', 'Root');
+                $query->where('role_name', 'Admin');
             })->first();
 
             if ($root) {

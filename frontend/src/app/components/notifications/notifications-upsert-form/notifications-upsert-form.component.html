@@ -10,7 +10,7 @@
     <mat-form-field class="w-full mb-4 blueBG">
       <mat-label class="blueTxt">Para</mat-label>
       <mat-select [(ngModel)]="selectedUser" name="para" class="blueTxt" required>
-        <mat-option *ngFor="let user of users" [value]="user.id">{{ user.name }}</mat-option>
+        <mat-option *ngFor="let user of users" [value]="user.id">{{ user.email}}</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field class="w-full mb-4">

@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RoleSeeder::class,
             RoleUserSeeder::class,
-            NotificationSeeder::class,
+            // NotificationSeeder::class,
             ServiceSeeder::class,
             ActivitySeeder::class,
             IndicatorSeeder::class,
