@@ -1,6 +1,6 @@
 <section class="flex flex-col min-h-full forms-container">
-  <div class="flex justify-between w-full pt-2 pb-2 rounded-xl">
-    <div class="flex items-center gap-2">
+  <div class="flex justify-center w-full pt-2 pb-2 rounded-xl">
+    <div class="mx-auto flex items-center gap-2">
       <h1 class="text-xl font-semibold">Lista de Registros: {{ numberToMonth(filter.month) }}, {{ filter.year }}</h1>
       <svg matTooltip="Para editar um registro, clique no ícone de lápis. Para eliminar, clique no ícone de lixeira."
         [matTooltipPosition]="'above'" matTooltipClass="custom" xmlns="http://www.w3.org/2000/svg" height="24px"
@@ -47,7 +47,7 @@
     <app-loading-spinner [isForBlueBG]="true" message="A carregar registros..."></app-loading-spinner>
   </div>
 
-  <div *ngIf="!isLoadingRecords" class="my-auto min-h-full overflow-y-scroll">
+  <div *ngIf="!isLoadingRecords" class="min-h-full overflow-y-scroll">
     <div *ngIf="records.length; else noResults">
       <div class="relative">
         <table class="user-table min-w-full">
@@ -101,3 +101,4 @@
     (page)="onPageChanged($event)">
   </app-paginator>
 </section>
+

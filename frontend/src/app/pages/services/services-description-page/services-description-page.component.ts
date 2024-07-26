@@ -28,6 +28,8 @@ export class ServicesDescriptionPageComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.loadService(params['serviceId']);
     });
+    localStorage.removeItem('activeLink');
+
   }
 
   loadService(serviceId: number): void {

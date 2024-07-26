@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { ActivitiesListSectionComponent } from '../../../components/activities/activities-list-section/activities-list-section.component';
@@ -12,11 +12,14 @@ import { ActivityService } from '../../../core/services/activity/activity.servic
   templateUrl: './activities-page.component.html',
   styleUrls: ['./activities-page.component.scss']
 })
-export class ActivitiesPageComponent {
+export class ActivitiesPageComponent implements OnInit {
   filteredActivities: any[] = [];
   isLoadingSearch = false;
 
   constructor(private activityService: ActivityService) { }
+  ngOnInit() {
+    localStorage.removeItem('activeLink');
+   }
 
   onSearch(results: any[]): void {
     this.filteredActivities = results;

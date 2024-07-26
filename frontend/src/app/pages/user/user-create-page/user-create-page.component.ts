@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { UsersUpsertFormComponent } from '../../../components/user/users-upsert-form/users-upsert-form.component';
 
@@ -13,6 +13,9 @@ import { UsersUpsertFormComponent } from '../../../components/user/users-upsert-
   templateUrl: './user-create-page.component.html',
   styleUrl: './user-create-page.component.scss'
 })
-export class UserCreatePageComponent {
+export class UserCreatePageComponent implements OnInit {
+  ngOnInit()  {
+    localStorage.removeItem('activeLink');
 
+  }
 }

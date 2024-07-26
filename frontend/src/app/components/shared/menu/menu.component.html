@@ -51,7 +51,7 @@
             getRole() === 'root' ||
             getRole() === 'coordenador'
           ">
-      <a (click)="goToRecordsGoalsUpdate()" routerLinkActive="Ativo">Inserir dados</a>
+      <a (click)="goToRecordsGoalsUpdate()"  [ngClass]="{ 'Ativo': activeLink === '/record-goals-update' }">Inserir dados</a>
     </div>
     <div class="subMenuItem" *ngIf="
             getRole() === 'admin' ||
@@ -60,7 +60,8 @@
             getRole() === 'coordenador'
           ">
       >
-      <a (click)="goToCharts()" routerLinkActive="Ativo">Consultar Métricas</a>
+      <a (click)="goToCharts()"  [ngClass]="{ 'Ativo': activeLink === '/charts' }"
+      >Consultar Métricas</a>
     </div>
   </div>
 
@@ -275,14 +276,14 @@
   <app-feedback [message]="feedbackMessage" [type]="feedbackType"></app-feedback>
 </aside>
 
-<div class="modal" [ngClass]="{ show: isLoadingCharts }">
+<div class="modal" [ngClass]="{ show: isLoadingModal }">
   <div
     class="flex flex-col justify-center items-center mx-auto w-1/3 h-1/3 mt-[30vh] forms-container"
   >
     <app-loading-spinner
-      *ngIf="isLoadingCharts"
+      *ngIf="isLoadingModal"
       [isForBlueBG]="true"
-      message="A carregar gráficos..."
+      message={{loadingModalMessage}}
     ></app-loading-spinner>
   </div>
 </div>
