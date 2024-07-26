@@ -33,7 +33,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSelectModule,
     MatOptionModule,
     FormsModule,
-    FeedbackComponent, 
+    FeedbackComponent,
     MatTooltipModule
   ],
   templateUrl: './notifications-upsert-form.component.html',
@@ -46,7 +46,9 @@ export class NotificationsCreateFormComponent implements OnInit {
   message: string = '';
   feedbackMessage: string = '';
   feedbackType: 'success' | 'error' = 'success';
-  isLoading: boolean = false; // Adicione esta linha
+  isLoading: boolean = false;
+  subjectError: string = '';
+  messageError: string = '';
 
   constructor(private userService: UserService, private notificationService: NotificationService) { }
 
@@ -66,9 +68,33 @@ export class NotificationsCreateFormComponent implements OnInit {
     );
   }
 
+  validateSubject() {
+    if (this.subject.length > 80) {
+      this.subjectError = 'O assunto não pode ter mais de 80 caracteres.';
+    } else {
+      this.subjectError = '';
+    }
+  }
+
+  validateMessage() {
+    if (this.message.length > 200) {
+      this.messageError = 'A mensagem não pode ter mais de 200 caracteres.';
+    } else {
+      this.messageError = '';
+    }
+  }
+
   onSubmit() {
+    this.validateSubject();
+    this.validateMessage();
+
+    if (this.subjectError || this.messageError) {
+      this.showFeedback('Corrija os erros antes de enviar.', 'error');
+      return;
+    }
+
     if (this.selectedUser && this.subject && this.message) {
-      this.isLoading = true; // Inicie o estado de carregamento
+      this.isLoading = true;
       const newNotification = {
         userId: this.selectedUser,
         title: this.subject,
@@ -86,7 +112,7 @@ export class NotificationsCreateFormComponent implements OnInit {
           console.error('Failed to send notification', error);
         }
       ).add(() => {
-        this.isLoading = false; // Finalize o estado de carregamento
+        this.isLoading = false;
       });
     }
   }

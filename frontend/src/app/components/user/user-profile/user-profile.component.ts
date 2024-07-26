@@ -51,6 +51,7 @@ export class UserProfileComponent implements OnInit {
   newPasswordError: string = '';
   newPasswordFeedback: string[] = [];
   emailError: string = '';
+  nameError: string = '';
   isVisible: boolean = true;
   isError: boolean = false;
 
@@ -67,25 +68,37 @@ export class UserProfileComponent implements OnInit {
 
   formSubmited() {
     this.resetErrors();
+    this.validateNameOnBlur();
     this.validateEmailOnBlur();
     this.validateCurrentPassword();
     if (this.newPassword) {
       this.validateNewPassword();
     }
-    if (this.emailError || this.currentPasswordError || this.newPasswordError) {
+    if (this.nameError || this.emailError || this.currentPasswordError || this.newPasswordError) {
       return;
     }
     this.updateProfile();
   }
 
-  validateEmail(email: string): boolean {
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;                  
-    return emailPattern.test(email);
+  validateNameOnBlur() {
+    const namePattern = /^[a-zA-ZÀ-ÿ\s]{1,50}$/;
+    if (!namePattern.test(this.user.name)) {
+      this.nameError = 'O nome deve conter apenas letras e espaços e ter no máximo 50 caracteres.';
+    } else {
+      this.nameError = '';
+    }
   }
 
   validateEmailOnBlur() {
-    if (!this.validateEmail(this.user.email)) {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(this.user.email)) {
       this.emailError = 'Formato de email inválido.';
+    } else if (/(\.{2,}|[@._%+-]{2,})/.test(this.user.email)) {
+      this.emailError = 'O email não deve conter caracteres especiais consecutivos.';
+    } else if (/^[.@_%+-]|[@._%+-]$/.test(this.user.email)) {
+      this.emailError = 'O email não deve começar ou terminar com caracteres especiais.';
+    } else if (this.user.email.length > 50) {
+      this.emailError = 'O email não pode ter mais de 50 caracteres.';
     } else {
       this.emailError = '';
     }
@@ -195,5 +208,6 @@ export class UserProfileComponent implements OnInit {
     this.emailError = '';
     this.currentPasswordError = '';
     this.newPasswordError = '';
+    this.nameError = '';
   }
 }

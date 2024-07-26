@@ -44,7 +44,6 @@ import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 export class UsersUpsertFormComponent {
   loadingCircleMessage: string = "A carregar";
   @Input() formsAction: string = '';
-  
 
   @Input() user: User = {
     id: 0,
@@ -215,22 +214,29 @@ export class UsersUpsertFormComponent {
   }
 
   validateName() {
-    const namePattern = /^[a-zA-Z\s]*$/;
+    const namePattern = /^[a-zA-ZÀ-ÿ\s]{1,50}$/;
     if (!namePattern.test(this.user.name)) {
-      this.nameErrorMessage = 'O nome não deve conter números.';
+      this.nameErrorMessage = 'O nome deve conter apenas letras e espaços e ter no máximo 50 caracteres.';
     } else {
       this.nameErrorMessage = '';
     }
   }
 
   validateEmail() {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(this.user.email)) {
       this.emailErrorMessage = 'Formato de email inválido.';
+    } else if (/(\.{2,}|[@._%+-]{2,})/.test(this.user.email)) {
+      this.emailErrorMessage = 'O email não deve conter caracteres especiais consecutivos.';
+    } else if (/^[.@_%+-]|[@._%+-]$/.test(this.user.email)) {
+      this.emailErrorMessage = 'O email não deve começar ou terminar com caracteres especiais.';
+    } else if (this.user.email.length > 50) {
+      this.emailErrorMessage = 'O email não pode ter mais de 50 caracteres.';
     } else {
       this.emailErrorMessage = '';
     }
   }
+
 
   validateNIF() {
     const nifPattern = /^\d{9}$/;

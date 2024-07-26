@@ -101,7 +101,7 @@
       </div>
       <div
         class="subMenuItem"
-        *ngIf="getRole() === 'admin' || getRole() === 'root'"
+        *ngIf="getRole() === 'admin' || getRole() === 'root' || getRole() === 'coordenador'"
       >
         <a
           routerLink="/users"
@@ -140,8 +140,7 @@
       class="dashboardOption"
       *ngIf="
         getRole() === 'admin' ||
-        getRole() === 'root' ||
-        getRole() === 'coordenador'
+        getRole() === 'root'
       "
       (click)="openManageServices()"
       [ngClass]="{ 'is-open': isManageServicesSubMenuOpen }"
@@ -183,8 +182,7 @@
       (click)="openManageActivities()"
       *ngIf="
         getRole() === 'admin' ||
-        getRole() === 'root' ||
-        getRole() === 'coordenador'
+        getRole() === 'root'
       "
       [ngClass]="{ 'is-open': isManageActivitiesSubMenuOpen }"
     >
@@ -242,8 +240,7 @@
         class="subMenuItem"
         *ngIf="
           getRole() === 'admin' ||
-          getRole() === 'root' ||
-          getRole() === 'coordenador'
+          getRole() === 'root'
         "
       >
         <a
@@ -257,8 +254,7 @@
         class="subMenuItem"
         *ngIf="
           getRole() === 'admin' ||
-          getRole() === 'root' ||
-          getRole() === 'coordenador'
+          getRole() === 'root'
         "
       >
         <a

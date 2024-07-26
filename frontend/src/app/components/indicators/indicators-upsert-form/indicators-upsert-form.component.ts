@@ -7,11 +7,10 @@ import { ServiceService } from '../../../core/services/service/service.service';
 import { ActivityService } from '../../../core/services/activity/activity.service';
 import { FeedbackComponent } from '../../../components/shared/feedback/feedback.component';
 import { LoadingSpinnerComponent } from '../../../components/shared/loading-spinner/loading-spinner.component';
-import { Sai } from '../../../core/models/sai.model';
 import { DesassociationListComponent } from '../../../components/shared/desassociation-list/desassociation-list.component';
 import { AssociationListComponent } from '../../../components/shared/association-list/association-list.component';
 import { Indicator, CreateIndicator } from '../../../core/models/indicator.model';
-import { MatFormField, MatLabel, } from '@angular/material/form-field';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -37,9 +36,10 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
     indicator_name: '',
   };
 
-  loadingCircleMessage:string = "A carregar indicadores..."
+  loadingCircleMessage: string = "A carregar indicadores..."
   notificationMessage: string = '';
   Type: 'success' | 'error' = 'success';
+  indicatorNameError: string = '';
 
   isLoadingServices: boolean = true;
   isLoadingActivities: boolean = true;
@@ -231,8 +231,18 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
       (this.associations.length > 0 || this.desassociations.length > 0);
   }
 
+  validateIndicatorName(): void {
+    if (this.selectedIndicator.indicator_name.length > 100) {
+      this.indicatorNameError = 'O nome do indicador não pode ter mais de 100 caracteres.';
+    } else {
+      this.indicatorNameError = '';
+    }
+  }
+
   formSubmited(): void {
-    if (!this.formValid()) {
+    this.validateIndicatorName();
+
+    if (!this.formValid() || this.indicatorNameError) {
       this.setNotification('Por favor, preencha todos os campos obrigatórios.', 'error');
       return;
     }
@@ -253,9 +263,9 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
 
   createIndicator(): void {
     this.isLoading = true;
-    const createdIndicator = {
+    const createdIndicator: CreateIndicator = {
       indicator_name: this.selectedIndicator.indicator_name,
-      associations: this.associations,
+      associations: this.associations
     };
 
     this.indicatorService.storeIndicator(createdIndicator).subscribe(
@@ -270,7 +280,6 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
         const errorMessage = this.getErrorMessage(error);
         this.setNotification(errorMessage, 'error');
         this.isLoading = false;
-
       }
     );
   }
@@ -319,7 +328,6 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
     }
     return 'Ocorreu um erro. Tente novamente mais tarde.';
   }
-
 
   selectTab(tab: 'Desassociação' | 'Associação'): void {
     this.activeTab = tab;

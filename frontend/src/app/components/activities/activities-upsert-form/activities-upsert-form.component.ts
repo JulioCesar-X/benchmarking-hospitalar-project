@@ -7,8 +7,6 @@ import { ServiceService } from '../../../core/services/service/service.service';
 import { ActivityService } from '../../../core/services/activity/activity.service';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
-import { Service } from '../../../core/models/service.model';
-import { Indicator } from '../../../core/models/indicator.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DesassociationListComponent } from '../../../components/shared/desassociation-list/desassociation-list.component';
 import { AssociationListComponent } from '../../../components/shared/association-list/association-list.component';

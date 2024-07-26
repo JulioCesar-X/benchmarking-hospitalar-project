@@ -1,5 +1,6 @@
 <div class="modal" [ngClass]="{ 'show': isVisible }" (click)="close()">
-    <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG md:max-w-[600px] md:min-h-[400px] modalBorder" (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
+    <div class="p-4 w-[90%] sm:w-[60%] mx-auto my-5 sm:my-20 shadow-md blueBG md:max-w-[600px] md:min-h-[400px] modalBorder"
+        (click)="$event.stopPropagation()" [ngClass]="{ 'forms-container__error': isError }">
         <div class="modalHeader mb-2">
             <h2 class="modalTitle">Atualizar perfil</h2>
             <span class="close" (click)="close()">&times;</span>
@@ -7,11 +8,13 @@
         <form (ngSubmit)="formSubmited()">
             <mat-form-field class="w-full mb-4 blueBG">
                 <mat-label class="blueTxt">Nome:</mat-label>
-                <input matInput id="nome" [(ngModel)]="user.name" name="name" class="" />
+                <input matInput id="nome" [(ngModel)]="user.name" name="name" class="" (blur)="validateNameOnBlur()" />
+                <span *ngIf="nameError" class="redTxt">{{ nameError }}</span>
             </mat-form-field>
             <mat-form-field class="w-full mb-4">
                 <mat-label class="blueTxt">Email:</mat-label>
-                <input matInput  [(ngModel)]="user.email" name="email" [disabled]="formsAction === 'edit'" class="" (blur)="validateEmailOnBlur()" type="email"/>
+                <input matInput [(ngModel)]="user.email" name="email" [disabled]="formsAction === 'edit'" class=""
+                    (blur)="validateEmailOnBlur()" type="email" />
                 <span *ngIf="emailError" class="redTxt">{{ emailError }}</span>
             </mat-form-field>
             <mat-form-field class="w-full mb-4">
@@ -37,9 +40,9 @@
                 <label class="sectionTitle">Nova senha (opcional):</label>
                 <mat-form-field class="password-container">
                     <input matInput [type]="hideNewPassword ? 'password' : 'text'" [(ngModel)]="newPassword"
-                        name="newPassword" class="" (input)="validateNewPassword()"
-                        (blur)="validateNewPassword()" (copy)="preventCopyPaste($event)"
-                        (cut)="preventCopyPaste($event)" (paste)="preventCopyPaste($event)" />
+                        name="newPassword" class="" (input)="validateNewPassword()" (blur)="validateNewPassword()"
+                        (copy)="preventCopyPaste($event)" (cut)="preventCopyPaste($event)"
+                        (paste)="preventCopyPaste($event)" />
                 </mat-form-field>
                 <button mat-icon-button matSuffix (click)="togglePasswordVisibility('new', $event)"
                     [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideNewPassword" type="button">

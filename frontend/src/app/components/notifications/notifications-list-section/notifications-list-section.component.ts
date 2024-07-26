@@ -14,7 +14,6 @@ import { NotificationService } from '../../../core/services/notifications/notifi
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { TimelineItem } from '../../../core/models/timeline-item.model';
 
-
 @Component({
   selector: 'app-notifications-list-section',
   standalone: true,
@@ -45,6 +44,7 @@ export class NotificationsListSectionComponent implements OnInit {
   feedbackMessage = '';
   feedbackType: 'success' | 'error' = 'success';
   loadingItemId: number | null = null;
+  responseError: string = '';
 
   constructor(
     private notificationService: NotificationService,
@@ -88,9 +88,19 @@ export class NotificationsListSectionComponent implements OnInit {
     return false;
   }
 
+  validateResponse(response: string | undefined) {
+    if (response && response.length > 200) {
+      this.responseError = 'A resposta não pode ter mais de 200 caracteres.';
+    } else {
+      this.responseError = '';
+    }
+  }
+
   sendResponse(item: TimelineItem, event: Event) {
     event.stopPropagation();
-    if (!item.newResponse) return;
+    this.validateResponse(item.newResponse);
+
+    if (this.responseError || !item.newResponse) return;
 
     this.clearFeedback();
 
@@ -126,5 +136,4 @@ export class NotificationsListSectionComponent implements OnInit {
     this.feedbackMessage = '';
     this.feedbackType = 'success';
   }
-  
 }

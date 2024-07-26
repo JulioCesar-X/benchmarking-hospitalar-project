@@ -19,14 +19,13 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-services-upsert-form',
   standalone: true,
   imports: [
-    CommonModule,MatFormField,MatLabel,MatInput,MatButtonModule,
+    CommonModule, MatFormField, MatLabel, MatInput, MatButtonModule,
     FormsModule,
     FeedbackComponent,
     LoadingSpinnerComponent,
     DesassociationListComponent,
     AssociationListComponent,
     MatTooltipModule
-    
   ],
   templateUrl: './services-upsert-form.component.html',
   styleUrls: ['./services-upsert-form.component.scss']
@@ -37,6 +36,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
     id: -1,
     service_name: '',
     description: '',
+    more_info: '',
     image_url: ''
   };
 
@@ -61,6 +61,10 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
   associations: { activity_id: number, indicator_id: number }[] = [];
 
   activeTab: 'Desassociação' | 'Associação' = 'Desassociação';
+
+  serviceNameError: string = '';
+  descriptionError: string = '';
+  moreInfoError: string = '';
 
   constructor(
     private router: Router,
@@ -234,7 +238,7 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
       (this.associations.length > 0 || this.desassociations.length > 0);
   }
 
-    onFileSelected(event: Event): void {
+  onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
@@ -255,35 +259,38 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
     }
   }
 
-
   formSubmited(): void {
-    if (!this.formValid()) {
+    this.validateServiceName();
+    this.validateDescription();
+    this.validateMoreInfo();
+
+    if (!this.formValid() || this.serviceNameError || this.descriptionError || this.moreInfoError) {
       this.setNotification('Por favor, preencha todos os campos obrigatórios e selecione pelo menos uma atividade e um indicador.', 'error');
       return;
     }
 
     if (this.formsAction === 'create') {
-      this.loadingCircleMessage = "A criar serviço..."
+      this.loadingCircleMessage = "A criar serviço...";
       this.createService();
     } else if (this.formsAction === 'edit') {
-      this.loadingCircleMessage = "A editar serviço..."
+      this.loadingCircleMessage = "A editar serviço...";
       this.editService();
     }
   }
+
   setNotification(message: string, type: 'success' | 'error'): void {
     this.notificationMessage = message;
     this.Type = type;
   }
-
 
   editService() {
     this.isLoading = true;
     const updatedService: Service = {
       id: this.selectedService.id,
       service_name: this.selectedService.service_name,
-      description: this.selectedService.description,
+      description: this.selectedService.description || '',
       image_url: this.selectedService.image_url,
-      more_info: this.selectedService.more_info,
+      more_info: this.selectedService.more_info || '',
       associations: this.associations,
       desassociations: this.desassociations
     };
@@ -294,24 +301,21 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
           this.router.navigate(['/services']);
           this.isLoading = false;
         }, 2000);
-
       },
       (error: any) => {
         const errorMessage = this.getErrorMessage(error);
         this.setNotification(errorMessage, 'error');
       }
     );
-
-
   }
 
   createService() {
     this.isLoading = true;
     const createdService: CreateService = {
       service_name: this.selectedService.service_name,
-      description: this.selectedService.description,
+      description: this.selectedService.description || '',
       image_url: this.selectedService.image_url,
-      more_info: this.selectedService.more_info,
+      more_info: this.selectedService.more_info || '',
       associations: this.associations,
     };
 
@@ -356,5 +360,33 @@ export class ServicesUpsertFormComponent implements OnInit, OnChanges, AfterView
       this.selectedSaisIDs = this.saisList.filter(sai => !this.desassociations.some(d => d.sai_id === sai.sai_id)).map(sai => sai.sai_id);
     }
     this.cdr.detectChanges();
+  }
+
+  validateServiceName(): void {
+    const namePattern = /^[a-zA-ZÀ-ÿ\s]*$/; // Permitindo letras, incluindo acentos, e espaços
+    if (!this.selectedService.service_name || !namePattern.test(this.selectedService.service_name)) {
+      this.serviceNameError = 'O nome do serviço não deve conter números ou caracteres especiais.';
+    } else if (this.selectedService.service_name.length > 80) {
+      this.serviceNameError = 'O nome do serviço não pode ter mais de 80 caracteres.';
+    } else {
+      this.serviceNameError = '';
+    }
+  }
+
+  validateDescription(): void {
+    if (this.selectedService.description && this.selectedService.description.length > 200) {
+      this.descriptionError = 'A descrição não pode ter mais de 200 caracteres.';
+    } else {
+      this.descriptionError = '';
+    }
+  }
+
+  validateMoreInfo(): void {
+    const urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+    if (this.selectedService.more_info && !urlPattern.test(this.selectedService.more_info)) {
+      this.moreInfoError = 'O link "Mais informações" deve ser um URL válido.';
+    } else {
+      this.moreInfoError = '';
+    }
   }
 }
