@@ -160,3 +160,7 @@ textarea {
   max-height: 40vh;
   overflow-y: scroll;
 }
+
+.errorSpan {
+  color: $error-color;
+}

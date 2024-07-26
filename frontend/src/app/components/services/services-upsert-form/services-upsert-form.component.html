@@ -33,7 +33,7 @@
         <mat-label class="blueTxt">Nome do serviço:</mat-label>
         <input matInput [(ngModel)]="selectedService.service_name" id="name" name="name"
           (blur)="validateServiceName()" />
-        <span *ngIf="serviceNameError" class="redTxt">{{ serviceNameError }}</span>
+        <span *ngIf="serviceNameError" class="errorSpan">{{ serviceNameError }}</span>
       </mat-form-field>
 
       <mat-form-field class="w-full mb-4">
@@ -41,14 +41,14 @@
         <textarea matInput class="blueScrollBar" [(ngModel)]="selectedService.description" id="description"
           name="description" (blur)="validateDescription()" [ngClass]="{ 'inputContainer--input__error': isError }"
           required></textarea>
-        <span *ngIf="descriptionError" class="redTxt">{{ descriptionError }}</span>
+        <span *ngIf="descriptionError" class="errorSpan">{{ descriptionError }}</span>
       </mat-form-field>
 
       <mat-form-field class="w-full mb-4">
         <mat-label class="blueTxt">Mais informações (URL)</mat-label>
         <input matInput [(ngModel)]="selectedService.more_info" id="name" name="name" (blur)="validateMoreInfo()"
           id="more_info" name="more_info" [ngClass]="{ 'inputContainer--input__error': isError }" />
-        <span *ngIf="moreInfoError" class="redTxt">{{ moreInfoError }}</span>
+        <span *ngIf="moreInfoError" class="errorSpan">{{ moreInfoError }}</span>
       </mat-form-field>
 
       <div class="flex flex-col gap-2 w-full items-center whiteTxt">

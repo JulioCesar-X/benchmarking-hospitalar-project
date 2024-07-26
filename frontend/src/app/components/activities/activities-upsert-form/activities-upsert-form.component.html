@@ -76,7 +76,7 @@
       </div>
 
       <button *ngIf="!isLoading" mat-raised-button type="submit" class="mt-2 custom-button"
-        [disabled]="!formValid() || activityNameError">
+        [disabled]="!formValid()">
         {{ formsAction === "create" ? "Adicionar" : "Atualizar" }}
       </button>
     </form>

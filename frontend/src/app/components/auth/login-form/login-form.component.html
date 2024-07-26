@@ -8,15 +8,15 @@
 
     <mat-form-field class="w-full mb-4 blueBG" *ngIf="!isLoading">
       <mat-label class="blueTxt">Email: </mat-label>
-      <input matInput id="email" type="email" [ngClass]="{'loginInput--error': emailErrorMessage}" [(ngModel)]="email" name="email"
-        required (blur)="validateEmailOnBlur()" />
+      <input matInput id="login-email" type="email" [ngClass]="{'loginInput--error': emailErrorMessage}"
+        [(ngModel)]="email" name="email" required (blur)="validateEmailOnBlur()" />
       <span *ngIf="emailErrorMessage" class="errorSpan">{{ emailErrorMessage }}</span>
     </mat-form-field>
 
     <mat-form-field class="w-full mb-4" *ngIf="!isLoading">
       <mat-label class="blueTxt">Senha:</mat-label>
       <div class="password-container">
-        <input matInput [type]="hidePassword() ? 'password' : 'text'" id="password"
+        <input matInput [type]="hidePassword() ? 'password' : 'text'" id="login-password"
           [ngClass]="{'loginInput--error': passwordErrorMessage}" [(ngModel)]="password" name="password" required
           (blur)="resetErrors()" />
         <button mat-icon-button matSuffix (click)="togglePasswordVisibility($event)" [attr.aria-label]="'Hide password'"
