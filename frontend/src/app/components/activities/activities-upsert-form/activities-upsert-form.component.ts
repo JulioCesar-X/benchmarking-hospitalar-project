@@ -13,8 +13,11 @@ import { Activity, CreateActivity } from '../../../core/models/activity.model';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoggingService } from '../../../core/services/logging.service';
+
 
 @Component({
   selector: 'app-activities-upsert-form',
@@ -29,8 +32,10 @@ import { LoggingService } from '../../../core/services/logging.service';
     FeedbackComponent,
     LoadingSpinnerComponent,
     DesassociationListComponent,
-    AssociationListComponent,
-    MatTooltipModule
+    AssociationListComponent, 
+    MatTooltipModule,
+    DialogContentComponent,
+    
   ],
   templateUrl: './activities-upsert-form.component.html',
   styleUrls: ['./activities-upsert-form.component.scss']
@@ -63,7 +68,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
   desassociations: { sai_id: number }[] = [];
   associations: { service_id: number, indicator_id: number }[] = [];
 
-  activeTab: 'Desassociação' | 'Associação' = 'Desassociação';
+  activeTab: 'Associação' | 'Desassociação' = 'Associação';
 
   constructor(
     private router: Router,
@@ -71,6 +76,7 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
     private serviceService: ServiceService,
     private indicatorService: IndicatorService,
     private cdr: ChangeDetectorRef,
+    private dialog: MatDialog,
     private loggingService: LoggingService
   ) { }
 
@@ -340,5 +346,21 @@ export class ActivitiesUpsertFormComponent implements OnInit, OnChanges, AfterVi
       this.selectedSaisIDs = this.saisList.filter(sai => !this.desassociations.some(d => d.sai_id === sai.sai_id)).map(sai => sai.sai_id);
     }
     this.cdr.detectChanges();
+  }
+
+  openDialog(event: { selected: any[], deselected: any[] }): void {
+
+      const dialogRef = this.dialog.open(DialogContentComponent, {
+        data: {
+          message: `Tem certeza que deseja continuar com essa operação? Desassociar implica a perda de dados relacionados!`,
+          loadingMessage: 'Removendo ligação...'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.onSaisSelectionChange(event);
+        }
+      });
   }
 }

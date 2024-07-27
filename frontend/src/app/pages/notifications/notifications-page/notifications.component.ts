@@ -47,6 +47,8 @@ export class NotificationsComponent implements OnInit {
         }
       });
     });
+    localStorage.removeItem('activeLink');
+
   }
 
   selectTab(tab: string): void {

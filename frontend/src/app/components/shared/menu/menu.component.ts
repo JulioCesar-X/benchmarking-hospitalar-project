@@ -24,6 +24,8 @@ import { LoggingService } from '../../../core/services/logging.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MenuComponent implements OnInit {
+  activeLink: string = ''; //used to aply active link styles withou routerLink
+
   @Input() isManageUsersSubMenuOpen = false;
   @Input() isManageDataSubMenuOpen = false;
   @Input() isManageNotificationsSubMenuOpen = false;
@@ -31,7 +33,9 @@ export class MenuComponent implements OnInit {
   @Input() isManageServicesSubMenuOpen = false;
   @Input() isManageIndicatorsSubMenuOpen = false;
   @Input() isMenuOpen = true;
-  @Input() isLoadingCharts = false;
+  @Input() isLoadingModal = false;
+  @Input() loadingModalMessage = '';
+
 
   loading = false;
   feedbackMessage = '';
@@ -45,7 +49,9 @@ export class MenuComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.isLoadingCharts = false;
+    this.isLoadingModal = false;
+
+    this.activeLink = localStorage.getItem('activeLink') || this.router.url;
   }
 
   getRole() {
@@ -101,30 +107,46 @@ export class MenuComponent implements OnInit {
   }
 
   goToRecordsGoalsUpdate() {
-    this.loading = true;
+    this.isLoadingModal = true;
+    this.loadingModalMessage = 'A carregar dados...'
+
     this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {
           this.router.navigate(['/record-goals-update', { serviceId: service.id }], {
             state: { preLoad: true }
           });
+          localStorage.setItem('activeLink', '/record-goals-update');
+          //this.isLoadingModal = false;
+
+
         } else {
           this.feedbackMessage = 'Nenhum serviço válido encontrado';
           this.feedbackType = 'error';
+          this.isLoadingModal = false;
         }
-        this.loading = false;
       },
       error: (error) => {
         this.loggingService.error('Erro ao carregar o serviço:', error);
         this.feedbackMessage = error.message;
         this.feedbackType = 'error';
-        this.loading = false;
+        this.isLoadingModal = false;
+      },
+      complete: () => {
+        //timeout is necessary to avoid bug regarding the loading state of the modal.
+        //the modal after loading a 1st time, never loads again because the state is instantly changed to false, creating visual bugs
+        setTimeout(() => {
+          this.isLoadingModal = false;
+        }, 2000);
       }
     });
   }
 
+
   goToCharts() {
-    this.isLoadingCharts = true;
+    this.isLoadingModal = true;
+    this.loadingModalMessage = 'A carregar gráficos...'
+
     this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {

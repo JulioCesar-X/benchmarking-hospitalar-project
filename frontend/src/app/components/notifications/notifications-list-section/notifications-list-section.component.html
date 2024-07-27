@@ -17,21 +17,23 @@
           delay="1500" state="in-check" colors="primary:#FFFFFF" style="width:30px;height:30px">
         </lord-icon>
         <time>{{ item.created_at | date:'dd/MM/yyyy' }}</time>
-        <p class="text-base" *ngIf="item.type === 'received'">De: {{ item.sender }}</p>
-        <p class="text-base" *ngIf="item.type === 'sent'">Para: {{ item.receiver }}</p>
-        <p class="text-base" *ngIf="item.type === 'received'">Email: {{ item.sender_email }}</p>
-        <p class="text-base" *ngIf="item.type === 'sent'">Email: {{ item.receiver_email }}</p>
-        <p class="text-base">Assunto: {{ item.title }}</p>
-        <p class="text-base">Mensagem: {{ item.message }}</p>
+        <p class="text-lg" *ngIf="item.type === 'received'"><strong>De: </strong> {{ item.sender }}</p>
+        <p class="text-lg" *ngIf="item.type === 'sent'"><strong>De: </strong> {{ item.receiver }}</p>
+        <p class="text-lg" *ngIf="item.type === 'received'"><strong>Email: </strong>{{ item.sender_email }}</p>
+        <p class="text-lg" *ngIf="item.type === 'sent'"><strong>Email: </strong> {{ item.receiver_email }}</p>
+        <p class="text-lg mt-2"><strong>Assunto: </strong> {{ item.title }}</p>
+        <p class="text-lg"><strong>Mensagem: </strong> {{ item.message }}</p>
         <div *ngIf="item.expanded" class="notification-details">
           <div class="notification-body">
-            <h3 class="text-base">Resposta</h3>
+            <h3 class="text-lg" >Resposta</h3>
             <p *ngIf="item.response; else noResponse">{{ item.response }}</p>
-            <ng-template #noResponse class="text-base">Sem resposta ainda.</ng-template>
+            <ng-template #noResponse  class="text-lg"  >Sem resposta ainda.</ng-template>
           </div>
-          <p *ngIf="item.updated_at" class="response-date text-base">respondido: {{ item.updated_at | date:'dd/MM/yyyy'
-            }}</p>
+          <p *ngIf="item.updated_at" class="response-date tex-lg ">respondido: {{ item.updated_at | date:'dd/MM/yyyy' }}</p>
           <div *ngIf="!item.response && item.type === 'received'">
+            <textarea class="text-lg" [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."
+              (click)="$event.stopPropagation()"></textarea>
+            <button class="text-lg" *ngIf="!isLoading || item.id !== loadingItemId" class="send-button"
             <textarea class="text-base" [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."
               (input)="validateResponse(item.newResponse)" (click)="$event.stopPropagation()"></textarea>
             <span *ngIf="responseError" class="errorSpan">{{ responseError }}</span>
