@@ -53,6 +53,9 @@ export class NotificationsListSectionComponent {
     private loggingService: LoggingService
   ) { }
 
+  ngOnInit() {
+    // Initial load logic if necessary
+  }
 
   @HostListener('window:scroll', ['$event'])
   onScroll() {
@@ -61,7 +64,7 @@ export class NotificationsListSectionComponent {
     const height = document.body.offsetHeight;
 
     if (position > height - threshold) {
-
+      // Implement pagination logic if necessary
     }
   }
 
@@ -136,4 +139,5 @@ export class NotificationsListSectionComponent {
     this.feedbackMessage = '';
     this.feedbackType = 'success';
   }
+
 }

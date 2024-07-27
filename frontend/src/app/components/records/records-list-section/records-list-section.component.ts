@@ -75,12 +75,13 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
   pageSize = 10;
   currentPage = 0;
   records: Record[] = [];
-  allStaticRecords: Record[] = [];
+/*   allStaticRecords: Record[] = []; */
   allRecords: Record[] = [];
   loadedPages: Set<number> = new Set();
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
   pageOptions = [5, 10, 20, 50, 100];
+  isRecordForStoring:boolean = false;
 
   constructor(
     private recordService: RecordService,
@@ -90,12 +91,17 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
 
   ngOnInit(): void {
     this.loadRecords(0, 30);
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+        this.isRecordForStoring = false
+
     if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
       this.loadRecords(0, 30);
     }
+
+
   }
 
   ngAfterViewInit() {
@@ -374,7 +380,7 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
       return;
     }
 
-    if (record.record_id) {
+    if ((record.record_id !== null && record.record_id > 0) || record.record_id === 0) {
       record.isUpdating = true;
       this.recordService.updateRecord(record.record_id, record)
         .pipe(finalize(() => {
@@ -400,26 +406,46 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
         originalValue: record.value
       };
       record.isUpdating = true;
-      this.storeRecord(newRecord);
+      this.storeRecord(newRecord, record);
     }
   }
 
-  storeRecord(newRecord: Record): void {
+  storeRecord(newRecord: Record, localRecord:Record): void {
     this.recordService.storeRecord(newRecord)
       .pipe(finalize(() => newRecord.isUpdating = false))
       .subscribe(
         () => {
           this.setNotification('Registro criado com sucesso', 'success');
-          this.loadRecords(0, this.pageSize * 3);
-        },
+
+          console.log('Before:', this.records);
+
+          const recordToEdit = this.records.find(record => record.record_id === localRecord.record_id);
+          if (recordToEdit) {
+            recordToEdit.isUpdating = false;
+            recordToEdit.isEditing = false;
+          }
+          
+         //this.loadRecords(0, this.pageSize * 3);
+      },
         error => this.setNotification(this.getErrorMessage(error), 'error')
       );
   }
 
   onValueChange(record: Record): void {
+    this.isRecordForStoring = false
+
+    //if we select filter parameters that dont have any records, it will return a list of objects with some or all ids undefined
+    //we need ids for reference to which input is being edited in the input and that will be updated or stored
+    //so we check and add negative values to the records with undefined Ids to use as reference
+    this.checkRecordsForUndefinedIds();
+
+    console.log("records", this.records)
+
+
     const index = this.records.findIndex(r => r.record_id === record.record_id);
     if (index !== -1) {
       this.records[index].value = record.value;
+/*       console.log("records:", this.records) */
     }
   }
 
@@ -454,6 +480,16 @@ export class RecordsListSectionComponent implements OnInit, OnChanges, AfterView
     const startIndex = this.currentPage * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.records = this.allRecords.slice(startIndex, endIndex);
+  }
+  checkRecordsForUndefinedIds(){
+    let negativeId = -1;
+
+    this.records.forEach(record => {
+      if (record.record_id === undefined) {
+        record.record_id = negativeId;
+        negativeId--;
+      }
+    });
   }
 
   trackByIndex(index: number, item: any): number {
