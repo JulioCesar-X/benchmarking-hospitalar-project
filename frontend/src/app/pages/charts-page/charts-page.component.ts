@@ -6,6 +6,9 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { IndicatorService } from '../../core/services/indicator/indicator.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as ExcelJS from 'exceljs';
@@ -14,8 +17,6 @@ import { FilterComponent } from '../../components/shared/filter/filter.component
 import { ChartsComponent } from '../../components/charts/charts.component';
 import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
 import { Filter } from '../../core/models/filter.model';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { MenuComponent } from '../../components/shared/menu/menu.component';
 
 @Component({
@@ -27,10 +28,11 @@ import { MenuComponent } from '../../components/shared/menu/menu.component';
     HttpClientModule,
     ChartsComponent,
     MatMenuModule,
+    MatTooltipModule,
     LoadingSpinnerComponent,
     MatIconModule,
     MatButtonModule,
-    MenuComponent, 
+    MenuComponent,
   ],
   templateUrl: './charts-page.component.html',
   styleUrls: ['./charts-page.component.scss']
@@ -52,18 +54,40 @@ export class ChartsPageComponent implements OnInit {
   serviceName?: string = '';
   activityName?: string = '';
 
+  tooltipVisible1: boolean = false;
+  tooltipVisible2: boolean = false;
+
+  tooltipContent1: string = `
+  <div class="tooltip-content text-white p-4 rounded-md w-64 max-w-xs">
+    <h2 class="text-lg font-bold mb-2">Explicação da Produção Acumulada</h2>
+    <p>A produção acumulada é a soma das produções mensais ao longo do ano.</p>
+    <p class="font-bold mt-2">Fórmula:</p>
+    <p class="bg-gray-200 text-black p-2 rounded-md">P(A) = ∑ P(M)</p>
+    <p>onde P(A) é a produção acumulada e P(M) é a produção mensal.</p>
+  </div>
+`;
+
+  tooltipContent2: string = `
+  <div class="tooltip-content text-white p-4 rounded-md w-64 max-w-xs">
+    <h2 class="text-lg font-bold mb-2">Explicação da Variação de Produção</h2>
+    <p>A variação de produção é calculada comparando a produção do período atual com a do período anterior.</p>
+    <p class="font-bold mt-2">Fórmula:</p>
+    <p class="bg-gray-200 text-black p-2 rounded-md">V(P) = (P(atual) - P(anterior)) / P(anterior) * 100%</p>
+  </div>
+`;
+
   private filterSubject = new Subject<Partial<Filter>>();
 
   constructor(
     private indicatorService: IndicatorService,
     private authService: AuthService,
-    private route: ActivatedRoute){ }
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
     const role = this.authService.getRole();
     this.isAdminOrCoordinator = role === 'admin' || role === 'coordenador';
 
-    // Access the resolved data
     const resolvedData = this.route.snapshot.data['chartData'];
     if (resolvedData) {
       this.graphData = resolvedData.data;
@@ -100,6 +124,22 @@ export class ChartsPageComponent implements OnInit {
     });
 
     this.loadIndicatorName(); // Initial load
+  }
+
+  showTooltip1(): void {
+    this.tooltipVisible1 = true;
+  }
+
+  hideTooltip1(): void {
+    this.tooltipVisible1 = false;
+  }
+
+  showTooltip2(): void {
+    this.tooltipVisible2 = true;
+  }
+
+  hideTooltip2(): void {
+    this.tooltipVisible2 = false;
   }
 
   loadGraphData(): void {

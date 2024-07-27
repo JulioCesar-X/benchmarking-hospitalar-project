@@ -22,3 +22,7 @@ CUsersjulioDesktopprojetobenchmarking-hospitalar-projectbac
 CUsersjulioDesktopprojetobenchmarking-hospitalar-projectbackendstoragelogs
 CUsersjulioDesktopprojetobenchmarking-hospitalar-projectbackendstorageframework
 frontend/environments/env.ts
+backend/config/database.php
+backend/database/migrations/2024_07_01_201057_create_vw_indicator_accumulated_view.php
+backend/database/migrations/2024_07_01_202401_create_vw_goals_monthly_view.php
+backend/database/migrations/2024_07_01_202820_create_vw_variation_rate_view.php

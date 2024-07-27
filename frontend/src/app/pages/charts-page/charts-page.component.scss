@@ -5,42 +5,46 @@
     display: flex;
 }
 
-.whiteTxt{
-    color:$fill-white;
+.whiteTxt {
+    color: $fill-white;
 }
-._whiteBG{
+
+._whiteBG {
     background-color: $fill-white;
 }
-.blueText{
-    color: $main-dark-blue;
-  }
 
-._blueTxt{
-    margin:0;
+.blueText {
+    color: $main-dark-blue;
+}
+
+._blueTxt {
+    margin: 0;
     color: $main-blue;
 }
-.borderColorBlue{
+
+.borderColorBlue {
     border-color: $main-blue;
 }
 
-.graphicsContainer2{
+.graphicsContainer2 {
     background-color: $main-blue;
     box-sizing: border-box;
     border: none;
 }
 
-.tab-headers-wrapper{
+.tab-headers-wrapper {
     background-color: $darker-main-blue;
     font-size: 1.4em;
 }
+
 .tab-headers {
     display: flex;
     align-items: center;
     width: 30%;
+}
 
-
-} @media(max-width:600px){
-    .tab-headers{
+@media (max-width: 600px) {
+    .tab-headers {
         width: 50%;
         margin-left: 4em;
     }
@@ -55,10 +59,10 @@
     cursor: pointer;
     padding: 1em;
     transition: 0.3s;
-
 }
 
-.tab-link:hover, .tab-link.active:hover {
+.tab-link:hover,
+.tab-link.active:hover {
     background-color: darken($main-blue, 10);
 }
 
@@ -68,28 +72,30 @@
 
 /* To top button styles */
 #toTopIcon {
-    --lord-icon-primary: var(--main-dark-blue); 
-  }
+    --lord-icon-primary: var(--main-dark-blue);
+}
 
 .toTopBtn {
     cursor: pointer;
-    right: 50%; 
+    right: 50%;
     bottom: -50px;
-    transition: bottom 0.5s ease-in-out; 
+    transition: bottom 0.5s ease-in-out;
 }
 
 .toTopBtnVisible {
-    bottom: 30px; 
+    bottom: 30px;
 }
 
 .toTopBtnHidden {
     bottom: -50px;
 }
+
 .text-red {
-    color: darken($main-red,30%);
+    color: darken($main-red, 30%);
     font-size: large;
     font-weight: bold;
 }
+
 .text-green {
     color: #2dcb2d;
     font-size: large;

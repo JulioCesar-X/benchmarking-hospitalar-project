@@ -12,8 +12,10 @@
   font-size: 6em;
   margin-left: 2em;
   line-height: 1.1em;
-} @media (max-width: 600px) {
-  .headingTitle{
+}
+
+@media (max-width: 600px) {
+  .headingTitle {
     font-size: 1.5em;
   }
 }
@@ -22,30 +24,19 @@
   display: grid;
   margin-inline: auto;
   margin-block: 2em;
-
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: 1fr;
   gap: 2em;
   width: 80%;
   max-width: 1000px;
-}@media (max-width: 600px) {
-  .homepageCardsSections{
+}
+
+@media (max-width: 600px) {
+  .homepageCardsSections {
     grid-template-columns: repeat(1, 1fr);
     width: 90%;
   }
 }
-
-// .card {
-//   cursor: pointer;
-//   display: flex;
-//   background-color: $main-blue;
-//   flex-direction: column;
-//   justify-content: space-between;
-//   height: 100%;
-//   border-radius: 1em;
-//   overflow: hidden;
-
-// }
 
 .card {
   height: 50vh;
@@ -64,7 +55,6 @@
     top: calc(100% - 120px);
     opacity: 1;
     transition: all 1s ease-in-out;
-
     display: flex;
     align-items: top;
     justify-content: center;
@@ -135,19 +125,19 @@
       }
     }
   }
+
+  &.selected {
+    animation: pulse 1s infinite;
+  }
 }
 
 .card:hover {
   box-shadow: 5px 10px 63px -20px rgba(0, 0, 0, 0.75);
-  
-
 }
 
 .cardImg {
-  // cursor: pointer;
-  // display: flex;
-  // align-items: flex-end;
   width: 100%;
+
   img {
     width: 100%;
     aspect-ratio: 10/8;
@@ -155,18 +145,11 @@
   }
 }
 
-  // &:hover .cardImg img {
-  //   transform: scale(1.05); // Aumenta a imagem em 5% ao passar o mouse
-  // }
-
 .card:hover {
   background-color: $main-dark-blue;
-
 }
 
-
 .cardText {
-  //cursor: pointer;
   background-color: transparent;
   height: 100%;
   padding: 1em;
@@ -177,16 +160,9 @@
     text-align: center;
     margin: 0;
   }
-
-
 }
 
-// .cardText:hover {
-//   background-color: $main-dark-blue;
-// }
 .imgSize {
-  // width: $card-width;
-  // height: $card-height;
   width: 100%;
   height: auto;
 }
@@ -197,8 +173,6 @@
   min-height: 100vh;
 }
 
-
-
 main {
   flex: 1;
 }
@@ -207,7 +181,6 @@ main {
   flex: 1;
   display: flex;
 }
-
 
 .navigation-button {
   position: absolute;
@@ -221,15 +194,11 @@ main {
   transition: background-color 0.3s ease, opacity 0.3s ease;
 
   &.previous-button {
-    // left: 15rem;
-    // top: 35rem;
     left: 3rem;
     top: 25rem;
   }
 
   &.next-button {
-    // right: 15rem;
-    // top: 35rem;
     right: 3rem;
     top: 25rem;
   }
@@ -260,7 +229,6 @@ main {
   }
 }
 
-// Load
 .random-demo {
   display: flex;
   gap: 0.5em;
@@ -282,4 +250,3 @@ main {
   background-color: $main-dark-blue;
   border-radius: 50%;
 }
-

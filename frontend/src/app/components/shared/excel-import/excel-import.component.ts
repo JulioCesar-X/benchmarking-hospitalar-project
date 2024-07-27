@@ -177,13 +177,13 @@ export class ExcelImportComponent {
     return typeof year === 'number' && year > 1900 && year <= currentYear;
   }
 
-  addError(message: string): void {
-    this.errors.push(message);
-  }
-
   setFeedback(message: string, type: 'success' | 'error'): void {
     this.feedbackMessage = message;
     this.feedbackType = type;
+  }
+
+  addError(message: string): void {
+    this.errors.push(message);
   }
 
   finishImport(): void {

@@ -74,7 +74,11 @@ export class ServiceService {
   }
 
   updateServiceOrder(services: Service[]): Observable<any> {
-    return this.http.post<any>('/services/update-order', { services }).pipe(
+    const serviceOrder = services.map((service, index) => ({
+      id: service.id,
+      order: index + 1
+    }));
+    return this.http.post<any>('/services/update-order', { services: serviceOrder }).pipe(
       tap(() => this.cacheService.clear()), // Limpa o cache ao atualizar a ordem dos serviços
       catchError(error => {
         console.error('Failed to update service order:', error);
@@ -82,6 +86,7 @@ export class ServiceService {
       })
     );
   }
+
 
   showService(id: number): Observable<Service> {
     const cacheKey = this.getCacheKey(id);
