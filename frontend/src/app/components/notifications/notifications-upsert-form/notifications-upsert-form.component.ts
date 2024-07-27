@@ -58,7 +58,9 @@ export class NotificationsCreateFormComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
     this.fetchUsers();
+
   }
 
   fetchUsers() {

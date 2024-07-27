@@ -2,8 +2,8 @@
   <div class="w-full headingSection">
     <h1 class="w-[30%] ml-5 headingTitle">Departamento Psiquiatria</h1>
   </div>
-  <div class="homepageCardsSections" (mouseleave)="showNavButtons = true" (mouseenter)="showNavButtons = false" cdkDropList (cdkDropListDropped)="drop($event)">
-    <div *ngFor="let service of displayedServices" cdkDrag >
+  <div class="homepageCardsSections">
+    <div *ngFor="let service of displayedServices">
       <div *ngIf="userRole === 'admin' || userRole === 'root'; else noDrag">
         <div class="card" (click)="goToDescription(service.id)">
           <div class="cardImg">
@@ -15,7 +15,8 @@
                 <p class="card__title">{{ service.service_name }}</p>
               </div>
               <div class="p-5" *ngIf="loadingServiceId === service.id">
-                <lord-icon src="https://cdn.lordicon.com/lqxfrxad.json" trigger="loop" colors="primary:#ffffff" style="width:150px;height:150px;"></lord-icon>
+                <lord-icon src="https://cdn.lordicon.com/lqxfrxad.json" trigger="loop" colors="primary:#ffffff"
+                  style="width:150px;height:150px;"></lord-icon>
               </div>
             </div>
           </div>
@@ -32,7 +33,8 @@
                 <p class="card__title">{{ service.service_name }}</p>
               </div>
               <div class="p-5" *ngIf="loadingServiceId === service.id">
-                <lord-icon src="https://cdn.lordicon.com/lqxfrxad.json" trigger="loop" colors="primary:#ffffff" style="width:150px;height:150px;"></lord-icon>
+                <lord-icon src="https://cdn.lordicon.com/lqxfrxad.json" trigger="loop" colors="primary:#ffffff"
+                  style="width:150px;height:150px;"></lord-icon>
               </div>
             </div>
           </div>
@@ -49,12 +51,17 @@
   </div>
 
   <!-- Botão para carregar serviços anteriores -->
-  <button *ngIf=" showNavButtons && !isLoading && page > 1" (click)="loadPreviousServices()" [ngClass]="{'btnVisible': page > 1, 'btnHidden': page <= 1}" class="navigation-button previous-button">
-    <lord-icon src="https://cdn.lordicon.com/whtfgdfm.json" trigger="hover" state="hover-ternd-flat-6" colors="primary:#ffffff" style="width:30px;height:48px; transform: rotate(180deg);"></lord-icon>
+  <button *ngIf="showNavButtons && !isLoading && page > 1" (click)="loadPreviousServices()"
+    [ngClass]="{'btnVisible': page > 1, 'btnHidden': page <= 1}" class="navigation-button previous-button">
+    <lord-icon src="https://cdn.lordicon.com/whtfgdfm.json" trigger="hover" state="hover-ternd-flat-6"
+      colors="primary:#ffffff" style="width:30px;height:48px; transform: rotate(180deg);"></lord-icon>
   </button>
-  
+
   <!-- Botão para carregar serviços seguintes -->
-  <button *ngIf="showNavButtons && !isLoading && page * pageSize < totalServices" (click)="loadNextServices()" [ngClass]="{'btnVisible': page * pageSize < totalServices, 'btnHidden': page * pageSize >= totalServices}" class="navigation-button next-button">
-    <lord-icon src="https://cdn.lordicon.com/whtfgdfm.json" trigger="hover" state="hover-ternd-flat-6" colors="primary:#ffffff" style="width:30px;height:48px;"></lord-icon>
+  <button *ngIf="showNavButtons && !isLoading && page * pageSize < totalServices" (click)="loadNextServices()"
+    [ngClass]="{'btnVisible': page * pageSize < totalServices, 'btnHidden': page * pageSize >= totalServices}"
+    class="navigation-button next-button">
+    <lord-icon src="https://cdn.lordicon.com/whtfgdfm.json" trigger="hover" state="hover-ternd-flat-6"
+      colors="primary:#ffffff" style="width:30px;height:48px;"></lord-icon>
   </button>
 </div>

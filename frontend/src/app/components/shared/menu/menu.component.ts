@@ -110,14 +110,14 @@ export class MenuComponent implements OnInit {
     this.isLoadingModal = true;
     this.loadingModalMessage = 'A carregar dados...'
 
-    this.serviceService.getFirstValidService().subscribe({
+  this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {
           this.router.navigate(['/record-goals-update', { serviceId: service.id }], {
             state: { preLoad: true }
           });
           localStorage.setItem('activeLink', '/record-goals-update');
-          //this.isLoadingModal = false;
+/*           this.isLoadingModal = false; */
 
 
         } else {
@@ -135,26 +135,27 @@ export class MenuComponent implements OnInit {
       complete: () => {
         //timeout is necessary to avoid bug regarding the loading state of the modal.
         //the modal after loading a 1st time, never loads again because the state is instantly changed to false, creating visual bugs
-        setTimeout(() => {
+/*         setTimeout(() => {
           this.isLoadingModal = false;
-        }, 2000);
+        }, 2000); */
       }
     });
   }
 
 
-  goToCharts() {
+  async goToCharts() {
     this.isLoadingModal = true;
     this.loadingModalMessage = 'A carregar gráficos...'
-
-    this.serviceService.getFirstValidService().subscribe({
+/*     this.router.navigate(['/charts'], {
+      //state: { preLoad: true }
+    }); */
+    await this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {
           // this.loadingCharts = true;
           this.router.navigate(['/charts', { serviceId: service.id }], {
             //state: { preLoad: true }
           });
-          //this.isLoadingModal = false;
           localStorage.setItem('activeLink', '/charts');
 
 
@@ -173,9 +174,9 @@ export class MenuComponent implements OnInit {
       complete: () => {
         //timeout is necessary to avoid bug regarding the loading state of the modal.
         //the modal after loading a 1st time, never loads again because the state is instantly changed to false, creating visual bugs
-        setTimeout(() => {
+/*         setTimeout(() => {
           this.isLoadingModal = false;
-        }, 2000);
+        }, 2000); */
       }
     });
   }

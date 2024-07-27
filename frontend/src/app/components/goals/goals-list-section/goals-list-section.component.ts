@@ -1,4 +1,12 @@
-import { Component, Input, OnChanges, SimpleChanges, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Filter } from '../../../core/models/filter.model';
@@ -9,7 +17,11 @@ import { of, forkJoin } from 'rxjs';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { FeedbackComponent } from '../../shared/feedback/feedback.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PageEvent, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
+import {
+  PageEvent,
+  MatPaginatorModule,
+  MatPaginatorIntl,
+} from '@angular/material/paginator';
 import { PaginatorComponent } from '../../shared/paginator/paginator.component';
 import { CustomMatPaginatorIntl } from '../../shared/paginator/customMatPaginatorIntl';
 import { ExcelImportComponent } from '../../shared/excel-import/excel-import.component';
@@ -29,7 +41,7 @@ interface Goal {
   isInserted: boolean;
   isUpdating: boolean;
   isEditing: boolean;
-  originalValue?: string;
+  originalValue?: string; // Adicionada a propriedade originalValue
 }
 
 @Component({
@@ -45,15 +57,15 @@ interface Goal {
     FeedbackComponent,
     MatTooltipModule,
     ExcelImportComponent,
-    MatProgressBarModule
+    MatProgressBarModule,
   ],
-  providers: [
-    { provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }
-  ],
+  providers: [{ provide: MatPaginatorIntl, useClass: CustomMatPaginatorIntl }],
   templateUrl: './goals-list-section.component.html',
-  styleUrls: ['./goals-list-section.component.scss']
+  styleUrls: ['./goals-list-section.component.scss'],
 })
-export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewInit {
+export class GoalsListSectionComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
   @ViewChild('excelImport') excelImportComponent!: ExcelImportComponent;
 
   @Input() filter: Filter = {
@@ -61,7 +73,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     activityId: 1,
     serviceId: 1,
     month: new Date().getMonth() + 1,
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
   };
 
   @Input() indicators: any[] = [];
@@ -84,14 +96,17 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     private goalService: GoalService,
     private indicatorService: IndicatorService,
     private loggingService: LoggingService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadGoals(0, 30);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['filter'] && changes['filter'].currentValue !== changes['filter'].previousValue) {
+    if (
+      changes['filter'] &&
+      changes['filter'].currentValue !== changes['filter'].previousValue
+    ) {
       this.loadGoals(0, 30);
     }
   }
@@ -105,21 +120,36 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       this.isLoadingGoals = true;
       const { serviceId, activityId, year } = this.filter;
 
-      this.indicatorService.getIndicatorsGoals(Number(serviceId), Number(activityId), year, pageIndex, pageSize)
+      this.indicatorService
+        .getIndicatorsGoals(
+          Number(serviceId),
+          Number(activityId),
+          year,
+          pageIndex,
+          pageSize
+        )
         .pipe(
-          catchError(error => {
-            this.loggingService.error('Error fetching goals', error);
+          catchError((error) => {
+            console.error('Error fetching goals', error);
             return of({ total: 0, data: [] });
           }),
-          finalize(() => this.isLoadingGoals = false)
+          finalize(() => (this.isLoadingGoals = false))
         )
-        .subscribe(response => {
-          this.allGoals = pageIndex === 0 ? this.mapGoals(response.data) : [
-            ...this.allGoals,
-            ...this.mapGoals(response.data).filter(newGoal =>
-              !this.allGoals.some(existingGoal => existingGoal.sai_id === newGoal.sai_id && existingGoal.year === newGoal.year)
-            )
-          ];
+        .subscribe((response) => {
+          this.allGoals =
+            pageIndex === 0
+              ? this.mapGoals(response.data)
+              : [
+                  ...this.allGoals,
+                  ...this.mapGoals(response.data).filter(
+                    (newGoal) =>
+                      !this.allGoals.some(
+                        (existingGoal) =>
+                          existingGoal.sai_id === newGoal.sai_id &&
+                          existingGoal.year === newGoal.year
+                      )
+                  ),
+                ];
           this.totalGoals = response.total;
           this.updateDataSource();
           this.loadedPages.add(pageIndex);
@@ -128,7 +158,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   mapGoals(data: any[]): Goal[] {
-    return data.map(item => ({
+    return data.map((item) => ({
       id: item.goal?.id ?? null,
       indicator_name: item.indicator_name,
       target_value: item.goal?.target_value ?? '',
@@ -139,13 +169,15 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       isInserted: !!item.goal?.target_value,
       isUpdating: false,
       isEditing: false,
-      originalValue: item.goal?.target_value ?? ''
+      originalValue: item.goal?.target_value ?? '', // Adicionada a propriedade originalValue
     }));
   }
 
   onGoalsImported(goals: any[]): void {
-    goals.forEach(goal => {
-      const existingGoal = this.allGoals.find(g => g.sai_id === goal.sai_id && g.year === goal.year);
+    goals.forEach((goal) => {
+      const existingGoal = this.allGoals.find(
+        (g) => g.sai_id === goal.sai_id && g.year === goal.year
+      );
 
       if (existingGoal) {
         existingGoal.target_value = goal.target_value;
@@ -161,7 +193,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
           isInserted: true,
           isUpdating: false,
           isEditing: false,
-          originalValue: goal.target_value
+          originalValue: goal.target_value, // Adicionada a propriedade originalValue
         });
       }
     });
@@ -171,20 +203,29 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   sendGoalsToBackend(goals: Goal[]): void {
-    const requests = goals.map(goal => {
-      const existingGoal = this.allGoals.find(g => g.sai_id === goal.sai_id && g.year === goal.year);
+    const requests = goals.map((goal) => {
+      const existingGoal = this.allGoals.find(
+        (g) => g.sai_id === goal.sai_id && g.year === goal.year
+      );
 
       return existingGoal && existingGoal.id
-        ? this.goalService.updateGoal(existingGoal.id, goal).pipe(finalize(() => this.finalizeUpdate(goal)))
-        : this.goalService.storeGoal(goal).pipe(finalize(() => this.finalizeUpdate(goal)));
+        ? this.goalService
+            .updateGoal(existingGoal.id, goal)
+            .pipe(finalize(() => this.finalizeUpdate(goal)))
+        : this.goalService
+            .storeGoal(goal)
+            .pipe(finalize(() => this.finalizeUpdate(goal)));
     });
 
     forkJoin(requests).subscribe(
       () => {
-        this.setNotification('Metas criadas/atualizadas com sucesso', 'success');
+        this.setNotification(
+          'Metas criadas/atualizadas com sucesso',
+          'success'
+        );
         this.loadGoals(this.currentPage, this.pageSize);
       },
-      error => {
+      (error) => {
         this.setNotification('Erro ao criar/atualizar metas', 'error');
       }
     );
@@ -211,8 +252,12 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     worksheet.getCell('A1').value = `Metas do Ano ${this.filter.year}`;
     worksheet.getCell('A1').font = { bold: true };
 
-    const serviceName = this.allGoals.length ? this.allGoals[0].service_name : 'N/A';
-    const activityName = this.allGoals.length ? this.allGoals[0].activity_name : 'N/A';
+    const serviceName = this.allGoals.length
+      ? this.allGoals[0].service_name
+      : 'N/A';
+    const activityName = this.allGoals.length
+      ? this.allGoals[0].activity_name
+      : 'N/A';
 
     worksheet.mergeCells('A2:D2');
     worksheet.getCell('A2').value = `Serviço: ${serviceName}`;
@@ -224,7 +269,9 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
     const currentDate = new Date();
     worksheet.mergeCells('A4:D4');
-    worksheet.getCell('A4').value = `Data: ${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
+    worksheet.getCell(
+      'A4'
+    ).value = `Data: ${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
     worksheet.getCell('A4').font = { bold: true };
 
     worksheet.mergeCells('A5:D5');
@@ -235,7 +282,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       { header: 'ID', key: 'sai_id', width: 10 },
       { header: 'Nome do Indicador', key: 'indicator_name', width: 30 },
       { header: 'Ano', key: 'year', width: 15 },
-      { header: 'Meta Anual', key: 'target_value', width: 15 }
+      { header: 'Meta Anual', key: 'target_value', width: 15 },
     ];
 
     const headerRow = worksheet.addRow({
@@ -245,12 +292,12 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       target_value: 'Meta Anual',
     });
 
-    this.allGoals.forEach(goal => {
+    this.allGoals.forEach((goal) => {
       worksheet.addRow({
         sai_id: goal.sai_id,
         indicator_name: goal.indicator_name,
         year: goal.year,
-        target_value: Number(goal.target_value)
+        target_value: Number(goal.target_value),
       });
     });
 
@@ -265,53 +312,87 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FFB6DDE8' }
+        fgColor: { argb: 'FFB6DDE8' },
       };
     });
 
-    const lockedCells = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5', 'C1', 'C2', 'C3', 'C4', 'C5', 'D1', 'D2', 'D3', 'D4', 'D5'];
+    // Bloquear células específicas (cabeçalhos e subtítulos)
+    const lockedCells = [
+      'A1',
+      'A2',
+      'A3',
+      'A4',
+      'A5',
+      'B1',
+      'B2',
+      'B3',
+      'B4',
+      'B5',
+      'C1',
+      'C2',
+      'C3',
+      'C4',
+      'C5',
+      'D1',
+      'D2',
+      'D3',
+      'D4',
+      'D5',
+    ];
 
     lockedCells.forEach((cellAddress) => {
       const cell = worksheet.getCell(cellAddress);
       cell.protection = { locked: true };
     });
 
+    // Bloquear células das colunas ID e Nome do Indicador
     worksheet.getColumn('A').eachCell((cell, rowNumber) => {
       if (rowNumber > 5) {
+        // Ignorar cabeçalho e subtítulos
         cell.protection = { locked: true };
       }
     });
 
     worksheet.getColumn('B').eachCell((cell, rowNumber) => {
       if (rowNumber > 5) {
+        // Ignorar cabeçalho e subtítulos
         cell.protection = { locked: true };
       }
     });
 
+    // Desbloquear as células "Ano" e "Meta Anual"
     worksheet.getColumn('C').eachCell((cell, rowNumber) => {
       if (rowNumber > 5) {
+        // Ignorar cabeçalho e subtítulos
         cell.protection = { locked: false };
       }
     });
 
     worksheet.getColumn('D').eachCell((cell, rowNumber) => {
       if (rowNumber > 5) {
+        // Ignorar cabeçalho e subtítulos
         cell.protection = { locked: false };
       }
     });
 
+    // Proteger a planilha
     worksheet.protect('atec2024', {
       selectLockedCells: true,
       selectUnlockedCells: true,
-      autoFilter: true
+      autoFilter: true,
     });
 
-    workbook.xlsx.writeBuffer().then((buffer) => {
-      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      saveAs(blob, 'GoalsDataExport.xlsx');
-    }).catch((error) => {
-      this.loggingService.error('Erro ao gerar o arquivo Excel:', error);
-    });
+    workbook.xlsx
+      .writeBuffer()
+      .then((buffer) => {
+        const blob = new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        saveAs(blob, 'GoalsDataExport.xlsx');
+      })
+      .catch((error) => {
+        console.error('Erro ao gerar o arquivo Excel:', error);
+      });
   }
 
   toggleDropdown(): void {
@@ -324,7 +405,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
   editGoal(goal: Goal): void {
     if (!goal.isEditing) {
-      goal.originalValue = goal.target_value;
+      goal.originalValue = goal.target_value; // Salve o valor original ao iniciar a edição
       goal.isEditing = true;
       return;
     }
@@ -335,27 +416,37 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     }
 
     const valueAsNumber = Number(goal.target_value);
-    if (isNaN(valueAsNumber) || !Number.isInteger(valueAsNumber) || valueAsNumber <= 0) {
-      this.setNotification('O valor deve ser um número inteiro maior que 0', 'error');
+    if (
+      isNaN(valueAsNumber) ||
+      !Number.isInteger(valueAsNumber) ||
+      valueAsNumber <= 0
+    ) {
+      this.setNotification(
+        'O valor deve ser um número inteiro maior que 0',
+        'error'
+      );
       return;
     }
 
     if ((goal.id !== null && goal.id > 0) || goal.id === 0) {
       goal.isUpdating = true;
-      this.goalService.updateGoal(goal.id, goal)
-        .pipe(finalize(() => {
-          goal.isUpdating = false;
-          goal.isEditing = false;
-        }))
+      this.goalService
+        .updateGoal(goal.id, goal)
+        .pipe(
+          finalize(() => {
+            goal.isUpdating = false;
+            goal.isEditing = false;
+          })
+        )
         .subscribe(
           () => this.setNotification('Meta atualizada com sucesso', 'success'),
-          error => this.setNotification(this.getErrorMessage(error), 'error')
+          (error) => this.setNotification(this.getErrorMessage(error), 'error')
         );
     } else {
       const newGoal = {
         sai_id: goal.sai_id,
         target_value: goal.target_value,
-        year: goal.year
+        year: goal.year,
       };
       goal.isUpdating = true;
       this.storeGoal(newGoal, goal);
@@ -363,27 +454,28 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
   }
 
   storeGoal(newGoal: any, goal: Goal): void {
-    this.goalService.storeGoal(newGoal)
-      .pipe(finalize(() => newGoal.isUpdating = false))
+    this.goalService
+      .storeGoal(newGoal)
+      .pipe(finalize(() => (newGoal.isUpdating = false)))
       .subscribe(
         () => {
           this.setNotification('Meta criada com sucesso', 'success');
 
-          const goalToPost = this.goals.find(g => g.id === goal.id);
+          const goalToPost = this.goals.find((g) => g.id === goal.id);
           if (goalToPost) {
             goalToPost.isUpdating = false;
             goalToPost.isEditing = false;
           }
-/*           this.loadGoals(0, this.pageSize * 3); */
+          /*           this.loadGoals(0, this.pageSize * 3); */
         },
-        error => this.setNotification(this.getErrorMessage(error), 'error')
+        (error) => this.setNotification(this.getErrorMessage(error), 'error')
       );
   }
 
   onValueChange(goal: Goal): void {
     this.checkGoalsForUndefinedIds();
 
-    const index = this.goals.findIndex(g => g.id === goal.id);
+    const index = this.goals.findIndex((g) => g.id === goal.id);
     if (index !== -1) {
       this.goals[index].target_value = goal.target_value;
     }
@@ -423,12 +515,12 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     const endIndex = startIndex + this.pageSize;
     this.goals = this.allGoals.slice(startIndex, endIndex);
     this.checkGoalsForUndefinedIds();
-    console.log(this.goals)
+    
   }
-  checkGoalsForUndefinedIds(){
+  checkGoalsForUndefinedIds() {
     let negativeId = -1;
 
-    this.goals.forEach(goal => {
+    this.goals.forEach((goal) => {
       if (goal.id === null) {
         goal.id = negativeId;
         negativeId--;
@@ -442,12 +534,22 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
   numberToMonth(monthNumber: number | undefined): string {
     const months = [
-      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
     ];
 
     if (monthNumber === undefined || monthNumber < 1 || monthNumber > 12) {
-      throw new Error("Número do mês deve estar entre 1 e 12.");
+      throw new Error('Número do mês deve estar entre 1 e 12.');
     }
 
     return months[monthNumber - 1];
@@ -455,7 +557,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
 
   cancelEditing(goal: Goal): void {
     if (goal.originalValue !== undefined) {
-      goal.target_value = goal.originalValue;
+      goal.target_value = goal.originalValue; // Restaure o valor original
     }
     goal.isEditing = false;
   }

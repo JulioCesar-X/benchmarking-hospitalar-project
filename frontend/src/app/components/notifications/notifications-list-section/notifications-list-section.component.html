@@ -18,7 +18,7 @@
         </lord-icon>
         <time>{{ item.created_at | date:'dd/MM/yyyy' }}</time>
         <p class="text-lg" *ngIf="item.type === 'received'"><strong>De: </strong> {{ item.sender }}</p>
-        <p class="text-lg" *ngIf="item.type === 'sent'"><strong>De: </strong> {{ item.receiver }}</p>
+        <p class="text-lg" *ngIf="item.type === 'sent'"><strong>Para: </strong> {{ item.receiver }}</p>
         <p class="text-lg" *ngIf="item.type === 'received'"><strong>Email: </strong>{{ item.sender_email }}</p>
         <p class="text-lg" *ngIf="item.type === 'sent'"><strong>Email: </strong> {{ item.receiver_email }}</p>
         <p class="text-lg mt-2"><strong>Assunto: </strong> {{ item.title }}</p>
@@ -35,9 +35,6 @@
             <textarea class="text-lg" [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."
               (click)="$event.stopPropagation()"></textarea>
             
-            <textarea class="text-base" [(ngModel)]="item.newResponse" placeholder="Escreva sua resposta..."
-              (input)="validateResponse(item.newResponse)" (click)="$event.stopPropagation()"></textarea>
-            <span *ngIf="responseError" class="errorSpan">{{ responseError }}</span>
             <button class="text-lg" *ngIf="!isLoading || item.id !== loadingItemId" class="send-button"
               (click)="sendResponse(item, $event)">
               Enviar Resposta

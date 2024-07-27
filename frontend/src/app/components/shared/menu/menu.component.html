@@ -223,7 +223,11 @@
       class="dashboardOption"
       (click)="openManageIndicators()"
       [ngClass]="{ 'is-open': isManageIndicatorsSubMenuOpen }"
-    >
+      *ngIf="
+            getRole() === 'admin' ||
+            getRole() === 'root' 
+          ">
+    
       <div
         class="plusIcon"
         [ngClass]="{ 'is-open': isManageIndicatorsSubMenuOpen }"

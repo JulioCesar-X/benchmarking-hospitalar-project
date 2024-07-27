@@ -88,7 +88,7 @@ export class ExcelImportComponent {
     } finally {
       this.finishImport();
     }
-  }
+ }
 
   validateHeaders(headerRow: ExcelJS.Row, expectedHeaders: string[]): boolean {
     for (let i = 1; i <= expectedHeaders.length; i++) {
@@ -159,6 +159,7 @@ export class ExcelImportComponent {
 
   isValidDate(date: string): boolean {
     let parsedDate;
+    console.log(date)
     if (date.includes('-')) {
       parsedDate = Date.parse(date); // Formato YYYY-MM-DD
     } else if (date.includes('/')) {
@@ -167,6 +168,7 @@ export class ExcelImportComponent {
     } else {
       return false;
     }
+    console.log("parsedDate",parsedDate);
 
     if (isNaN(parsedDate)) {
       return false;

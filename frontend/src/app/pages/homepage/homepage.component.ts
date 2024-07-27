@@ -1,13 +1,22 @@
-import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  CUSTOM_ELEMENTS_SCHEMA,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, ActivatedRoute, NavigationExtras } from '@angular/router';
+import {
+  RouterModule,
+  Router,
+  ActivatedRoute,
+  NavigationExtras,
+} from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ServiceService } from '../../core/services/service/service.service';
 import { Service } from '../../core/models/service.model';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../components/shared/loading-spinner/loading-spinner.component';
-import { LoggingService } from '../../core/services/logging.service';
 import anime from 'animejs/lib/anime.es.js';
 
 @Component({
@@ -17,12 +26,12 @@ import anime from 'animejs/lib/anime.es.js';
     CommonModule,
     RouterModule,
     MatIconModule,
-    DragDropModule,
-    LoadingSpinnerComponent
+    MatTooltipModule,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.scss'],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class HomepageComponent implements OnInit, OnDestroy {
   services: Service[] = [];
@@ -40,14 +49,14 @@ export class HomepageComponent implements OnInit, OnDestroy {
     private serviceService: ServiceService,
     private router: Router,
     private authService: AuthService,
-    private route: ActivatedRoute,
-    private loggingService: LoggingService
-  ) { }
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.loadServices();
     this.startLoadingAnimation();
     this.userRole = this.authService.getRole();
+    this.showIntroduction();
   }
 
   ngOnDestroy(): void {
@@ -55,27 +64,23 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   loadServices(): void {
-    if (this.loadedPages.has(this.page)) {
-      this.updateDisplayedServices();
-      return;
-    }
-
     this.isLoading = true;
-    this.serviceService.getServicesPaginated(this.page, this.pageSize).subscribe({
-      next: (data: any) => {
-        this.services = this.services.concat(data.data);
-        this.totalServices = data.total;
-        this.updateDisplayedServices();
-        this.loadedPages.add(this.page);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.loggingService.error('Erro ao carregar serviços', err);
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
+    this.serviceService
+      .getServicesPaginated(this.page, this.pageSize)
+      .subscribe({
+        next: (data: any) => {
+          this.services = data.data;
+          this.totalServices = data.total;
+          this.updateDisplayedServices();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Erro ao carregar serviços', err);
+        },
+        complete: () => {
+          this.isLoading = false;
+        },
+      });
   }
 
   updateDisplayedServices(): void {
@@ -106,10 +111,21 @@ export class HomepageComponent implements OnInit, OnDestroy {
         translateX: () => anime.random(0, 270),
         easing: 'easeInOutQuad',
         duration: 600,
-        complete: animate
+        complete: animate,
       });
     };
     animate();
+  }
+
+  showIntroduction() {
+    anime({
+      targets: '.drag-handle',
+      scale: [1, 1.5],
+      duration: 1500,
+      easing: 'easeInOutQuad',
+      direction: 'alternate',
+      loop: true,
+    });
   }
 
   goToDescription(serviceId: number) {
@@ -128,23 +144,5 @@ export class HomepageComponent implements OnInit, OnDestroy {
 
   scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  drop(event: CdkDragDrop<Service[]>) {
-    this.loggingService.log('Item moved from', event.previousIndex, 'to', event.currentIndex);
-    moveItemInArray(this.displayedServices, event.previousIndex, event.currentIndex);
-    this.saveOrder();
-  }
-
-  saveOrder() {
-    this.loggingService.log('Saving order', this.displayedServices);
-    this.serviceService.updateServiceOrder(this.displayedServices).subscribe({
-      next: () => {
-        this.loggingService.log('Ordem dos serviços atualizada com sucesso.');
-      },
-      error: (err) => {
-        this.loggingService.error('Erro ao atualizar a ordem dos serviços.', err);
-      }
-    });
   }
 }
