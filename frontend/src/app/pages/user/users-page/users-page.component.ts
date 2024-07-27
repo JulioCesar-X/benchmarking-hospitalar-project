@@ -23,7 +23,6 @@ export class UsersPageComponent implements OnInit {
   constructor(private userService: UserService, private loggingService: LoggingService) { }
   ngOnInit() {
     localStorage.removeItem('activeLink');
-
   }
   
   onSearch(results: any[]): void {

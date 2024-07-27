@@ -68,7 +68,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
     private serviceService: ServiceService,
     private activityService: ActivityService,
     private cdr: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
     private loggingService: LoggingService
   ) { }
 

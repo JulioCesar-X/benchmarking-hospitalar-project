@@ -150,18 +150,32 @@ export class MenuComponent implements OnInit {
     this.serviceService.getFirstValidService().subscribe({
       next: (service) => {
         if (service) {
-          this.router.navigate(['/charts', { serviceId: service.id }]);
+          // this.loadingCharts = true;
+          this.router.navigate(['/charts', { serviceId: service.id }], {
+            //state: { preLoad: true }
+          });
+          //this.isLoadingModal = false;
+          localStorage.setItem('activeLink', '/charts');
+
+
+
         } else {
           this.feedbackMessage = 'Nenhum serviço válido encontrado';
           this.feedbackType = 'error';
-          this.isLoadingCharts = false;
+          this.isLoadingModal = false; // Stop loading
         }
       },
       error: (error) => {
-        this.loggingService.error('Erro ao carregar o serviço:', error);
         this.feedbackMessage = error.message;
         this.feedbackType = 'error';
-        this.isLoadingCharts = false;
+        this.isLoadingModal = false; // Stop loading
+      },
+      complete: () => {
+        //timeout is necessary to avoid bug regarding the loading state of the modal.
+        //the modal after loading a 1st time, never loads again because the state is instantly changed to false, creating visual bugs
+        setTimeout(() => {
+          this.isLoadingModal = false;
+        }, 2000);
       }
     });
   }
