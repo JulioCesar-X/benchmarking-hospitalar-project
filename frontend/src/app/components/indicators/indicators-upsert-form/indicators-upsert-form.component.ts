@@ -14,6 +14,8 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogContentComponent } from '../../shared/dialog-content/dialog-content.component';
 import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
@@ -58,7 +60,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
   desassociations: { sai_id: number }[] = [];
   associations: { service_id: number, activity_id: number }[] = [];
 
-  activeTab: 'Desassociação' | 'Associação' = 'Desassociação';
+  activeTab: 'Associação' | 'Desassociação' = 'Associação';
 
   constructor(
     private router: Router,
@@ -66,6 +68,7 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
     private serviceService: ServiceService,
     private activityService: ActivityService,
     private cdr: ChangeDetectorRef,
+    private dialog: MatDialog,
     private loggingService: LoggingService
   ) { }
 
@@ -342,4 +345,19 @@ export class IndicatorsUpsertFormComponent implements OnInit, OnChanges, AfterVi
     }
     this.cdr.detectChanges();
   }
+  openDialog(event: { selected: any[], deselected: any[] }): void {
+
+    const dialogRef = this.dialog.open(DialogContentComponent, {
+      data: {
+        message: `Tem certeza que deseja continuar com essa operação? Desassociar implica a perda de dados relacionados!`,
+        loadingMessage: 'Removendo ligação...'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.onSaisSelectionChange(event);
+      }
+    });
+}
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { ServicesListSectionComponent } from '../../../components/services/services-list-section/services-list-section.component';
@@ -18,12 +18,15 @@ import { LoggingService } from '../../../core/services/logging.service';
   templateUrl: './services-page.component.html',
   styleUrls: ['./services-page.component.scss']
 })
-export class ServicesPageComponent {
+export class ServicesPageComponent implements OnInit {
   filteredServices: any[] = [];
   isLoadingSearch = false;
 
   constructor(private serviceService: ServiceService, private loggingService: LoggingService) { }
 
+  ngOnInit() {
+    localStorage.removeItem('activeLink');
+   }
   onSearch(results: any[]): void {
     this.filteredServices = results;
     this.isLoadingSearch = false;

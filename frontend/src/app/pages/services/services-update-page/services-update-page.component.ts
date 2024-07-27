@@ -33,6 +33,7 @@ export class ServicesUpdatePageComponent implements OnInit, OnDestroy {
     private loggingService: LoggingService
   ) { }
 
+
   ngOnInit(): void {
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const serviceId = +params['id'];
@@ -40,6 +41,8 @@ export class ServicesUpdatePageComponent implements OnInit, OnDestroy {
         this.loadService(serviceId);
       }
     });
+    localStorage.removeItem('activeLink');
+
   }
 
   ngOnDestroy(): void {

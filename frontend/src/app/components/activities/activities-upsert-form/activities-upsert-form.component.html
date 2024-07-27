@@ -35,29 +35,46 @@
         <span *ngIf="activityNameError" class="errorSpan">{{ activityNameError }}</span>
       </mat-form-field>
 
-      <!-- tabs -->
-      <div class="tab-headers-wrapper mt-5">
-        <div id="tabHead" class="flex items-center justify-between pr-2">
-          <div id="tabHeaders" class="flex w-[30%]">
-            <button matTooltip="Desassociar serviços e indicadores á atividade." [matTooltipPosition]="'above'"
-              matTooltipClass="custom" type="button" class="tab-link" [class.active]="activeTab === 'Desassociação'"
-              (click)="selectTab('Desassociação')">
-              Desassociação
-            </button>
-            <button matTooltip="Associar serviços e indicadores á atividade." [matTooltipPosition]="'above'"
-              matTooltipClass="custom" type="button" class="tab-link" [class.active]="activeTab === 'Associação'"
-              (click)="selectTab('Associação')">
-              Associação
-            </button>
+        <!-- tabs -->
+        <div class="tab-headers-wrapper mt-5">
+          <div id="tabHead" class="flex items-center justify-between pr-2">
+            <div id="tabHeaders" class="flex w-[30%]">
+              <button *ngIf="formsAction === 'edit'"
+              matTooltip="Desassociar serviços e indicadores á atividade." [matTooltipPosition]="'above'"
+              matTooltipClass="custom"
+                type="button"
+                class="tab-link"
+                [class.active]="activeTab === 'Desassociação'"
+                (click)="selectTab('Desassociação')"
+              >
+                Desassociação
+              </button>
+              <button
+              matTooltip="Associar serviços e indicadores á atividade." [matTooltipPosition]="'above'"
+              matTooltipClass="custom"
+                type="button"
+                class="tab-link"
+                [class.active]="activeTab === 'Associação'"
+                (click)="selectTab('Associação')"
+              >
+                Associação
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div *ngIf="activeTab === 'Desassociação'" class="checkboxContainer">
-          <app-loading-spinner *ngIf="isLoadingDesassociacao" message="A carregar SAIs..."></app-loading-spinner>
-          <app-desassociation-list [items]="saisList" [displayProperties]="['service_name', 'indicator_name']"
-            [preSelectedItems]="selectedSaisIDs" (selectionChange)="onSaisSelectionChange($event)">
-          </app-desassociation-list>
-        </div>
+          <div *ngIf="activeTab === 'Desassociação' && formsAction === 'edit'" class="checkboxContainer">
+            <app-loading-spinner
+              *ngIf="isLoadingDesassociacao"
+              message="A carregar SAIs..."
+            ></app-loading-spinner>
+            <app-desassociation-list
+              [items]="saisList"
+              [displayProperties]="['service_name', 'indicator_name']"
+              [preSelectedItems]="selectedSaisIDs"
+              (selectionChange)="openDialog($event)"
+            >
+            </app-desassociation-list>
+          </div>
 
         <div *ngIf="activeTab === 'Associação'" class="checkboxContainer">
           <app-loading-spinner *ngIf="isLoadingAssociacao" message="A carregar Associações..."></app-loading-spinner>

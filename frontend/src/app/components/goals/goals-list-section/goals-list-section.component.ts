@@ -340,7 +340,7 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
       return;
     }
 
-    if (goal.id) {
+    if ((goal.id !== null && goal.id > 0) || goal.id === 0) {
       goal.isUpdating = true;
       this.goalService.updateGoal(goal.id, goal)
         .pipe(finalize(() => {
@@ -358,23 +358,31 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
         year: goal.year
       };
       goal.isUpdating = true;
-      this.storeGoal(newGoal);
+      this.storeGoal(newGoal, goal);
     }
   }
 
-  storeGoal(newGoal: any): void {
+  storeGoal(newGoal: any, goal: Goal): void {
     this.goalService.storeGoal(newGoal)
       .pipe(finalize(() => newGoal.isUpdating = false))
       .subscribe(
         () => {
           this.setNotification('Meta criada com sucesso', 'success');
-          this.loadGoals(0, this.pageSize * 3);
+
+          const goalToPost = this.goals.find(g => g.id === goal.id);
+          if (goalToPost) {
+            goalToPost.isUpdating = false;
+            goalToPost.isEditing = false;
+          }
+/*           this.loadGoals(0, this.pageSize * 3); */
         },
         error => this.setNotification(this.getErrorMessage(error), 'error')
       );
   }
 
   onValueChange(goal: Goal): void {
+    this.checkGoalsForUndefinedIds();
+
     const index = this.goals.findIndex(g => g.id === goal.id);
     if (index !== -1) {
       this.goals[index].target_value = goal.target_value;
@@ -414,6 +422,18 @@ export class GoalsListSectionComponent implements OnInit, OnChanges, AfterViewIn
     const startIndex = this.currentPage * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.goals = this.allGoals.slice(startIndex, endIndex);
+    this.checkGoalsForUndefinedIds();
+    console.log(this.goals)
+  }
+  checkGoalsForUndefinedIds(){
+    let negativeId = -1;
+
+    this.goals.forEach(goal => {
+      if (goal.id === null) {
+        goal.id = negativeId;
+        negativeId--;
+      }
+    });
   }
 
   trackByIndex(index: number, item: any): number {
