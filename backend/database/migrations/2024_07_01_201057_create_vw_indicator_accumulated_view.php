@@ -13,7 +13,8 @@ class CreateVwIndicatorAccumulatedView extends Migration
      */
     public function up()
     {
-        DB::statement("
+        DB::statement(
+        "
     CREATE OR REPLACE VIEW vw_indicator_accumulated AS
     SELECT
         sai.id AS sai_id,

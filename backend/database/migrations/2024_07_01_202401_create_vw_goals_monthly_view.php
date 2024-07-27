@@ -13,7 +13,8 @@ class CreateVwGoalsMonthlyView extends Migration
      */
     public function up()
     {
-        DB::statement("
+        DB::statement(
+        "
 CREATE OR REPLACE VIEW vw_goals_monthly AS
     SELECT
         g.sai_id,
