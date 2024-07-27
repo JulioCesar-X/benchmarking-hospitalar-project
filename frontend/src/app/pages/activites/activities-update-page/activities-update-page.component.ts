@@ -31,6 +31,7 @@ export class ActivitiesUpdatePageComponent implements OnInit, OnDestroy {
     private activityService: ActivityService
   ) { }
 
+
   ngOnInit(): void {
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const activityId = +params['id'];
@@ -38,6 +39,8 @@ export class ActivitiesUpdatePageComponent implements OnInit, OnDestroy {
         this.loadActivity(activityId);
       }
     });
+    localStorage.removeItem('activeLink');
+
   }
 
   ngOnDestroy(): void {

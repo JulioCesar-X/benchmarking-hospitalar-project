@@ -41,6 +41,8 @@ export class IndicatorsUpdatePageComponent implements OnInit, OnDestroy {
         this.loadIndicator(indicatorId);
       }
     });
+    localStorage.removeItem('activeLink');
+
   }
 
   ngOnDestroy(): void {

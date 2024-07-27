@@ -62,7 +62,7 @@
         <div class="tab-headers-wrapper mt-5">
           <div id="tabHead" class="flex items-center justify-between pr-2">
             <div id="tabHeaders" class="flex w-[30%]">
-              <button
+              <button *ngIf="formsAction === 'edit'"
               matTooltip="Desassociar serviços e indicadores á atividade." [matTooltipPosition]="'above'"
               matTooltipClass="custom"
                 type="button"
@@ -85,7 +85,7 @@
             </div>
           </div>
 
-          <div *ngIf="activeTab === 'Desassociação'" class="checkboxContainer">
+          <div *ngIf="activeTab === 'Desassociação' && formsAction === 'edit'" class="checkboxContainer">
             <app-loading-spinner
               *ngIf="isLoadingDesassociacao"
               message="A carregar SAIs..."
@@ -94,7 +94,7 @@
               [items]="saisList"
               [displayProperties]="['service_name', 'indicator_name']"
               [preSelectedItems]="selectedSaisIDs"
-              (selectionChange)="onSaisSelectionChange($event)"
+              (selectionChange)="openDialog($event)"
             >
             </app-desassociation-list>
           </div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { IndicatorsListSectionComponent } from '../../../components/indicators/indicators-list-section/indicators-list-section.component';
@@ -17,11 +17,15 @@ import { IndicatorService } from '../../../core/services/indicator/indicator.ser
   templateUrl: './indicators-page.component.html',
   styleUrls: ['./indicators-page.component.scss']
 })
-export class IndicatorsPageComponent {
+export class IndicatorsPageComponent implements OnInit {
   filteredIndicators: any[] = [];
   isLoadingSearch = false;
 
   constructor(private indicatorService: IndicatorService) { }
+
+  ngOnInit() {
+    localStorage.removeItem('activeLink');
+   }
 
   onSearch(results: any[]): void {
     this.filteredIndicators = results;

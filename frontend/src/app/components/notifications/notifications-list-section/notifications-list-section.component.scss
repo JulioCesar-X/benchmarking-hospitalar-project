@@ -48,7 +48,8 @@
 .timeline ul li .timeline-item {
   position: relative;
   bottom: 0;
-  width: 400px;
+  min-height: 300px;
+  width: 600px;
   background: $main-blue;
   color: $fill-white;
   padding: 3em;
@@ -68,14 +69,9 @@
 .timeline ul li.sent:nth-child(even) .timeline-item::before{
   border-color: transparent transparent transparent $main-dark-blue !important;
 }
-
 .timeline ul li.sent .timeline-item .notification-details {
   background: $main-blue;
 }
-
-
-
-
 .timeline ul li.expanded::after {
   background: $main-dark-blue;
 }
@@ -107,7 +103,7 @@
 }
 
 .timeline ul li:nth-child(even) .timeline-item {
-  left: -439px;
+  left: -640px;
 }
 
 .timeline ul li:nth-child(even) .timeline-item::before {
@@ -320,4 +316,22 @@ textarea {
 .highlight {
   box-shadow: 0 0 10px 5px $main-red;
   transition: box-shadow 2s;
+}
+
+/* to garantee expanded cards stay in place */
+.timeline ul li.expanded .timeline-item {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition: none; 
+}
+
+.timeline ul li:not(.expanded) .timeline-item {
+  transition: all 0.5s ease-in-out;  
+}
+
+.timeline ul li.in-view .timeline-item {
+  transform: none; 
+  visibility: visible;
+  opacity: 1;
 }

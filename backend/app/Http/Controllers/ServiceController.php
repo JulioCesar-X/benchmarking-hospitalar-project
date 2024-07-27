@@ -101,7 +101,7 @@ class ServiceController extends Controller
             $services = $request->input('services');
 
             foreach ($services as $index => $service) {
-                Service::where('id', $service['id'])->update(['order' => $index]);
+                Service::where('id', $service['id'])->update(['order' => $index + 1]); // Atualiza a ordem
             }
 
             return response()->json(['message' => 'Ordem dos serviços atualizada com sucesso.'], 200);

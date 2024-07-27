@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MenuComponent } from '../../../components/shared/menu/menu.component';
 import { NotificationsCreateFormComponent } from '../../../components/notifications/notifications-upsert-form/notifications-upsert-form.component';
 
@@ -9,6 +9,8 @@ import { NotificationsCreateFormComponent } from '../../../components/notificati
   templateUrl: './notifications-create-page.component.html',
   styleUrl: './notifications-create-page.component.scss'
 })
-export class NotificationsCreatePageComponent {
-
+export class NotificationsCreatePageComponent implements OnInit {
+  ngOnInit() {
+    localStorage.removeItem('activeLink');
+   }
 }

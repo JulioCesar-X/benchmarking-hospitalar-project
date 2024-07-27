@@ -64,6 +64,7 @@
             <button
             matTooltip="Desassociar serviços e atividades do indicador." [matTooltipPosition]="'above'"
               matTooltipClass="custom"
+              *ngIf="formsAction === 'edit'"
               type="button"
               class="tab-link"
               [class.active]="activeTab === 'Desassociação'"
@@ -86,7 +87,7 @@
       </div>
       <!-- checkboxes -->
 
-      <div *ngIf="activeTab === 'Desassociação'" class="checkboxContainer">
+      <div *ngIf="activeTab === 'Desassociação' && formsAction === 'edit'" class="checkboxContainer">
         <app-loading-spinner
           *ngIf="isLoadingDesassociacao"
           message="A carregar SAIs..."
@@ -99,8 +100,8 @@
             activity_name: 'Atividade'
           }"
           [preSelectedItems]="selectedSaisIDs"
-          (selectionChange)="onSaisSelectionChange($event)"
-        >
+          (selectionChange)="openDialog($event)"
+          >
         </app-desassociation-list>
       </div>
 
